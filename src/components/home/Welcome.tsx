@@ -13,7 +13,7 @@ const Welcome = () => {
             <div className="relative z-10">
               <img 
                 src="https://images.unsplash.com/photo-1567515004624-219c11d31f2e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" 
-                alt="Pastor" 
+                alt="Pastor Kobus Bezuidenhout" 
                 className="rounded-xl shadow-card w-full h-auto object-cover"
               />
             </div>
@@ -53,12 +53,12 @@ const Welcome = () => {
               <div className="flex items-center">
                 <img 
                   src="https://images.unsplash.com/photo-1544717305-2782549b5136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" 
-                  alt="Pastor Signature" 
+                  alt="Pastor Kobus Bezuidenhout" 
                   className="w-12 h-12 rounded-full object-cover mr-4"
                 />
                 <div>
-                  <h4 className="font-semibold text-church-neutral-900">Senior Pastor</h4>
-                  <p className="text-sm text-church-neutral-600">Gate Gaborone Ministries</p>
+                  <h4 className="font-semibold text-church-neutral-900">Pastor Kobus Bezuidenhout</h4>
+                  <p className="text-sm text-church-neutral-600">Senior Pastor</p>
                 </div>
               </div>
             </div>

@@ -18,7 +18,7 @@ const Hero = () => {
           <span className="inline-block bg-church-gold px-3 py-1 rounded-full text-sm font-medium text-church-neutral-900 mb-6 animate-fade-in">
             Welcome to Gate Gaborone
           </span>
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in shadow-text" style={{ animationDelay: '0.2s', textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in">
             <span className="font-extrabold tracking-wider">GATE GABORONE MINISTRIES</span>
           </h1>
           <p className="text-lg md:text-xl text-white/90 mb-8 animate-fade-in" style={{ animationDelay: '0.4s' }}>

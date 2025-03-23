@@ -4,9 +4,6 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Hero from '@/components/home/Hero';
 import Welcome from '@/components/home/Welcome';
-import ScriptureWall from '@/components/home/ScriptureWall';
-import EventCountdown from '@/components/home/EventCountdown';
-import TestimonialCarousel from '@/components/home/TestimonialCarousel';
 import { Link } from 'react-router-dom';
 
 const Index = () => {
@@ -21,12 +18,6 @@ const Index = () => {
         {/* Welcome Section */}
         <Welcome />
         
-        {/* Scripture Wall */}
-        <ScriptureWall />
-        
-        {/* Upcoming Services */}
-        <EventCountdown />
-        
         {/* Featured Sections Links */}
         <section className="py-16 md:py-24 bg-white">
           <div className="container mx-auto px-4">
@@ -38,7 +29,7 @@ const Index = () => {
                 Get Connected
               </h2>
               <p className="max-w-2xl mx-auto text-church-neutral-700">
-                Discover different ways to get involved and grow in your faith journey at Grace Community.
+                Discover different ways to get involved and grow in your faith journey at Gate Gaborone Ministries.
               </p>
             </div>
             
@@ -108,9 +99,6 @@ const Index = () => {
             </div>
           </div>
         </section>
-        
-        {/* Testimonials */}
-        <TestimonialCarousel />
       </main>
       
       <Footer />
