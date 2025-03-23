@@ -3,7 +3,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 // Pages
 import Index from "./pages/Index";
@@ -17,12 +18,32 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Title component to update document title based on route
+const TitleUpdater = () => {
+  const location = useLocation();
+  
+  useEffect(() => {
+    let title = "Gate Gaborone Ministries";
+    
+    // Add page name to title
+    if (location.pathname !== "/") {
+      const pageName = location.pathname.substring(1);
+      title += ` | ${pageName.charAt(0).toUpperCase() + pageName.slice(1).replace(/-/g, " ")}`;
+    }
+    
+    document.title = title;
+  }, [location]);
+  
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <TitleUpdater />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/sermons" element={<Sermons />} />

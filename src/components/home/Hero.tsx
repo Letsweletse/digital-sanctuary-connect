@@ -16,15 +16,15 @@ const Hero = () => {
       <div className="container mx-auto px-4 relative z-20 text-center">
         <div className="max-w-3xl mx-auto">
           <span className="inline-block bg-church-gold px-3 py-1 rounded-full text-sm font-medium text-church-neutral-900 mb-6 animate-fade-in">
-            Welcome to Grace Community
+            Welcome to Gate Gaborone
           </span>
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            Living in Faith, Growing in Grace
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in shadow-text" style={{ animationDelay: '0.2s', textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
+            <span className="font-extrabold tracking-wider">GATE GABORONE MINISTRIES</span>
           </h1>
           <p className="text-lg md:text-xl text-white/90 mb-8 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            Join us on a journey of faith, community, and spiritual growth. 
-            Experience the warmth of a congregation dedicated to living out 
-            God's purpose in our everyday lives.
+            An apostolic center in the heart of Botswana's economic capital,
+            strategically positioned to align with biblical patterns and model
+            the Kingdom of God.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in" style={{ animationDelay: '0.6s' }}>

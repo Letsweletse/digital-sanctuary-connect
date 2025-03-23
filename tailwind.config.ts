@@ -65,9 +65,9 @@ export default {
 				},
 				church: {
 					blue: {
-						light: '#E6F0FD',
-						DEFAULT: '#B9D5FD',
-						dark: '#8ABAFC'
+						light: '#D3DEF2',
+						DEFAULT: '#1A56DB', // Denim blue as primary blue
+						dark: '#0D3FA0'
 					},
 					gold: {
 						light: '#F2E4C9',
@@ -100,6 +100,7 @@ export default {
 			boxShadow: {
 				'soft': '0 4px 20px rgba(0, 0, 0, 0.05)',
 				'card': '0 8px 30px rgba(0, 0, 0, 0.08)',
+				'text': '0 2px 3px rgba(0, 0, 0, 0.3)', // For text emboss and drop shadow
 			},
 			keyframes: {
 				'accordion-down': {

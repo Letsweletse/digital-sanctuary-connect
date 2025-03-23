@@ -13,7 +13,7 @@ const Welcome = () => {
             <div className="relative z-10">
               <img 
                 src="https://images.unsplash.com/photo-1567515004624-219c11d31f2e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" 
-                alt="Pastor John Doe" 
+                alt="Pastor" 
                 className="rounded-xl shadow-card w-full h-auto object-cover"
               />
             </div>
@@ -22,24 +22,31 @@ const Welcome = () => {
           {/* Welcome Message */}
           <div>
             <span className="inline-block bg-church-blue-light px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4">
-              A Message From Our Pastor
+              Our Story & Vision
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-church-neutral-900 mb-6">
-              Welcome to Our Church Family
+              The Gate Family of Churches
             </h2>
             <div className="space-y-4 text-church-neutral-700">
               <p>
-                Grace is not just our name—it's how we live. At Grace Community, we believe in creating a space 
-                where everyone can experience God's love and grow in their faith journey.
+                Gate Gaborone, as part of the Gate Family of churches, was birthed through a divine mandate given in a conference in 2012. 
+                The directive was unequivocally simple and clear — a new season has dawned upon the church that must visibly announce 
+                and tangibly express itself through congregations strategically positioned in gateway cities globally.
               </p>
               <p>
-                Whether you're new to faith or have been walking with God for years, you'll find a community 
-                that welcomes you with open arms and encourages your spiritual growth.
+                This season, named in some circles as the 'apostolic season', was born at least two decades ago in relative obscurity 
+                and insignificance. Through this period of time, it has endured the rigorous process of spiritual and physical formation 
+                before presenting itself as a fresh biblical paradigm distinct from that of its Pentecostal/Charismatic counterparts.
               </p>
               <p>
-                We invite you to join us this Sunday and see for yourself what makes our church special. 
-                It's not the building—it's the people, the worship, and most importantly, 
-                the presence of God among us.
+                At the heart of this season is the passionate pursuit to align the church to apostolic biblical patterns, 
+                free from conformity to secular and humanistic influences. GGB serves as an apostolic center in the heart of the 
+                economic capital of Botswana. Its mandate is to be a strategic gate for the presentation, proclamation, and modeling 
+                of the apostolic message to the nations.
+              </p>
+              <p>
+                In pursuit of its mandate, Gate Gaborone Ministries seeks to constructively and practically provide a biblical, 
+                Christocentric model of ministry, offering a deeper spiritual encounter of the family of God.
               </p>
             </div>
             <div className="mt-8">
@@ -50,8 +57,8 @@ const Welcome = () => {
                   className="w-12 h-12 rounded-full object-cover mr-4"
                 />
                 <div>
-                  <h4 className="font-semibold text-church-neutral-900">Pastor John Doe</h4>
-                  <p className="text-sm text-church-neutral-600">Senior Pastor</p>
+                  <h4 className="font-semibold text-church-neutral-900">Senior Pastor</h4>
+                  <p className="text-sm text-church-neutral-600">Gate Gaborone Ministries</p>
                 </div>
               </div>
             </div>
