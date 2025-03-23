@@ -130,11 +130,6 @@
     @apply border border-church-neutral-300 text-church-neutral-700 hover:bg-church-neutral-100 transition-colors duration-300 px-6 py-3 rounded-md font-medium;
   }
   
-  .text-emboss {
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    letter-spacing: 1px;
-  }
-  
   .shadow-text {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   }

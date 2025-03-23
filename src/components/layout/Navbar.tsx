@@ -35,15 +35,15 @@ const Navbar = () => {
   return (
     <header className={cn(
       "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-      isScrolled ? "bg-white/90 backdrop-blur-md shadow-sm py-4" : "bg-transparent py-6"
+      isScrolled ? "bg-church-blue/90 backdrop-blur-md shadow-sm py-4 text-white" : "bg-transparent py-6 text-white"
     )}>
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
           <Link 
             to="/" 
-            className="text-2xl font-bold text-church-neutral-900 flex items-center gap-2"
+            className="text-2xl font-bold flex items-center gap-2"
           >
-            <span className="text-church-gold">Grace</span>Community
+            <span className="text-church-gold">Gate</span>Gaborone
           </Link>
           
           {/* Desktop Navigation */}
@@ -55,15 +55,17 @@ const Navbar = () => {
                 className={cn(
                   "px-4 py-2 rounded-md text-sm font-medium transition-colors",
                   location.pathname === link.path
-                    ? "bg-church-blue-light text-church-neutral-900"
-                    : "text-church-neutral-700 hover:bg-church-blue-light/50"
+                    ? "bg-church-blue-light text-church-blue-dark"
+                    : "text-white hover:bg-white/10"
                 )}
               >
                 {link.title}
               </Link>
             ))}
             <a
-              href="#"
+              href="https://www.youtube.com/@gategaboronebotswana2702"
+              target="_blank"
+              rel="noopener noreferrer"
               className="ml-4 btn-accent"
             >
               Watch Live
@@ -72,7 +74,7 @@ const Navbar = () => {
           
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 text-church-neutral-800 hover:bg-church-blue-light rounded-md"
+            className="md:hidden p-2 text-white hover:bg-white/10 rounded-md"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -82,7 +84,7 @@ const Navbar = () => {
       
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-church-neutral-200 animate-slide-up">
+        <div className="md:hidden bg-church-blue border-t border-white/10 animate-slide-up">
           <div className="container mx-auto px-4 py-4">
             <nav className="flex flex-col space-y-3">
               {navLinks.map((link) => (
@@ -92,15 +94,17 @@ const Navbar = () => {
                   className={cn(
                     "px-4 py-3 rounded-md text-base font-medium transition-colors",
                     location.pathname === link.path
-                      ? "bg-church-blue-light text-church-neutral-900"
-                      : "text-church-neutral-700 hover:bg-church-blue-light/50"
+                      ? "bg-church-blue-light text-church-blue-dark"
+                      : "text-white hover:bg-white/10"
                   )}
                 >
                   {link.title}
                 </Link>
               ))}
               <a
-                href="#"
+                href="https://www.youtube.com/@gategaboronebotswana2702"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="btn-accent text-center mt-4"
               >
                 Watch Live

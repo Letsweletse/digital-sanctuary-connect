@@ -85,16 +85,16 @@ const HouseChurch = () => {
       
       <main className="flex-grow pt-24 page-transition">
         {/* Page Header */}
-        <section className="bg-church-blue-light py-16 md:py-24">
+        <section className="bg-church-blue py-16 md:py-24 text-white">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl">
-              <span className="inline-block bg-white px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4">
+              <span className="inline-block bg-white px-3 py-1 rounded-full text-sm font-medium text-church-blue mb-4">
                 Small Groups
               </span>
-              <h1 className="text-4xl md:text-5xl font-bold text-church-neutral-900 mb-6">
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
                 House Church Ministry
               </h1>
-              <p className="text-lg text-church-neutral-700">
+              <p className="text-lg text-white/90">
                 Experience the warmth of Christian community through our house church groups, 
                 where faith is nurtured through fellowship, prayer, and Bible study in a home setting.
               </p>
@@ -208,20 +208,92 @@ const HouseChurch = () => {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* YouTube Integration */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <span className="inline-block bg-church-blue-light px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4">
+                Watch Our Videos
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-church-neutral-900 mb-6">
+                Recent Messages
+              </h2>
+              <p className="max-w-2xl mx-auto text-church-neutral-700">
+                Watch our latest sermons and teachings from our YouTube channel.
+              </p>
+            </div>
             
-            {/* Start Your Own Group */}
-            <div className="mt-16 glass-panel p-8 bg-church-gold-light/70">
-              <div className="text-center">
-                <h3 className="text-2xl font-bold text-church-neutral-900 mb-4">
-                  Interested in Leading a House Church?
-                </h3>
-                <p className="text-church-neutral-700 mb-6 max-w-2xl mx-auto">
-                  We're always looking for members who feel called to host and lead House Church groups. 
-                  Training and resources are provided to equip you for this meaningful ministry.
+            <div className="relative pb-9 h-0" style={{ paddingBottom: "56.25%" }}>
+              <iframe 
+                src="https://www.youtube.com/embed?listType=user_uploads&list=gategaboronebotswana2702" 
+                className="absolute top-0 left-0 w-full h-full"
+                title="Gate Gaborone Ministries YouTube Channel"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+            
+            <div className="mt-8 text-center">
+              <a 
+                href="https://www.youtube.com/@gategaboronebotswana2702" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="btn-primary"
+              >
+                Visit Our YouTube Channel
+              </a>
+            </div>
+          </div>
+        </section>
+        
+        {/* Media Upload Info */}
+        <section className="py-16 bg-church-blue text-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <span className="inline-block bg-white px-3 py-1 rounded-full text-sm font-medium text-church-blue mb-4">
+                Media Resources
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                Sermon Audio & Images
+              </h2>
+              <p className="max-w-2xl mx-auto text-white/90">
+                Access our MP3 sermon archive and view our image gallery.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="glass-panel bg-white/10 p-8 rounded-xl">
+                <h3 className="text-2xl font-bold text-white mb-4">Sermon Audio</h3>
+                <p className="text-white/90 mb-6">
+                  Listen to our weekly sermon recordings or download them to your device.
                 </p>
-                <Link to="/contact" className="btn-primary">
-                  Learn About Leading
-                </Link>
+                <a 
+                  href="https://soundcloud.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="btn-accent"
+                >
+                  Access Audio Archive
+                </a>
+              </div>
+              
+              <div className="glass-panel bg-white/10 p-8 rounded-xl">
+                <h3 className="text-2xl font-bold text-white mb-4">Image Gallery</h3>
+                <p className="text-white/90 mb-6">
+                  Browse our collection of photos from church events and gatherings.
+                </p>
+                <a 
+                  href="https://flickr.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="btn-accent"
+                >
+                  View Image Gallery
+                </a>
               </div>
             </div>
           </div>

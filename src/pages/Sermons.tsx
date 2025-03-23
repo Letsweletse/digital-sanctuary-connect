@@ -3,6 +3,7 @@ import React from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import SermonGrid from '@/components/sermons/SermonGrid';
+import YouTubeEmbed from '@/components/media/YouTubeEmbed';
 
 const Sermons = () => {
   return (
@@ -11,16 +12,16 @@ const Sermons = () => {
       
       <main className="flex-grow pt-24 page-transition">
         {/* Page Header */}
-        <section className="bg-church-blue-light py-16 md:py-24">
+        <section className="bg-church-blue py-16 md:py-24 text-white">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl">
-              <span className="inline-block bg-white px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4">
+              <span className="inline-block bg-white px-3 py-1 rounded-full text-sm font-medium text-church-blue mb-4">
                 Sermons & Teachings
               </span>
-              <h1 className="text-4xl md:text-5xl font-bold text-church-neutral-900 mb-6">
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
                 Weekly Messages
               </h1>
-              <p className="text-lg text-church-neutral-700">
+              <p className="text-lg text-white/90">
                 Explore our sermon archive for teachings on faith, grace, and living out God's Word. 
                 Watch online, download audio, or subscribe for updates.
               </p>
@@ -28,9 +29,40 @@ const Sermons = () => {
           </div>
         </section>
         
-        {/* Sermons Content */}
-        <section className="py-16">
+        {/* YouTube Videos */}
+        <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <span className="inline-block bg-church-blue-light px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4">
+                Latest Videos
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-church-neutral-900 mb-6">
+                Watch Our Sermons
+              </h2>
+              <p className="max-w-2xl mx-auto text-church-neutral-700">
+                Subscribe to our YouTube channel for the latest videos from Gate Gaborone Ministries.
+              </p>
+            </div>
+            
+            <YouTubeEmbed channelId="gategaboronebotswana2702" maxResults={6} />
+          </div>
+        </section>
+        
+        {/* Sermon Archives */}
+        <section className="py-16 bg-church-neutral-50">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <span className="inline-block bg-church-gold-light px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4">
+                Sermon Archive
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-church-neutral-900 mb-6">
+                Browse Past Messages
+              </h2>
+              <p className="max-w-2xl mx-auto text-church-neutral-700">
+                Search and filter our sermon archive by topic, speaker, or date.
+              </p>
+            </div>
+            
             <SermonGrid />
           </div>
         </section>
