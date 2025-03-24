@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MediaUploader from '../media/MediaUploader';
 import YouTubeEmbed from '../media/YouTubeEmbed';
+import AudioSermonPlayer from '../media/AudioSermonPlayer';
 
 const MediaSection = () => {
   const [selectedTab, setSelectedTab] = useState("youtube");
@@ -59,6 +60,15 @@ const MediaSection = () => {
           </TabsContent>
           
           <TabsContent value="audio" className="space-y-6">
+            <div className="glass-panel p-6 bg-white">
+              <h3 className="text-xl font-bold text-church-neutral-900 mb-4">Recent Audio Sermons</h3>
+              <p className="text-church-neutral-700 mb-6">
+                Listen to our latest sermon recordings directly on our website. You can also download them for offline listening.
+              </p>
+              
+              <AudioSermonPlayer />
+            </div>
+            
             <div className="glass-panel p-6 bg-white">
               <h3 className="text-xl font-bold text-church-neutral-900 mb-4">Upload Sermon Audio</h3>
               <p className="text-church-neutral-700 mb-6">
