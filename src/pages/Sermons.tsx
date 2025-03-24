@@ -23,7 +23,7 @@ const Sermons = () => {
               </h1>
               <p className="text-lg text-white/90">
                 Explore our sermon archive for teachings on faith, grace, and living out God's Word. 
-                Watch online, download audio, or subscribe for updates.
+                Watch online or subscribe to our YouTube channel for updates.
               </p>
             </div>
           </div>
@@ -64,6 +64,17 @@ const Sermons = () => {
             </div>
             
             <SermonGrid />
+            
+            <div className="mt-12 text-center">
+              <a 
+                href="https://www.youtube.com/@gategaboronebotswana2702/videos"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary"
+              >
+                View All Sermons on YouTube
+              </a>
+            </div>
           </div>
         </section>
       </main>

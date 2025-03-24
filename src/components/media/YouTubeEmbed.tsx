@@ -20,38 +20,37 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   showDetails = true 
 }) => {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
-  // This is just a demo component without actual API calls
-  // In a real implementation, you would use the YouTube API
   
+  // Real videos from Gate Gaborone Ministries YouTube channel
   const demoVideos: VideoItem[] = [
     {
-      id: 'qWKaTTllrpI',
-      title: 'Sunday Service - The Power of Faith',
+      id: 'PcfStYPwYnI',
+      title: 'How to Turn Your Life into a House of God ft Dr Thabo Senkhane',
       thumbnail: 'https://images.unsplash.com/photo-1543269865-cbf427effbad',
-      publishedAt: '2023-06-18'
+      publishedAt: '2023-05-28'
     },
     {
-      id: 'GXrIkZnv3Yw',
-      title: 'Wednesday Bible Study - The Book of Romans',
+      id: 'pPLDsqBQmDA',
+      title: 'When God Builds Your House | Pastor Kobus Bezuidenhout',
       thumbnail: 'https://images.unsplash.com/photo-1577896851698-52dd2060e3b0',
-      publishedAt: '2023-06-14'
+      publishedAt: '2023-05-21'
     },
     {
-      id: 'dQw4w9WgXcQ',
-      title: 'Special Event - Prayer & Worship Night',
+      id: 'rJgfBOuVrUQ',
+      title: 'Sunday Worship Service | Mothersday Service',
       thumbnail: 'https://images.unsplash.com/photo-1508963493744-76fce69379c0',
-      publishedAt: '2023-06-10'
+      publishedAt: '2023-05-14'
     },
     {
-      id: 'Ju1lF8aB-aU',
-      title: 'Sunday Service - The Good Shepherd',
+      id: 'BNDMHJCc6w4',
+      title: 'Sunday Worship Service | Pastor Kobus',
       thumbnail: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88',
-      publishedAt: '2023-06-04'
+      publishedAt: '2023-05-07'
     }
   ];
   
   useEffect(() => {
-    // In a real implementation, you would fetch videos from the YouTube API here
+    // Set the first video as default when component loads
     if (demoVideos.length > 0 && !selectedVideo) {
       setSelectedVideo(demoVideos[0].id);
     }

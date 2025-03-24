@@ -102,69 +102,6 @@ const HouseChurch = () => {
           </div>
         </section>
         
-        {/* What is House Church */}
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-              <div>
-                <span className="inline-block bg-church-gold-light px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4">
-                  About House Church
-                </span>
-                <h2 className="text-3xl md:text-4xl font-bold text-church-neutral-900 mb-6">
-                  Why Join a House Church?
-                </h2>
-                <div className="space-y-4 text-church-neutral-700">
-                  <p>
-                    House Churches are small groups of people who gather regularly in homes to study the Bible, 
-                    pray together, and build meaningful relationships.
-                  </p>
-                  <p>
-                    While Sunday services provide a wonderful opportunity for corporate worship, House Churches 
-                    offer a more intimate setting where questions can be asked, stories shared, and faith deepened 
-                    through close community.
-                  </p>
-                  <p>
-                    In these smaller gatherings, members can experience authentic community, receive personalized 
-                    prayer and support, and find opportunities to use their spiritual gifts in serving one another.
-                  </p>
-                </div>
-                <div className="mt-8">
-                  <a href="#find-group" className="btn-primary">
-                    Find Your Group
-                  </a>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-4">
-                  <img 
-                    src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1932&q=80" 
-                    alt="House Church Fellowship" 
-                    className="w-full h-auto rounded-lg shadow-md"
-                  />
-                  <img 
-                    src="https://images.unsplash.com/photo-1601598853533-26ef209200df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80" 
-                    alt="Bible Study" 
-                    className="w-full h-auto rounded-lg shadow-md mt-4"
-                  />
-                </div>
-                <div className="space-y-4 mt-8">
-                  <img 
-                    src="https://images.unsplash.com/photo-1577896851698-52dd2060e3b0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" 
-                    alt="Prayer Time" 
-                    className="w-full h-auto rounded-lg shadow-md"
-                  />
-                  <img 
-                    src="https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" 
-                    alt="Community Meal" 
-                    className="w-full h-auto rounded-lg shadow-md mt-4"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        
         {/* Find a Group */}
         <section id="find-group" className="py-16 bg-church-neutral-50">
           <div className="container mx-auto px-4">
@@ -246,55 +183,6 @@ const HouseChurch = () => {
               >
                 Visit Our YouTube Channel
               </a>
-            </div>
-          </div>
-        </section>
-        
-        {/* Media Upload Info */}
-        <section className="py-16 bg-church-blue text-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <span className="inline-block bg-white px-3 py-1 rounded-full text-sm font-medium text-church-blue mb-4">
-                Media Resources
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                Sermon Audio & Images
-              </h2>
-              <p className="max-w-2xl mx-auto text-white/90">
-                Access our MP3 sermon archive and view our image gallery.
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="glass-panel bg-white/10 p-8 rounded-xl">
-                <h3 className="text-2xl font-bold text-white mb-4">Sermon Audio</h3>
-                <p className="text-white/90 mb-6">
-                  Listen to our weekly sermon recordings or download them to your device.
-                </p>
-                <a 
-                  href="https://soundcloud.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="btn-accent"
-                >
-                  Access Audio Archive
-                </a>
-              </div>
-              
-              <div className="glass-panel bg-white/10 p-8 rounded-xl">
-                <h3 className="text-2xl font-bold text-white mb-4">Image Gallery</h3>
-                <p className="text-white/90 mb-6">
-                  Browse our collection of photos from church events and gatherings.
-                </p>
-                <a 
-                  href="https://flickr.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="btn-accent"
-                >
-                  View Image Gallery
-                </a>
-              </div>
             </div>
           </div>
         </section>
