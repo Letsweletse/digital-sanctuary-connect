@@ -32,18 +32,6 @@ const Sermons = () => {
         {/* YouTube Videos */}
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <span className="inline-block bg-church-blue-light px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4">
-                Latest Videos
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-church-neutral-900 mb-6">
-                Watch Our Sermons
-              </h2>
-              <p className="max-w-2xl mx-auto text-church-neutral-700">
-                Subscribe to our YouTube channel for the latest videos from Gate Gaborone Ministries.
-              </p>
-            </div>
-            
             <YouTubeEmbed channelId="gategaboronebotswana2702" maxResults={6} />
           </div>
         </section>

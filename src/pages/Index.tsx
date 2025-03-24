@@ -4,6 +4,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Hero from '@/components/home/Hero';
 import Welcome from '@/components/home/Welcome';
+import MediaSection from '@/components/home/MediaSection';
 import { Link } from 'react-router-dom';
 
 const Index = () => {
@@ -17,6 +18,9 @@ const Index = () => {
         
         {/* Welcome Section */}
         <Welcome />
+        
+        {/* Media Section */}
+        <MediaSection />
         
         {/* Featured Sections Links */}
         <section className="py-16 md:py-24 bg-white">

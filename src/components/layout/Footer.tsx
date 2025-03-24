@@ -68,11 +68,12 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="text-white/80">
                 <span className="font-medium">Address:</span>
-                <span className="block">Gaborone, Botswana</span>
+                <span className="block">Gate Gaborone Auditorium</span>
+                <span className="block">Gaborone West, Phase 4, Plot 54014</span>
               </li>
               <li className="text-white/80">
                 <span className="font-medium">Phone:</span>
-                <span className="block">+267 123 4567</span>
+                <span className="block">+267 75507981</span>
               </li>
               <li className="text-white/80">
                 <span className="font-medium">Email:</span>
