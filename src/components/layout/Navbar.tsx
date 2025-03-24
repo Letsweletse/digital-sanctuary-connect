@@ -56,7 +56,7 @@ const Navbar = () => {
                   "px-4 py-2 rounded-md text-sm font-medium transition-colors",
                   location.pathname === link.path
                     ? "bg-church-blue-light text-church-blue-dark"
-                    : "text-white hover:bg-white/10"
+                    : isScrolled ? "text-white hover:bg-white/10" : "text-white hover:bg-white/10"
                 )}
               >
                 {link.title}

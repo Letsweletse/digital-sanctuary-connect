@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -101,8 +100,8 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-church-neutral-900 mb-2">Our Location</h3>
-                      <p className="text-church-neutral-700">123 Faith Avenue</p>
-                      <p className="text-church-neutral-700">Grace City, State 12345</p>
+                      <p className="text-church-neutral-700">Gate Gaborone Auditorium</p>
+                      <p className="text-church-neutral-700">Gaborone West, Phase 4, Plot 54014</p>
                     </div>
                   </div>
                   
@@ -126,8 +125,8 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-church-neutral-900 mb-2">Email Us</h3>
-                      <p className="text-church-neutral-700">General Information: info@gracecommunity.org</p>
-                      <p className="text-church-neutral-700">Prayer Requests: prayer@gracecommunity.org</p>
+                      <p className="text-church-neutral-700">General Information: info@gategaborone.org</p>
+                      <p className="text-church-neutral-700">Prayer Requests: prayer@gategaborone.org</p>
                     </div>
                   </div>
                   
@@ -150,7 +149,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-church-neutral-900 mb-2">Call Us</h3>
-                      <p className="text-church-neutral-700">Main Office: +1 (555) 123-4567</p>
+                      <p className="text-church-neutral-700">Main Office: +267 75507981</p>
                       <p className="text-church-neutral-700">After Hours: +1 (555) 987-6543</p>
                     </div>
                   </div>
