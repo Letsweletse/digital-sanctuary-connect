@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -150,7 +151,7 @@ const Contact = () => {
                     <div>
                       <h3 className="text-lg font-semibold text-church-neutral-900 mb-2">Call Us</h3>
                       <p className="text-church-neutral-700">Main Office: +267 75507981</p>
-                      <p className="text-church-neutral-700">After Hours: +1 (555) 987-6543</p>
+                      <p className="text-church-neutral-700">After Hours: +267 75507981</p>
                     </div>
                   </div>
                   

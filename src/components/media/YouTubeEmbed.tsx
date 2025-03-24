@@ -21,8 +21,20 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
 }) => {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   
-  // Real videos from Gate Gaborone Ministries YouTube channel
-  const demoVideos: VideoItem[] = [
+  // Actual videos from Gate Gaborone Ministries YouTube channel
+  const videos: VideoItem[] = [
+    {
+      id: '0Nkx8oww13E',
+      title: 'SUNDAY SERVICE || THIS MORNING || 10/12/2023',
+      thumbnail: 'https://images.unsplash.com/photo-1543269865-cbf427effbad',
+      publishedAt: '2023-12-10'
+    },
+    {
+      id: 'p6Q5iqTIEqw',
+      title: 'SUNDAY SERVICE || THIS MORNING || 26/11/2023',
+      thumbnail: 'https://images.unsplash.com/photo-1577896851698-52dd2060e3b0',
+      publishedAt: '2023-11-26'
+    },
     {
       id: 'PcfStYPwYnI',
       title: 'How to Turn Your Life into a House of God ft Dr Thabo Senkhane',
@@ -51,8 +63,8 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   
   useEffect(() => {
     // Set the first video as default when component loads
-    if (demoVideos.length > 0 && !selectedVideo) {
-      setSelectedVideo(demoVideos[0].id);
+    if (videos.length > 0 && !selectedVideo) {
+      setSelectedVideo(videos[0].id);
     }
   }, []);
   
@@ -79,7 +91,7 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
       
       {/* Video List */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {demoVideos.slice(0, maxResults).map((video) => (
+        {videos.slice(0, maxResults).map((video) => (
           <div 
             key={video.id}
             className={`cursor-pointer group overflow-hidden rounded-lg transition-all duration-300 ${
