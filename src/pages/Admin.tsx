@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import MediaSection from '@/components/home/MediaSection';
+import ImageUploader from '@/components/media/ImageUploader';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Admin = () => {
   const [authenticated, setAuthenticated] = useState(false);
@@ -79,7 +81,45 @@ const Admin = () => {
             </div>
           </section>
         ) : (
-          <MediaSection />
+          <section className="py-16 bg-white">
+            <div className="container mx-auto px-4">
+              <Tabs defaultValue="images" className="w-full">
+                <TabsList className="mb-8">
+                  <TabsTrigger value="images">Image Management</TabsTrigger>
+                  <TabsTrigger value="audio">Audio Sermons</TabsTrigger>
+                  <TabsTrigger value="youtube">YouTube Videos</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="images" className="space-y-8">
+                  <ImageUploader />
+                </TabsContent>
+                
+                <TabsContent value="audio">
+                  <MediaSection />
+                </TabsContent>
+                
+                <TabsContent value="youtube">
+                  <div className="glass-panel p-8">
+                    <h2 className="text-2xl font-bold text-church-neutral-900 mb-6">
+                      YouTube Channel Management
+                    </h2>
+                    <p className="text-church-neutral-700 mb-4">
+                      This section allows you to manage YouTube videos that appear on the website.
+                      The videos are pulled directly from the Gate Gaborone YouTube channel.
+                    </p>
+                    <div className="bg-church-neutral-100 p-4 rounded-md">
+                      <p className="text-sm text-church-neutral-700">
+                        Channel ID: <span className="font-mono">gategaboronebotswana2702</span>
+                      </p>
+                      <p className="text-sm text-church-neutral-500 mt-2">
+                        To update videos, simply upload new content to your YouTube channel.
+                      </p>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </div>
+          </section>
         )}
       </main>
       

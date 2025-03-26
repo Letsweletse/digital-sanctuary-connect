@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -65,9 +64,9 @@ export default {
 				},
 				church: {
 					blue: {
-						light: '#D3DEF2',
-						DEFAULT: '#1A56DB', // Denim blue as primary blue
-						dark: '#0D3FA0'
+						light: '#B7C9E2',
+						DEFAULT: '#4682B4',
+						dark: '#385F82'
 					},
 					gold: {
 						light: '#F2E4C9',
@@ -100,7 +99,7 @@ export default {
 			boxShadow: {
 				'soft': '0 4px 20px rgba(0, 0, 0, 0.05)',
 				'card': '0 8px 30px rgba(0, 0, 0, 0.08)',
-				'text': '0 2px 3px rgba(0, 0, 0, 0.3)', // For text emboss and drop shadow
+				'text': '0 2px 3px rgba(0, 0, 0, 0.3)',
 			},
 			keyframes: {
 				'accordion-down': {
