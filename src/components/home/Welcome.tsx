@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const Welcome = () => {
@@ -25,7 +24,7 @@ const Welcome = () => {
               Our Vision
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-church-neutral-900 mb-6">
-              Gate Gaborone Ministries
+              Gate Gaborone
             </h2>
             <div className="space-y-4 text-church-neutral-700">
               <p>
@@ -45,7 +44,7 @@ const Welcome = () => {
                 of the apostolic message to the nations.
               </p>
               <p>
-                In pursuit of its mandate, Gate Gaborone Ministries seeks to constructively and practically provide a biblical, 
+                In pursuit of its mandate, Gate Gaborone seeks to constructively and practically provide a biblical, 
                 Christocentric model of ministry, offering a deeper spiritual encounter of the family of God.
               </p>
             </div>

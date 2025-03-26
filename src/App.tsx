@@ -24,7 +24,7 @@ const TitleUpdater = () => {
   const location = useLocation();
   
   useEffect(() => {
-    let title = "Gate Gaborone Ministries";
+    let title = "Gate Gaborone";
     
     // Add page name to title
     if (location.pathname !== "/") {

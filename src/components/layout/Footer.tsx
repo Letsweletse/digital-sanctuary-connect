@@ -85,7 +85,7 @@ const Footer = () => {
         
         <div className="border-t border-white/10 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-white/50 text-sm mb-4 md:mb-0">
-            &copy; {new Date().getFullYear()} Gate Gaborone Ministries. All rights reserved.
+            &copy; {new Date().getFullYear()} Gate Gaborone. All rights reserved.
           </p>
           <div className="flex space-x-6">
             <Link to="/privacy" className="text-white/50 hover:text-church-gold text-sm transition-colors">Privacy Policy</Link>

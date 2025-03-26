@@ -19,7 +19,7 @@ const Hero = () => {
             Welcome to Gate Gaborone
           </span>
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in tracking-wider">
-            GATE GABORONE MINISTRIES
+            GATE GABORONE
           </h1>
           <p className="text-lg md:text-xl text-white/90 mb-8 animate-fade-in" style={{ animationDelay: '0.4s' }}>
             An apostolic center in the heart of Botswana's economic capital,
