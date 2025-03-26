@@ -4,6 +4,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import SermonGrid from '@/components/sermons/SermonGrid';
 import YouTubeEmbed from '@/components/media/YouTubeEmbed';
+import SermonAudio from '@/components/media/SermonAudio';
 
 const Sermons = () => {
   return (
@@ -29,8 +30,29 @@ const Sermons = () => {
           </div>
         </section>
         
-        {/* YouTube Videos */}
+        {/* SermonAudio Integration */}
         <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <span className="inline-block bg-church-blue-light px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4">
+                SermonAudio
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-church-neutral-900 mb-6">
+                Listen to Our Sermons
+              </h2>
+              <p className="max-w-2xl mx-auto text-church-neutral-700">
+                Access our sermons through SermonAudio's platform for high-quality audio recordings of our weekly messages.
+              </p>
+            </div>
+            
+            <div className="max-w-4xl mx-auto glass-panel p-6">
+              <SermonAudio churchId="gategaborone" showLatest={true} count={5} />
+            </div>
+          </div>
+        </section>
+        
+        {/* YouTube Videos */}
+        <section className="py-16 bg-church-neutral-50">
           <div className="container mx-auto px-4">
             <YouTubeEmbed channelId="gategaboronebotswana2702" maxResults={6} />
           </div>
