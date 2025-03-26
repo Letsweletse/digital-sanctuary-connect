@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { findOne } from '@/lib/mongodb';
+import { Document, WithId } from 'mongodb';
 
 interface SermonAudioProps {
   churchId?: string;
@@ -32,7 +33,15 @@ const SermonAudio = ({
         try {
           const churchConfig = await findOne('church_config', { configType: 'sermon_audio' });
           if (churchConfig) {
-            setConfig(churchConfig as ChurchConfig);
+            // Properly convert MongoDB document to ChurchConfig type
+            const { _id, ...configData } = churchConfig as WithId<Document>;
+            
+            // Make sure the document has the required fields
+            if ('sermonAudioId' in configData && 'sermonCount' in configData) {
+              setConfig(configData as unknown as ChurchConfig);
+            } else {
+              throw new Error('MongoDB document is missing required fields');
+            }
           }
         } catch (err) {
           console.error('Error fetching MongoDB config', err);

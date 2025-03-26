@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -5,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { findMany } from '@/lib/mongodb';
 import { Loader2 } from 'lucide-react';
 import SermonAudio from '@/components/media/SermonAudio';
+import { Document, WithId } from 'mongodb';
 
 interface HouseChurchGroup {
   id: string;
@@ -29,8 +31,38 @@ const HouseChurch = () => {
         const mongoGroups = await findMany('house_church_groups', {});
         
         if (mongoGroups && mongoGroups.length > 0) {
-          setGroups(mongoGroups as HouseChurchGroup[]);
+          // Convert MongoDB documents to HouseChurchGroup type
+          const typedGroups = mongoGroups.map((doc: WithId<Document>) => {
+            const { _id, ...data } = doc;
+            
+            // Check if the document has the required fields
+            const requiredFields = ['name', 'day', 'time', 'location', 'description', 'leaders', 'image'];
+            const hasAllFields = requiredFields.every(field => field in data);
+            
+            if (hasAllFields) {
+              return {
+                id: _id.toString(),
+                ...data
+              } as unknown as HouseChurchGroup;
+            }
+            
+            // If the document is missing fields, log an error but continue with what we have
+            console.error('MongoDB document is missing required fields', doc);
+            return {
+              id: _id.toString(),
+              name: data.name || 'Unknown Group',
+              day: data.day || 'Unknown Day',
+              time: data.time || 'Unknown Time',
+              location: data.location || 'Unknown Location',
+              description: data.description || 'No description available',
+              leaders: data.leaders || 'Unknown Leaders',
+              image: data.image || 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac'
+            } as HouseChurchGroup;
+          });
+          
+          setGroups(typedGroups);
         } else {
+          // Fall back to default groups
           setGroups([
             {
               id: '1',
