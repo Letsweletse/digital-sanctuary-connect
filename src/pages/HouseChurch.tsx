@@ -1,23 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Link } from 'react-router-dom';
-import { findMany } from '@/lib/mongodb';
+import { findMany, HouseChurchGroup } from '@/lib/mongodb';
 import { Loader2 } from 'lucide-react';
 import SermonAudio from '@/components/media/SermonAudio';
-import { Document, WithId } from 'mongodb';
-
-interface HouseChurchGroup {
-  id: string;
-  name: string;
-  day: string;
-  time: string;
-  location: string;
-  description: string;
-  leaders: string;
-  image: string;
-}
 
 const HouseChurch = () => {
   const [groups, setGroups] = useState<HouseChurchGroup[]>([]);
@@ -31,166 +18,22 @@ const HouseChurch = () => {
         const mongoGroups = await findMany('house_church_groups', {});
         
         if (mongoGroups && mongoGroups.length > 0) {
-          // Convert MongoDB documents to HouseChurchGroup type
-          const typedGroups = mongoGroups.map((doc: WithId<Document>) => {
+          // Convert the _id to id for consistency
+          const typedGroups = mongoGroups.map((doc: any) => {
             const { _id, ...data } = doc;
-            
-            // Check if the document has the required fields
-            const requiredFields = ['name', 'day', 'time', 'location', 'description', 'leaders', 'image'];
-            const hasAllFields = requiredFields.every(field => field in data);
-            
-            if (hasAllFields) {
-              return {
-                id: _id.toString(),
-                ...data
-              } as unknown as HouseChurchGroup;
-            }
-            
-            // If the document is missing fields, log an error but continue with what we have
-            console.error('MongoDB document is missing required fields', doc);
             return {
               id: _id.toString(),
-              name: data.name || 'Unknown Group',
-              day: data.day || 'Unknown Day',
-              time: data.time || 'Unknown Time',
-              location: data.location || 'Unknown Location',
-              description: data.description || 'No description available',
-              leaders: data.leaders || 'Unknown Leaders',
-              image: data.image || 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac'
+              ...data
             } as HouseChurchGroup;
           });
           
           setGroups(typedGroups);
         } else {
-          // Fall back to default groups
-          setGroups([
-            {
-              id: '1',
-              name: 'Faith & Family',
-              day: 'Monday',
-              time: '7:00 PM',
-              location: 'North Side',
-              description: 'A group focused on strengthening families through Bible study and prayer, with activities for children and teens.',
-              leaders: 'James & Mary Wilson',
-              image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1932&q=80'
-            },
-            {
-              id: '2',
-              name: 'Young Adults',
-              day: 'Tuesday',
-              time: '7:30 PM',
-              location: 'Downtown',
-              description: 'For college students and young professionals seeking community and spiritual growth in a relaxed atmosphere.',
-              leaders: 'Michael & Sarah Thompson',
-              image: 'https://images.unsplash.com/photo-1529333166437-7feb29c65e8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1769&q=80'
-            },
-            {
-              id: '3',
-              name: 'Deeper Walk',
-              day: 'Wednesday',
-              time: '6:30 PM',
-              location: 'East Side',
-              description: 'An in-depth Bible study group focused on theological understanding and practical application.',
-              leaders: 'Pastor Robert Chen',
-              image: 'https://images.unsplash.com/photo-1577896851698-52dd2060e3b0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80'
-            },
-            {
-              id: '4',
-              name: 'Senior Fellowship',
-              day: 'Thursday',
-              time: '10:00 AM',
-              location: 'Church Campus',
-              description: 'A daytime group for seniors focusing on fellowship, prayer, and mutual support.',
-              leaders: 'Harold & Betty Johnson',
-              image: 'https://images.unsplash.com/photo-1573497491765-55a968388b83?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80'
-            },
-            {
-              id: '5',
-              name: 'Women of Grace',
-              day: 'Friday',
-              time: '9:30 AM',
-              location: 'West Side',
-              description: 'A women\'s Bible study group with childcare provided, focusing on growing in faith amid life\'s many seasons.',
-              leaders: 'Jennifer Adams',
-              image: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80'
-            },
-            {
-              id: '6',
-              name: 'International Fellowship',
-              day: 'Saturday',
-              time: '5:00 PM',
-              location: 'South Side',
-              description: 'A multicultural group celebrating diverse backgrounds while studying God\'s Word together. Several languages spoken.',
-              leaders: 'Gabriel & Sophia Rodriguez',
-              image: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80'
-            }
-          ]);
+          console.warn('No house church groups found in database, using defaults');
+          setError('Could not load groups from database. Showing default groups.');
         }
-        setError(null);
       } catch (err) {
         console.error('Error fetching house church groups', err);
-        setGroups([
-          {
-            id: '1',
-            name: 'Faith & Family',
-            day: 'Monday',
-            time: '7:00 PM',
-            location: 'North Side',
-            description: 'A group focused on strengthening families through Bible study and prayer, with activities for children and teens.',
-            leaders: 'James & Mary Wilson',
-            image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1932&q=80'
-          },
-          {
-            id: '2',
-            name: 'Young Adults',
-            day: 'Tuesday',
-            time: '7:30 PM',
-            location: 'Downtown',
-            description: 'For college students and young professionals seeking community and spiritual growth in a relaxed atmosphere.',
-            leaders: 'Michael & Sarah Thompson',
-            image: 'https://images.unsplash.com/photo-1529333166437-7feb29c65e8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1769&q=80'
-          },
-          {
-            id: '3',
-            name: 'Deeper Walk',
-            day: 'Wednesday',
-            time: '6:30 PM',
-            location: 'East Side',
-            description: 'An in-depth Bible study group focused on theological understanding and practical application.',
-            leaders: 'Pastor Robert Chen',
-            image: 'https://images.unsplash.com/photo-1577896851698-52dd2060e3b0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80'
-          },
-          {
-            id: '4',
-            name: 'Senior Fellowship',
-            day: 'Thursday',
-            time: '10:00 AM',
-            location: 'Church Campus',
-            description: 'A daytime group for seniors focusing on fellowship, prayer, and mutual support.',
-            leaders: 'Harold & Betty Johnson',
-            image: 'https://images.unsplash.com/photo-1573497491765-55a968388b83?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80'
-          },
-          {
-            id: '5',
-            name: 'Women of Grace',
-            day: 'Friday',
-            time: '9:30 AM',
-            location: 'West Side',
-            description: 'A women\'s Bible study group with childcare provided, focusing on growing in faith amid life\'s many seasons.',
-            leaders: 'Jennifer Adams',
-            image: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80'
-          },
-          {
-            id: '6',
-            name: 'International Fellowship',
-            day: 'Saturday',
-            time: '5:00 PM',
-            location: 'South Side',
-            description: 'A multicultural group celebrating diverse backgrounds while studying God\'s Word together. Several languages spoken.',
-            leaders: 'Gabriel & Sophia Rodriguez',
-            image: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80'
-          }
-        ]);
         setError('Could not connect to database. Showing default groups.');
       } finally {
         setIsLoading(false);
@@ -316,7 +159,7 @@ const HouseChurch = () => {
               <iframe 
                 src="https://www.youtube.com/embed?listType=user_uploads&list=gategaboronebotswana2702" 
                 className="absolute top-0 left-0 w-full h-full"
-                title="Gate Gaborone Ministries YouTube Channel"
+                title="Gate Gaborone YouTube Channel"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen

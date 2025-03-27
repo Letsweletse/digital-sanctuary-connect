@@ -1,12 +1,11 @@
 
 import { useState, useEffect } from 'react';
 import { findMany } from '@/lib/mongodb';
-import { Document, WithId } from 'mongodb';
 
 export function useMongoData<T>(
   collectionName: string, 
-  query: object = {}, 
-  options: object = {}
+  query: Record<string, any> = {}, 
+  options: Record<string, any> = {}
 ) {
   const [data, setData] = useState<T[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -17,9 +16,9 @@ export function useMongoData<T>(
       try {
         setIsLoading(true);
         const result = await findMany(collectionName, query, options);
-        // Properly convert MongoDB documents to the expected type
-        const typedResult = result.map((doc: WithId<Document>) => {
-          // Remove MongoDB's _id field and convert it to a string id if needed
+        
+        // Convert the _id to id for consistency
+        const typedResult = result.map((doc: any) => {
           const { _id, ...rest } = doc;
           return { 
             id: _id.toString(), 
@@ -30,7 +29,7 @@ export function useMongoData<T>(
         setData(typedResult);
         setError(null);
       } catch (err) {
-        console.error('Error fetching data from MongoDB', err);
+        console.error('Error fetching data from database', err);
         setError(err instanceof Error ? err : new Error('Unknown error occurred'));
         setData([]);
       } finally {
