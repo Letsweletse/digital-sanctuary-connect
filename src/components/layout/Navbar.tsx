@@ -24,12 +24,12 @@ const Navbar = () => {
   
   const navLinks = [
     { title: 'Home', path: '/' },
+    { title: 'About', path: '/about' },
     { title: 'Sermons', path: '/sermons' },
     { title: 'Leadership', path: '/leadership' },
     { title: 'House Church', path: '/house-church' },
-    { title: 'About', path: '/about' },
     { title: 'Events', path: '/events' },
-    { title: 'Give', path: '/give' }, // Add the Give page link
+    { title: 'Give', path: '/give' }, // Moved to a more prominent position
     { title: 'Contact', path: '/contact' },
   ];
   
