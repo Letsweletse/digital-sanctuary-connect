@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Upload, X, Check, AlertCircle, Folder, Image } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -35,7 +36,7 @@ const ImageUploader = () => {
         const formattedImages = images.map((img: any) => ({
           name: img.name,
           url: img.url,
-          category: img.category as ImageCategory,
+          category: img.category as ImageCategory, // Cast the string to ImageCategory
           uploadedAt: new Date(img.uploadedAt || Date.now())
         }));
         setUploadedImages(formattedImages);
@@ -142,7 +143,7 @@ const ImageUploader = () => {
         const newImage = {
           name: file.name,
           url: imageUrl,
-          category,
+          category, // This is already of type ImageCategory
           uploadedAt: new Date().toISOString()
         };
         
