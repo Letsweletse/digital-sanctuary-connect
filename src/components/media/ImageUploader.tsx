@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Upload, X, Check, AlertCircle, Folder, Image } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -49,6 +50,7 @@ const ImageUploader = () => {
         setUploadedImages(formattedImages);
       } catch (err) {
         console.error('Error fetching images', err);
+        // Define mockImages directly as ImageFile[] with proper types
         const mockImages: ImageFile[] = [
           {
             name: 'hero-image.jpg',
