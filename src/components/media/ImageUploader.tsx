@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Upload, X, Check, AlertCircle, Folder, Image } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -33,12 +32,20 @@ const ImageUploader = () => {
     const fetchImages = async () => {
       try {
         const images = await findMany('images', { category: category === 'general' ? {} : { category } });
-        const formattedImages = images.map((img: any) => ({
-          name: img.name,
-          url: img.url,
-          category: img.category as ImageCategory, // Cast the string to ImageCategory
-          uploadedAt: new Date(img.uploadedAt || Date.now())
-        }));
+        const formattedImages = images.map((img: any) => {
+          const imgCategory = img.category || 'general';
+          const validCategory: ImageCategory = 
+            ['hero', 'sermons', 'events', 'leadership', 'general'].includes(imgCategory) 
+              ? imgCategory as ImageCategory 
+              : 'general';
+              
+          return {
+            name: img.name,
+            url: img.url,
+            category: validCategory,
+            uploadedAt: new Date(img.uploadedAt || Date.now())
+          };
+        });
         setUploadedImages(formattedImages);
       } catch (err) {
         console.error('Error fetching images', err);
@@ -143,7 +150,7 @@ const ImageUploader = () => {
         const newImage = {
           name: file.name,
           url: imageUrl,
-          category, // This is already of type ImageCategory
+          category: category as ImageCategory,
           uploadedAt: new Date().toISOString()
         };
         
