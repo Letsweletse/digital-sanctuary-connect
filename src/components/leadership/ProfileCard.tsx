@@ -39,10 +39,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
         
         {/* Content */}
         <div className={`p-6 ${isSeniorPastor ? 'md:w-2/3' : 'w-full'}`}>
-          <span className="inline-block bg-church-blue-light px-3 py-1 rounded-full text-xs font-medium text-church-neutral-700 mb-3">
+          <span className="inline-block bg-indigo-100 px-3 py-1 rounded-full text-xs font-medium text-indigo-700 mb-3">
             {role}
           </span>
-          <h3 className="text-2xl font-bold text-church-neutral-900 mb-2">{name}</h3>
+          <h3 className="text-2xl font-bold text-black mb-2">{name}</h3>
           
           <div className={`relative overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-none' : 'max-h-20'}`}>
             <p className="text-church-neutral-700">{bio}</p>
@@ -51,23 +51,23 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
           
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-church-blue-dark hover:text-church-gold mt-2 text-sm font-medium transition-colors"
+            className="text-indigo-600 hover:text-indigo-800 mt-2 text-sm font-medium transition-colors"
           >
             {isExpanded ? 'Read Less' : 'Read More'}
           </button>
           
           {isSeniorPastor && sermons && sermons.length > 0 && (
             <div className="mt-6">
-              <h4 className="text-lg font-semibold text-church-neutral-900 mb-3">Recent Sermons</h4>
+              <h4 className="text-lg font-semibold text-black mb-3">Recent Sermons</h4>
               <ul className="space-y-2">
                 {sermons.map((sermon, index) => (
                   <li key={index}>
                     <Link 
                       to={sermon.url} 
-                      className="text-church-neutral-700 hover:text-church-gold flex items-center transition-colors"
+                      className="text-church-neutral-700 hover:text-indigo-600 flex items-center transition-colors"
                     >
                       <svg 
-                        className="w-4 h-4 mr-2 text-church-gold" 
+                        className="w-4 h-4 mr-2 text-indigo-500" 
                         viewBox="0 0 24 24" 
                         fill="none" 
                         stroke="currentColor" 
@@ -84,27 +84,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
               </ul>
             </div>
           )}
-          
-          <div className="mt-6">
-            <a 
-              href={`mailto:${email || 'info@gracecommunity.org'}`}
-              className="btn-primary inline-flex items-center"
-            >
-              <svg 
-                className="w-4 h-4 mr-2" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                <polyline points="22,6 12,13 2,6"></polyline>
-              </svg>
-              Contact for Prayer
-            </a>
-          </div>
         </div>
       </div>
     </div>

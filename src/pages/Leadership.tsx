@@ -10,16 +10,16 @@ const Leadership = () => {
       <Navbar />
       
       <main className="flex-grow pt-24 page-transition">
-        <section className="py-16 bg-church-blue text-white">
+        <section className="py-16 bg-indigo-100 text-black">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl">
-              <span className="inline-block bg-white px-3 py-1 rounded-full text-sm font-medium text-church-blue mb-4">
+              <span className="inline-block bg-white px-3 py-1 rounded-full text-sm font-medium text-indigo-700 mb-4">
                 Our Team
               </span>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              <h1 className="text-4xl md:text-5xl font-bold text-black mb-6">
                 Leadership
               </h1>
-              <p className="text-lg text-white/90">
+              <p className="text-lg text-black/90">
                 Meet the dedicated team that guides Gate Gaborone. Our leaders are committed to serving our community with wisdom and compassion.
               </p>
             </div>
