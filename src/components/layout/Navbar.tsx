@@ -29,6 +29,7 @@ const Navbar = () => {
     { title: 'House Church', path: '/house-church' },
     { title: 'About', path: '/about' },
     { title: 'Events', path: '/events' },
+    { title: 'Give', path: '/give' }, // Add the Give page link
     { title: 'Contact', path: '/contact' },
   ];
   
