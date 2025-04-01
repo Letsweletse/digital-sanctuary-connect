@@ -83,12 +83,25 @@ const Admin = () => {
         ) : (
           <section className="py-16 bg-white">
             <div className="container mx-auto px-4">
-              <Tabs defaultValue="images" className="w-full">
+              <Tabs defaultValue="leadership" className="w-full">
                 <TabsList className="mb-8">
-                  <TabsTrigger value="images">Image Management</TabsTrigger>
+                  <TabsTrigger value="leadership">Leadership Photos</TabsTrigger>
+                  <TabsTrigger value="images">General Images</TabsTrigger>
                   <TabsTrigger value="audio">Audio Sermons</TabsTrigger>
                   <TabsTrigger value="youtube">YouTube Videos</TabsTrigger>
                 </TabsList>
+                
+                <TabsContent value="leadership" className="space-y-8">
+                  <div className="glass-panel p-8">
+                    <h2 className="text-2xl font-bold text-church-neutral-900 mb-6">
+                      Leadership Photos Management
+                    </h2>
+                    <p className="text-church-neutral-700 mb-6">
+                      Upload and manage photos of church leadership team members. These images will appear on the Leadership page.
+                    </p>
+                    <ImageUploader />
+                  </div>
+                </TabsContent>
                 
                 <TabsContent value="images" className="space-y-8">
                   <ImageUploader />

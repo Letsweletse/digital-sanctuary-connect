@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Upload, X, Check, AlertCircle, Folder, Image } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
+import { insertOne, findMany } from '@/lib/mongodb';
 
 type ImageCategory = 'hero' | 'sermons' | 'events' | 'leadership' | 'general';
 
@@ -22,36 +22,64 @@ const ImageUploader = () => {
   const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
-  const [category, setCategory] = useState<ImageCategory>('general');
+  const [category, setCategory] = useState<ImageCategory>('leadership');
   const [uploadedImages, setUploadedImages] = useState<ImageFile[]>([]);
   const [selectedImage, setSelectedImage] = useState<ImageFile | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const maxFileSizeMB = 5;
   
-  // Simulate fetching of uploaded images
   useEffect(() => {
-    const mockImages: ImageFile[] = [
-      {
-        name: 'hero-image.jpg',
-        url: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3',
-        category: 'hero',
-        uploadedAt: new Date(2023, 5, 15)
-      },
-      {
-        name: 'sermon-cover.jpg',
-        url: 'https://images.unsplash.com/photo-1508963493744-76fce69379c0',
-        category: 'sermons',
-        uploadedAt: new Date(2023, 6, 22)
-      },
-      {
-        name: 'event-banner.jpg',
-        url: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94',
-        category: 'events',
-        uploadedAt: new Date(2023, 7, 10)
+    const fetchImages = async () => {
+      try {
+        const images = await findMany('images', { category: category === 'general' ? {} : { category } });
+        const formattedImages = images.map((img: any) => ({
+          name: img.name,
+          url: img.url,
+          category: img.category as ImageCategory,
+          uploadedAt: new Date(img.uploadedAt || Date.now())
+        }));
+        setUploadedImages(formattedImages);
+      } catch (err) {
+        console.error('Error fetching images', err);
+        const mockImages: ImageFile[] = [
+          {
+            name: 'hero-image.jpg',
+            url: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3',
+            category: 'hero',
+            uploadedAt: new Date(2023, 5, 15)
+          },
+          {
+            name: 'sermon-cover.jpg',
+            url: 'https://images.unsplash.com/photo-1508963493744-76fce69379c0',
+            category: 'sermons',
+            uploadedAt: new Date(2023, 6, 22)
+          },
+          {
+            name: 'event-banner.jpg',
+            url: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94',
+            category: 'events',
+            uploadedAt: new Date(2023, 7, 10)
+          },
+          {
+            name: 'pastor-john.jpg',
+            url: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81',
+            category: 'leadership',
+            uploadedAt: new Date(2023, 8, 5)
+          },
+          {
+            name: 'elder-board.jpg',
+            url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c',
+            category: 'leadership',
+            uploadedAt: new Date(2023, 9, 15)
+          }
+        ].filter(img => category === 'general' || img.category === category);
+        
+        setUploadedImages(mockImages);
       }
-    ];
+    };
     
-    setUploadedImages(mockImages);
-  }, []);
+    fetchImages();
+  }, [category, refreshTrigger]);
   
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -81,14 +109,12 @@ const ImageUploader = () => {
   const validateAndSetFile = (file: File) => {
     setError(null);
     
-    // Check file type
     const fileType = file.type;
     if (!fileType.match(/image\/(jpeg|jpg|png|gif|webp)/)) {
       setError(`Invalid file type. Please upload an image file.`);
       return;
     }
     
-    // Check file size
     const fileSizeMB = file.size / (1024 * 1024);
     if (fileSizeMB > maxFileSizeMB) {
       setError(`File is too large. Maximum size is ${maxFileSizeMB}MB.`);
@@ -103,32 +129,66 @@ const ImageUploader = () => {
     
     setIsUploading(true);
     
-    // Simulate upload process
-    setTimeout(() => {
-      setIsUploading(false);
-      setIsUploaded(true);
+    try {
+      const reader = new FileReader();
       
-      // Add to uploaded images
-      const newImage: ImageFile = {
-        name: file.name,
-        url: URL.createObjectURL(file),
-        category: category,
-        uploadedAt: new Date()
+      reader.onload = async (e) => {
+        if (!e.target?.result) {
+          throw new Error("Failed to read file");
+        }
+        
+        const imageUrl = e.target.result as string;
+        
+        const newImage = {
+          name: file.name,
+          url: imageUrl,
+          category,
+          uploadedAt: new Date().toISOString()
+        };
+        
+        await insertOne('images', newImage);
+        
+        const addedImage: ImageFile = {
+          name: file.name,
+          url: imageUrl,
+          category,
+          uploadedAt: new Date()
+        };
+        
+        setUploadedImages(prev => [addedImage, ...prev]);
+        
+        toast({
+          title: "Image Uploaded",
+          description: `${file.name} has been uploaded successfully.`,
+        });
+        
+        setIsUploading(false);
+        setIsUploaded(true);
+        
+        setRefreshTrigger(prev => prev + 1);
+        
+        setTimeout(() => {
+          setFile(null);
+          setIsUploaded(false);
+        }, 3000);
       };
       
-      setUploadedImages(prev => [newImage, ...prev]);
+      reader.onerror = () => {
+        throw new Error("Failed to read file");
+      };
+      
+      reader.readAsDataURL(file);
+    } catch (err) {
+      console.error('Error uploading image', err);
+      setError('Failed to upload image. Please try again.');
+      setIsUploading(false);
       
       toast({
-        title: "Image Uploaded",
-        description: `${file.name} has been uploaded successfully.`,
+        title: "Upload Failed",
+        description: "There was an error uploading your image.",
+        variant: "destructive",
       });
-      
-      // Reset after 3 seconds
-      setTimeout(() => {
-        setFile(null);
-        setIsUploaded(false);
-      }, 3000);
-    }, 2000);
+    }
   };
   
   const handleImageClick = (image: ImageFile) => {
@@ -145,17 +205,42 @@ const ImageUploader = () => {
     }
   };
   
-  const handleDelete = (image: ImageFile) => {
-    // In a real app, you would call an API to delete the image
-    setUploadedImages(prev => prev.filter(img => img.url !== image.url));
-    
-    if (selectedImage && selectedImage.url === image.url) {
-      setSelectedImage(null);
+  const handleDelete = async (image: ImageFile) => {
+    try {
+      await insertOne('deleted_images', {
+        name: image.name,
+        url: image.url,
+        category: image.category,
+        deletedAt: new Date().toISOString()
+      });
+      
+      setUploadedImages(prev => prev.filter(img => img.url !== image.url));
+      
+      if (selectedImage && selectedImage.url === image.url) {
+        setSelectedImage(null);
+      }
+      
+      toast({
+        title: "Image Deleted",
+        description: `${image.name} has been deleted.`,
+      });
+      
+      setRefreshTrigger(prev => prev + 1);
+    } catch (err) {
+      console.error('Error deleting image', err);
+      toast({
+        title: "Delete Failed",
+        description: "There was an error deleting the image.",
+        variant: "destructive",
+      });
     }
-    
+  };
+  
+  const handleRefreshImages = () => {
+    setRefreshTrigger(prev => prev + 1);
     toast({
-      title: "Image Deleted",
-      description: `${image.name} has been deleted.`,
+      title: "Refreshed",
+      description: "Image library has been refreshed.",
     });
   };
   
@@ -173,7 +258,6 @@ const ImageUploader = () => {
         <div className="space-y-4">
           <h2 className="text-xl font-semibold text-church-neutral-900">Upload New Image</h2>
           
-          {/* Upload Area */}
           <div 
             className={`border-2 border-dashed rounded-lg p-6 transition-colors ${
               isDragging 
@@ -355,21 +439,34 @@ const ImageUploader = () => {
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold text-church-neutral-900">Image Library</h2>
-          <select
-            value={category === 'general' ? 'all' : category}
-            onChange={(e) => {
-              const value = e.target.value;
-              setCategory(value === 'all' ? 'general' : value as ImageCategory);
-            }}
-            className="px-3 py-2 border border-church-neutral-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-church-blue"
-          >
-            <option value="all">All Categories</option>
-            <option value="hero">Hero Images</option>
-            <option value="sermons">Sermons</option>
-            <option value="events">Events</option>
-            <option value="leadership">Leadership</option>
-            <option value="general">General</option>
-          </select>
+          <div className="flex items-center space-x-2">
+            <Button 
+              onClick={handleRefreshImages} 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center"
+            >
+              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Refresh
+            </Button>
+            <select
+              value={category === 'general' ? 'all' : category}
+              onChange={(e) => {
+                const value = e.target.value;
+                setCategory(value === 'all' ? 'general' : value as ImageCategory);
+              }}
+              className="px-3 py-2 border border-church-neutral-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-church-blue"
+            >
+              <option value="all">All Categories</option>
+              <option value="hero">Hero Images</option>
+              <option value="sermons">Sermons</option>
+              <option value="events">Events</option>
+              <option value="leadership">Leadership</option>
+              <option value="general">General</option>
+            </select>
+          </div>
         </div>
         
         <ScrollArea className="h-80 border border-church-neutral-200 rounded-lg p-4">
