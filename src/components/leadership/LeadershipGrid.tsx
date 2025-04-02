@@ -1,3 +1,4 @@
+
 import React from 'react';
 import ProfileCard from './ProfileCard';
 import useMongoData from '@/hooks/useMongoData';
@@ -13,7 +14,7 @@ const LeadershipGrid: React.FC = () => {
       id: '1',
       name: 'Pastor John Williams',
       role: 'Senior Pastor',
-      image: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+      image: 'https://images.unsplash.com/photo-1567515004624-219c11d31f2e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80',
       bio: 'Pastor John has been leading our congregation for over 15 years. With a background in theology and a passion for community service, he has helped our church grow spiritually and in numbers. His powerful messages inspire us to live out our faith in practical ways.',
       email: 'pastor.john@gategaborone.org',
       isSeniorPastor: true

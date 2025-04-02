@@ -5,7 +5,7 @@ import useMongoData from '@/hooks/useMongoData';
 import { LeadershipPerson } from '@/types/leadershipTypes';
 
 const Welcome = () => {
-  const [pastorImage, setPastorImage] = useState("https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80");
+  const [pastorImage, setPastorImage] = useState("https://images.unsplash.com/photo-1567515004624-219c11d31f2e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80");
   const { uploadedImages } = useImageLibrary('leadership');
   const { data: leaders } = useMongoData<LeadershipPerson>('leadership');
   
