@@ -4,9 +4,17 @@ import ProfileCard from './ProfileCard';
 import useMongoData from '@/hooks/useMongoData';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LeadershipPerson } from '@/types/leadershipTypes';
+import { useImageLibrary } from '@/hooks/useImageLibrary';
 
 const LeadershipGrid: React.FC = () => {
   const { data: leaders, isLoading } = useMongoData<LeadershipPerson>('leadership');
+  const { uploadedImages } = useImageLibrary('general');
+  
+  // Find pastor image from uploaded images
+  const pastorImage = uploadedImages.find(img => 
+    img.name.toLowerCase().includes('pastor') || 
+    img.name.toLowerCase().includes('senior')
+  )?.url || '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
   
   // Mock data for development/fallback
   const mockLeaders: LeadershipPerson[] = [
@@ -14,7 +22,7 @@ const LeadershipGrid: React.FC = () => {
       id: '1',
       name: 'Pastor John Williams',
       role: 'Senior Pastor',
-      image: '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png',
+      image: pastorImage,
       bio: 'Pastor John has been leading our congregation for over 15 years. With a background in theology and a passion for community service, he has helped our church grow spiritually and in numbers. His powerful messages inspire us to live out our faith in practical ways.',
       email: 'pastor.john@gategaborone.org',
       isSeniorPastor: true

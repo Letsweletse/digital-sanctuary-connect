@@ -28,6 +28,9 @@ const Navbar = () => {
     { title: 'Contact', path: '/contact' },
   ];
 
+  // Find the logo image from uploaded images
+  const logoImage = uploadedImages.find(img => img.name.toLowerCase().includes('logo'));
+  
   const handleLogoError = () => {
     console.error('Logo failed to load:', logoUrl);
     setLogoError(true);
@@ -47,6 +50,16 @@ const Navbar = () => {
                 alt="Gate Gaborone Logo" 
                 className="h-10 md:h-12"
                 onError={handleLogoError}
+              />
+            ) : logoImage ? (
+              <img 
+                src={logoImage.url} 
+                alt="Gate Gaborone" 
+                className="h-10 md:h-12" 
+                onError={() => {
+                  console.error('Logo image failed to load');
+                  setLogoError(true);
+                }}
               />
             ) : (
               <img 

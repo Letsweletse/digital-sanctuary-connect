@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useImageLibrary } from '@/hooks/useImageLibrary';
 import useMongoData from '@/hooks/useMongoData';
@@ -5,7 +6,7 @@ import { LeadershipPerson } from '@/types/leadershipTypes';
 
 const Welcome = () => {
   const [pastorImage, setPastorImage] = useState("/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png");
-  const { uploadedImages } = useImageLibrary('leadership');
+  const { uploadedImages } = useImageLibrary('general');
   const { data: leaders } = useMongoData<LeadershipPerson>('leadership');
   
   useEffect(() => {
@@ -19,8 +20,15 @@ const Welcome = () => {
     
     // If no senior pastor found in leadership data, try to use uploaded images
     if (uploadedImages && uploadedImages.length > 0) {
-      // Use the first leadership image found
-      setPastorImage(uploadedImages[0].url);
+      // Look for an image that has "pastor" or "senior" in the name
+      const pastorImg = uploadedImages.find(img => 
+        img.name.toLowerCase().includes('pastor') || 
+        img.name.toLowerCase().includes('senior')
+      );
+      
+      if (pastorImg) {
+        setPastorImage(pastorImg.url);
+      }
     }
   }, [uploadedImages, leaders]);
 
