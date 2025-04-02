@@ -1,11 +1,114 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import Hero from '@/components/home/Hero';
 import Welcome from '@/components/home/Welcome';
 import { Link } from 'react-router-dom';
+import { useToast } from "@/hooks/use-toast";
+import { toast as sonnerToast } from "sonner";
+import EventRegistrationDialog from '@/components/events/EventRegistrationDialog';
+import { formatDate } from '@/utils/dateUtils';
+import { EventData, RegistrationFormData } from '@/types/eventTypes';
+import { sendEventRegistrationEmail } from '@/lib/emailService';
 
 const Index = () => {
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  
+  // Featured event data
+  const featuredEvent: EventData = {
+    id: "featured-event-1",
+    title: "Perspectives on the Apostolic",
+    date: "2025-05-10",
+    time: "9:00 AM - 1:30 PM",
+    location: "Gate Gaborone Auditorium",
+    description: "A special conference exploring apostolic ministry in the modern church. Join us for powerful teachings, workshops, and fellowship.",
+    category: "conference",
+    image: "https://images.unsplash.com/photo-1523580494863-6f031224c94?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
+    registration: true
+  };
+  
+  const [formData, setFormData] = useState<RegistrationFormData>({
+    name: '',
+    email: '',
+    phone: '',
+    numberOfAttendees: 1
+  });
+  
+  const handleOpenRegistration = () => {
+    setIsRegistrationOpen(true);
+    // Show a toast notification for better UX
+    sonnerToast("Registration Form Opened", {
+      description: `You're registering for ${featuredEvent.title}`,
+      duration: 3000
+    });
+  };
+
+  const handleCloseRegistration = () => {
+    setIsRegistrationOpen(false);
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      numberOfAttendees: 1
+    });
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'numberOfAttendees' ? parseInt(value) || 1 : value
+    }));
+  };
+
+  const handleSubmitRegistration = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const registrationData = {
+        event: featuredEvent.title,
+        eventDate: formatDate(featuredEvent.date),
+        eventTime: featuredEvent.time,
+        attendee: formData,
+        submitDate: new Date().toISOString()
+      };
+
+      console.log('Registration submitted:', registrationData);
+      
+      // Send the email notification
+      const emailResult = await sendEventRegistrationEmail(featuredEvent.title, registrationData);
+      console.log('Email service response:', emailResult);
+      
+      // Simulate API delay for better UX - feels more "real"
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Show success message using both toasts for better visibility
+      toast({
+        title: "Registration Successful!",
+        description: `Thank you for registering for ${featuredEvent.title}. In a production environment, confirmation emails would be sent.`,
+      });
+      
+      sonnerToast.success("Registration Complete!", {
+        description: "Thank you for your registration. Check your email for confirmation details.",
+        duration: 5000
+      });
+      
+      handleCloseRegistration();
+    } catch (error) {
+      console.error("Error submitting registration:", error);
+      toast({
+        title: "Registration Failed",
+        description: "There was an error submitting your registration. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <Layout>
       <div className="page-transition">
@@ -35,7 +138,7 @@ const Index = () => {
               <div className="glass-panel overflow-hidden group">
                 <div className="relative h-72 md:h-96">
                   <img 
-                    src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" 
+                    src="https://images.unsplash.com/photo-1523580494863-6f031224c94?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" 
                     alt="Perspectives on the Apostolic" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -46,9 +149,12 @@ const Index = () => {
                     </div>
                     <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">Perspectives on the Apostolic</h3>
                     <p className="text-white/90 mb-4">May 10, 2025 at 9:00 AM - 1:30 PM | Gate Gaborone Auditorium</p>
-                    <Link to="/events" className="btn-primary inline-block">
+                    <button 
+                      className="btn-primary inline-block"
+                      onClick={handleOpenRegistration}
+                    >
                       Register Now
-                    </Link>
+                    </button>
                   </div>
                 </div>
                 <div className="p-6">
@@ -156,6 +262,18 @@ const Index = () => {
             </div>
           </div>
         </section>
+        
+        {/* Add EventRegistrationDialog component */}
+        <EventRegistrationDialog
+          isOpen={isRegistrationOpen}
+          onClose={handleCloseRegistration}
+          currentEvent={featuredEvent}
+          formData={formData}
+          onInputChange={handleInputChange}
+          onSubmit={handleSubmitRegistration}
+          isSubmitting={isSubmitting}
+          formatDate={formatDate}
+        />
       </div>
     </Layout>
   );
