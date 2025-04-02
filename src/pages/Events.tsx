@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { CalendarCheck, User, Mail, Phone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { sendEventRegistrationEmail } from '@/lib/emailService';
 
 interface Event {
   id: string;
@@ -179,20 +181,7 @@ const Events = () => {
 
       console.log('Registration submitted:', registrationData);
       
-      const emailContent = `
-        New Event Registration:
-        
-        Event: ${currentEvent?.title}
-        Date: ${currentEvent?.date ? formatDate(currentEvent.date) : 'N/A'} at ${currentEvent?.time}
-        
-        Attendee Information:
-        Name: ${formData.name}
-        Email: ${formData.email}
-        Phone: ${formData.phone}
-        Number of Attendees: ${formData.numberOfAttendees}
-        
-        Please contact the attendee to confirm their registration.
-      `;
+      await sendEventRegistrationEmail(currentEvent?.title || 'Event', registrationData);
       
       await new Promise(resolve => setTimeout(resolve, 1000));
       
@@ -257,12 +246,14 @@ const Events = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {sortedEvents.map((event) => (
                 <div key={event.id} className="glass-panel overflow-hidden group">
-                  <div className="relative h-48">
-                    <img 
-                      src={event.image} 
-                      alt={event.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+                  <div className="relative">
+                    <AspectRatio ratio={16 / 9} className="w-full">
+                      <img 
+                        src={event.image} 
+                        alt={event.title} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </AspectRatio>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                     <div className="absolute bottom-0 left-0 w-full p-4">
                       <div 
@@ -395,11 +386,13 @@ const Events = () => {
             
             {currentEvent && (
               <div className="mb-4 rounded-md overflow-hidden">
-                <img 
-                  src={currentEvent.image} 
-                  alt={currentEvent.title} 
-                  className="w-full h-auto object-cover max-h-64"
-                />
+                <AspectRatio ratio={16 / 9}>
+                  <img 
+                    src={currentEvent.image} 
+                    alt={currentEvent.title} 
+                    className="w-full h-full object-cover"
+                  />
+                </AspectRatio>
                 <div className="p-3 bg-church-blue-light">
                   <h3 className="font-bold">{currentEvent?.title}</h3>
                   <p className="text-sm">{formatDate(currentEvent?.date || '')} | {currentEvent?.time}</p>
@@ -470,7 +463,7 @@ const Events = () => {
                 </div>
                 <div className="mt-2 p-3 bg-blue-50 border border-blue-100 rounded-md">
                   <p className="text-sm text-blue-700">
-                    Registration details will be sent to church staff at oteng777@gmail.com
+                    Registration details will be sent to church staff at otenggate@gmail.com
                   </p>
                 </div>
               </div>

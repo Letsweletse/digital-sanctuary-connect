@@ -7,7 +7,7 @@
  */
 
 // Email addresses for admin notifications
-const ADMIN_EMAILS = ['oteng777@gmail.com', 'iblimenterprise@zohomail.com'];
+const ADMIN_EMAILS = ['otenggate@gmail.com'];
 
 /**
  * Sends event registration notification to church admins
