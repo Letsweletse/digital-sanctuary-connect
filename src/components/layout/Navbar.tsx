@@ -6,20 +6,10 @@ import { cn } from '@/lib/utils';
 import { useLogo } from './LogoContext';
 
 const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
   const location = useLocation();
   const { logoUrl } = useLogo();
-  
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
   
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -42,10 +32,7 @@ const Navbar = () => {
   };
   
   return (
-    <header className={cn(
-      "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-      isScrolled ? "bg-church-blue shadow-sm py-4" : "bg-transparent py-6"
-    )}>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-church-blue py-4 shadow-sm">
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
           <Link 
@@ -60,7 +47,7 @@ const Navbar = () => {
                 onError={handleLogoError}
               />
             ) : (
-              <span className="text-church-gold font-bold">GateGaborone</span>
+              <span className="text-church-gold font-bold">Gate Gaborone</span>
             )}
           </Link>
           
