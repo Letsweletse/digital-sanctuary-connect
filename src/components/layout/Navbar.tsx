@@ -1,14 +1,15 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { X, Menu } from 'lucide-react';
-import { useMediaQuery } from '@/hooks/use-mobile';
-import { useLogoContext } from '@/components/layout/LogoContext';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useLogo } from '@/components/layout/LogoContext';
 
 const Navbar = () => {
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-  const logoContext = useLogoContext();
+  const logoContext = useLogo();
   
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
