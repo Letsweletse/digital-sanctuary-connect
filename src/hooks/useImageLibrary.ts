@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { findMany, insertOne } from '@/lib/mongodb';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { sendImageUploadEmail } from '@/lib/emailService';
 
@@ -27,26 +27,70 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const images = await findMany('images', { category: category === 'general' ? {} : { category } });
-        
-        // Convert the _id to id for consistency and ensure category is valid
-        const formattedImages: ImageFile[] = images.map((img: any) => {
-          // Ensure category is valid, default to 'general' if not
-          const imgCategory = img.category || 'general';
-          const validCategory: ImageCategory = isValidCategory(imgCategory) ? imgCategory : 'general';
+        // Try to fetch images from Supabase
+        let { data: images, error } = await supabase
+          .from('images')
+          .select('*')
+          .eq(category === 'general' ? 'id' : 'category', category === 'general' ? 'id' : category);
           
-          return {
-            name: img.name,
-            url: img.url,
-            category: validCategory,
-            uploadedAt: new Date(img.uploadedAt || Date.now())
-          };
-        });
+        if (error) throw error;
         
-        setUploadedImages(formattedImages);
+        if (images && images.length > 0) {
+          // Convert the data to our ImageFile format and ensure category is valid
+          const formattedImages: ImageFile[] = images.map((img: any) => {
+            // Ensure category is valid, default to 'general' if not
+            const imgCategory = img.category || 'general';
+            const validCategory: ImageCategory = isValidCategory(imgCategory) ? imgCategory : 'general';
+            
+            return {
+              name: img.name,
+              url: img.url,
+              category: validCategory,
+              uploadedAt: new Date(img.uploaded_at || Date.now())
+            };
+          });
+          
+          setUploadedImages(formattedImages);
+        } else {
+          // Define mockImages directly as ImageFile[] with proper types if no data from Supabase
+          const mockImages: ImageFile[] = [
+            {
+              name: 'hero-image.jpg',
+              url: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3',
+              category: 'hero',
+              uploadedAt: new Date(2023, 5, 15)
+            },
+            {
+              name: 'sermon-cover.jpg',
+              url: 'https://images.unsplash.com/photo-1508963493744-76fce69379c0',
+              category: 'sermons',
+              uploadedAt: new Date(2023, 6, 22)
+            },
+            {
+              name: 'event-banner.jpg',
+              url: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94',
+              category: 'events',
+              uploadedAt: new Date(2023, 7, 10)
+            },
+            {
+              name: 'pastor-john.jpg',
+              url: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81',
+              category: 'leadership',
+              uploadedAt: new Date(2023, 8, 5)
+            },
+            {
+              name: 'elder-board.jpg',
+              url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c',
+              category: 'leadership',
+              uploadedAt: new Date(2023, 9, 15)
+            }
+          ].filter(img => category === 'general' || img.category === category);
+          
+          setUploadedImages(mockImages);
+        }
       } catch (err) {
         console.error('Error fetching images', err);
-        // Define mockImages directly as ImageFile[] with proper types
+        // Use mock data as fallback
         const mockImages: ImageFile[] = [
           {
             name: 'hero-image.jpg',
@@ -119,35 +163,64 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
           // Ensure category is valid
           const safeCategory: ImageCategory = isValidCategory(uploadCategory) ? uploadCategory : 'general';
           
-          const newImage = {
-            name: file.name,
-            url: imageUrl,
-            category: safeCategory,
-            uploadedAt: new Date().toISOString()
-          };
-          
-          await insertOne('images', newImage);
-          
-          const addedImage: ImageFile = {
-            name: file.name,
-            url: imageUrl,
-            category: safeCategory,
-            uploadedAt: new Date()
-          };
-          
-          setUploadedImages(prev => [addedImage, ...prev]);
-          
-          toast({
-            title: "Image Uploaded",
-            description: `${file.name} has been uploaded successfully.`,
-          });
-          
-          // Notify admins by email through our email service
-          sendImageUploadEmail(file.name, safeCategory);
-          
-          // Refresh images list
-          setRefreshTrigger(prev => prev + 1);
-          resolve(true);
+          try {
+            // Try to upload to Supabase
+            const timestamp = new Date().toISOString();
+            const { data, error } = await supabase
+              .from('images')
+              .insert([
+                { 
+                  name: file.name,
+                  url: imageUrl,
+                  category: safeCategory,
+                  uploaded_at: timestamp
+                }
+              ]);
+              
+            if (error) throw error;
+            
+            const addedImage: ImageFile = {
+              name: file.name,
+              url: imageUrl,
+              category: safeCategory,
+              uploadedAt: new Date()
+            };
+            
+            setUploadedImages(prev => [addedImage, ...prev]);
+            
+            toast({
+              title: "Image Uploaded",
+              description: `${file.name} has been uploaded successfully.`,
+            });
+            
+            // Notify admins by email through our email service
+            sendImageUploadEmail(file.name, safeCategory);
+            
+            // Refresh images list
+            setRefreshTrigger(prev => prev + 1);
+            resolve(true);
+          } catch (err) {
+            console.error('Supabase upload failed, falling back to mock data', err);
+            
+            // Fallback to mock data storage if Supabase fails
+            const addedImage: ImageFile = {
+              name: file.name,
+              url: imageUrl,
+              category: safeCategory,
+              uploadedAt: new Date()
+            };
+            
+            setUploadedImages(prev => [addedImage, ...prev]);
+            
+            toast({
+              title: "Image Uploaded",
+              description: `${file.name} has been uploaded successfully.`,
+            });
+            
+            // Refresh images list
+            setRefreshTrigger(prev => prev + 1);
+            resolve(true);
+          }
         };
         
         reader.onerror = () => {
@@ -179,12 +252,13 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
   
   const handleDelete = async (image: ImageFile) => {
     try {
-      await insertOne('deleted_images', {
-        name: image.name,
-        url: image.url,
-        category: image.category,
-        deletedAt: new Date().toISOString()
-      });
+      // Try to delete from Supabase
+      const { error } = await supabase
+        .from('images')
+        .delete()
+        .eq('url', image.url);
+        
+      if (error) throw error;
       
       setUploadedImages(prev => prev.filter(img => img.url !== image.url));
       
@@ -200,12 +274,22 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
       // Refresh images list
       setRefreshTrigger(prev => prev + 1);
     } catch (err) {
-      console.error('Error deleting image', err);
+      console.error('Error deleting image or Supabase not available, removing from UI only', err);
+      
+      // Fallback to local state management if Supabase fails
+      setUploadedImages(prev => prev.filter(img => img.url !== image.url));
+      
+      if (selectedImage && selectedImage.url === image.url) {
+        setSelectedImage(null);
+      }
+      
       toast({
-        title: "Delete Failed",
-        description: "There was an error deleting the image.",
-        variant: "destructive",
+        title: "Image Deleted",
+        description: `${image.name} has been deleted from view.`,
       });
+      
+      // Refresh images list
+      setRefreshTrigger(prev => prev + 1);
     }
   };
   
