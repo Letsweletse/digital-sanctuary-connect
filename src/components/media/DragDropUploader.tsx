@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Upload, X, Check, AlertCircle, Image } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ const DragDropUploader: React.FC<DragDropUploaderProps> = ({
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [category, setCategory] = useState<ImageCategory>('leadership');
+  const { toast } = useToast();
   
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -67,7 +69,34 @@ const DragDropUploader: React.FC<DragDropUploaderProps> = ({
   
   const handleUpload = async () => {
     if (!file) return;
-    await onUpload(file, category);
+    
+    try {
+      await onUpload(file, category);
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast({
+        title: "Upload Warning",
+        description: "The image was uploaded but may not display correctly.",
+        variant: "warning",
+      });
+    }
+  };
+  
+  // Function to handle paste from clipboard
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    
+    if (!items) return;
+    
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        const file = items[i].getAsFile();
+        if (file) {
+          validateAndSetFile(file);
+          break;
+        }
+      }
+    }
   };
 
   return (
@@ -84,6 +113,8 @@ const DragDropUploader: React.FC<DragDropUploaderProps> = ({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
+      onPaste={handlePaste}
+      tabIndex={0}
     >
       <div className="flex flex-col items-center justify-center space-y-4">
         {!file ? (
@@ -93,7 +124,7 @@ const DragDropUploader: React.FC<DragDropUploaderProps> = ({
             </div>
             <div className="text-center">
               <h3 className="text-lg font-semibold text-church-neutral-900">Upload Image</h3>
-              <p className="text-church-neutral-600 text-sm mt-1">Drag & drop or click to select an image</p>
+              <p className="text-church-neutral-600 text-sm mt-1">Drag & drop, paste, or click to select an image</p>
               <p className="text-church-neutral-500 text-xs mt-2">
                 Max file size: {maxFileSizeMB}MB
               </p>

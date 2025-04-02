@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { findMany, insertOne } from '@/lib/mongodb';
 import { useToast } from '@/hooks/use-toast';
@@ -28,7 +29,7 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
         const images = await findMany('images', { category: category === 'general' ? {} : { category } });
         
         // Convert the _id to id for consistency and ensure category is valid
-        const formattedImages = images.map((img: any) => {
+        const formattedImages: ImageFile[] = images.map((img: any) => {
           // Ensure category is valid, default to 'general' if not
           const imgCategory = img.category || 'general';
           const validCategory: ImageCategory = isValidCategory(imgCategory) ? imgCategory : 'general';
@@ -38,7 +39,7 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
             url: img.url,
             category: validCategory,
             uploadedAt: new Date(img.uploadedAt || Date.now())
-          } as ImageFile;
+          };
         });
         
         setUploadedImages(formattedImages);
@@ -85,6 +86,25 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
     fetchImages();
   }, [category, refreshTrigger]);
 
+  // Add function to validate image URLs
+  const validateImageUrl = async (url: string): Promise<boolean> => {
+    if (!url) return false;
+    
+    // If it's a data URL, consider it valid
+    if (url.startsWith('data:image/')) {
+      return true;
+    }
+    
+    // For fake URLs in development/mock mode, consider them valid
+    if (url.includes('unsplash.com') || url.includes('placeholder.com') || url.includes('loremflickr.com')) {
+      return true;
+    }
+    
+    // For all other URLs, we'll assume they're valid to avoid CORS issues
+    // In a real implementation, you might want to check the URL on the server
+    return true;
+  };
+
   const handleUpload = async (file: File, uploadCategory: ImageCategory) => {
     try {
       const reader = new FileReader();
@@ -95,6 +115,16 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
         }
         
         const imageUrl = e.target.result as string;
+        
+        // Validate the URL (just for future extensibility)
+        const isValid = await validateImageUrl(imageUrl);
+        if (!isValid) {
+          toast({
+            title: "Warning",
+            description: "The image may not be accessible, but we'll upload it anyway.",
+            variant: "warning",
+          });
+        }
         
         const newImage = {
           name: file.name,

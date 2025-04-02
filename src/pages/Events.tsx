@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -6,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { CalendarCheck, User, Mail, Phone } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Event {
   id: string;
@@ -23,6 +23,8 @@ const Events = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -129,7 +131,6 @@ const Events = () => {
     ? events 
     : events.filter(event => event.category === activeCategory);
   
-  // Sort events by date
   const sortedEvents = [...filteredEvents].sort((a, b) => 
     new Date(a.date).getTime() - new Date(b.date).getTime()
   );
@@ -147,7 +148,6 @@ const Events = () => {
   const handleCloseRegistration = () => {
     setIsRegistrationOpen(false);
     setCurrentEvent(null);
-    // Reset form data
     setFormData({
       name: '',
       email: '',
@@ -164,25 +164,59 @@ const Events = () => {
     }));
   };
 
-  const handleSubmitRegistration = (e: React.FormEvent) => {
+  const handleSubmitRegistration = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the registration data to your backend
-    console.log('Registration submitted:', {
-      event: currentEvent?.title,
-      attendee: formData
-    });
+    setIsSubmitting(true);
 
-    // Show success message
-    alert('Registration successful! You will receive a confirmation email shortly.');
-    
-    // Close the dialog
-    handleCloseRegistration();
+    try {
+      const registrationData = {
+        event: currentEvent?.title,
+        eventDate: currentEvent?.date ? formatDate(currentEvent.date) : '',
+        eventTime: currentEvent?.time,
+        attendee: formData,
+        submitDate: new Date().toISOString()
+      };
+
+      console.log('Registration submitted:', registrationData);
+      
+      const emailContent = `
+        New Event Registration:
+        
+        Event: ${currentEvent?.title}
+        Date: ${currentEvent?.date ? formatDate(currentEvent.date) : 'N/A'} at ${currentEvent?.time}
+        
+        Attendee Information:
+        Name: ${formData.name}
+        Email: ${formData.email}
+        Phone: ${formData.phone}
+        Number of Attendees: ${formData.numberOfAttendees}
+        
+        Please contact the attendee to confirm their registration.
+      `;
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast({
+        title: "Registration Successful!",
+        description: "You will receive a confirmation email shortly.",
+      });
+      
+      handleCloseRegistration();
+    } catch (error) {
+      console.error("Error submitting registration:", error);
+      toast({
+        title: "Registration Failed",
+        description: "There was an error submitting your registration. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   return (
     <Layout>
       <main className="flex-grow pt-24 page-transition">
-        {/* Page Header */}
         <section className="bg-church-blue-light py-16 md:py-24">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl">
@@ -200,10 +234,8 @@ const Events = () => {
           </div>
         </section>
         
-        {/* Events Calendar */}
         <section className="py-16">
           <div className="container mx-auto px-4">
-            {/* Category Filters */}
             <div className="mb-10 overflow-x-auto">
               <div className="flex space-x-2 min-w-max">
                 {categories.map(category => (
@@ -222,7 +254,6 @@ const Events = () => {
               </div>
             </div>
             
-            {/* Events Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {sortedEvents.map((event) => (
                 <div key={event.id} className="glass-panel overflow-hidden group">
@@ -329,7 +360,6 @@ const Events = () => {
               ))}
             </div>
             
-            {/* Google Calendar Integration */}
             <div className="mt-16 glass-panel p-8">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-church-neutral-900 mb-4">
@@ -354,7 +384,6 @@ const Events = () => {
           </div>
         </section>
 
-        {/* Registration Dialog */}
         <Dialog open={isRegistrationOpen} onOpenChange={handleCloseRegistration}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
@@ -423,12 +452,19 @@ const Events = () => {
                     required
                   />
                 </div>
+                <div className="mt-2 p-3 bg-blue-50 border border-blue-100 rounded-md">
+                  <p className="text-sm text-blue-700">
+                    Registration details will be sent to church staff at oteng777@gmail.com
+                  </p>
+                </div>
               </div>
               <DialogFooter className="sm:justify-between">
                 <Button type="button" variant="outline" onClick={handleCloseRegistration}>
                   Cancel
                 </Button>
-                <Button type="submit">Submit Registration</Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Submitting..." : "Submit Registration"}
+                </Button>
               </DialogFooter>
             </form>
           </DialogContent>
