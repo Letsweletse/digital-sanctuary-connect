@@ -26,6 +26,13 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
     <p>He and his wife have three children and have dedicated their lives to building our church community.</p>
   `;
 
+  // Pastor's recent sermons
+  const pastorSermons = [
+    { title: "The Power of Faith", url: "https://www.youtube.com/watch?v=example1" },
+    { title: "Walking in God's Purpose", url: "https://www.youtube.com/watch?v=example2" },
+    { title: "Kingdom Principles for Today", url: "https://www.youtube.com/watch?v=example3" }
+  ];
+
   // Elder data - Updated with the new elders information
   const elders = [
     {
@@ -61,12 +68,11 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
       <div className="mb-16">
         <h2 className="text-3xl font-bold text-center mb-8">Senior Pastor</h2>
         <PastorCard 
-          name="Rev. Dr. Otengate" 
+          name="Pastor Kobus Bezuidenhout" 
           role="Senior Pastor" 
           image={pastorImage}
           bio={pastorBio}
-          email="otenggate@gmail.com"
-          phone="+267 71 123 456"
+          sermons={pastorSermons}
         />
       </div>
       
