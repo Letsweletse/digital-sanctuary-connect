@@ -1,17 +1,11 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { sendImageUploadEmail } from '@/lib/emailService';
+import { ImageCategory, ImageFile } from '@/types/imageTypes';
+import { fetchImages, uploadImage, deleteImage } from '@/services/imageService';
+import { formatDate } from '@/utils/imageUtils';
 
-export type ImageCategory = 'hero' | 'sermons' | 'events' | 'leadership' | 'general' | 'logo';
-
-export interface ImageFile {
-  name: string;
-  url: string;
-  category: ImageCategory;
-  uploadedAt: Date;
-}
+export { ImageCategory, ImageFile } from '@/types/imageTypes';
 
 export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
   const { toast } = useToast();
@@ -20,205 +14,46 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
   const [category, setCategory] = useState<ImageCategory>(initialCategory);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   
-  const isValidCategory = (cat: string): cat is ImageCategory => {
-    return ['hero', 'sermons', 'events', 'leadership', 'general', 'logo'].includes(cat);
-  };
-
   useEffect(() => {
-    const fetchImages = async () => {
+    const loadImages = async () => {
       try {
-        let { data: images, error } = await supabase
-          .from('images')
-          .select('*')
-          .eq(category === 'general' ? 'id' : 'category', category === 'general' ? 'id' : category);
-          
-        if (error) throw error;
-        
-        if (images && images.length > 0) {
-          const formattedImages: ImageFile[] = images.map((img: any) => {
-            const imgCategory = img.category || 'general';
-            // Validate the category and fall back to 'general' if it's not valid
-            const validCategory: ImageCategory = isValidCategory(imgCategory) ? imgCategory : 'general';
-            
-            return {
-              name: img.name,
-              url: img.url,
-              category: validCategory,
-              uploadedAt: new Date(img.uploaded_at || Date.now())
-            };
-          });
-          
-          setUploadedImages(formattedImages);
-        } else {
-          // Mock images with proper typing for categories
-          const mockImages: ImageFile[] = [
-            {
-              name: 'hero-image.jpg',
-              url: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3',
-              category: 'hero',
-              uploadedAt: new Date(2023, 5, 15)
-            },
-            {
-              name: 'sermon-cover.jpg',
-              url: 'https://images.unsplash.com/photo-1508963493744-76fce69379c0',
-              category: 'sermons',
-              uploadedAt: new Date(2023, 6, 22)
-            },
-            {
-              name: 'event-banner.jpg',
-              url: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94',
-              category: 'events',
-              uploadedAt: new Date(2023, 7, 10)
-            },
-            {
-              name: 'pastor-john.jpg',
-              url: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81',
-              category: 'leadership',
-              uploadedAt: new Date(2023, 8, 5)
-            },
-            {
-              name: 'elder-board.jpg',
-              url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c',
-              category: 'leadership',
-              uploadedAt: new Date(2023, 9, 15)
-            }
-          ].filter(img => category === 'general' || img.category === category);
-          
-          setUploadedImages(mockImages);
-        }
+        const images = await fetchImages(category);
+        setUploadedImages(images);
       } catch (err) {
-        console.error('Error fetching images', err);
-        // Mock images with proper typing for categories
-        const mockImages: ImageFile[] = [
-          {
-            name: 'hero-image.jpg',
-            url: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3',
-            category: 'hero',
-            uploadedAt: new Date(2023, 5, 15)
-          },
-          {
-            name: 'sermon-cover.jpg',
-            url: 'https://images.unsplash.com/photo-1508963493744-76fce69379c0',
-            category: 'sermons',
-            uploadedAt: new Date(2023, 6, 22)
-          },
-          {
-            name: 'event-banner.jpg',
-            url: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94',
-            category: 'events',
-            uploadedAt: new Date(2023, 7, 10)
-          },
-          {
-            name: 'pastor-john.jpg',
-            url: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81',
-            category: 'leadership',
-            uploadedAt: new Date(2023, 8, 5)
-          },
-          {
-            name: 'elder-board.jpg',
-            url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c',
-            category: 'leadership',
-            uploadedAt: new Date(2023, 9, 15)
-          }
-        ].filter(img => category === 'general' || img.category === category);
-        
-        setUploadedImages(mockImages);
+        console.error('Error loading images', err);
+        toast({
+          title: "Error",
+          description: "Failed to load images. Please try again later.",
+          variant: "destructive",
+        });
       }
     };
     
-    fetchImages();
-  }, [category, refreshTrigger]);
-
-  const validateImageUrl = async (url: string): Promise<boolean> => {
-    return true;
-  };
+    loadImages();
+  }, [category, refreshTrigger, toast]);
 
   const handleUpload = async (file: File, uploadCategory: ImageCategory) => {
     try {
-      const reader = new FileReader();
+      const result = await uploadImage(file, uploadCategory);
       
-      return new Promise<boolean>((resolve, reject) => {
-        reader.onload = async (e) => {
-          if (!e.target?.result) {
-            reject(new Error("Failed to read file"));
-            return;
-          }
-          
-          const imageUrl = e.target.result as string;
-          
-          const isValid = await validateImageUrl(imageUrl);
-          if (!isValid) {
-            toast({
-              title: "Warning",
-              description: "The image may not be accessible, but we'll upload it anyway.",
-              variant: "default",
-            });
-          }
-          
-          // Validate the category
-          const safeCategory: ImageCategory = isValidCategory(uploadCategory) ? uploadCategory : 'general';
-          
-          try {
-            const timestamp = new Date().toISOString();
-            const { data, error } = await supabase
-              .from('images')
-              .insert([
-                { 
-                  name: file.name,
-                  url: imageUrl,
-                  category: safeCategory,
-                  uploaded_at: timestamp
-                }
-              ]);
-              
-            if (error) throw error;
-            
-            const addedImage: ImageFile = {
-              name: file.name,
-              url: imageUrl,
-              category: safeCategory,
-              uploadedAt: new Date()
-            };
-            
-            setUploadedImages(prev => [addedImage, ...prev]);
-            
-            toast({
-              title: "Image Uploaded",
-              description: `${file.name} has been uploaded successfully.`,
-            });
-            
-            sendImageUploadEmail(file.name, safeCategory);
-            
-            setRefreshTrigger(prev => prev + 1);
-            resolve(true);
-          } catch (err) {
-            console.error('Supabase upload failed, falling back to mock data', err);
-            
-            const addedImage: ImageFile = {
-              name: file.name,
-              url: imageUrl,
-              category: safeCategory,
-              uploadedAt: new Date()
-            };
-            
-            setUploadedImages(prev => [addedImage, ...prev]);
-            
-            toast({
-              title: "Image Uploaded",
-              description: `${file.name} has been uploaded successfully.`,
-            });
-            
-            setRefreshTrigger(prev => prev + 1);
-            resolve(true);
-          }
-        };
+      if (result.success && result.image) {
+        setUploadedImages(prev => [result.image!, ...prev]);
         
-        reader.onerror = () => {
-          reject(new Error("Failed to read file"));
-        };
+        toast({
+          title: "Image Uploaded",
+          description: `${file.name} has been uploaded successfully.`,
+        });
         
-        reader.readAsDataURL(file);
-      });
+        setRefreshTrigger(prev => prev + 1);
+        return true;
+      } else {
+        toast({
+          title: "Upload Failed",
+          description: "There was an error uploading your image.",
+          variant: "destructive",
+        });
+        return false;
+      }
     } catch (err) {
       console.error('Error uploading image', err);
       toast({
@@ -242,40 +77,31 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
   
   const handleDelete = async (image: ImageFile) => {
     try {
-      const { error } = await supabase
-        .from('images')
-        .delete()
-        .eq('url', image.url);
+      const success = await deleteImage(image);
+      
+      if (success) {
+        setUploadedImages(prev => prev.filter(img => img.url !== image.url));
         
-      if (error) throw error;
-      
-      setUploadedImages(prev => prev.filter(img => img.url !== image.url));
-      
-      if (selectedImage && selectedImage.url === image.url) {
-        setSelectedImage(null);
+        if (selectedImage && selectedImage.url === image.url) {
+          setSelectedImage(null);
+        }
+        
+        toast({
+          title: "Image Deleted",
+          description: `${image.name} has been deleted.`,
+        });
+        
+        setRefreshTrigger(prev => prev + 1);
+      } else {
+        throw new Error("Failed to delete image");
       }
-      
-      toast({
-        title: "Image Deleted",
-        description: `${image.name} has been deleted.`,
-      });
-      
-      setRefreshTrigger(prev => prev + 1);
     } catch (err) {
-      console.error('Error deleting image or Supabase not available, removing from UI only', err);
-      
-      setUploadedImages(prev => prev.filter(img => img.url !== image.url));
-      
-      if (selectedImage && selectedImage.url === image.url) {
-        setSelectedImage(null);
-      }
-      
+      console.error('Error deleting image', err);
       toast({
-        title: "Image Deleted",
-        description: `${image.name} has been deleted from view.`,
+        title: "Delete Failed",
+        description: "There was an error deleting your image.",
+        variant: "destructive",
       });
-      
-      setRefreshTrigger(prev => prev + 1);
     }
   };
   
@@ -293,14 +119,6 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
 
   const handleImageClick = (image: ImageFile) => {
     setSelectedImage(image);
-  };
-  
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    }).format(date);
   };
 
   return {

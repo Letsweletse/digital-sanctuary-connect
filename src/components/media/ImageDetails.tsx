@@ -2,7 +2,7 @@ import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Image } from 'lucide-react';
-import { ImageFile } from '@/hooks/useImageLibrary';
+import { ImageFile } from '@/types/imageTypes';
 
 interface ImageDetailsProps {
   selectedImage: ImageFile | null;

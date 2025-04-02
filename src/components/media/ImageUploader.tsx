@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { useImageLibrary, ImageCategory } from '@/hooks/useImageLibrary';
+import { useImageLibrary } from '@/hooks/useImageLibrary';
+import { ImageCategory } from '@/types/imageTypes';
 import DragDropUploader from './DragDropUploader';
 import ImageDetails from './ImageDetails';
 import ImageLibrary from './ImageLibrary';

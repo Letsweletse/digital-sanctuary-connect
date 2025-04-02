@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { UploadIcon, XIcon, CheckIcon } from 'lucide-react';
-import { ImageCategory } from '@/hooks/useImageLibrary';
+import { ImageCategory } from '@/types/imageTypes';
 import { sendImageUploadEmail } from '@/lib/emailService';
 
 interface DragDropUploaderProps {
