@@ -1,6 +1,19 @@
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
+import { useImageLibrary } from '@/hooks/useImageLibrary';
 
 const Welcome = () => {
+  const [pastorImage, setPastorImage] = useState("https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80");
+  const { uploadedImages } = useImageLibrary('leadership');
+  
+  useEffect(() => {
+    // Try to find a leadership image to use
+    if (uploadedImages && uploadedImages.length > 0) {
+      // Use the first leadership image found
+      setPastorImage(uploadedImages[0].url);
+    }
+  }, [uploadedImages]);
+
   return (
     <section className="py-16 md:py-24 bg-white">
       <div className="container mx-auto px-4">
@@ -11,7 +24,7 @@ const Welcome = () => {
             <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-church-gold-light rounded-br-2xl"></div>
             <div className="relative z-10">
               <img 
-                src="https://images.unsplash.com/photo-1567515004624-219c11d31f2e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" 
+                src={pastorImage} 
                 alt="Pastor Kobus Bezuidenhout" 
                 className="rounded-xl shadow-card w-full h-auto object-cover"
               />
@@ -51,7 +64,7 @@ const Welcome = () => {
             <div className="mt-8">
               <div className="flex items-center">
                 <img 
-                  src="https://images.unsplash.com/photo-1544717305-2782549b5136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" 
+                  src={pastorImage} 
                   alt="Pastor Kobus Bezuidenhout" 
                   className="w-12 h-12 rounded-full object-cover mr-4"
                 />
