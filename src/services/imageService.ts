@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { ImageCategory, ImageFile, isValidImageCategory } from '@/types/imageTypes';
 import { fetchImagesFromSupabase, getMockImages, validateImageUrl } from '@/utils/imageUtils';
@@ -24,52 +23,88 @@ export async function uploadImage(file: File, uploadCategory: ImageCategory): Pr
           return;
         }
         
-        const imageUrl = e.target.result as string;
+        // Keep original filename and add timestamp to avoid duplication
+        const timestamp = Date.now();
+        const fileName = file.name;
+        const fileExt = fileName.split('.').pop() || '';
+        const uniqueName = `${fileName.split('.')[0]}_${timestamp}.${fileExt}`;
         
-        const isValid = await validateImageUrl(imageUrl);
-        if (!isValid) {
-          console.warn("The image may not be accessible, but we'll upload it anyway.");
-        }
+        // Store image directly, preserving the original name format
+        const { data: storageData, error: storageError } = await supabase.storage
+          .from('images')
+          .upload(uniqueName, file);
         
-        // Validate the category
-        const safeCategory: ImageCategory = isValidImageCategory(uploadCategory) ? uploadCategory : 'general';
-        
-        try {
-          const timestamp = new Date().toISOString();
+        if (storageError) {
+          console.error('Storage upload error:', storageError);
+          
+          // Fallback to base64 storage but with preserved filename
+          try {
+            const imageUrl = e.target.result as string;
+            
+            // Validate the category
+            const safeCategory: ImageCategory = isValidImageCategory(uploadCategory) ? uploadCategory : 'general';
+            
+            const { data, error } = await supabase
+              .from('images')
+              .insert([
+                { 
+                  name: fileName,
+                  url: imageUrl,
+                  category: safeCategory,
+                  uploaded_at: new Date().toISOString()
+                }
+              ]);
+              
+            if (error) throw error;
+            
+            const addedImage: ImageFile = {
+              name: fileName,
+              url: imageUrl,
+              category: safeCategory,
+              uploadedAt: new Date()
+            };
+            
+            sendImageUploadEmail(fileName, safeCategory);
+            
+            resolve({ success: true, image: addedImage });
+          } catch (err) {
+            console.error('Fallback upload failed:', err);
+            reject(err);
+          }
+        } else {
+          // If storage upload successful, get the public URL
+          const publicUrl = supabase.storage
+            .from('images')
+            .getPublicUrl(storageData.path).data.publicUrl;
+            
+          // Store the reference in the images table
+          const safeCategory: ImageCategory = isValidImageCategory(uploadCategory) ? uploadCategory : 'general';
+          
           const { data, error } = await supabase
             .from('images')
             .insert([
               { 
-                name: file.name,
-                url: imageUrl,
+                name: fileName,
+                url: publicUrl,
                 category: safeCategory,
-                uploaded_at: timestamp
+                uploaded_at: new Date().toISOString()
               }
             ]);
             
-          if (error) throw error;
+          if (error) {
+            console.error('Database reference error:', error);
+            reject(error);
+            return;
+          }
           
           const addedImage: ImageFile = {
-            name: file.name,
-            url: imageUrl,
+            name: fileName,
+            url: publicUrl,
             category: safeCategory,
             uploadedAt: new Date()
           };
           
-          sendImageUploadEmail(file.name, safeCategory);
-          
-          resolve({ success: true, image: addedImage });
-        } catch (err) {
-          console.error('Supabase upload failed, falling back to mock data', err);
-          
-          const addedImage: ImageFile = {
-            name: file.name,
-            url: imageUrl,
-            category: safeCategory,
-            uploadedAt: new Date()
-          };
-          
-          sendImageUploadEmail(file.name, safeCategory);
+          sendImageUploadEmail(fileName, safeCategory);
           
           resolve({ success: true, image: addedImage });
         }

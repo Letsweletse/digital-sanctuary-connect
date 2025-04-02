@@ -392,6 +392,17 @@ const Events = () => {
                 Complete the form below to reserve your spot for {formatDate(currentEvent?.date || '')} at {currentEvent?.time}.
               </DialogDescription>
             </DialogHeader>
+            
+            {currentEvent && (
+              <div className="mb-4 rounded-md overflow-hidden">
+                <img 
+                  src={currentEvent.image} 
+                  alt={currentEvent.title} 
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            )}
+            
             <form onSubmit={handleSubmitRegistration}>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">

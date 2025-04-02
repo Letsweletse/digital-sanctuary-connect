@@ -1,146 +1,262 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Menu, X, ChevronDown } from 'lucide-react';
 import { useLogo } from './LogoContext';
-import { useImageLibrary } from '@/hooks/useImageLibrary';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [logoError, setLogoError] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
-  const { logoUrl } = useLogo();
-  const { uploadedImages } = useImageLibrary('general');
+  const { logo } = useLogo();
   
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location.pathname]);
-  
-  const navLinks = [
-    { title: 'Home', path: '/' },
-    { title: 'About', path: '/about' },
-    { title: 'Sermons', path: '/sermons' },
-    { title: 'Leadership', path: '/leadership' },
-    { title: 'House Church', path: '/house-church' },
-    { title: 'Events', path: '/events' },
-    { title: 'Give', path: '/give' },
-    { title: 'Contact', path: '/contact' },
-  ];
-
-  // Find the logo image from uploaded images
-  const logoImage = uploadedImages.find(img => img.name.toLowerCase().includes('logo'));
-  
-  const handleLogoError = () => {
-    console.error('Logo failed to load:', logoUrl);
-    setLogoError(true);
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
   
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      setIsScrolled(scrollPosition > 20);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+  
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white py-4 shadow-sm">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex items-center justify-between">
-          <Link 
-            to="/" 
-            className="text-2xl font-bold flex items-center gap-2"
-          >
-            {logoUrl && !logoError ? (
+    <header className={`fixed w-full z-50 transition-colors duration-300 bg-white text-church-neutral-800 shadow-sm`}>
+      <div className="container mx-auto">
+        <nav className="flex items-center justify-between py-4 px-4">
+          <Link to="/" className="flex items-center space-x-2" onClick={closeMobileMenu}>
+            {logo ? (
               <img 
-                src={logoUrl} 
-                alt="Gate Gaborone Logo" 
-                className="h-10 md:h-12"
-                onError={handleLogoError}
-              />
-            ) : logoImage ? (
-              <img 
-                src={logoImage.url} 
-                alt="Gate Gaborone" 
-                className="h-10 md:h-12" 
-                onError={() => {
-                  console.error('Logo image failed to load');
-                  setLogoError(true);
+                src={logo} 
+                alt="Gate Gaborone Ministries" 
+                className="h-12 w-auto"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/placeholder.svg';
+                  console.error('Error loading logo image');
                 }}
               />
             ) : (
               <img 
-                src="/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png" 
-                alt="Gate Gaborone" 
-                className="h-10 md:h-12" 
-                onError={() => {
-                  console.error('Default logo failed to load');
-                  setLogoError(true);
-                }}
+                src="/placeholder.svg" 
+                alt="Gate Gaborone Ministries" 
+                className="h-12 w-auto"
               />
             )}
+            <span className="text-lg font-bold text-church-neutral-800">Gate Gaborone</span>
           </Link>
           
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={cn(
-                  "px-4 py-2 rounded-md text-sm font-medium transition-colors",
-                  location.pathname === link.path
-                    ? "bg-church-neutral-100 text-church-neutral-800"
-                    : "text-church-neutral-700 hover:bg-church-neutral-100"
-                )}
-              >
-                {link.title}
-              </Link>
-            ))}
-            <a
-              href="https://www.youtube.com/@gategaboronebotswana2702"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ml-4 btn-accent"
+          <div className="hidden md:flex items-center space-x-1">
+            <Link 
+              to="/"
+              className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 hover:text-church-neutral-900 ${
+                isActive('/') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+              }`}
             >
-              Watch Live
-            </a>
-          </nav>
+              Home
+            </Link>
+            
+            <Link 
+              to="/about"
+              className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 hover:text-church-neutral-900 ${
+                isActive('/about') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+              }`}
+            >
+              About
+            </Link>
+            
+            <Link 
+              to="/sermons"
+              className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 hover:text-church-neutral-900 ${
+                isActive('/sermons') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+              }`}
+            >
+              Sermons
+            </Link>
+            
+            <Link 
+              to="/events"
+              className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 hover:text-church-neutral-900 ${
+                isActive('/events') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+              }`}
+            >
+              Events
+            </Link>
+            
+            <Link 
+              to="/house-church"
+              className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 hover:text-church-neutral-900 ${
+                isActive('/house-church') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+              }`}
+            >
+              House Church
+            </Link>
+            
+            <Link 
+              to="/leadership"
+              className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 hover:text-church-neutral-900 ${
+                isActive('/leadership') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+              }`}
+            >
+              Leadership
+            </Link>
+            
+            <Link 
+              to="/give"
+              className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 hover:text-church-neutral-900 ${
+                isActive('/give') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+              }`}
+            >
+              Give
+            </Link>
+            
+            <Link 
+              to="/contact"
+              className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 hover:text-church-neutral-900 ${
+                isActive('/contact') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+              }`}
+            >
+              Contact
+            </Link>
+            
+            <Link 
+              to="/admin"
+              className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 hover:text-church-neutral-900 ${
+                isActive('/admin') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+              }`}
+            >
+              Admin
+            </Link>
+          </div>
           
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 text-church-neutral-700 hover:bg-church-neutral-100 rounded-md"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
+          <div className="md:hidden">
+            <button
+              onClick={toggleMobileMenu}
+              className="text-church-neutral-700 hover:text-church-neutral-900 focus:outline-none"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+          </div>
+        </nav>
       </div>
       
       {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-church-neutral-200 animate-slide-up">
-          <div className="container mx-auto px-4 py-4">
-            <nav className="flex flex-col space-y-3">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={cn(
-                    "px-4 py-3 rounded-md text-base font-medium transition-colors",
-                    location.pathname === link.path
-                      ? "bg-church-neutral-100 text-church-neutral-800"
-                      : "text-church-neutral-700 hover:bg-church-neutral-100"
-                  )}
-                >
-                  {link.title}
-                </Link>
-              ))}
-              <a
-                href="https://www.youtube.com/@gategaboronebotswana2702"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-accent text-center mt-4"
-              >
-                Watch Live
-              </a>
-            </nav>
-          </div>
+      <div
+        className={`md:hidden bg-white shadow-lg transform transition-transform duration-300 ease-in-out absolute w-full ${
+          isMobileMenuOpen ? 'translate-y-0' : '-translate-y-full'
+        }`}
+      >
+        <div className="flex flex-col px-4 py-2 space-y-1">
+          <Link
+            to="/"
+            className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 ${
+              isActive('/') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+            }`}
+            onClick={closeMobileMenu}
+          >
+            Home
+          </Link>
+          
+          <Link
+            to="/about"
+            className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 ${
+              isActive('/about') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+            }`}
+            onClick={closeMobileMenu}
+          >
+            About
+          </Link>
+          
+          <Link
+            to="/sermons"
+            className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 ${
+              isActive('/sermons') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+            }`}
+            onClick={closeMobileMenu}
+          >
+            Sermons
+          </Link>
+          
+          <Link
+            to="/events"
+            className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 ${
+              isActive('/events') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+            }`}
+            onClick={closeMobileMenu}
+          >
+            Events
+          </Link>
+          
+          <Link
+            to="/house-church"
+            className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 ${
+              isActive('/house-church') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+            }`}
+            onClick={closeMobileMenu}
+          >
+            House Church
+          </Link>
+          
+          <Link
+            to="/leadership"
+            className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 ${
+              isActive('/leadership') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+            }`}
+            onClick={closeMobileMenu}
+          >
+            Leadership
+          </Link>
+          
+          <Link
+            to="/give"
+            className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 ${
+              isActive('/give') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+            }`}
+            onClick={closeMobileMenu}
+          >
+            Give
+          </Link>
+          
+          <Link
+            to="/contact"
+            className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 ${
+              isActive('/contact') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+            }`}
+            onClick={closeMobileMenu}
+          >
+            Contact
+          </Link>
+          
+          <Link
+            to="/admin"
+            className={`px-3 py-2 rounded text-church-neutral-700 hover:bg-church-neutral-100 ${
+              isActive('/admin') ? 'bg-church-neutral-100 text-church-neutral-900 font-medium' : ''
+            }`}
+            onClick={closeMobileMenu}
+          >
+            Admin
+          </Link>
         </div>
-      )}
+      </div>
     </header>
   );
 };

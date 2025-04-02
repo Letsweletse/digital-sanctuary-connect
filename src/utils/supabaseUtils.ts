@@ -33,3 +33,30 @@ export const createUUIDFilter = (column: string, id: string | undefined | null) 
   const safeId = safeUUID(id);
   return safeId ? { [column]: safeId } : {};
 };
+
+/**
+ * Creates a safe equals filter 
+ * @param column - Column name to filter on
+ * @param value - Value to filter for
+ * @returns Object with filter or empty object if invalid
+ */
+export const createEqualsFilter = (column: string, value: string | undefined | null) => {
+  return value ? { [column]: value } : {};
+};
+
+/**
+ * Handles potential errors from Supabase queries
+ * @param error - Error object from Supabase
+ * @param fallbackData - Optional fallback data to return
+ * @throws Error with formatted message
+ */
+export const handleSupabaseError = (error: any, fallbackData?: any) => {
+  if (error) {
+    console.error('Supabase error:', error);
+    if (fallbackData !== undefined) {
+      console.warn('Using fallback data due to error');
+      return fallbackData;
+    }
+    throw new Error(`Database operation failed: ${error.message || 'Unknown error'}`);
+  }
+};
