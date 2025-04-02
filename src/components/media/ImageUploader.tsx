@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { insertOne, findMany } from '@/lib/mongodb';
@@ -27,16 +26,17 @@ const ImageUploader = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const maxFileSizeMB = 5;
   
+  const isValidCategory = (cat: string): cat is ImageCategory => {
+    return ['hero', 'sermons', 'events', 'leadership', 'general'].includes(cat);
+  };
+  
   useEffect(() => {
     const fetchImages = async () => {
       try {
         const images = await findMany('images', { category: category === 'general' ? {} : { category } });
         const formattedImages = images.map((img: any) => {
           const imgCategory = img.category || 'general';
-          const validCategory: ImageCategory = 
-            ['hero', 'sermons', 'events', 'leadership', 'general'].includes(imgCategory) 
-              ? imgCategory as ImageCategory 
-              : 'general';
+          const validCategory: ImageCategory = isValidCategory(imgCategory) ? imgCategory : 'general';
               
           return {
             name: img.name,
