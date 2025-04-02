@@ -1,18 +1,8 @@
-
 import React from 'react';
 import ProfileCard from './ProfileCard';
 import useMongoData from '@/hooks/useMongoData';
 import { Skeleton } from '@/components/ui/skeleton';
-
-interface LeadershipPerson {
-  id: string;
-  name: string;
-  role: string;
-  image: string;
-  bio: string;
-  email?: string;
-  isSeniorPastor?: boolean;
-}
+import { LeadershipPerson } from '@/types/leadershipTypes';
 
 const LeadershipGrid: React.FC = () => {
   const { data: leaders, isLoading } = useMongoData<LeadershipPerson>('leadership');

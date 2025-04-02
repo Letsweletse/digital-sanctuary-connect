@@ -36,6 +36,24 @@ const mockData = {
       sermonCount: 5
     }
   ],
+  leadership: [
+    {
+      _id: "1",
+      name: "Pastor Kobus Bezuidenhout",
+      role: "Senior Pastor",
+      image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+      bio: "Pastor Kobus Bezuidenhout has been leading our congregation with wisdom and compassion.",
+      email: "pastor@gategaborone.org",
+      isSeniorPastor: true
+    },
+    {
+      _id: "2",
+      name: "Sarah Johnson",
+      role: "Worship Director",
+      image: "https://images.unsplash.com/photo-1573497491765-55a968388b83?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+      bio: "Sarah has been leading our worship team for 8 years."
+    }
+  ],
   house_church_groups: [
     {
       _id: "1",
