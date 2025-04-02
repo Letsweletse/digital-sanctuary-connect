@@ -1,10 +1,8 @@
-
 import React, { useState } from 'react';
 import { Upload, X, Check, AlertCircle, Image } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-
-type ImageCategory = 'hero' | 'sermons' | 'events' | 'leadership' | 'general';
+import { ImageCategory } from '@/hooks/useImageLibrary';
 
 interface DragDropUploaderProps {
   onUpload: (file: File, category: ImageCategory) => Promise<void>;
@@ -70,11 +68,8 @@ const DragDropUploader: React.FC<DragDropUploaderProps> = ({
   const handleUpload = async () => {
     if (!file) return;
     await onUpload(file, category);
-    setTimeout(() => {
-      setFile(null);
-    }, 3000);
   };
-  
+
   return (
     <div 
       className={`border-2 border-dashed rounded-lg p-6 transition-colors ${

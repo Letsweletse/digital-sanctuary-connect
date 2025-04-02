@@ -1,17 +1,8 @@
-
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Image } from 'lucide-react';
-
-type ImageCategory = 'hero' | 'sermons' | 'events' | 'leadership' | 'general';
-
-interface ImageFile {
-  name: string;
-  url: string;
-  category: ImageCategory;
-  uploadedAt: Date;
-}
+import { ImageFile } from '@/hooks/useImageLibrary';
 
 interface ImageDetailsProps {
   selectedImage: ImageFile | null;

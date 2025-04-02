@@ -1,17 +1,8 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Folder } from 'lucide-react';
-
-type ImageCategory = 'hero' | 'sermons' | 'events' | 'leadership' | 'general';
-
-interface ImageFile {
-  name: string;
-  url: string;
-  category: ImageCategory;
-  uploadedAt: Date;
-}
+import { ImageFile, ImageCategory } from '@/hooks/useImageLibrary';
 
 interface ImageLibraryProps {
   images: ImageFile[];
