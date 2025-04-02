@@ -3,11 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLogo } from './LogoContext';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { logoUrl } = useLogo();
   
   useEffect(() => {
     const handleScroll = () => {
@@ -44,7 +46,15 @@ const Navbar = () => {
             to="/" 
             className="text-2xl font-bold flex items-center gap-2"
           >
-            <span className="text-church-gold font-bold">GateGaborone</span>
+            {logoUrl ? (
+              <img 
+                src={logoUrl} 
+                alt="Gate Gaborone Logo" 
+                className="h-10 md:h-12"
+              />
+            ) : (
+              <span className="text-church-gold font-bold">GateGaborone</span>
+            )}
           </Link>
           
           {/* Desktop Navigation */}

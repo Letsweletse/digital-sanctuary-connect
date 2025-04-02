@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { LogoProvider } from "./components/layout/LogoContext";
 
 // Pages
 import Index from "./pages/Index";
@@ -44,21 +45,23 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <TitleUpdater />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/sermons" element={<Sermons />} />
-          <Route path="/leadership" element={<Leadership />} />
-          <Route path="/house-church" element={<HouseChurch />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/events" element={<Events />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/give" element={<Give />} /> {/* Add the new Give route */}
-          <Route path="/admin" element={<Admin />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <LogoProvider>
+        <BrowserRouter>
+          <TitleUpdater />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/sermons" element={<Sermons />} />
+            <Route path="/leadership" element={<Leadership />} />
+            <Route path="/house-church" element={<HouseChurch />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/give" element={<Give />} /> {/* Add the new Give route */}
+            <Route path="/admin" element={<Admin />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </LogoProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
