@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Upload, Image, X, Check, AlertCircle } from 'lucide-react';
+import { Upload, X, Check, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLogo } from '../layout/LogoContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const LogoUploader: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
@@ -17,7 +18,7 @@ const LogoUploader: React.FC = () => {
   useEffect(() => {
     // Cleanup function for the preview URL
     return () => {
-      if (previewUrl) {
+      if (previewUrl && previewUrl.startsWith('blob:')) {
         URL.revokeObjectURL(previewUrl);
       }
     };
@@ -75,33 +76,103 @@ const LogoUploader: React.FC = () => {
     if (!selectedFile) return;
     
     setIsUploading(true);
-    // In a real implementation, you would upload the file to a server.
-    // For now, we'll just simulate the upload with a timeout and use the preview URL
+    setError(null);
     
     try {
-      // Simulate upload delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Convert the file to a data URL
+      const reader = new FileReader();
       
-      // Use the preview URL as the logo URL
-      setLogoUrl(previewUrl);
+      reader.onload = async (e) => {
+        if (e.target?.result) {
+          const dataUrl = e.target.result as string;
+          
+          try {
+            // Try to upload to Supabase storage first
+            let logoUrl = '';
+            
+            try {
+              // Try to store in Supabase Storage
+              const fileName = `logo-${Date.now()}.${selectedFile.name.split('.').pop()}`;
+              const { data, error } = await supabase
+                .storage
+                .from('images')
+                .upload(`logos/${fileName}`, selectedFile);
+              
+              if (error) throw error;
+              
+              // Get the public URL
+              const { data: publicUrlData } = supabase
+                .storage
+                .from('images')
+                .getPublicUrl(`logos/${fileName}`);
+              
+              if (publicUrlData) {
+                logoUrl = publicUrlData.publicUrl;
+              } else {
+                throw new Error('Failed to get public URL');
+              }
+            } catch (storageError) {
+              console.error('Storage upload failed, using data URL instead:', storageError);
+              // Fallback to data URL if storage upload fails
+              logoUrl = dataUrl;
+            }
+            
+            // Store in Supabase database
+            try {
+              await supabase.from('images').insert({
+                name: selectedFile.name,
+                url: logoUrl,
+                category: 'logo'
+              });
+            } catch (dbError) {
+              console.error('Database insert failed:', dbError);
+              // Continue since we still have the URL
+            }
+            
+            // Update the logo context
+            setLogoUrl(logoUrl);
+            
+            setIsUploaded(true);
+            toast({
+              title: "Logo updated successfully",
+              description: "Your logo has been updated and is now visible on the website.",
+            });
+            
+            // Reset the uploaded state after a short delay
+            setTimeout(() => {
+              setIsUploaded(false);
+              setSelectedFile(null);
+              setPreviewUrl(null);
+            }, 3000);
+          } catch (error) {
+            console.error('Upload error:', error);
+            setError('Failed to upload logo. Please try again.');
+            toast({
+              variant: "destructive",
+              title: "Upload failed",
+              description: "There was an error uploading your logo.",
+            });
+          }
+        }
+      };
       
-      setIsUploaded(true);
-      toast({
-        title: "Logo updated successfully",
-        description: "Your logo has been updated and is now visible on the website.",
-      });
+      reader.onerror = () => {
+        setError('Failed to read file. Please try again.');
+        toast({
+          variant: "destructive",
+          title: "Upload failed",
+          description: "There was an error reading your file.",
+        });
+      };
       
-      // Reset the uploaded state after a short delay
-      setTimeout(() => {
-        setIsUploaded(false);
-        setSelectedFile(null);
-      }, 3000);
+      reader.readAsDataURL(selectedFile);
     } catch (error) {
-      setError('Failed to upload logo. Please try again.');
+      console.error('Error in upload process:', error);
+      setError('An unexpected error occurred. Please try again.');
       toast({
         variant: "destructive",
         title: "Upload failed",
-        description: "There was an error uploading your logo.",
+        description: "There was an unexpected error uploading your logo.",
       });
     } finally {
       setIsUploading(false);
@@ -133,6 +204,12 @@ const LogoUploader: React.FC = () => {
               src={logoUrl} 
               alt="Current Church Logo" 
               className="h-20 object-contain"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                console.error('Logo image failed to load:', target.src);
+                target.src = '/placeholder.svg'; // Fallback to placeholder
+                target.onerror = null; // Prevent infinite loop
+              }}
             />
           </div>
         </div>

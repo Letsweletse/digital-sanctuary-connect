@@ -8,6 +8,7 @@ import { useLogo } from './LogoContext';
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [logoError, setLogoError] = useState(false);
   const location = useLocation();
   const { logoUrl } = useLogo();
   
@@ -21,7 +22,7 @@ const Navbar = () => {
   }, []);
   
   useEffect(() => {
-    setIsMobileMenuOpen(false);
+    setMobileMenuOpen(false);
   }, [location.pathname]);
   
   const navLinks = [
@@ -31,9 +32,14 @@ const Navbar = () => {
     { title: 'Leadership', path: '/leadership' },
     { title: 'House Church', path: '/house-church' },
     { title: 'Events', path: '/events' },
-    { title: 'Give', path: '/give' }, // Moved to a more prominent position
+    { title: 'Give', path: '/give' },
     { title: 'Contact', path: '/contact' },
   ];
+
+  const handleLogoError = () => {
+    console.error('Logo failed to load:', logoUrl);
+    setLogoError(true);
+  };
   
   return (
     <header className={cn(
@@ -46,11 +52,12 @@ const Navbar = () => {
             to="/" 
             className="text-2xl font-bold flex items-center gap-2"
           >
-            {logoUrl ? (
+            {logoUrl && !logoError ? (
               <img 
                 src={logoUrl} 
                 alt="Gate Gaborone Logo" 
                 className="h-10 md:h-12"
+                onError={handleLogoError}
               />
             ) : (
               <span className="text-church-gold font-bold">GateGaborone</span>
