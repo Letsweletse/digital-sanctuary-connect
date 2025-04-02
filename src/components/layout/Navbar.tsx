@@ -38,7 +38,6 @@ const Navbar = () => {
                 className="h-8 w-auto mr-2"
               />
             )}
-            <span className="font-bold text-xl">Gate Gaborone</span>
           </Link>
         </div>
 
