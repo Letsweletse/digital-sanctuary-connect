@@ -2,12 +2,19 @@
 import React from 'react';
 import ProfileCard from './ProfileCard';
 import { LeaderData } from '@/types/leadershipTypes';
+import useMongoData from '@/hooks/useMongoData';
 
 interface LeadershipGridProps {
-  leaders: LeaderData[];
+  leaders?: LeaderData[];
 }
 
-const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders }) => {
+const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
+  // Use the MongoDB hook to fetch leaders if not provided via props
+  const { data: fetchedLeaders, isLoading } = useMongoData<LeaderData>('leaders', {});
+  
+  // Use provided leaders or fetched leaders
+  const leadersList = leaders.length > 0 ? leaders : fetchedLeaders || [];
+  
   // Custom card for senior pastor
   const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/Senior%20Pastor_1743595796187.jpeg";
   
@@ -16,6 +23,10 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders }) => {
     <p>With a doctorate in Theology from Stellenbosch University and years of mission work across Southern Africa, he brings rich insights to scripture and practical application to daily Christian living.</p>
     <p>He and his wife, Mrs. Otengate, have three children and have dedicated their lives to building our church community.</p>
   `;
+
+  if (isLoading) {
+    return <div className="text-center py-12">Loading leadership team...</div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -27,11 +38,11 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders }) => {
           bio={pastorBio}
           email="otenggate@gmail.com"
           phone="+267 71 123 456"
-          featured
+          featured={true}
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {leaders.map((leader) => (
+        {leadersList.map((leader) => (
           <ProfileCard 
             key={leader.id}
             name={leader.name}

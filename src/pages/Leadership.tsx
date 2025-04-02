@@ -3,8 +3,13 @@ import React from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import LeadershipGrid from '@/components/leadership/LeadershipGrid';
+import { LeaderData } from '@/types/leadershipTypes';
+import useMongoData from '@/hooks/useMongoData';
 
 const Leadership = () => {
+  // Fetch leaders from MongoDB
+  const { data: leaders, isLoading } = useMongoData<LeaderData>('leaders', {});
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -28,7 +33,7 @@ const Leadership = () => {
         
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
-            <LeadershipGrid />
+            <LeadershipGrid leaders={leaders || []} />
           </div>
         </section>
       </main>
