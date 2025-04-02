@@ -1,3 +1,4 @@
+
 import React from 'react';
 import ProfileCard from './ProfileCard';
 import useMongoData from '@/hooks/useMongoData';
@@ -9,8 +10,8 @@ const LeadershipGrid: React.FC = () => {
   const { data: leaders, isLoading } = useMongoData<LeadershipPerson>('leadership');
   const { uploadedImages } = useImageLibrary('general');
   
-  // Use senior pastor image from base64 or fallback
-  const pastorImage = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoKCgoKCgsMDAsPEA4QDxYUExMUFiIYGhgaGCIzICUgICUgMy03LCksNy1RQDg4QFFeT0pPXnFlZXGPiI+7u/sBCgoKCgoKCwwMCw8QDhAPFhQTExQWIhgaGBoYIjMgJSAgJSAzLTcsKSw3LVFAODhAUV5PSk9ecWVlcY+Ij7u7+//CABEIA8ACHAMBIgACEQEDEQH/xAAuAAEBAQEBAQAAAAAAAAAAAAAAAQIDBAUBAQEBAQAAAAAAAAAAAAAAAAABAgP/2gAMAwEAAhADEAAAAvCMqlFgoKlKlFgtzS2CpSpSoLYLYNXN";
+  // Use senior pastor image from the new URL instead of base64
+  const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/Senior%20Pastor_1743595796187.jpeg";
   
   // Mock data for development/fallback
   const mockLeaders: LeadershipPerson[] = [
