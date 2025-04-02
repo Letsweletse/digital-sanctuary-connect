@@ -19,3 +19,7 @@ export interface LeaderData {
   email?: string;
   phone?: string;
 }
+
+export interface PastorData extends LeaderData {
+  sermons?: Array<{ title: string; url: string }>;
+}

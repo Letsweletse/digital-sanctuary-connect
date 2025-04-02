@@ -1,7 +1,6 @@
 
 import React from 'react';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+import Layout from '@/components/layout/Layout';
 import LeadershipGrid from '@/components/leadership/LeadershipGrid';
 import { LeadershipPerson } from '@/types/leadershipTypes';
 import useMongoData from '@/hooks/useMongoData';
@@ -14,9 +13,7 @@ const Leadership = () => {
   console.log('Leadership page loaded, leaders data:', leaders?.length || 0);
   
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      
+    <Layout>
       <main className="flex-grow pt-24 page-transition">
         <section className="py-16 bg-indigo-100 text-black">
           <div className="container mx-auto px-4">
@@ -40,9 +37,7 @@ const Leadership = () => {
           </div>
         </section>
       </main>
-      
-      <Footer />
-    </div>
+    </Layout>
   );
 };
 
