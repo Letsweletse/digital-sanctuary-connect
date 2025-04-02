@@ -64,9 +64,9 @@ const Events = () => {
     {
       id: '4',
       title: 'Perspectives on the Apostolic',
-      date: '2023-12-16',
+      date: '2025-05-16',
       time: '9:00 AM - 4:00 PM',
-      location: 'Main Auditorium',
+      location: 'Gate Gaborone Auditorium',
       description: 'A special conference exploring apostolic ministry in the modern church. Join us for powerful teachings, workshops, and fellowship.',
       category: 'conference',
       image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1769&q=80',
