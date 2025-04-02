@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -36,6 +37,7 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
         if (images && images.length > 0) {
           const formattedImages: ImageFile[] = images.map((img: any) => {
             const imgCategory = img.category || 'general';
+            // Validate the category and fall back to 'general' if it's not valid
             const validCategory: ImageCategory = isValidCategory(imgCategory) ? imgCategory : 'general';
             
             return {
@@ -48,6 +50,7 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
           
           setUploadedImages(formattedImages);
         } else {
+          // Mock images with proper typing for categories
           const mockImages: ImageFile[] = [
             {
               name: 'hero-image.jpg',
@@ -85,6 +88,7 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
         }
       } catch (err) {
         console.error('Error fetching images', err);
+        // Mock images with proper typing for categories
         const mockImages: ImageFile[] = [
           {
             name: 'hero-image.jpg',
@@ -151,6 +155,7 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
             });
           }
           
+          // Validate the category
           const safeCategory: ImageCategory = isValidCategory(uploadCategory) ? uploadCategory : 'general';
           
           try {
