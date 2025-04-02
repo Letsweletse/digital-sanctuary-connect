@@ -18,7 +18,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <div className="flex flex-col min-h-screen">
         <Navbar />
         <main className={`flex-grow ${isEventPage ? 'pt-16' : 'pt-20'}`}>
-          {children}
+          <div className="page-transition">
+            {children}
+          </div>
         </main>
         <Footer />
       </div>

@@ -6,8 +6,9 @@
  * In a real app, it would connect to a backend service for sending emails
  */
 
-// Email addresses for admin notifications
-const ADMIN_EMAILS = ['otenggate@gmail.com'];
+// Email address for admin notifications - exported for use in components
+export const ADMIN_EMAIL = 'otenggate@gmail.com';
+export const ADMIN_EMAILS = [ADMIN_EMAIL];
 
 /**
  * Sends event registration notification to church admins

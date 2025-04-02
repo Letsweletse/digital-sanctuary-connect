@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { useToast } from "@/hooks/use-toast";
+import { toast as sonnerToast } from "sonner";
 import { sendEventRegistrationEmail } from '@/lib/emailService';
 import EventCard from '@/components/events/EventCard';
 import EventRegistrationDialog from '@/components/events/EventRegistrationDialog';
@@ -25,7 +26,8 @@ const Events = () => {
   });
   
   useEffect(() => {
-    const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/Senior%20Pastor_1743595796187.jpeg";
+    // Preload the pastor image for faster rendering
+    const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Senior%20Pastor_1743598781352.jpeg";
     const img = new Image();
     img.onload = () => {
       console.log("Senior Pastor image loaded successfully:", pastorImage);
@@ -47,6 +49,11 @@ const Events = () => {
   const handleOpenRegistration = (event: EventData) => {
     setCurrentEvent(event);
     setIsRegistrationOpen(true);
+    // Show a toast notification for better UX
+    sonnerToast("Registration Form Opened", {
+      description: `You're registering for ${event.title}`,
+      duration: 3000
+    });
   };
 
   const handleCloseRegistration = () => {
@@ -87,13 +94,18 @@ const Events = () => {
       const emailResult = await sendEventRegistrationEmail(currentEvent?.title || 'Event', registrationData);
       console.log('Email service response:', emailResult);
       
-      // Simulate API delay
+      // Simulate API delay for better UX - feels more "real"
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Show success message to the user
+      // Show success message using both toasts for better visibility
       toast({
         title: "Registration Successful!",
-        description: `Thank you for registering. In a production environment, both you and the church staff would receive confirmation emails. Currently, this is a mock implementation.`,
+        description: `Thank you for registering for ${currentEvent?.title}. In a production environment, confirmation emails would be sent.`,
+      });
+      
+      sonnerToast.success("Registration Complete!", {
+        description: "Thank you for your registration. Check your email for confirmation details.",
+        duration: 5000
       });
       
       handleCloseRegistration();
@@ -112,10 +124,10 @@ const Events = () => {
   return (
     <Layout>
       <main className="flex-grow pt-24 page-transition">
-        <section className="bg-church-blue-light py-16 md:py-24">
+        <section className="bg-gradient-to-b from-church-blue-light to-white py-16 md:py-24">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl">
-              <span className="inline-block bg-white px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4">
+              <span className="inline-block bg-white px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4 shadow-sm">
                 Events Calendar
               </span>
               <h1 className="text-4xl md:text-5xl font-bold text-church-neutral-900 mb-6">

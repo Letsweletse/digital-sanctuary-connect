@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -93,13 +94,16 @@ export default {
 				sm: 'calc(var(--radius) - 4px)'
 			},
 			fontFamily: {
-				sans: ['Inter', 'sans-serif'],
-				serif: ['Lora', 'serif'],
+				sans: ['Montserrat', 'sans-serif'],
+				serif: ['Playfair Display', 'serif'],
+				montserrat: ['Montserrat', 'sans-serif'],
+				playfair: ['Playfair Display', 'serif'],
 			},
 			boxShadow: {
 				'soft': '0 4px 20px rgba(0, 0, 0, 0.05)',
 				'card': '0 8px 30px rgba(0, 0, 0, 0.08)',
 				'text': '0 2px 3px rgba(0, 0, 0, 0.3)',
+				'premium': '0 10px 40px -10px rgba(0, 0, 0, 0.1), 0 4px 10px -8px rgba(0, 0, 0, 0.15)'
 			},
 			keyframes: {
 				'accordion-down': {

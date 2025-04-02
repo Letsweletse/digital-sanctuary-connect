@@ -10,6 +10,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { EventData, RegistrationFormData } from '@/types/eventTypes';
 import { useIsMobile } from '@/hooks/use-mobile';
 
+// Importing the admin email from emailService
+import { ADMIN_EMAIL } from '@/lib/emailService';
+
 interface EventRegistrationDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -35,9 +38,9 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-xl md:max-w-2xl lg:max-w-3xl w-[95%] max-h-[90vh] overflow-y-auto p-0 gap-0">
-        <DialogHeader className="p-6 pb-2">
-          <DialogTitle className="text-xl md:text-2xl">Register for {currentEvent?.title}</DialogTitle>
+      <DialogContent className="sm:max-w-xl md:max-w-2xl lg:max-w-3xl w-[95%] max-h-[90vh] overflow-y-auto p-0 gap-0 dialog-animation">
+        <DialogHeader className="p-6 pb-2 bg-gradient-to-r from-church-blue-light/30 to-white">
+          <DialogTitle className="text-xl md:text-2xl font-montserrat">Register for {currentEvent?.title}</DialogTitle>
           <DialogDescription className="text-base">
             Complete the form below to reserve your spot.
           </DialogDescription>
@@ -52,10 +55,10 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
                   <img 
                     src={currentEvent.image} 
                     alt={currentEvent.title} 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                   />
                 </AspectRatio>
-                <CardContent className="p-4 mt-3 bg-church-blue-light bg-opacity-20 rounded-md space-y-2">
+                <CardContent className="p-4 mt-3 bg-church-blue-light bg-opacity-20 rounded-md space-y-2 border border-church-blue-light/30">
                   <h3 className="font-bold text-lg text-church-blue-dark">{currentEvent?.title}</h3>
                   <div className="flex items-center gap-2 text-sm md:text-base">
                     <CalendarCheck className="h-4 w-4 text-church-blue" />
@@ -96,7 +99,7 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
                     value={formData.name}
                     onChange={onInputChange}
                     required
-                    className="border-church-blue-light focus-visible:ring-church-blue text-base"
+                    className="border-church-blue-light focus-visible:ring-church-blue text-base transition-all duration-300"
                   />
                 </div>
                 
@@ -114,7 +117,7 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
                       value={formData.email}
                       onChange={onInputChange}
                       required
-                      className="border-church-blue-light focus-visible:ring-church-blue text-base"
+                      className="border-church-blue-light focus-visible:ring-church-blue text-base transition-all duration-300"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -129,7 +132,7 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
                       value={formData.phone}
                       onChange={onInputChange}
                       required
-                      className="border-church-blue-light focus-visible:ring-church-blue text-base"
+                      className="border-church-blue-light focus-visible:ring-church-blue text-base transition-all duration-300"
                     />
                   </div>
                 </div>
@@ -147,7 +150,7 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
                     value={formData.numberOfAttendees}
                     onChange={onInputChange}
                     required
-                    className="border-church-blue-light focus-visible:ring-church-blue text-base"
+                    className="border-church-blue-light focus-visible:ring-church-blue text-base transition-all duration-300"
                   />
                 </div>
                 
@@ -157,7 +160,7 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
                     <p className="font-medium mb-1">Demo Mode Information:</p>
                     <p>
                       This is currently a frontend-only demo. In a production environment, registration details 
-                      would be sent to church staff at {ADMIN_EMAILS[0]}. To implement actual email sending, 
+                      would be sent to church staff at {ADMIN_EMAIL}. To implement actual email sending, 
                       a backend service would need to be connected.
                     </p>
                   </div>
@@ -176,9 +179,18 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
                 <Button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="bg-church-blue hover:bg-church-blue-dark text-white w-full md:w-auto text-base py-6 md:py-2.5"
+                  className="bg-church-blue hover:bg-church-blue-dark text-white w-full md:w-auto text-base py-6 md:py-2.5 transition-all duration-300 hover:shadow-lg"
                 >
-                  {isSubmitting ? "Submitting..." : "Submit Registration"}
+                  {isSubmitting ? 
+                    <span className="flex items-center gap-2">
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Submitting...
+                    </span> 
+                    : "Submit Registration"
+                  }
                 </Button>
               </DialogFooter>
             </form>
