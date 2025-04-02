@@ -133,4 +133,17 @@
   .shadow-text {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   }
+
+  /* Header styling for white header with black text for contrast */
+  .header-light {
+    @apply bg-white text-church-neutral-800 shadow-sm;
+  }
+  
+  .nav-item-light {
+    @apply text-church-neutral-700 hover:bg-church-neutral-100 hover:text-church-neutral-900;
+  }
+  
+  .nav-item-active-light {
+    @apply bg-church-neutral-100 text-church-neutral-900 font-medium;
+  }
 }

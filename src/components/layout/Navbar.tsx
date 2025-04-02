@@ -37,7 +37,7 @@ const Navbar = () => {
   };
   
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-church-blue py-4 shadow-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white py-4 shadow-sm">
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
           <Link 
@@ -83,8 +83,8 @@ const Navbar = () => {
                 className={cn(
                   "px-4 py-2 rounded-md text-sm font-medium transition-colors",
                   location.pathname === link.path
-                    ? "bg-church-blue-light text-church-blue-dark"
-                    : "text-white hover:bg-white/10"
+                    ? "bg-church-neutral-100 text-church-neutral-800"
+                    : "text-church-neutral-700 hover:bg-church-neutral-100"
                 )}
               >
                 {link.title}
@@ -102,7 +102,7 @@ const Navbar = () => {
           
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 text-white hover:bg-white/10 rounded-md"
+            className="md:hidden p-2 text-church-neutral-700 hover:bg-church-neutral-100 rounded-md"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -112,7 +112,7 @@ const Navbar = () => {
       
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-church-blue border-t border-white/10 animate-slide-up">
+        <div className="md:hidden bg-white border-t border-church-neutral-200 animate-slide-up">
           <div className="container mx-auto px-4 py-4">
             <nav className="flex flex-col space-y-3">
               {navLinks.map((link) => (
@@ -122,8 +122,8 @@ const Navbar = () => {
                   className={cn(
                     "px-4 py-3 rounded-md text-base font-medium transition-colors",
                     location.pathname === link.path
-                      ? "bg-church-blue-light text-church-blue-dark"
-                      : "text-white hover:bg-white/10"
+                      ? "bg-church-neutral-100 text-church-neutral-800"
+                      : "text-church-neutral-700 hover:bg-church-neutral-100"
                   )}
                 >
                   {link.title}

@@ -1,17 +1,14 @@
 
 import React from 'react';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+import Layout from '@/components/layout/Layout';
 import Hero from '@/components/home/Hero';
 import Welcome from '@/components/home/Welcome';
 import { Link } from 'react-router-dom';
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      
-      <main className="flex-grow pt-16 page-transition">
+    <Layout>
+      <div className="page-transition">
         {/* Hero Section */}
         <Hero />
         
@@ -76,33 +73,31 @@ const Index = () => {
                 </div>
               </div>
               
-              {/* Events Card */}
+              {/* Featured Event Card - Perspectives on the Apostolic */}
               <div className="glass-panel overflow-hidden group">
                 <div className="relative h-48">
                   <img 
                     src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" 
-                    alt="Events" 
+                    alt="Perspectives on the Apostolic" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  <h3 className="absolute bottom-4 left-4 text-xl font-bold text-white">Events</h3>
+                  <h3 className="absolute bottom-4 left-4 text-xl font-bold text-white">Perspectives on the Apostolic</h3>
                 </div>
                 <div className="p-6">
                   <p className="text-church-neutral-700 mb-4">
-                    Stay connected with our church community through special services, outreach, and social gatherings.
+                    Join us for this special event exploring the apostolic foundations of the church and its relevance today.
                   </p>
                   <Link to="/events" className="btn-outline inline-block">
-                    View Calendar
+                    Learn More
                   </Link>
                 </div>
               </div>
             </div>
           </div>
         </section>
-      </main>
-      
-      <Footer />
-    </div>
+      </div>
+    </Layout>
   );
 };
 
