@@ -6,8 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { CalendarCheck, User, Mail, Phone } from "lucide-react";
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { EventData, RegistrationFormData } from '@/types/eventTypes';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface EventRegistrationDialogProps {
   isOpen: boolean;
@@ -30,126 +31,141 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
   isSubmitting,
   formatDate
 }) => {
+  const isMobile = useIsMobile();
+  
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-md md:max-w-xl lg:max-w-2xl w-[95%] p-0 gap-0 overflow-hidden">
+        <DialogHeader className="p-6 pb-0">
           <DialogTitle className="text-xl">Register for {currentEvent?.title}</DialogTitle>
           <DialogDescription>
             Complete the form below to reserve your spot.
           </DialogDescription>
         </DialogHeader>
         
-        {currentEvent && (
-          <Card className="border-none shadow-none">
-            <AspectRatio ratio={16 / 9} className="overflow-hidden rounded-md">
-              <img 
-                src={currentEvent.image} 
-                alt={currentEvent.title} 
-                className="w-full h-full object-cover"
-              />
-            </AspectRatio>
-            <CardContent className="p-3 bg-blue-50 rounded-b-md space-y-1">
-              <h3 className="font-bold text-church-blue-dark">{currentEvent?.title}</h3>
-              <div className="flex items-center gap-2 text-sm">
-                <CalendarCheck className="h-4 w-4 text-church-blue" />
-                <span>{formatDate(currentEvent?.date || '')} | {currentEvent?.time}</span>
-              </div>
-              <p className="text-sm font-medium">{currentEvent?.location}</p>
-            </CardContent>
-          </Card>
-        )}
-        
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name" className="flex items-center gap-2">
-                <User className="h-4 w-4 text-church-blue" />
-                Full Name
-              </Label>
-              <Input
-                id="name"
-                name="name"
-                placeholder="Enter your full name"
-                value={formData.name}
-                onChange={onInputChange}
-                required
-                className="border-church-blue-light focus-visible:ring-church-blue"
-              />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="email" className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-church-blue" />
-                  Email Address
-                </Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={formData.email}
-                  onChange={onInputChange}
-                  required
-                  className="border-church-blue-light focus-visible:ring-church-blue"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="phone" className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-church-blue" />
-                  Phone Number
-                </Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  placeholder="Your contact number"
-                  value={formData.phone}
-                  onChange={onInputChange}
-                  required
-                  className="border-church-blue-light focus-visible:ring-church-blue"
-                />
-              </div>
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="numberOfAttendees" className="flex items-center gap-2">
-                <CalendarCheck className="h-4 w-4 text-church-blue" />
-                Number of Attendees
-              </Label>
-              <Input
-                id="numberOfAttendees"
-                name="numberOfAttendees"
-                type="number"
-                min="1"
-                value={formData.numberOfAttendees}
-                onChange={onInputChange}
-                required
-                className="border-church-blue-light focus-visible:ring-church-blue"
-              />
-            </div>
-            
-            <div className="p-3 bg-blue-50 border border-blue-100 rounded-md flex items-start gap-2">
-              <Mail className="h-4 w-4 text-blue-700 mt-0.5" />
-              <p className="text-sm text-blue-700">
-                Registration details will be sent to church staff at otenggate@gmail.com
-              </p>
-            </div>
+        <div className="flex flex-col md:flex-row">
+          {/* Left side - Event details */}
+          <div className="md:w-1/3 p-6 pt-3 pb-0">
+            {currentEvent && (
+              <Card className="border-none shadow-none bg-transparent">
+                <AspectRatio ratio={4 / 3} className="overflow-hidden rounded-md">
+                  <img 
+                    src={currentEvent.image} 
+                    alt={currentEvent.title} 
+                    className="w-full h-full object-cover"
+                  />
+                </AspectRatio>
+                <CardContent className="p-3 bg-blue-50 rounded-b-md space-y-1 mt-2">
+                  <h3 className="font-bold text-church-blue-dark">{currentEvent?.title}</h3>
+                  <div className="flex items-center gap-2 text-sm">
+                    <CalendarCheck className="h-4 w-4 text-church-blue" />
+                    <span>{formatDate(currentEvent?.date || '')} | {currentEvent?.time}</span>
+                  </div>
+                  <p className="text-sm font-medium">{currentEvent?.location}</p>
+                </CardContent>
+              </Card>
+            )}
           </div>
           
-          <DialogFooter className="sm:justify-between gap-2">
-            <Button type="button" variant="outline" onClick={onClose} className="border-church-neutral-300">
-              Cancel
-            </Button>
-            <Button 
-              type="submit" 
-              disabled={isSubmitting}
-              className="bg-church-blue hover:bg-church-blue-dark text-white"
-            >
-              {isSubmitting ? "Submitting..." : "Submit Registration"}
-            </Button>
-          </DialogFooter>
-        </form>
+          {/* Right side - Form */}
+          <div className="md:w-2/3 p-6 pt-3">
+            <form onSubmit={onSubmit} className="space-y-4">
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name" className="flex items-center gap-2">
+                    <User className="h-4 w-4 text-church-blue" />
+                    Full Name
+                  </Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder="Enter your full name"
+                    value={formData.name}
+                    onChange={onInputChange}
+                    required
+                    className="border-church-blue-light focus-visible:ring-church-blue"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="email" className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-church-blue" />
+                      Email Address
+                    </Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={formData.email}
+                      onChange={onInputChange}
+                      required
+                      className="border-church-blue-light focus-visible:ring-church-blue"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="phone" className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-church-blue" />
+                      Phone Number
+                    </Label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      placeholder="Your contact number"
+                      value={formData.phone}
+                      onChange={onInputChange}
+                      required
+                      className="border-church-blue-light focus-visible:ring-church-blue"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label htmlFor="numberOfAttendees" className="flex items-center gap-2">
+                    <CalendarCheck className="h-4 w-4 text-church-blue" />
+                    Number of Attendees
+                  </Label>
+                  <Input
+                    id="numberOfAttendees"
+                    name="numberOfAttendees"
+                    type="number"
+                    min="1"
+                    value={formData.numberOfAttendees}
+                    onChange={onInputChange}
+                    required
+                    className="border-church-blue-light focus-visible:ring-church-blue"
+                  />
+                </div>
+                
+                <div className="p-3 bg-blue-50 border border-blue-100 rounded-md flex items-start gap-2">
+                  <Mail className="h-4 w-4 text-blue-700 mt-0.5" />
+                  <p className="text-sm text-blue-700">
+                    Registration details will be sent to church staff at otenggate@gmail.com
+                  </p>
+                </div>
+              </div>
+              
+              <DialogFooter className={isMobile ? "flex-col" : "sm:justify-between gap-2"}>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={onClose} 
+                  className="border-church-neutral-300 w-full md:w-auto"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="bg-church-blue hover:bg-church-blue-dark text-white w-full md:w-auto"
+                >
+                  {isSubmitting ? "Submitting..." : "Submit Registration"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

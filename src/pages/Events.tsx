@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { useToast } from "@/hooks/use-toast";
 import { sendEventRegistrationEmail } from '@/lib/emailService';
@@ -23,6 +22,18 @@ const Events = () => {
     phone: '',
     numberOfAttendees: 1
   });
+  
+  useEffect(() => {
+    const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/Senior%20Pastor_1743597241096.jpeg";
+    const img = new Image();
+    img.onload = () => {
+      console.log("Senior Pastor image loaded successfully:", pastorImage);
+    };
+    img.onerror = () => {
+      console.error("Failed to load Senior Pastor image:", pastorImage);
+    };
+    img.src = pastorImage;
+  }, []);
   
   const filteredEvents = activeCategory === 'all' 
     ? events 
