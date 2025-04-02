@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { findMany, insertOne } from '@/lib/mongodb';
 import { useToast } from '@/hooks/use-toast';
@@ -27,17 +26,21 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
     const fetchImages = async () => {
       try {
         const images = await findMany('images', { category: category === 'general' ? {} : { category } });
+        
+        // Convert the _id to id for consistency and ensure category is valid
         const formattedImages = images.map((img: any) => {
+          // Ensure category is valid, default to 'general' if not
           const imgCategory = img.category || 'general';
           const validCategory: ImageCategory = isValidCategory(imgCategory) ? imgCategory : 'general';
-              
+          
           return {
             name: img.name,
             url: img.url,
             category: validCategory,
             uploadedAt: new Date(img.uploadedAt || Date.now())
-          };
+          } as ImageFile;
         });
+        
         setUploadedImages(formattedImages);
       } catch (err) {
         console.error('Error fetching images', err);
