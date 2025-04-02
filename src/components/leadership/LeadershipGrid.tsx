@@ -1,104 +1,49 @@
 
 import React from 'react';
 import ProfileCard from './ProfileCard';
-import useMongoData from '@/hooks/useMongoData';
-import { Skeleton } from '@/components/ui/skeleton';
-import { LeadershipPerson } from '@/types/leadershipTypes';
-import { useImageLibrary } from '@/hooks/useImageLibrary';
+import { LeaderData } from '@/types/leadershipTypes';
 
-const LeadershipGrid: React.FC = () => {
-  const { data: leaders, isLoading } = useMongoData<LeadershipPerson>('leadership');
-  const { uploadedImages } = useImageLibrary('general');
-  
-  // Use senior pastor image from the new URL instead of base64
+interface LeadershipGridProps {
+  leaders: LeaderData[];
+}
+
+const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders }) => {
+  // Custom card for senior pastor
   const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/Senior%20Pastor_1743595796187.jpeg";
   
-  // Mock data for development/fallback
-  const mockLeaders: LeadershipPerson[] = [
-    {
-      id: '1',
-      name: 'Pastor John Williams',
-      role: 'Senior Pastor',
-      image: pastorImage,
-      bio: 'Pastor John has been leading our congregation for over 15 years. With a background in theology and a passion for community service, he has helped our church grow spiritually and in numbers.',
-      email: 'pastor.john@gategaborone.org',
-      isSeniorPastor: true
-    },
-    {
-      id: '2',
-      name: 'Sarah Johnson',
-      role: 'Worship Director',
-      image: 'https://images.unsplash.com/photo-1573497491765-55a968388b83?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-      bio: 'Sarah has been leading our worship team for 8 years. Her beautiful voice and heart for worship create an atmosphere where people can truly connect with God.',
-      email: 'sarah.j@gategaborone.org'
-    },
-    {
-      id: '3',
-      name: 'Michael Thompson',
-      role: 'Youth Pastor',
-      image: 'https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
-      bio: 'Michael has a heart for guiding the next generation. His energetic approach to youth ministry combines fun activities with deep spiritual lessons. Under his leadership, our youth program has grown from 15 to over 50 active participants.',
-      email: 'michael.t@gategaborone.org'
-    },
-    {
-      id: '4',
-      name: 'Dr. Elizabeth Chen',
-      role: 'Elder',
-      image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-      bio: 'Dr. Chen brings wisdom and insight to our leadership team. As a practicing physician and devoted Christian, she helps us navigate both practical and spiritual challenges. She leads our health ministry and international missions efforts.',
-      email: 'elizabeth.c@gategaborone.org'
-    }
-  ];
+  const pastorBio = `
+    <p>Rev. Dr. Otengate, our Senior Pastor, has been shepherding our community for over 15 years with wisdom and compassion.</p>
+    <p>With a doctorate in Theology from Stellenbosch University and years of mission work across Southern Africa, he brings rich insights to scripture and practical application to daily Christian living.</p>
+    <p>He and his wife, Mrs. Otengate, have three children and have dedicated their lives to building our church community.</p>
+  `;
 
-  // Use mock data if no real data is loaded
-  const displayLeaders = leaders.length > 0 ? leaders : mockLeaders;
-  
-  // Find the senior pastor for special treatment
-  const seniorPastor = displayLeaders.find(leader => leader.isSeniorPastor);
-  const otherLeaders = displayLeaders.filter(leader => !leader.isSeniorPastor);
-  
-  if (isLoading) {
-    return (
+  return (
+    <div className="container mx-auto px-4 py-12">
+      <div className="mb-12">
+        <ProfileCard 
+          name="Rev. Dr. Otengate" 
+          role="Senior Pastor" 
+          image={pastorImage}
+          bio={pastorBio}
+          email="otenggate@gmail.com"
+          phone="+267 71 123 456"
+          featured
+        />
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {[1, 2, 3, 4].map(i => (
-          <div key={i} className="glass-panel p-6">
-            <div className="space-y-4">
-              <Skeleton className="h-48 w-full" />
-              <Skeleton className="h-6 w-1/3" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-10 w-1/2" />
-            </div>
-          </div>
+        {leaders.map((leader) => (
+          <ProfileCard 
+            key={leader.id}
+            name={leader.name}
+            role={leader.role}
+            image={leader.image}
+            bio={leader.bio}
+            email={leader.email}
+            phone={leader.phone}
+            featured={false}
+          />
         ))}
       </div>
-    );
-  }
-  
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {seniorPastor && (
-        <ProfileCard 
-          name={seniorPastor.name}
-          role={seniorPastor.role}
-          image={seniorPastor.image}
-          bio={seniorPastor.bio}
-          email={seniorPastor.email}
-          isSeniorPastor={true}
-        />
-      )}
-      
-      {otherLeaders.map(leader => (
-        <ProfileCard
-          key={leader.id}
-          name={leader.name}
-          role={leader.role}
-          image={leader.image}
-          bio={leader.bio}
-          email={leader.email}
-        />
-      ))}
     </div>
   );
 };
