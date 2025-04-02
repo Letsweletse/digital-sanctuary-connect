@@ -33,12 +33,12 @@ const Navbar = () => {
           <Link to="/" className="flex items-center">
             {logoContext?.logoUrl && (
               <img
-                src={logoContext?.logoUrl}
-                alt={logoContext?.logoAltText || 'Logo'}
+                src={logoContext.logoUrl}
+                alt="Logo"
                 className="h-8 w-auto mr-2"
               />
             )}
-            <span className="font-bold text-xl">{logoContext?.title || 'Gate Gaborone'}</span>
+            <span className="font-bold text-xl">Gate Gaborone</span>
           </Link>
         </div>
 
