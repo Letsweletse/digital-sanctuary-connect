@@ -22,7 +22,7 @@ const Navbar = () => {
   }, []);
   
   useEffect(() => {
-    setMobileMenuOpen(false);
+    setIsMobileMenuOpen(false);
   }, [location.pathname]);
   
   const navLinks = [
