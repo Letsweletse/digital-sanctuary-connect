@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { CalendarCheck, User, Mail, Phone, Users, Info } from "lucide-react";
+import { CalendarCheck, User, Mail, Phone, Users } from "lucide-react";
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Card, CardContent } from "@/components/ui/card";
 import { EventData, RegistrationFormData } from '@/types/eventTypes';
@@ -152,18 +152,6 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
                     required
                     className="border-church-blue-light focus-visible:ring-church-blue text-base transition-all duration-300"
                   />
-                </div>
-                
-                <div className="p-4 bg-amber-50 border border-amber-200 rounded-md flex items-start gap-2 mt-2">
-                  <Info className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
-                  <div className="text-sm md:text-base text-amber-700">
-                    <p className="font-medium mb-1">Demo Mode Information:</p>
-                    <p>
-                      This is currently a frontend-only demo. In a production environment, registration details 
-                      would be sent to church staff at {ADMIN_EMAIL}. To implement actual email sending, 
-                      a backend service would need to be connected.
-                    </p>
-                  </div>
                 </div>
               </div>
               

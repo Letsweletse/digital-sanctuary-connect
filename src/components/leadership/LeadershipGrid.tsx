@@ -21,33 +21,33 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
   const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Senior%20Pastor_1743598781352.jpeg";
   
   const pastorBio = `
-    <p>Rev. Dr. Otengate, our Senior Pastor, has been shepherding our community for over 15 years with wisdom and compassion.</p>
+    <p>Pastor Kobus Bezuidenhout, our Senior Pastor, has been shepherding our community for over 15 years with wisdom and compassion.</p>
     <p>With a doctorate in Theology from Stellenbosch University and years of mission work across Southern Africa, he brings rich insights to scripture and practical application to daily Christian living.</p>
-    <p>He and his wife, Mrs. Otengate, have three children and have dedicated their lives to building our church community.</p>
+    <p>He and his wife have three children and have dedicated their lives to building our church community.</p>
   `;
 
-  // Elder data
+  // Elder data - Updated with the new elders information
   const elders = [
     {
       id: "elder1",
-      name: "Elder James Mokobi",
-      role: "Church Elder",
+      name: "Peter & Naomi Taylor",
+      role: "Church Elders",
       image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
-      bio: "Elder James has served our church for over a decade, providing wise counsel and spiritual leadership."
+      bio: "Peter and Naomi have served our church for over a decade, providing wise counsel and spiritual leadership to our congregation."
     },
     {
       id: "elder2",
-      name: "Elder Sarah Nkoane",
-      role: "Church Elder",
+      name: "Oteng & Carry Leepile",
+      role: "Church Elders",
       image: "https://images.unsplash.com/photo-1573497491765-55a968388b83?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-      bio: "Elder Sarah leads our women's ministry with grace and dedication, bringing years of pastoral care experience to our congregation."
+      bio: "Oteng and Carry lead with grace and dedication, bringing years of pastoral care experience to our congregation."
     },
     {
       id: "elder3",
-      name: "Elder David Molefe",
-      role: "Church Elder",
+      name: "Thabiso & Lesogo Thwane",
+      role: "Church Elders",
       image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-      bio: "Elder David oversees our outreach programs and has been instrumental in building community partnerships throughout Gaborone."
+      bio: "Thabiso and Lesogo oversee our outreach programs and have been instrumental in building community partnerships throughout Gaborone."
     }
   ];
 
