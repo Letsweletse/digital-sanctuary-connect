@@ -13,11 +13,16 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
   const [selectedImage, setSelectedImage] = useState<ImageFile | null>(null);
   const [category, setCategory] = useState<ImageCategory>(initialCategory);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   
+  // Load images when category changes or refresh is triggered
   useEffect(() => {
     const loadImages = async () => {
       try {
+        setIsLoading(true);
+        console.log('Loading images for category:', category);
         const images = await fetchImages(category);
+        console.log('Images loaded:', images.length);
         setUploadedImages(images);
       } catch (err) {
         console.error('Error loading images', err);
@@ -26,6 +31,8 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
           description: "Failed to load images. Please try again later.",
           variant: "destructive",
         });
+      } finally {
+        setIsLoading(false);
       }
     };
     
@@ -34,9 +41,12 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
 
   const handleUpload = async (file: File, uploadCategory: ImageCategory) => {
     try {
+      console.log('Uploading file:', file.name, 'to category:', uploadCategory);
       const result = await uploadImage(file, uploadCategory);
       
       if (result.success && result.image) {
+        console.log('Upload successful:', result.image);
+        // Add the new image to the state
         setUploadedImages(prev => [result.image!, ...prev]);
         
         toast({
@@ -44,9 +54,11 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
           description: `${file.name} has been uploaded successfully.`,
         });
         
+        // Force a refresh to ensure we get the latest images
         setRefreshTrigger(prev => prev + 1);
         return true;
       } else {
+        console.error('Upload failed, no image returned');
         toast({
           title: "Upload Failed",
           description: "There was an error uploading your image.",
@@ -77,9 +89,11 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
   
   const handleDelete = async (image: ImageFile) => {
     try {
+      console.log('Deleting image:', image.name);
       const success = await deleteImage(image);
       
       if (success) {
+        // Remove from local state
         setUploadedImages(prev => prev.filter(img => img.url !== image.url));
         
         if (selectedImage && selectedImage.url === image.url) {
@@ -91,7 +105,9 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
           description: `${image.name} has been deleted.`,
         });
         
+        // Force a refresh to ensure we get the latest images
         setRefreshTrigger(prev => prev + 1);
+        return true;
       } else {
         throw new Error("Failed to delete image");
       }
@@ -102,10 +118,12 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
         description: "There was an error deleting your image.",
         variant: "destructive",
       });
+      return false;
     }
   };
   
   const handleRefreshImages = () => {
+    console.log('Manually refreshing images');
     setRefreshTrigger(prev => prev + 1);
     toast({
       title: "Refreshed",
@@ -114,10 +132,12 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
   };
 
   const handleCategoryChange = (newCategory: ImageCategory | 'all') => {
+    console.log('Changing category to:', newCategory);
     setCategory(newCategory === 'all' ? 'general' : newCategory);
   };
 
   const handleImageClick = (image: ImageFile) => {
+    console.log('Selected image:', image.name);
     setSelectedImage(image);
   };
 
@@ -125,6 +145,7 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
     uploadedImages,
     selectedImage,
     category,
+    isLoading,
     handleUpload,
     handleCopyUrl,
     handleDelete,

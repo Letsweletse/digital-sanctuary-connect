@@ -3,8 +3,8 @@ import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { toast } from '@/hooks/use-toast';
-import { UploadIcon, XIcon, CheckIcon } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { UploadIcon, XIcon, CheckIcon, AlertCircle } from 'lucide-react';
 import { ImageCategory } from '@/types/imageTypes';
 import { sendImageUploadEmail } from '@/lib/emailService';
 
@@ -30,9 +30,11 @@ const DragDropUploader = ({
   isUploading,
   maxFileSizeMB
 }: DragDropUploaderProps) => {
+  const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(isUploading || false);
   const [uploadSuccess, setUploadSuccess] = useState<boolean | null>(isUploaded === true ? true : null);
   const [uploadPercent, setUploadPercent] = useState(0);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   
   // Use the appropriate handler function
   const handleFile = onUpload || onFileAccepted;
@@ -46,6 +48,10 @@ const DragDropUploader = ({
     const file = acceptedFiles[0]; // Just handle the first file
     setIsProcessing(true);
     setUploadSuccess(null);
+    setErrorMessage(null);
+    
+    // Log the file being uploaded
+    console.log(`Uploading file: ${file.name}, size: ${(file.size / 1024).toFixed(1)}KB, type: ${file.type}`);
     
     // Simulate upload progress
     const interval = setInterval(() => {
@@ -61,17 +67,31 @@ const DragDropUploader = ({
       setUploadPercent(100);
       
       if (result) {
+        console.log(`Upload successful for ${file.name} to category ${category}`);
         toast({
           title: "Upload Complete",
           description: "Your image has been uploaded successfully.",
         });
         
         // Send email notification to admins
-        sendImageUploadEmail(file.name, category);
+        try {
+          sendImageUploadEmail(file.name, category);
+        } catch (emailError) {
+          console.warn('Email notification failed, but upload succeeded:', emailError);
+        }
+      } else {
+        console.error(`Upload failed for ${file.name}`);
+        setErrorMessage("Upload failed. Please try again.");
+        toast({
+          title: "Upload Failed",
+          description: "There was a problem uploading your image.",
+          variant: "destructive",
+        });
       }
     } catch (err) {
       console.error("Error in onFileAccepted:", err);
       setUploadSuccess(false);
+      setErrorMessage(err instanceof Error ? err.message : "Unknown error");
       toast({
         title: "Upload Failed",
         description: "Could not process image. Please try again.",
@@ -80,11 +100,14 @@ const DragDropUploader = ({
     } finally {
       clearInterval(interval);
       setTimeout(() => {
-        setIsProcessing(false);
-        setUploadPercent(0);
+        if (uploadSuccess) {
+          // Reset form only if upload was successful
+          setIsProcessing(false);
+          setUploadPercent(0);
+        }
       }, 1500);
     }
-  }, [handleFile, category]);
+  }, [handleFile, category, toast]);
 
   // Handle paste from clipboard
   const handlePaste = async (e: React.ClipboardEvent) => {
@@ -94,6 +117,7 @@ const DragDropUploader = ({
     for (const item of Array.from(items)) {
       // Check if the pasted item is an image
       if (item.type.indexOf('image') === 0) {
+        console.log(`Pasted image of type: ${item.type}`);
         const file = item.getAsFile();
         if (file) {
           await onDrop([file]);
@@ -117,6 +141,14 @@ const DragDropUploader = ({
     if (bytes < 1024) return bytes + ' B';
     else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
     else return (bytes / 1048576).toFixed(1) + ' MB';
+  };
+
+  // Retry upload button handler
+  const handleRetry = () => {
+    setIsProcessing(false);
+    setUploadSuccess(null);
+    setUploadPercent(0);
+    setErrorMessage(null);
   };
 
   return (
@@ -147,16 +179,22 @@ const DragDropUploader = ({
                 ></div>
               </div>
               {uploadSuccess !== null && (
-                <div className="flex items-center justify-center mt-2">
+                <div className="flex flex-col items-center justify-center mt-2">
                   {uploadSuccess ? (
                     <div className="flex items-center text-green-600">
                       <CheckIcon className="w-4 h-4 mr-1" />
                       <span className="text-sm">Upload complete</span>
                     </div>
                   ) : (
-                    <div className="flex items-center text-red-600">
-                      <XIcon className="w-4 h-4 mr-1" />
-                      <span className="text-sm">Upload failed</span>
+                    <div className="flex flex-col items-center text-red-600">
+                      <div className="flex items-center">
+                        <XIcon className="w-4 h-4 mr-1" />
+                        <span className="text-sm">Upload failed</span>
+                      </div>
+                      {errorMessage && <span className="text-xs mt-1">{errorMessage}</span>}
+                      <Button onClick={handleRetry} variant="outline" size="sm" className="mt-2">
+                        Try Again
+                      </Button>
                     </div>
                   )}
                 </div>

@@ -3,12 +3,15 @@ import React from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import LeadershipGrid from '@/components/leadership/LeadershipGrid';
-import { LeaderData } from '@/types/leadershipTypes';
+import { LeadershipPerson } from '@/types/leadershipTypes';
 import useMongoData from '@/hooks/useMongoData';
 
 const Leadership = () => {
   // Fetch leaders from MongoDB
-  const { data: leaders, isLoading } = useMongoData<LeaderData>('leaders', {});
+  const { data: leaders, isLoading } = useMongoData<LeadershipPerson>('leaders', {});
+  
+  // Debug log to see if we're getting data
+  console.log('Leadership page loaded, leaders data:', leaders?.length || 0);
   
   return (
     <div className="min-h-screen flex flex-col">

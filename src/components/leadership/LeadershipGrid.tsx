@@ -28,6 +28,9 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
     return <div className="text-center py-12">Loading leadership team...</div>;
   }
 
+  // Log the leadership team data for debugging
+  console.log('Leadership team data:', leadersList);
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="mb-12">
@@ -41,19 +44,24 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
           featured={true}
         />
       </div>
+      
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {leadersList.map((leader) => (
-          <ProfileCard 
-            key={leader.id}
-            name={leader.name}
-            role={leader.role}
-            image={leader.image}
-            bio={leader.bio}
-            email={leader.email}
-            phone={leader.phone}
-            featured={false}
-          />
-        ))}
+        {leadersList.map((leader) => {
+          // Log individual leader data for debugging
+          console.log('Leader:', leader.name, 'Image URL:', leader.image);
+          return (
+            <ProfileCard 
+              key={leader.id}
+              name={leader.name}
+              role={leader.role}
+              image={leader.image}
+              bio={leader.bio}
+              email={leader.email}
+              phone={leader.phone}
+              featured={false}
+            />
+          );
+        })}
       </div>
     </div>
   );

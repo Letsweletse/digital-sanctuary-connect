@@ -1,10 +1,11 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { ImageCategory, ImageFile, isValidImageCategory } from '@/types/imageTypes';
-import { createEqualsFilter } from '@/utils/supabaseUtils';
 
 export async function fetchImagesFromSupabase(category: ImageCategory): Promise<ImageFile[]> {
   try {
+    console.log('Fetching images from Supabase for category:', category);
+    
     let query = supabase.from('images').select('*');
     
     // Apply filter only if not fetching all images
@@ -12,9 +13,17 @@ export async function fetchImagesFromSupabase(category: ImageCategory): Promise<
       query = query.eq('category', category);
     }
     
+    // Order by upload date, newest first
+    query = query.order('uploaded_at', { ascending: false });
+    
     let { data: images, error } = await query;
     
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase query error:', error);
+      throw error;
+    }
+    
+    console.log(`Found ${images?.length || 0} images in Supabase`);
     
     if (images && images.length > 0) {
       return images.map((img: any) => {
@@ -22,7 +31,7 @@ export async function fetchImagesFromSupabase(category: ImageCategory): Promise<
         const validCategory: ImageCategory = isValidImageCategory(imgCategory) ? imgCategory : 'general';
         
         return {
-          name: img.name,
+          name: img.name || 'Untitled',
           url: img.url,
           category: validCategory,
           uploadedAt: new Date(img.uploaded_at || Date.now())
@@ -74,8 +83,21 @@ export function getMockImages(category: ImageCategory): ImageFile[] {
 }
 
 export async function validateImageUrl(url: string): Promise<boolean> {
-  // This is a stub function, in a real app you'd validate the image URL
-  return true;
+  // This is an improved validator function that checks if the URL is accessible
+  if (!url) return false;
+  
+  // If it's a Supabase URL, assume it's valid (to avoid CORS issues with HEAD requests)
+  if (url.includes('supabase.co/storage')) {
+    return true;
+  }
+  
+  try {
+    const response = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+    return true; // If no error is thrown, assume the URL is valid
+  } catch (err) {
+    console.error('URL validation failed:', err);
+    return false;
+  }
 }
 
 export function formatDate(date: Date): string {
