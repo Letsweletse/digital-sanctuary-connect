@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { ImageCategory, ImageFile, isValidImageCategory } from '@/types/imageTypes';
 import { fetchImagesFromSupabase, getMockImages, validateImageUrl } from '@/utils/imageUtils';
@@ -27,7 +28,8 @@ export async function uploadImage(file: File, uploadCategory: ImageCategory): Pr
         const timestamp = Date.now();
         const fileName = file.name;
         const fileExt = fileName.split('.').pop() || '';
-        const uniqueName = `${fileName.split('.')[0]}_${timestamp}.${fileExt}`;
+        const fileNameWithoutExt = fileName.split('.')[0];
+        const uniqueName = `${fileNameWithoutExt}_${timestamp}.${fileExt}`;
         
         // Store image directly, preserving the original name format
         const { data: storageData, error: storageError } = await supabase.storage
@@ -37,11 +39,9 @@ export async function uploadImage(file: File, uploadCategory: ImageCategory): Pr
         if (storageError) {
           console.error('Storage upload error:', storageError);
           
-          // Fallback to base64 storage but with preserved filename
+          // Fallback to base64 storage but with shorter reference
           try {
-            const imageUrl = e.target.result as string;
-            
-            // Validate the category
+            // Don't store the entire base64 string in the database, just a reference
             const safeCategory: ImageCategory = isValidImageCategory(uploadCategory) ? uploadCategory : 'general';
             
             const { data, error } = await supabase
@@ -49,7 +49,8 @@ export async function uploadImage(file: File, uploadCategory: ImageCategory): Pr
               .insert([
                 { 
                   name: fileName,
-                  url: imageUrl,
+                  // Store a reference to the file instead of the full base64 string
+                  url: `file:${fileName}`,
                   category: safeCategory,
                   uploaded_at: new Date().toISOString()
                 }
@@ -57,9 +58,11 @@ export async function uploadImage(file: File, uploadCategory: ImageCategory): Pr
               
             if (error) throw error;
             
+            // Use the imageUrl from the reader result temporarily for the UI
+            // but don't store the full base64 in the database
             const addedImage: ImageFile = {
               name: fileName,
-              url: imageUrl,
+              url: e.target.result as string,
               category: safeCategory,
               uploadedAt: new Date()
             };

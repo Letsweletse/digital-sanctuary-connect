@@ -1,14 +1,19 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { ImageCategory, ImageFile, isValidImageCategory } from '@/types/imageTypes';
+import { createEqualsFilter } from '@/utils/supabaseUtils';
 
 export async function fetchImagesFromSupabase(category: ImageCategory): Promise<ImageFile[]> {
   try {
-    let { data: images, error } = await supabase
-      .from('images')
-      .select('*')
-      .eq(category === 'general' ? 'id' : 'category', category === 'general' ? 'id' : category);
-      
+    let query = supabase.from('images').select('*');
+    
+    // Apply filter only if not fetching all images
+    if (category !== 'general') {
+      query = query.eq('category', category);
+    }
+    
+    let { data: images, error } = await query;
+    
     if (error) throw error;
     
     if (images && images.length > 0) {

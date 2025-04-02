@@ -385,7 +385,7 @@ const Events = () => {
         </section>
 
         <Dialog open={isRegistrationOpen} onOpenChange={handleCloseRegistration}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Register for {currentEvent?.title}</DialogTitle>
               <DialogDescription>
@@ -398,8 +398,13 @@ const Events = () => {
                 <img 
                   src={currentEvent.image} 
                   alt={currentEvent.title} 
-                  className="w-full h-auto object-cover"
+                  className="w-full h-auto object-cover max-h-64"
                 />
+                <div className="p-3 bg-church-blue-light">
+                  <h3 className="font-bold">{currentEvent?.title}</h3>
+                  <p className="text-sm">{formatDate(currentEvent?.date || '')} | {currentEvent?.time}</p>
+                  <p className="text-sm font-medium">{currentEvent?.location}</p>
+                </div>
               </div>
             )}
             
