@@ -1,22 +1,22 @@
 
 import React from 'react';
 import ProfileCard from './ProfileCard';
-import { LeaderData } from '@/types/leadershipTypes';
+import { LeadershipPerson } from '@/types/leadershipTypes';
 import useMongoData from '@/hooks/useMongoData';
 
 interface LeadershipGridProps {
-  leaders?: LeaderData[];
+  leaders?: LeadershipPerson[];
 }
 
 const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
   // Use the MongoDB hook to fetch leaders if not provided via props
-  const { data: fetchedLeaders, isLoading } = useMongoData<LeaderData>('leaders', {});
+  const { data: fetchedLeaders, isLoading } = useMongoData<LeadershipPerson>('leaders', {});
   
   // Use provided leaders or fetched leaders
   const leadersList = leaders.length > 0 ? leaders : fetchedLeaders || [];
   
-  // Custom card for senior pastor
-  const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/Senior%20Pastor_1743595796187.jpeg";
+  // Custom card for senior pastor with updated image URL
+  const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/Senior%20Pastor_1743597241096.jpeg";
   
   const pastorBio = `
     <p>Rev. Dr. Otengate, our Senior Pastor, has been shepherding our community for over 15 years with wisdom and compassion.</p>
