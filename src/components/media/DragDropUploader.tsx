@@ -1,225 +1,171 @@
 
-import React, { useState } from 'react';
-import { Upload, X, Check, AlertCircle, Image } from 'lucide-react';
+import React, { useState, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
+import { toast } from '@/hooks/use-toast';
+import { UploadIcon, XIcon, CheckIcon } from 'lucide-react';
 import { ImageCategory } from '@/hooks/useImageLibrary';
 
 interface DragDropUploaderProps {
-  onUpload: (file: File, category: ImageCategory) => Promise<void>;
-  isUploaded: boolean;
-  isUploading: boolean;
-  maxFileSizeMB: number;
+  onFileAccepted: (file: File, category: ImageCategory) => Promise<boolean>;
+  category: ImageCategory;
+  acceptedFileTypes?: string[];
+  maxSize?: number;
 }
 
-const DragDropUploader: React.FC<DragDropUploaderProps> = ({ 
-  onUpload, 
-  isUploaded, 
-  isUploading,
-  maxFileSizeMB 
-}) => {
-  const [isDragging, setIsDragging] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [category, setCategory] = useState<ImageCategory>('leadership');
-  const { toast } = useToast();
-  
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-  
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
-  
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
+const DragDropUploader = ({
+  onFileAccepted,
+  category,
+  acceptedFileTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+  maxSize = 5242880, // 5MB
+}: DragDropUploaderProps) => {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState<boolean | null>(null);
+  const [uploadPercent, setUploadPercent] = useState(0);
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    if (acceptedFiles.length === 0) return;
     
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      validateAndSetFile(e.dataTransfer.files[0]);
-    }
-  };
-  
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      validateAndSetFile(e.target.files[0]);
-    }
-  };
-  
-  const validateAndSetFile = (file: File) => {
-    setError(null);
+    const file = acceptedFiles[0]; // Just handle the first file
+    setIsProcessing(true);
+    setUploadSuccess(null);
     
-    const fileType = file.type;
-    if (!fileType.match(/image\/(jpeg|jpg|png|gif|webp)/)) {
-      setError(`Invalid file type. Please upload an image file.`);
-      return;
-    }
-    
-    const fileSizeMB = file.size / (1024 * 1024);
-    if (fileSizeMB > maxFileSizeMB) {
-      setError(`File is too large. Maximum size is ${maxFileSizeMB}MB.`);
-      return;
-    }
-    
-    setFile(file);
-  };
-  
-  const handleUpload = async () => {
-    if (!file) return;
+    // Simulate upload progress
+    const interval = setInterval(() => {
+      setUploadPercent(prev => {
+        const newValue = prev + 15;
+        return newValue > 95 ? 95 : newValue;
+      });
+    }, 200);
     
     try {
-      await onUpload(file, category);
-    } catch (error) {
-      console.error("Upload error:", error);
+      const result = await onFileAccepted(file, category);
+      setUploadSuccess(result);
+      setUploadPercent(100);
+      
+      if (result) {
+        toast({
+          title: "Upload Complete",
+          description: "Your image has been uploaded successfully.",
+        });
+      }
+    } catch (err) {
+      console.error("Error in onFileAccepted:", err);
+      setUploadSuccess(false);
       toast({
-        title: "Upload Warning",
-        description: "The image was uploaded but may not display correctly.",
-        variant: "warning",
+        title: "Upload Failed",
+        description: "Could not process image. Please try again.",
+        variant: "destructive",
       });
+    } finally {
+      clearInterval(interval);
+      setTimeout(() => {
+        setIsProcessing(false);
+        setUploadPercent(0);
+      }, 1500);
     }
-  };
-  
-  // Function to handle paste from clipboard
-  const handlePaste = (e: React.ClipboardEvent) => {
+  }, [onFileAccepted, category]);
+
+  // Handle paste from clipboard
+  const handlePaste = async (e: React.ClipboardEvent) => {
     const items = e.clipboardData?.items;
-    
     if (!items) return;
     
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].type.indexOf('image') !== -1) {
-        const file = items[i].getAsFile();
+    for (const item of Array.from(items)) {
+      // Check if the pasted item is an image
+      if (item.type.indexOf('image') === 0) {
+        const file = item.getAsFile();
         if (file) {
-          validateAndSetFile(file);
+          await onDrop([file]);
           break;
         }
       }
     }
   };
+  
+  const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
+    onDrop,
+    accept: acceptedFileTypes.reduce((obj: any, type) => {
+      obj[type] = [];
+      return obj;
+    }, {}),
+    maxSize,
+    multiple: false
+  });
+  
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return bytes + ' B';
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    else return (bytes / 1048576).toFixed(1) + ' MB';
+  };
 
   return (
     <div 
-      className={`border-2 border-dashed rounded-lg p-6 transition-colors ${
-        isDragging 
-          ? 'border-church-blue bg-church-blue-light/30' 
-          : error 
-            ? 'border-red-300 bg-red-50'
-            : isUploaded
-              ? 'border-green-300 bg-green-50'
-              : 'border-church-neutral-300 hover:border-church-blue'
-      }`}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
+      className="w-full" 
       onPaste={handlePaste}
-      tabIndex={0}
+      tabIndex={0} // Make div focusable to receive paste events
     >
-      <div className="flex flex-col items-center justify-center space-y-4">
-        {!file ? (
-          <>
-            <div className="p-3 bg-church-blue-light rounded-full">
-              <Upload size={24} className="text-church-blue" />
-            </div>
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-church-neutral-900">Upload Image</h3>
-              <p className="text-church-neutral-600 text-sm mt-1">Drag & drop, paste, or click to select an image</p>
-              <p className="text-church-neutral-500 text-xs mt-2">
-                Max file size: {maxFileSizeMB}MB
-              </p>
-            </div>
-            <input
-              type="file"
-              id="file-upload"
-              className="hidden"
-              accept="image/jpeg,image/png,image/gif,image/webp"
-              onChange={handleFileChange}
-            />
-            <label
-              htmlFor="file-upload"
-              className="btn-primary cursor-pointer text-center"
-            >
-              Select Image
-            </label>
-          </>
-        ) : isUploaded ? (
-          <div className="flex flex-col items-center space-y-3">
-            <div className="p-3 bg-green-100 rounded-full">
-              <Check size={24} className="text-green-600" />
-            </div>
-            <p className="text-green-700 font-medium">Upload Complete!</p>
-            <p className="text-church-neutral-500 text-sm">{file.name}</p>
-          </div>
-        ) : (
-          <div className="w-full space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-church-blue-light rounded">
-                  <Image size={18} className="text-church-blue" />
-                </div>
-                <div className="truncate">
-                  <p className="text-church-neutral-900 font-medium truncate max-w-[200px]">{file.name}</p>
-                  <p className="text-church-neutral-500 text-xs">
-                    {(file.size / (1024 * 1024)).toFixed(2)} MB
-                  </p>
-                </div>
+      <div
+        {...getRootProps()}
+        className={`border-2 border-dashed rounded-md p-6 text-center cursor-pointer transition-colors duration-200 ${
+          isDragActive ? 'bg-primary/5 border-primary' : 'hover:bg-secondary/10'
+        } ${isDragAccept ? 'border-green-500' : ''} ${isDragReject ? 'border-red-500' : ''}`}
+      >
+        <input {...getInputProps()} />
+        
+        <div className="flex flex-col items-center justify-center gap-3 p-4">
+          {isProcessing ? (
+            <div className="w-full">
+              <div className="flex justify-between mb-1 text-xs">
+                <span>{uploadSuccess === null ? 'Uploading...' : (uploadSuccess ? 'Complete' : 'Failed')}</span>
+                <span>{uploadPercent}%</span>
               </div>
-              <button
-                className="p-1 text-church-neutral-500 hover:text-church-neutral-700"
-                onClick={() => setFile(null)}
-              >
-                <X size={18} />
-              </button>
-            </div>
-            
-            <div className="space-y-3">
-              <div>
-                <label htmlFor="category" className="block text-sm font-medium text-church-neutral-700 mb-1">
-                  Category
-                </label>
-                <select
-                  id="category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value as ImageCategory)}
-                  className="w-full px-3 py-2 border border-church-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-church-blue"
-                >
-                  <option value="hero">Hero Images</option>
-                  <option value="sermons">Sermons</option>
-                  <option value="events">Events</option>
-                  <option value="leadership">Leadership</option>
-                  <option value="general">General</option>
-                </select>
+              <div className="w-full bg-muted rounded-full h-1.5 mb-3">
+                <div 
+                  className={`h-1.5 rounded-full ${uploadSuccess === false ? 'bg-red-500' : 'bg-blue-600'}`}
+                  style={{ width: `${uploadPercent}%` }}
+                ></div>
               </div>
-              
-              {!isUploading ? (
-                <Button 
-                  className="btn-primary w-full"
-                  onClick={handleUpload}
-                >
-                  Upload Image
-                </Button>
-              ) : (
-                <div className="relative pt-1">
-                  <div className="overflow-hidden h-2 text-xs flex rounded bg-church-blue-light">
-                    <div 
-                      className="animate-pulse bg-church-blue h-full"
-                      style={{ width: '100%' }}
-                    ></div>
-                  </div>
-                  <p className="text-center text-church-neutral-600 text-sm mt-2">Uploading...</p>
+              {uploadSuccess !== null && (
+                <div className="flex items-center justify-center mt-2">
+                  {uploadSuccess ? (
+                    <div className="flex items-center text-green-600">
+                      <CheckIcon className="w-4 h-4 mr-1" />
+                      <span className="text-sm">Upload complete</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center text-red-600">
+                      <XIcon className="w-4 h-4 mr-1" />
+                      <span className="text-sm">Upload failed</span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-          </div>
-        )}
-        
-        {error && (
-          <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-lg w-full">
-            <AlertCircle size={18} />
-            <p className="text-sm">{error}</p>
-          </div>
-        )}
+          ) : (
+            <>
+              <UploadIcon className="h-10 w-10 text-muted-foreground" />
+              <div className="space-y-2">
+                <p className="text-base font-medium">Drag & drop image here</p>
+                <p className="text-sm text-muted-foreground">
+                  Or click to browse files
+                </p>
+                <Badge variant="outline" className="mt-2">
+                  Max size: {formatFileSize(maxSize)}
+                </Badge>
+                <div className="flex justify-center">
+                  <Button variant="secondary" size="sm" className="mt-2">
+                    Select Image
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  You can also paste an image from your clipboard
+                </p>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
