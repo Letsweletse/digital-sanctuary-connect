@@ -5,7 +5,7 @@ import { ImageCategory, ImageFile } from '@/types/imageTypes';
 import { fetchImages, uploadImage, deleteImage } from '@/services/imageService';
 import { formatDate } from '@/utils/imageUtils';
 
-export { ImageCategory, ImageFile } from '@/types/imageTypes';
+export type { ImageCategory, ImageFile } from '@/types/imageTypes';
 
 export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
   const { toast } = useToast();
