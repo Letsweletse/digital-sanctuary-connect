@@ -83,13 +83,17 @@ const Events = () => {
 
       console.log('Registration submitted:', registrationData);
       
-      await sendEventRegistrationEmail(currentEvent?.title || 'Event', registrationData);
+      // Send the email notification
+      const emailResult = await sendEventRegistrationEmail(currentEvent?.title || 'Event', registrationData);
+      console.log('Email service response:', emailResult);
       
+      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Show success message to the user
       toast({
         title: "Registration Successful!",
-        description: "You will receive a confirmation email shortly.",
+        description: `Thank you for registering. In a production environment, both you and the church staff would receive confirmation emails. Currently, this is a mock implementation.`,
       });
       
       handleCloseRegistration();

@@ -17,12 +17,22 @@ export const sendEventRegistrationEmail = (eventName: string, registrantData: an
   console.log(`Recipients: ${ADMIN_EMAILS.join(', ')}`);
   console.log('Registration data:', registrantData);
   
-  // In a real implementation, this would call an API to send the email
-  // For now we just log it
+  // In a production environment, you would:
+  // 1. Connect to a real email service API (like SendGrid, Mailgun, etc.)
+  // 2. Format the email with proper HTML templates
+  // 3. Send the email to all admin recipients
+  
+  // For now, this is just a mock implementation that logs to console
+  // To receive actual emails, you would need to:
+  // 1. Set up a backend API endpoint (Node.js, Supabase Edge Functions, etc.)
+  // 2. Connect that endpoint to an email service provider
+  // 3. Call that endpoint from this function
   
   return {
     success: true,
-    message: 'Email notification queued for sending'
+    message: 'Email notification queued for sending',
+    recipients: ADMIN_EMAILS,
+    timestamp: new Date().toISOString()
   };
 };
 
