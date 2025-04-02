@@ -4,12 +4,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLogo } from './LogoContext';
+import { useImageLibrary } from '@/hooks/useImageLibrary';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
   const location = useLocation();
   const { logoUrl } = useLogo();
+  const { uploadedImages } = useImageLibrary('general');
   
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -47,7 +49,15 @@ const Navbar = () => {
                 onError={handleLogoError}
               />
             ) : (
-              <span className="text-church-gold font-bold">Gate Gaborone</span>
+              <img 
+                src="/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png" 
+                alt="Gate Gaborone" 
+                className="h-10 md:h-12" 
+                onError={() => {
+                  console.error('Default logo failed to load');
+                  setLogoError(true);
+                }}
+              />
             )}
           </Link>
           

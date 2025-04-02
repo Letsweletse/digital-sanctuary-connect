@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { useImageLibrary } from '@/hooks/useImageLibrary';
 import useMongoData from '@/hooks/useMongoData';
 import { LeadershipPerson } from '@/types/leadershipTypes';
 
 const Welcome = () => {
-  const [pastorImage, setPastorImage] = useState("https://images.unsplash.com/photo-1567515004624-219c11d31f2e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80");
+  const [pastorImage, setPastorImage] = useState("/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png");
   const { uploadedImages } = useImageLibrary('leadership');
   const { data: leaders } = useMongoData<LeadershipPerson>('leadership');
   
