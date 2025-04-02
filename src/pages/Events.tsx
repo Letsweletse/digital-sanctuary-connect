@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { useToast } from "@/hooks/use-toast";
@@ -24,7 +25,7 @@ const Events = () => {
   });
   
   useEffect(() => {
-    const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/Senior%20Pastor_1743597241096.jpeg";
+    const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/Senior%20Pastor_1743595796187.jpeg";
     const img = new Image();
     img.onload = () => {
       console.log("Senior Pastor image loaded successfully:", pastorImage);
