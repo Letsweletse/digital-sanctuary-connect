@@ -1,3 +1,4 @@
+
 import React from 'react';
 import ProfileCard from './ProfileCard';
 import PastorCard from './PastorCard';
@@ -17,7 +18,7 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
   const leadersList = leaders.length > 0 ? leaders : fetchedLeaders || [];
   
   // Senior Pastor data
-  const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/Senior%20Pastor_1743595796187.jpeg";
+  const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Senior%20Pastor_1743598781352.jpeg";
   
   const pastorBio = `
     <p>Rev. Dr. Otengate, our Senior Pastor, has been shepherding our community for over 15 years with wisdom and compassion.</p>
