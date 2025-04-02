@@ -1,18 +1,28 @@
 
 import React, { useState, useEffect } from 'react';
 import { useImageLibrary } from '@/hooks/useImageLibrary';
+import useMongoData from '@/hooks/useMongoData';
 
 const Welcome = () => {
   const [pastorImage, setPastorImage] = useState("https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80");
   const { uploadedImages } = useImageLibrary('leadership');
+  const { data: leaders } = useMongoData('leadership');
   
   useEffect(() => {
-    // Try to find a leadership image to use
+    // First try to find the senior pastor from leadership data
+    const seniorPastor = leaders.find(leader => leader.isSeniorPastor || leader.role?.toLowerCase().includes('senior'));
+    
+    if (seniorPastor && seniorPastor.image) {
+      setPastorImage(seniorPastor.image);
+      return;
+    }
+    
+    // If no senior pastor found in leadership data, try to use uploaded images
     if (uploadedImages && uploadedImages.length > 0) {
       // Use the first leadership image found
       setPastorImage(uploadedImages[0].url);
     }
-  }, [uploadedImages]);
+  }, [uploadedImages, leaders]);
 
   return (
     <section className="py-16 md:py-24 bg-white">
