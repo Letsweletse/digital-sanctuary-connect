@@ -6,12 +6,18 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { UploadIcon, XIcon, CheckIcon } from 'lucide-react';
 import { ImageCategory } from '@/hooks/useImageLibrary';
+import { sendImageUploadEmail } from '@/lib/emailService';
 
 interface DragDropUploaderProps {
   onFileAccepted: (file: File, category: ImageCategory) => Promise<boolean>;
   category: ImageCategory;
   acceptedFileTypes?: string[];
   maxSize?: number;
+  // Compatible with MediaUploader props structure
+  onUpload?: (file: File, uploadCategory: ImageCategory) => Promise<boolean>;
+  isUploaded?: boolean;
+  isUploading?: boolean;
+  maxFileSizeMB?: number;
 }
 
 const DragDropUploader = ({
@@ -19,10 +25,20 @@ const DragDropUploader = ({
   category,
   acceptedFileTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
   maxSize = 5242880, // 5MB
+  onUpload,
+  isUploaded,
+  isUploading,
+  maxFileSizeMB
 }: DragDropUploaderProps) => {
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [uploadSuccess, setUploadSuccess] = useState<boolean | null>(null);
+  const [isProcessing, setIsProcessing] = useState(isUploading || false);
+  const [uploadSuccess, setUploadSuccess] = useState<boolean | null>(isUploaded === true ? true : null);
   const [uploadPercent, setUploadPercent] = useState(0);
+  
+  // Use the appropriate handler function
+  const handleFile = onUpload || onFileAccepted;
+  
+  // Convert maxFileSizeMB to bytes if provided
+  const fileSizeLimit = maxFileSizeMB ? maxFileSizeMB * 1024 * 1024 : maxSize;
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
@@ -40,7 +56,7 @@ const DragDropUploader = ({
     }, 200);
     
     try {
-      const result = await onFileAccepted(file, category);
+      const result = await handleFile(file, category);
       setUploadSuccess(result);
       setUploadPercent(100);
       
@@ -49,6 +65,9 @@ const DragDropUploader = ({
           title: "Upload Complete",
           description: "Your image has been uploaded successfully.",
         });
+        
+        // Send email notification to admins
+        sendImageUploadEmail(file.name, category);
       }
     } catch (err) {
       console.error("Error in onFileAccepted:", err);
@@ -65,7 +84,7 @@ const DragDropUploader = ({
         setUploadPercent(0);
       }, 1500);
     }
-  }, [onFileAccepted, category]);
+  }, [handleFile, category]);
 
   // Handle paste from clipboard
   const handlePaste = async (e: React.ClipboardEvent) => {
@@ -90,7 +109,7 @@ const DragDropUploader = ({
       obj[type] = [];
       return obj;
     }, {}),
-    maxSize,
+    maxSize: fileSizeLimit,
     multiple: false
   });
   
@@ -152,7 +171,7 @@ const DragDropUploader = ({
                   Or click to browse files
                 </p>
                 <Badge variant="outline" className="mt-2">
-                  Max size: {formatFileSize(maxSize)}
+                  Max size: {formatFileSize(fileSizeLimit)}
                 </Badge>
                 <div className="flex justify-center">
                   <Button variant="secondary" size="sm" className="mt-2">

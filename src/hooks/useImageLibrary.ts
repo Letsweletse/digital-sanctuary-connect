@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { findMany, insertOne } from '@/lib/mongodb';
 import { useToast } from '@/hooks/use-toast';
+import { sendImageUploadEmail } from '@/lib/emailService';
 
 export type ImageCategory = 'hero' | 'sermons' | 'events' | 'leadership' | 'general';
 
@@ -96,59 +97,65 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
     try {
       const reader = new FileReader();
       
-      reader.onload = async (e) => {
-        if (!e.target?.result) {
-          throw new Error("Failed to read file");
-        }
-        
-        const imageUrl = e.target.result as string;
-        
-        // We still validate but always proceed with upload
-        const isValid = await validateImageUrl(imageUrl);
-        if (!isValid) {
+      return new Promise<boolean>((resolve, reject) => {
+        reader.onload = async (e) => {
+          if (!e.target?.result) {
+            reject(new Error("Failed to read file"));
+            return;
+          }
+          
+          const imageUrl = e.target.result as string;
+          
+          // We still validate but always proceed with upload
+          const isValid = await validateImageUrl(imageUrl);
+          if (!isValid) {
+            toast({
+              title: "Warning",
+              description: "The image may not be accessible, but we'll upload it anyway.",
+              variant: "default",
+            });
+          }
+          
+          // Ensure category is valid
+          const safeCategory: ImageCategory = isValidCategory(uploadCategory) ? uploadCategory : 'general';
+          
+          const newImage = {
+            name: file.name,
+            url: imageUrl,
+            category: safeCategory,
+            uploadedAt: new Date().toISOString()
+          };
+          
+          await insertOne('images', newImage);
+          
+          const addedImage: ImageFile = {
+            name: file.name,
+            url: imageUrl,
+            category: safeCategory,
+            uploadedAt: new Date()
+          };
+          
+          setUploadedImages(prev => [addedImage, ...prev]);
+          
           toast({
-            title: "Warning",
-            description: "The image may not be accessible, but we'll upload it anyway.",
-            variant: "default",
+            title: "Image Uploaded",
+            description: `${file.name} has been uploaded successfully.`,
           });
-        }
-        
-        const newImage = {
-          name: file.name,
-          url: imageUrl,
-          category: uploadCategory,
-          uploadedAt: new Date().toISOString()
+          
+          // Notify admins by email through our email service
+          sendImageUploadEmail(file.name, safeCategory);
+          
+          // Refresh images list
+          setRefreshTrigger(prev => prev + 1);
+          resolve(true);
         };
         
-        await insertOne('images', newImage);
-        
-        const addedImage: ImageFile = {
-          name: file.name,
-          url: imageUrl,
-          category: uploadCategory,
-          uploadedAt: new Date()
+        reader.onerror = () => {
+          reject(new Error("Failed to read file"));
         };
         
-        setUploadedImages(prev => [addedImage, ...prev]);
-        
-        toast({
-          title: "Image Uploaded",
-          description: `${file.name} has been uploaded successfully.`,
-        });
-        
-        // Notify admins by email (mock - would be implemented on server)
-        notifyAdminsOfImageUpload(file.name, uploadCategory);
-        
-        // Refresh images list
-        setRefreshTrigger(prev => prev + 1);
-      };
-      
-      reader.onerror = () => {
-        throw new Error("Failed to read file");
-      };
-      
-      reader.readAsDataURL(file);
-      return true;
+        reader.readAsDataURL(file);
+      });
     } catch (err) {
       console.error('Error uploading image', err);
       toast({
@@ -158,15 +165,6 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
       });
       return false;
     }
-  };
-  
-  // Function to notify admins of image uploads (mock implementation)
-  const notifyAdminsOfImageUpload = (imageName: string, category: ImageCategory) => {
-    console.log(`Notifying admins about image upload: ${imageName} (${category})`);
-    console.log('Emails to notify: oteng777@gmail.com, iblimenterprise@zohomail.com');
-    
-    // In a real implementation, this would call a server endpoint to send emails
-    // For now, we just log it
   };
   
   const handleCopyUrl = () => {

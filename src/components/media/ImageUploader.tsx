@@ -39,6 +39,8 @@ const ImageUploader = () => {
         setIsUploaded(false);
       }, 3000);
     }
+    
+    return success;
   };
   
   return (
@@ -48,7 +50,8 @@ const ImageUploader = () => {
           <h2 className="text-xl font-semibold text-church-neutral-900">Upload New Image</h2>
           
           <DragDropUploader 
-            onUpload={handleFileUpload}
+            onFileAccepted={handleFileUpload}
+            category={category}
             isUploaded={isUploaded}
             isUploading={isUploading}
             maxFileSizeMB={maxFileSizeMB}
