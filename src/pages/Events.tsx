@@ -1,7 +1,11 @@
 
 import React, { useState } from 'react';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+import Layout from '@/components/layout/Layout';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { CalendarCheck, User, Mail, Phone } from "lucide-react";
 
 interface Event {
   id: string;
@@ -12,10 +16,19 @@ interface Event {
   description: string;
   category: string;
   image: string;
+  registration?: boolean;
 }
 
 const Events = () => {
   const [activeCategory, setActiveCategory] = useState('all');
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
+  const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    numberOfAttendees: 1
+  });
   
   const events: Event[] = [
     {
@@ -50,13 +63,14 @@ const Events = () => {
     },
     {
       id: '4',
-      title: 'Christmas Outreach Project',
+      title: 'Perspectives on the Apostolic',
       date: '2023-12-16',
-      time: '10:00 AM',
-      location: 'Community Center',
-      description: 'Help us prepare Christmas gift baskets for families in need in our community. All supplies provided.',
-      category: 'outreach',
-      image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80'
+      time: '9:00 AM - 4:00 PM',
+      location: 'Main Auditorium',
+      description: 'A special conference exploring apostolic ministry in the modern church. Join us for powerful teachings, workshops, and fellowship.',
+      category: 'conference',
+      image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1769&q=80',
+      registration: true
     },
     {
       id: '5',
@@ -107,7 +121,8 @@ const Events = () => {
     { id: 'fellowship', name: 'Fellowship' },
     { id: 'outreach', name: 'Outreach' },
     { id: 'youth', name: 'Youth' },
-    { id: 'children', name: 'Children' }
+    { id: 'children', name: 'Children' },
+    { id: 'conference', name: 'Conferences' }
   ];
   
   const filteredEvents = activeCategory === 'all' 
@@ -123,11 +138,49 @@ const Events = () => {
     const options: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('en-US', options);
   };
+
+  const handleOpenRegistration = (event: Event) => {
+    setCurrentEvent(event);
+    setIsRegistrationOpen(true);
+  };
+
+  const handleCloseRegistration = () => {
+    setIsRegistrationOpen(false);
+    setCurrentEvent(null);
+    // Reset form data
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      numberOfAttendees: 1
+    });
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'numberOfAttendees' ? parseInt(value) || 1 : value
+    }));
+  };
+
+  const handleSubmitRegistration = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Here you would typically send the registration data to your backend
+    console.log('Registration submitted:', {
+      event: currentEvent?.title,
+      attendee: formData
+    });
+
+    // Show success message
+    alert('Registration successful! You will receive a confirmation email shortly.');
+    
+    // Close the dialog
+    handleCloseRegistration();
+  };
   
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      
+    <Layout>
       <main className="flex-grow pt-24 page-transition">
         {/* Page Header */}
         <section className="bg-church-blue-light py-16 md:py-24">
@@ -188,6 +241,7 @@ const Events = () => {
                           event.category === 'fellowship' ? 'bg-green-100 text-green-800' :
                           event.category === 'outreach' ? 'bg-purple-100 text-purple-800' :
                           event.category === 'youth' ? 'bg-orange-100 text-orange-800' :
+                          event.category === 'conference' ? 'bg-blue-100 text-blue-800' :
                           'bg-pink-100 text-pink-800'
                         }`}
                       >
@@ -254,9 +308,18 @@ const Events = () => {
                     <p className="text-church-neutral-700 mb-6">{event.description}</p>
                     
                     <div className="flex space-x-3">
-                      <button className="btn-primary flex-1">
-                        Learn More
-                      </button>
+                      {event.registration ? (
+                        <button 
+                          className="btn-primary flex-1"
+                          onClick={() => handleOpenRegistration(event)}
+                        >
+                          Register Now
+                        </button>
+                      ) : (
+                        <button className="btn-primary flex-1">
+                          Learn More
+                        </button>
+                      )}
                       <button className="btn-outline flex-1">
                         Add to Calendar
                       </button>
@@ -290,10 +353,88 @@ const Events = () => {
             </div>
           </div>
         </section>
+
+        {/* Registration Dialog */}
+        <Dialog open={isRegistrationOpen} onOpenChange={handleCloseRegistration}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Register for {currentEvent?.title}</DialogTitle>
+              <DialogDescription>
+                Complete the form below to reserve your spot for {formatDate(currentEvent?.date || '')} at {currentEvent?.time}.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSubmitRegistration}>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name" className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Full Name
+                  </Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder="Enter your full name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="email" className="flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    Email Address
+                  </Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="phone" className="flex items-center gap-2">
+                    <Phone className="h-4 w-4" />
+                    Phone Number
+                  </Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    placeholder="Your contact number"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="numberOfAttendees" className="flex items-center gap-2">
+                    <CalendarCheck className="h-4 w-4" />
+                    Number of Attendees
+                  </Label>
+                  <Input
+                    id="numberOfAttendees"
+                    name="numberOfAttendees"
+                    type="number"
+                    min="1"
+                    value={formData.numberOfAttendees}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+              </div>
+              <DialogFooter className="sm:justify-between">
+                <Button type="button" variant="outline" onClick={handleCloseRegistration}>
+                  Cancel
+                </Button>
+                <Button type="submit">Submit Registration</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </main>
-      
-      <Footer />
-    </div>
+    </Layout>
   );
 };
 
