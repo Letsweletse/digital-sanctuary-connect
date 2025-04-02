@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { CalendarCheck, User, Mail, Phone } from "lucide-react";
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { EventData, RegistrationFormData } from '@/types/eventTypes';
 
 interface EventRegistrationDialogProps {
@@ -33,34 +34,37 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Register for {currentEvent?.title}</DialogTitle>
+          <DialogTitle className="text-xl">Register for {currentEvent?.title}</DialogTitle>
           <DialogDescription>
-            Complete the form below to reserve your spot for {formatDate(currentEvent?.date || '')} at {currentEvent?.time}.
+            Complete the form below to reserve your spot.
           </DialogDescription>
         </DialogHeader>
         
         {currentEvent && (
-          <div className="mb-4 rounded-md overflow-hidden">
-            <AspectRatio ratio={16 / 9}>
+          <Card className="border-none shadow-none">
+            <AspectRatio ratio={16 / 9} className="overflow-hidden rounded-md">
               <img 
                 src={currentEvent.image} 
                 alt={currentEvent.title} 
                 className="w-full h-full object-cover"
               />
             </AspectRatio>
-            <div className="p-3 bg-church-blue-light">
-              <h3 className="font-bold">{currentEvent?.title}</h3>
-              <p className="text-sm">{formatDate(currentEvent?.date || '')} | {currentEvent?.time}</p>
+            <CardContent className="p-3 bg-blue-50 rounded-b-md space-y-1">
+              <h3 className="font-bold text-church-blue-dark">{currentEvent?.title}</h3>
+              <div className="flex items-center gap-2 text-sm">
+                <CalendarCheck className="h-4 w-4 text-church-blue" />
+                <span>{formatDate(currentEvent?.date || '')} | {currentEvent?.time}</span>
+              </div>
               <p className="text-sm font-medium">{currentEvent?.location}</p>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         )}
         
-        <form onSubmit={onSubmit}>
-          <div className="grid gap-4 py-4">
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="name" className="flex items-center gap-2">
-                <User className="h-4 w-4" />
+                <User className="h-4 w-4 text-church-blue" />
                 Full Name
               </Label>
               <Input
@@ -70,40 +74,47 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
                 value={formData.name}
                 onChange={onInputChange}
                 required
+                className="border-church-blue-light focus-visible:ring-church-blue"
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email" className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                Email Address
-              </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="you@example.com"
-                value={formData.email}
-                onChange={onInputChange}
-                required
-              />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="email" className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-church-blue" />
+                  Email Address
+                </Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={formData.email}
+                  onChange={onInputChange}
+                  required
+                  className="border-church-blue-light focus-visible:ring-church-blue"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="phone" className="flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-church-blue" />
+                  Phone Number
+                </Label>
+                <Input
+                  id="phone"
+                  name="phone"
+                  placeholder="Your contact number"
+                  value={formData.phone}
+                  onChange={onInputChange}
+                  required
+                  className="border-church-blue-light focus-visible:ring-church-blue"
+                />
+              </div>
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="phone" className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
-                Phone Number
-              </Label>
-              <Input
-                id="phone"
-                name="phone"
-                placeholder="Your contact number"
-                value={formData.phone}
-                onChange={onInputChange}
-                required
-              />
-            </div>
+            
             <div className="grid gap-2">
               <Label htmlFor="numberOfAttendees" className="flex items-center gap-2">
-                <CalendarCheck className="h-4 w-4" />
+                <CalendarCheck className="h-4 w-4 text-church-blue" />
                 Number of Attendees
               </Label>
               <Input
@@ -114,19 +125,27 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
                 value={formData.numberOfAttendees}
                 onChange={onInputChange}
                 required
+                className="border-church-blue-light focus-visible:ring-church-blue"
               />
             </div>
-            <div className="mt-2 p-3 bg-blue-50 border border-blue-100 rounded-md">
+            
+            <div className="p-3 bg-blue-50 border border-blue-100 rounded-md flex items-start gap-2">
+              <Mail className="h-4 w-4 text-blue-700 mt-0.5" />
               <p className="text-sm text-blue-700">
                 Registration details will be sent to church staff at otenggate@gmail.com
               </p>
             </div>
           </div>
-          <DialogFooter className="sm:justify-between">
-            <Button type="button" variant="outline" onClick={onClose}>
+          
+          <DialogFooter className="sm:justify-between gap-2">
+            <Button type="button" variant="outline" onClick={onClose} className="border-church-neutral-300">
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="bg-church-blue hover:bg-church-blue-dark text-white"
+            >
               {isSubmitting ? "Submitting..." : "Submit Registration"}
             </Button>
           </DialogFooter>
