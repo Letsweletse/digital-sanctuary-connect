@@ -1,40 +1,43 @@
-
 import React, { useState, useEffect } from 'react';
 import { useImageLibrary } from '@/hooks/useImageLibrary';
 import useMongoData from '@/hooks/useMongoData';
 import { LeadershipPerson } from '@/types/leadershipTypes';
 
 const Welcome = () => {
-  // Use base64 pastor image directly
+  // Use the provided pastor image directly
   const [pastorImage, setPastorImage] = useState(
-    "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoKCgoKCgsMDAsPEA4QDxYUExMUFiIYGhgaGCIzICUgICUgMy03LCksNy1RQDg4QFFeT0pPXnFlZXGPiI+7u/sBCgoKCgoKCwwMCw8QDhAPFhQTExQWIhgaGBoYIjMgJSAgJSAzLTcsKSw3LVFAODhAUV5PSk9ecWVlcY+Ij7u7+//CABEIA8ACHAMBIgACEQEDEQH/xAAuAAEBAQEBAQAAAAAAAAAAAAAAAQIDBAUBAQEBAQAAAAAAAAAAAAAAAAABAgP/2gAMAwEAAhADEAAAAvCMqlFgoKlKlFgtzS"
+    "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Pastor%20Kobus%20Bezuidenhout_1743680599419.jpeg"
   );
   
   const { uploadedImages } = useImageLibrary('general');
   const { data: leaders } = useMongoData<LeadershipPerson>('leadership');
   
+  // We'll keep the useEffect but it will only run if the direct image is not available
   useEffect(() => {
-    // First try to find the senior pastor from leadership data
-    const seniorPastor = leaders.find(
-      leader => leader.isSeniorPastor || 
-      leader.role?.toLowerCase().includes('senior')
-    );
-    
-    if (seniorPastor && seniorPastor.image) {
-      setPastorImage(seniorPastor.image);
-      return;
-    }
-    
-    // If no senior pastor found, try to use uploaded images
-    if (uploadedImages && uploadedImages.length > 0) {
-      // Look for pastor image
-      const pastorImg = uploadedImages.find(img => 
-        img.name.toLowerCase().includes('pastor') || 
-        img.name.toLowerCase().includes('senior')
+    // Only try to find alternative images if the current image is not available
+    if (!pastorImage || pastorImage.includes("data:image/jpeg;base64")) {
+      // First try to find the senior pastor from leadership data
+      const seniorPastor = leaders.find(
+        leader => leader.isSeniorPastor || 
+        leader.role?.toLowerCase().includes('senior')
       );
       
-      if (pastorImg) {
-        setPastorImage(pastorImg.url);
+      if (seniorPastor && seniorPastor.image) {
+        setPastorImage(seniorPastor.image);
+        return;
+      }
+      
+      // If no senior pastor found, try to use uploaded images
+      if (uploadedImages && uploadedImages.length > 0) {
+        // Look for pastor image
+        const pastorImg = uploadedImages.find(img => 
+          img.name.toLowerCase().includes('pastor') || 
+          img.name.toLowerCase().includes('senior')
+        );
+        
+        if (pastorImg) {
+          setPastorImage(pastorImg.url);
+        }
       }
     }
   }, [uploadedImages, leaders]);
