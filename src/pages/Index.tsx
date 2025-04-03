@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import Hero from '@/components/home/Hero';
@@ -26,7 +25,7 @@ const Index = () => {
     location: "Gate Gaborone Auditorium",
     description: "A special conference exploring apostolic ministry in the modern church. Join us for powerful teachings, workshops, and fellowship.",
     category: "conference",
-    image: "https://images.unsplash.com/photo-1523580494863-6f031224c94?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
+    image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Pastor%20Kobus%20Bezuidenhout_1743680599419.jpeg",
     registration: true
   };
   
