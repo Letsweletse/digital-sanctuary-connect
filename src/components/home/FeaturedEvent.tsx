@@ -32,7 +32,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
           <div className="glass-panel overflow-hidden group">
             <div className="relative h-72 md:h-96">
               <img 
-                src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                src={featuredEvent.image}
                 alt={featuredEvent.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
