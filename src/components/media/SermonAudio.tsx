@@ -68,7 +68,7 @@ const SermonAudio = ({
   return (
     <div className="w-full rounded-lg overflow-hidden">
       {isLoading && (
-        <div className="flex justify-center items-center h-80 bg-church-neutral-100">
+        <div className="flex justify-center items-center h-80 bg-church-neutral-100/50 rounded-lg">
           <Loader2 className="h-8 w-8 text-church-blue animate-spin" />
         </div>
       )}
@@ -76,7 +76,7 @@ const SermonAudio = ({
       <iframe 
         src={embedUrl}
         style={{ minHeight: "500px" }}
-        className={`w-full border-0 transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+        className={`w-full border-0 rounded-lg transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
         title="SermonAudio Player"
         seamless
         allow="autoplay"
@@ -87,8 +87,13 @@ const SermonAudio = ({
           href={`https://www.sermonaudio.com/solo/${effectiveChurchId}/sermons/`} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="text-sm text-church-blue hover:underline"
+          className="inline-flex items-center gap-1.5 text-sm text-church-blue hover:underline"
         >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
           View all sermons on SermonAudio
         </a>
       </div>
