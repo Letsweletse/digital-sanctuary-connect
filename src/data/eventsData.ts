@@ -34,13 +34,13 @@ export const events: EventData[] = [
   },
   {
     id: '4',
-    title: 'Perspectives on the Apostolic',
+    title: 'Perspectives on the Apostolic with Thamo Naidoo',
     date: '2025-05-10',
     time: '9:00 AM - 13:30 PM',
     location: 'Gate Gaborone Auditorium',
-    description: 'A special conference exploring apostolic ministry in the modern church. Join us for powerful teachings, workshops, and fellowship.',
+    description: 'A special conference exploring apostolic ministry in the modern church with guest speaker Thamo Naidoo. Join us for powerful teachings, workshops, and fellowship.',
     category: 'conference',
-    image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1769&q=80',
+    image: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg',
     registration: true
   },
   {
