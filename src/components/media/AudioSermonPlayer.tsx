@@ -1,10 +1,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react';
-import { Slider } from "@/components/ui/slider";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { format } from "date-fns";
 import { Sermon } from '@/types/sermonTypes';
+import SermonInfo from './SermonInfo';
+import AudioControls from './AudioControls';
+import SermonPlaylist from './SermonPlaylist';
 
 interface AudioSermonPlayerProps {
   customSermons?: Sermon[];
@@ -138,19 +137,10 @@ const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
     }
   };
   
-  // Format time in MM:SS
-  const formatTime = (time: number) => {
-    if (isNaN(time)) return "00:00";
-    
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  };
-  
-  // Format date
-  const formatDate = (date: Date) => {
-    return format(new Date(date), 'MMMM d, yyyy');
+  // Handle sermon selection from playlist
+  const handleSermonSelect = (index: number) => {
+    setCurrentSermonIndex(index);
+    setIsPlaying(false);
   };
   
   return (
@@ -163,121 +153,29 @@ const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
       />
       
       {/* Current sermon info */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-3">
-          <Avatar className="h-12 w-12 rounded-md shadow-sm">
-            <AvatarImage src={currentSermon.speakerImage} alt={currentSermon.speaker} />
-            <AvatarFallback className="rounded-md">{currentSermon.speaker?.charAt(0) || 'S'}</AvatarFallback>
-          </Avatar>
-          <div>
-            <h4 className="text-lg font-bold text-church-neutral-900">{currentSermon.title}</h4>
-            <p className="text-sm text-church-neutral-600">
-              {currentSermon.speaker} • {formatDate(currentSermon.date)}
-            </p>
-          </div>
-        </div>
-      </div>
+      <SermonInfo sermon={currentSermon} />
       
-      {/* Progress bar */}
-      <div className="mb-4">
-        <Slider
-          defaultValue={[0]}
-          value={[currentTime]}
-          max={duration || 100}
-          step={1}
-          onValueChange={handleTimeChange}
-          className="my-4"
-        />
-        <div className="flex justify-between text-xs text-church-neutral-600">
-          <span>{formatTime(currentTime)}</span>
-          <span>{formatTime(duration)}</span>
-        </div>
-      </div>
+      {/* Audio controls */}
+      <AudioControls
+        isPlaying={isPlaying}
+        isMuted={isMuted}
+        currentTime={currentTime}
+        duration={duration}
+        volume={volume}
+        onPlayPause={togglePlayPause}
+        onPrevious={handlePrevious}
+        onNext={handleNext}
+        onTimeChange={handleTimeChange}
+        onVolumeChange={handleVolumeChange}
+        onToggleMute={toggleMute}
+      />
       
-      {/* Controls */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={handlePrevious}
-            className="p-2 rounded-full hover:bg-church-neutral-100"
-          >
-            <SkipBack className="w-5 h-5 text-church-neutral-800" />
-          </button>
-          
-          <button
-            onClick={togglePlayPause}
-            className="p-3 bg-church-blue rounded-full text-white hover:bg-church-blue-dark"
-          >
-            {isPlaying ? 
-              <Pause className="w-6 h-6" /> : 
-              <Play className="w-6 h-6 ml-0.5" />
-            }
-          </button>
-          
-          <button 
-            onClick={handleNext}
-            className="p-2 rounded-full hover:bg-church-neutral-100"
-          >
-            <SkipForward className="w-5 h-5 text-church-neutral-800" />
-          </button>
-        </div>
-        
-        {/* Volume control */}
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={toggleMute}
-            className="p-2 rounded-full hover:bg-church-neutral-100"
-          >
-            {isMuted ? 
-              <VolumeX className="w-5 h-5 text-church-neutral-800" /> : 
-              <Volume2 className="w-5 h-5 text-church-neutral-800" />
-            }
-          </button>
-          
-          <Slider
-            defaultValue={[0.7]}
-            value={[isMuted ? 0 : volume]}
-            max={1}
-            step={0.01}
-            onValueChange={handleVolumeChange}
-            className="w-24"
-          />
-        </div>
-      </div>
-      
-      {/* Sermon list */}
-      <div className="mt-8 border-t border-church-neutral-200 pt-6">
-        <h4 className="font-medium text-church-neutral-800 mb-4">More Sermons</h4>
-        <div className="space-y-3">
-          {sermons.map((sermon, index) => (
-            <div 
-              key={sermon.id}
-              className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                index === currentSermonIndex
-                  ? 'bg-church-blue-light/30 border border-church-blue-light'
-                  : 'hover:bg-church-neutral-100'
-              }`}
-              onClick={() => {
-                setCurrentSermonIndex(index);
-                setIsPlaying(false);
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <Avatar className="h-8 w-8 rounded-md">
-                  <AvatarImage src={sermon.speakerImage} alt={sermon.speaker} />
-                  <AvatarFallback className="rounded-md text-xs">{sermon.speaker?.charAt(0) || 'S'}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h5 className="font-medium text-church-neutral-900">{sermon.title}</h5>
-                  <p className="text-xs text-church-neutral-600">
-                    {sermon.speaker} • {formatDate(sermon.date)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Sermon playlist */}
+      <SermonPlaylist
+        sermons={sermons}
+        currentIndex={currentSermonIndex}
+        onSermonSelect={handleSermonSelect}
+      />
     </div>
   );
 };
