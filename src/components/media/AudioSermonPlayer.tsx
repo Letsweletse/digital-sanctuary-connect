@@ -2,16 +2,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react';
 import { Slider } from "@/components/ui/slider";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { format } from "date-fns";
+import { Sermon } from '@/types/sermonTypes';
 
-interface Sermon {
-  id: string;
-  title: string;
-  speaker: string;
-  date: string;
-  audioUrl: string;
+interface AudioSermonPlayerProps {
+  customSermons?: Sermon[];
 }
 
-const AudioSermonPlayer = () => {
+const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
   const [currentSermonIndex, setCurrentSermonIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -21,31 +20,38 @@ const AudioSermonPlayer = () => {
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
-  // Sample sermon data - replace with real data from your backend
-  const sermons: Sermon[] = [
+  // Default sermon data if no custom sermons provided
+  const defaultSermons: Sermon[] = [
     {
       id: '1',
-      title: 'Finding Peace in Troubled Times',
-      speaker: 'Pastor John Doe',
-      date: '2023-12-10',
+      title: 'He\'s Power In Us',
+      speaker: 'Peter Taylor',
+      speakerImage: '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png',
+      date: new Date('2025-03-30'),
       audioUrl: 'https://cdn.devdojo.com/episode/June2023/the-making-of-wave.mp3',
+      youtubeId: 'PpSxcNgBOqM',
+      description: 'A powerful sermon about the Holy Spirit living in us.',
+      tags: ['Holy Spirit', 'Power', 'Christian Living'],
     },
     {
       id: '2',
       title: 'The Power of Community',
       speaker: 'Elder Sarah Smith',
-      date: '2023-12-03',
+      speakerImage: '/placeholder.svg',
+      date: new Date('2025-03-23'),
       audioUrl: 'https://cdn.devdojo.com/episode/June2023/how-to-build-a-successful-team.mp3',
     },
     {
       id: '3',
       title: 'Walking in Faith',
       speaker: 'Pastor John Doe',
-      date: '2023-11-26',
+      speakerImage: '/placeholder.svg',
+      date: new Date('2025-03-16'),
       audioUrl: 'https://cdn.devdojo.com/episode/May2023/wave-update-saas-starter-kit.mp3',
     },
   ];
   
+  const sermons = customSermons || defaultSermons;
   const currentSermon = sermons[currentSermonIndex];
   
   useEffect(() => {
@@ -143,9 +149,8 @@ const AudioSermonPlayer = () => {
   };
   
   // Format date
-  const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
+  const formatDate = (date: Date) => {
+    return format(new Date(date), 'MMMM d, yyyy');
   };
   
   return (
@@ -159,10 +164,18 @@ const AudioSermonPlayer = () => {
       
       {/* Current sermon info */}
       <div className="mb-6">
-        <h4 className="text-lg font-bold text-church-neutral-900">{currentSermon.title}</h4>
-        <p className="text-sm text-church-neutral-600">
-          {currentSermon.speaker} • {formatDate(currentSermon.date)}
-        </p>
+        <div className="flex items-center gap-3 mb-3">
+          <Avatar className="h-12 w-12 rounded-md shadow-sm">
+            <AvatarImage src={currentSermon.speakerImage} alt={currentSermon.speaker} />
+            <AvatarFallback className="rounded-md">{currentSermon.speaker?.charAt(0) || 'S'}</AvatarFallback>
+          </Avatar>
+          <div>
+            <h4 className="text-lg font-bold text-church-neutral-900">{currentSermon.title}</h4>
+            <p className="text-sm text-church-neutral-600">
+              {currentSermon.speaker} • {formatDate(currentSermon.date)}
+            </p>
+          </div>
+        </div>
       </div>
       
       {/* Progress bar */}
@@ -249,10 +262,18 @@ const AudioSermonPlayer = () => {
                 setIsPlaying(false);
               }}
             >
-              <h5 className="font-medium text-church-neutral-900">{sermon.title}</h5>
-              <p className="text-xs text-church-neutral-600">
-                {sermon.speaker} • {formatDate(sermon.date)}
-              </p>
+              <div className="flex items-center gap-2">
+                <Avatar className="h-8 w-8 rounded-md">
+                  <AvatarImage src={sermon.speakerImage} alt={sermon.speaker} />
+                  <AvatarFallback className="rounded-md text-xs">{sermon.speaker?.charAt(0) || 'S'}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <h5 className="font-medium text-church-neutral-900">{sermon.title}</h5>
+                  <p className="text-xs text-church-neutral-600">
+                    {sermon.speaker} • {formatDate(sermon.date)}
+                  </p>
+                </div>
+              </div>
             </div>
           ))}
         </div>

@@ -5,6 +5,7 @@ import Footer from '@/components/layout/Footer';
 import MediaSection from '@/components/home/MediaSection';
 import ImageUploader from '@/components/media/ImageUploader';
 import LogoUploader from '@/components/media/LogoUploader';
+import SermonManager from '@/components/media/SermonManager';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -90,6 +91,7 @@ const Admin = () => {
                   <TabsList className="mb-8">
                     <TabsTrigger value="logo">Church Logo</TabsTrigger>
                     <TabsTrigger value="leadership">Leadership Photos</TabsTrigger>
+                    <TabsTrigger value="sermons">Sermon Management</TabsTrigger>
                     <TabsTrigger value="images">General Images</TabsTrigger>
                     <TabsTrigger value="audio">Audio Sermons</TabsTrigger>
                     <TabsTrigger value="youtube">YouTube Videos</TabsTrigger>
@@ -110,6 +112,18 @@ const Admin = () => {
                         Upload and manage photos of church leadership team members. These images will appear on the Leadership page.
                       </p>
                       <ImageUploader />
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="sermons" className="space-y-8">
+                    <div className="glass-panel p-8">
+                      <h2 className="text-2xl font-bold text-church-neutral-900 mb-6">
+                        Sermon Management
+                      </h2>
+                      <p className="text-church-neutral-700 mb-6">
+                        Upload and manage sermons with speaker photos, audio files, and details. These will appear on the Sermons page.
+                      </p>
+                      <SermonManager />
                     </div>
                   </TabsContent>
                   
