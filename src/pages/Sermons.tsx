@@ -49,8 +49,8 @@ const Sermons = () => {
               <div className="aspect-video w-full rounded-lg overflow-hidden mb-6">
                 <iframe 
                   className="w-full h-full" 
-                  src="https://www.youtube.com/embed/videoseries?list=UUCIOsw_Ywb-2Rwi6Wt0GYjQ" 
-                  title="Latest Sermon" 
+                  src="https://www.youtube.com/embed/PpSxcNgBOqM" 
+                  title="He's Power In Us" 
                   frameBorder="0" 
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                   allowFullScreen
@@ -58,16 +58,16 @@ const Sermons = () => {
               </div>
               <div className="px-4">
                 <h3 className="text-xl md:text-2xl font-bold text-church-neutral-900 mb-2">
-                  Walking in the Spirit
+                  He's Power In Us
                 </h3>
                 <div className="flex flex-wrap items-center gap-4 text-church-neutral-700 mb-4">
                   <span className="flex items-center gap-1.5">
                     <MicVocal size={18} className="text-church-blue" />
-                    Pastor Kobus Bezuidenhout
+                    Peter Taylor
                   </span>
                   <span className="flex items-center gap-1.5">
                     <CalendarDays size={18} className="text-church-blue" />
-                    April 02, 2025
+                    March 30, 2025
                   </span>
                 </div>
               </div>
