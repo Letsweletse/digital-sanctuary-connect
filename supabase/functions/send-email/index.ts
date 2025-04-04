@@ -18,6 +18,7 @@ interface EmailRequest {
   message: string;
   eventName?: string;
   registrationType?: string;
+  sendConfirmation?: boolean;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -27,9 +28,9 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { to, subject, name, email, message, eventName, registrationType }: EmailRequest = await req.json();
+    const { to, subject, name, email, message, eventName, registrationType, sendConfirmation }: EmailRequest = await req.json();
 
-    console.log("Received email request:", { to, subject, name, email });
+    console.log("Received email request:", { to, subject, name, email, sendConfirmation });
 
     let htmlContent = "";
     
@@ -61,6 +62,35 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     console.log("Email sent successfully:", emailResponse);
+    
+    // Send confirmation email to the registrant if requested
+    if (sendConfirmation && email && eventName) {
+      const confirmationHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 5px;">
+          <h1 style="color: #3b82f6; margin-bottom: 20px;">Registration Confirmation</h1>
+          <p>Dear ${name},</p>
+          <p>Thank you for registering for <strong>${eventName}</strong>.</p>
+          <p><strong>Event Details:</strong></p>
+          <ul>
+            <li><strong>Event:</strong> ${eventName}</li>
+            <li><strong>Registration Type:</strong> ${registrationType || 'Standard'}</li>
+            <li><strong>Number of Attendees:</strong> ${message.includes('numberOfAttendees') ? message.split('numberOfAttendees:')[1].trim() : '1'}</li>
+          </ul>
+          <p>We look forward to seeing you there!</p>
+          <p>If you have any questions, please don't hesitate to contact us.</p>
+          <p style="margin-top: 30px;">Best regards,<br/>Gate Gaborone Team</p>
+        </div>
+      `;
+
+      const confirmationResponse = await resend.emails.send({
+        from: "Gate Gaborone <info@gategaborone.com>",
+        to: [email],
+        subject: `Registration Confirmation: ${eventName}`,
+        html: confirmationHtml,
+      });
+
+      console.log("Confirmation email sent successfully:", confirmationResponse);
+    }
 
     return new Response(JSON.stringify(emailResponse), {
       status: 200,

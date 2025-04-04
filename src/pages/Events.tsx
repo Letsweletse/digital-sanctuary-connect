@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { useToast } from "@/hooks/use-toast";
@@ -26,7 +25,6 @@ const Events = () => {
   });
   
   useEffect(() => {
-    // Preload the pastor image for faster rendering
     const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Senior%20Pastor_1743598781352.jpeg";
     const img = new Image();
     img.onload = () => {
@@ -49,7 +47,6 @@ const Events = () => {
   const handleOpenRegistration = (event: EventData) => {
     setCurrentEvent(event);
     setIsRegistrationOpen(true);
-    // Show a toast notification for better UX
     sonnerToast("Registration Form Opened", {
       description: `You're registering for ${event.title}`,
       duration: 3000
@@ -85,22 +82,20 @@ const Events = () => {
         eventDate: currentEvent?.date ? formatDate(currentEvent.date) : '',
         eventTime: currentEvent?.time,
         attendee: formData,
+        message: `numberOfAttendees: ${formData.numberOfAttendees}`,
         submitDate: new Date().toISOString()
       };
 
       console.log('Registration submitted:', registrationData);
       
-      // Send the email notification
       const emailResult = await sendEventRegistrationEmail(currentEvent?.title || 'Event', registrationData);
       console.log('Email service response:', emailResult);
       
-      // Simulate API delay for better UX - feels more "real"
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Show success message using both toasts for better visibility
       toast({
         title: "Registration Successful!",
-        description: `Thank you for registering for ${currentEvent?.title}. In a production environment, confirmation emails would be sent.`,
+        description: `Thank you for registering for ${currentEvent?.title}. A confirmation email has been sent to ${formData.email}.`,
       });
       
       sonnerToast.success("Registration Complete!", {

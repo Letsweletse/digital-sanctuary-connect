@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import Hero from '@/components/home/Hero';
@@ -74,6 +73,7 @@ const Index = () => {
         eventDate: formatDate(featuredEvent.date),
         eventTime: featuredEvent.time,
         attendee: formData,
+        message: `numberOfAttendees: ${formData.numberOfAttendees}`,
         submitDate: new Date().toISOString()
       };
 
@@ -89,7 +89,7 @@ const Index = () => {
       // Show success message using both toasts for better visibility
       toast({
         title: "Registration Successful!",
-        description: `Thank you for registering for ${featuredEvent.title}. In a production environment, confirmation emails would be sent.`,
+        description: `Thank you for registering for ${featuredEvent.title}. A confirmation email has been sent to ${formData.email}.`,
       });
       
       sonnerToast.success("Registration Complete!", {

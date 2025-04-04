@@ -21,9 +21,10 @@ export const sendEventRegistrationEmail = async (eventName: string, registrantDa
         subject: `New Registration for ${eventName}`,
         name: registrantData.attendee.name,
         email: registrantData.attendee.email,
-        message: registrantData.message || '',
+        message: registrantData.message || `numberOfAttendees: ${registrantData.attendee.numberOfAttendees}`,
         eventName: eventName,
-        registrationType: registrantData.registrationType || 'Standard'
+        registrationType: registrantData.registrationType || 'Standard',
+        sendConfirmation: true // Enable sending confirmation email to the registrant
       }
     });
     
@@ -34,7 +35,7 @@ export const sendEventRegistrationEmail = async (eventName: string, registrantDa
     
     return {
       success: true,
-      message: 'Email notification sent successfully',
+      message: 'Email notification and confirmation sent successfully',
       recipients: ADMIN_EMAILS,
       timestamp: new Date().toISOString()
     };
@@ -92,7 +93,7 @@ export const sendImageUploadEmail = async (imageName: string, category: string) 
         to: ADMIN_EMAILS,
         subject: 'New Image Uploaded',
         name: 'System',
-        email: 'system@gategaborone.com',
+        email: 'info@gategaborone.com',
         message: `A new image "${imageName}" has been uploaded in the ${category} category.`
       }
     });
