@@ -120,44 +120,6 @@ const HouseChurch = () => {
             )}
           </div>
         </section>
-
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <span className="inline-block bg-church-blue-light px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4">
-                Watch Our Videos
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-church-neutral-900 mb-6">
-                Recent Messages
-              </h2>
-              <p className="max-w-2xl mx-auto text-church-neutral-700">
-                Watch our latest sermons and teachings from our YouTube channel.
-              </p>
-            </div>
-            
-            <div className="relative pb-9 h-0" style={{ paddingBottom: "56.25%" }}>
-              <iframe 
-                src="https://www.youtube.com/embed?listType=user_uploads&list=gategaboronebotswana2702" 
-                className="absolute top-0 left-0 w-full h-full"
-                title="Gate Gaborone YouTube Channel"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </div>
-            
-            <div className="mt-8 text-center">
-              <a 
-                href="https://www.youtube.com/@gategaboronebotswana2702" 
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary"
-              >
-                Visit Our YouTube Channel
-              </a>
-            </div>
-          </div>
-        </section>
       </main>
       
       <Footer />
