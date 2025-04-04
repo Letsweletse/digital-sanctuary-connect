@@ -74,7 +74,7 @@ const About = () => {
                 <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-church-gold-light rounded-br-2xl"></div>
                 <div className="relative z-10">
                   <img 
-                    src="https://images.unsplash.com/photo-1503446018554-89d78568c3e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1622&q=80" 
+                    src="https://images.unsplash.com/photo-1601142958639-bdcd4f235256?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" 
                     alt="Church Community" 
                     className="rounded-xl shadow-card w-full h-auto object-cover"
                   />
