@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Sermon } from '@/types/sermonTypes';
 
@@ -21,6 +20,23 @@ export const useSermons = () => {
       downloads: 128,
       views: 356,
       series: 'Power Series'
+    },
+    {
+      id: '11',
+      title: 'Attitude',
+      speaker: 'Pastor Oteng Leepile',
+      speakerImage: '/placeholder.svg',
+      date: new Date('2025-03-23'),
+      audioUrl: 'https://cdn.devdojo.com/episode/June2023/the-making-of-wave.mp3',
+      youtubeId: 'Rt87TZ3cP2g',
+      description: 'A transformative message on how our attitude shapes our Christian walk and impacts those around us.',
+      tags: ['Christian Living', 'Growth', 'Mindset'],
+      scripture: 'Philippians 2:5',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1591951425300-39e9c6bdad56?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80',
+      duration: '38:42',
+      downloads: 0,
+      views: 12,
+      series: 'Christian Character'
     },
     {
       id: '2',
@@ -174,7 +190,6 @@ export const useSermons = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // In a real application, you would fetch sermons from a server/database
   const fetchSermons = async () => {
     try {
       setLoading(true);
@@ -194,7 +209,6 @@ export const useSermons = () => {
     // fetchSermons();
   }, []);
 
-  // Add a new sermon
   const addSermon = (sermon: Omit<Sermon, 'id'>) => {
     const newSermon: Sermon = {
       ...sermon,
@@ -204,7 +218,6 @@ export const useSermons = () => {
     return newSermon;
   };
 
-  // Update a sermon
   const updateSermon = (id: string, updatedSermon: Partial<Sermon>) => {
     setSermons(prev => 
       prev.map(sermon => 
@@ -213,12 +226,10 @@ export const useSermons = () => {
     );
   };
 
-  // Delete a sermon
   const deleteSermon = (id: string) => {
     setSermons(prev => prev.filter(sermon => sermon.id !== id));
   };
 
-  // Get a featured sermon
   const getFeaturedSermon = (): Sermon | undefined => {
     return sermons.find(sermon => sermon.featured);
   };
