@@ -12,4 +12,8 @@ export interface Sermon {
   featured?: boolean;
   scripture?: string;
   thumbnailUrl?: string;
+  duration?: string;
+  series?: string;
+  downloads?: number;
+  views?: number;
 }
