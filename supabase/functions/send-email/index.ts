@@ -54,7 +54,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const emailResponse = await resend.emails.send({
-      from: "Gate Gaborone <onboarding@resend.dev>",
+      from: "Gate Gaborone <info@gategaborone.com>",
       to: to,
       subject: subject,
       html: htmlContent,

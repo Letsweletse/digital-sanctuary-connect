@@ -19,8 +19,8 @@ export const sendEventRegistrationEmail = async (eventName: string, registrantDa
       body: {
         to: ADMIN_EMAILS,
         subject: `New Registration for ${eventName}`,
-        name: registrantData.name,
-        email: registrantData.email,
+        name: registrantData.attendee.name,
+        email: registrantData.attendee.email,
         message: registrantData.message || '',
         eventName: eventName,
         registrationType: registrantData.registrationType || 'Standard'
