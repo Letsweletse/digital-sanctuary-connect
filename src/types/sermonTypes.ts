@@ -10,4 +10,6 @@ export interface Sermon {
   description?: string;
   tags?: string[];
   featured?: boolean;
+  scripture?: string;
+  thumbnailUrl?: string;
 }
