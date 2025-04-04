@@ -3,7 +3,6 @@ import React from 'react';
 import Layout from '@/components/layout/Layout';
 import SermonGrid from '@/components/sermons/SermonGrid';
 import YouTubeEmbed from '@/components/media/YouTubeEmbed';
-import SermonAudio from '@/components/media/SermonAudio';
 import { CalendarDays, Headphones, MicVocal, VideoIcon } from 'lucide-react';
 import AudioSermonPlayer from '@/components/media/AudioSermonPlayer';
 
@@ -114,30 +113,29 @@ const Sermons = () => {
                 <div className="md:w-2/3">
                   <div className="glass-panel p-6 bg-white/90 rounded-xl shadow-md mb-8">
                     <h3 className="text-xl font-bold text-church-neutral-900 mb-6 flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-church-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-                        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-                        <line x1="6" y1="1" x2="6" y2="4"></line>
-                        <line x1="10" y1="1" x2="10" y2="4"></line>
-                        <line x1="14" y1="1" x2="14" y2="4"></line>
-                      </svg>
-                      SermonAudio Library
+                      <VideoIcon className="w-5 h-5 text-church-blue" />
+                      Video Archive
                     </h3>
-                    <div className="bg-white rounded-lg">
-                      <SermonAudio churchId="gategaborone" showLatest={true} count={5} />
-                    </div>
+                    <YouTubeEmbed channelId="gategaboronebotswana2702" maxResults={4} />
                   </div>
                   
                   <div className="glass-panel p-6 bg-white/90 rounded-xl shadow-md">
                     <h3 className="text-xl font-bold text-church-neutral-900 mb-6 flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-church-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                        <polyline points="21 15 16 10 5 21"></polyline>
-                      </svg>
-                      Video Archive
+                      <Headphones className="w-5 h-5 text-church-blue" />
+                      Audio Sermons
                     </h3>
-                    <YouTubeEmbed channelId="gategaboronebotswana2702" maxResults={4} />
+                    <div className="text-center py-8">
+                      <p className="text-church-neutral-700 mb-4">
+                        Browse our complete collection of audio sermons to listen on-demand.
+                      </p>
+                      <a 
+                        href="#sermon-library" 
+                        className="inline-flex items-center gap-2 bg-church-blue hover:bg-church-blue-dark text-white px-4 py-2 rounded-md transition-colors"
+                      >
+                        <Headphones className="w-4 h-4" />
+                        Browse Audio Sermons
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -146,7 +144,7 @@ const Sermons = () => {
         </section>
         
         {/* Sermon Archives */}
-        <section className="py-16 bg-white">
+        <section id="sermon-library" className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <span className="inline-block bg-church-blue-light px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4">

@@ -1,10 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Link } from 'react-router-dom';
 import { findMany, HouseChurchGroup } from '@/lib/mongodb';
 import { Loader2 } from 'lucide-react';
-import SermonAudio from '@/components/media/SermonAudio';
 
 const HouseChurch = () => {
   const [groups, setGroups] = useState<HouseChurchGroup[]>([]);
@@ -125,26 +125,6 @@ const HouseChurch = () => {
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <span className="inline-block bg-church-blue-light px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4">
-                Listen to Our Messages
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-church-neutral-900 mb-6">
-                House Church Teachings
-              </h2>
-              <p className="max-w-2xl mx-auto text-church-neutral-700">
-                Access our house church teachings and discussions through SermonAudio.
-              </p>
-            </div>
-            
-            <div className="max-w-4xl mx-auto glass-panel p-6">
-              <SermonAudio churchId="gategaborone" showLatest={true} count={3} useMongoConfig={true} />
-            </div>
-          </div>
-        </section>
-        
-        <section className="py-16 bg-church-neutral-50">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <span className="inline-block bg-church-blue-light px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4">
                 Watch Our Videos
               </span>
               <h2 className="text-3xl md:text-4xl font-bold text-church-neutral-900 mb-6">
@@ -169,7 +149,7 @@ const HouseChurch = () => {
             <div className="mt-8 text-center">
               <a 
                 href="https://www.youtube.com/@gategaboronebotswana2702" 
-                target="_blank" 
+                target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary"
               >
