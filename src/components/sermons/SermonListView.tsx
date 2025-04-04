@@ -1,0 +1,100 @@
+
+import React from 'react';
+import { format } from 'date-fns';
+import { Play, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { Sermon } from '@/types/sermonTypes';
+
+interface SermonListViewProps {
+  sermons: Sermon[];
+}
+
+const SermonListView = ({ sermons }: SermonListViewProps) => {
+  if (sermons.length === 0) {
+    return (
+      <div className="text-center py-10 bg-church-neutral-50 rounded-lg">
+        <p className="text-church-neutral-600">No sermons match your search criteria.</p>
+        <p className="text-church-neutral-500 text-sm mt-2">Try adjusting your filters or search terms.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="border rounded-md overflow-hidden">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="bg-church-neutral-100">
+            <th className="py-3 px-4 text-left font-medium text-church-neutral-700">Title</th>
+            <th className="py-3 px-4 text-left font-medium text-church-neutral-700 hidden md:table-cell">Scripture</th>
+            <th className="py-3 px-4 text-left font-medium text-church-neutral-700 hidden md:table-cell">Speaker</th>
+            <th className="py-3 px-4 text-left font-medium text-church-neutral-700 hidden sm:table-cell">Date</th>
+            <th className="py-3 px-4 text-center font-medium text-church-neutral-700">Listen</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sermons.map((sermon, index) => (
+            <tr 
+              key={sermon.id} 
+              className={cn(
+                "hover:bg-church-neutral-50 transition-colors", 
+                index % 2 === 0 ? "bg-white" : "bg-church-neutral-50/50"
+              )}
+            >
+              <td className="py-3 px-4 border-t border-church-neutral-200">
+                <div>
+                  <p className="font-medium text-church-blue hover:text-church-blue-dark transition-colors cursor-pointer">
+                    {sermon.title}
+                  </p>
+                  <p className="text-xs text-church-neutral-500 mt-1 sm:hidden">
+                    {sermon.speaker} • {format(new Date(sermon.date), 'MMM d, yyyy')}
+                  </p>
+                </div>
+              </td>
+              <td className="py-3 px-4 border-t border-church-neutral-200 text-church-neutral-600 hidden md:table-cell">
+                {sermon.scripture || "—"}
+              </td>
+              <td className="py-3 px-4 border-t border-church-neutral-200 text-church-neutral-600 hidden md:table-cell">
+                {sermon.speaker}
+              </td>
+              <td className="py-3 px-4 border-t border-church-neutral-200 text-church-neutral-600 hidden sm:table-cell">
+                {format(new Date(sermon.date), 'MMM d, yyyy')}
+              </td>
+              <td className="py-3 px-4 border-t border-church-neutral-200 text-center">
+                <div className="flex justify-center gap-2">
+                  <Button variant="ghost" size="icon" title="Listen">
+                    <Play className="h-4 w-4 text-church-blue" />
+                  </Button>
+                  {sermon.youtubeId && (
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      className="text-red-500"
+                      title="Watch on YouTube"
+                      asChild
+                    >
+                      <a href={`https://www.youtube.com/watch?v=${sermon.youtubeId}`} target="_blank" rel="noopener noreferrer">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                        </svg>
+                      </a>
+                    </Button>
+                  )}
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    title="Download"
+                  >
+                    <Download className="h-4 w-4 text-church-neutral-600" />
+                  </Button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default SermonListView;
