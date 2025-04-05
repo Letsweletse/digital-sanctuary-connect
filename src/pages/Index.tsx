@@ -34,7 +34,7 @@ const Index = () => {
     title: 'Mr',
     name: '',
     email: '',
-    countryCode: '+267', // Added the missing countryCode field with default Botswana code
+    countryCode: '+267', // Default to Botswana code
     phone: '',
     role: 'Individual',
     denomination: '',
@@ -56,7 +56,7 @@ const Index = () => {
       title: 'Mr',
       name: '',
       email: '',
-      countryCode: '+267', // Added the countryCode reset with default value
+      countryCode: '+267', // Reset to default Botswana code
       phone: '',
       role: 'Individual',
       denomination: '',

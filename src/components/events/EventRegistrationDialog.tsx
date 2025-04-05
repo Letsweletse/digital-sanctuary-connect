@@ -158,11 +158,11 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
                       name="countryCode"
                       value={formData.countryCode}
                       onChange={onInputChange}
-                      className="flex h-10 w-1/3 rounded-md border border-church-blue-light bg-background px-3 py-2 text-base transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-church-blue"
+                      className="flex h-10 w-2/5 rounded-md border border-church-blue-light bg-background px-3 py-2 text-base transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-church-blue"
                     >
                       {countryCodes.map((country) => (
                         <option key={country.code} value={country.code}>
-                          {country.code} ({country.country})
+                          {country.flag} {country.code} ({country.country})
                         </option>
                       ))}
                     </select>
@@ -173,7 +173,7 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
                       value={formData.phone}
                       onChange={onInputChange}
                       required
-                      className="border-church-blue-light focus-visible:ring-church-blue text-base transition-all duration-300 w-2/3"
+                      className="border-church-blue-light focus-visible:ring-church-blue text-base transition-all duration-300 w-3/5"
                     />
                   </div>
                 </div>
