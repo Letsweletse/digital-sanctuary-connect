@@ -93,8 +93,9 @@ export const useEventRegistration = () => {
       const emailResult = await sendEventRegistrationEmail(currentEvent.title, registrationData);
       console.log('Email service response:', emailResult);
       
-      // Simulate API delay for better UX - feels more "real"
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!emailResult.success) {
+        throw new Error(emailResult.message || "Failed to send registration email");
+      }
       
       // Show success message using both toasts for better visibility
       toast({
@@ -112,8 +113,13 @@ export const useEventRegistration = () => {
       console.error("Error submitting registration:", error);
       toast({
         title: "Registration Failed",
-        description: "There was an error submitting your registration. Please try again.",
+        description: error instanceof Error ? error.message : "There was an error submitting your registration. Please try again.",
         variant: "destructive",
+      });
+      
+      sonnerToast.error("Registration Failed", {
+        description: "There was a problem processing your registration. Please try again or contact support.",
+        duration: 5000
       });
     } finally {
       setIsSubmitting(false);

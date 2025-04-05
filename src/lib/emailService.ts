@@ -18,6 +18,9 @@ import { supabase } from "@/integrations/supabase/client";
  */
 export const sendEventRegistrationEmail = async (eventName: string, registrantData: any) => {
   try {
+    console.log("Sending event registration email for:", eventName);
+    console.log("Registration data:", registrantData);
+    
     const { data, error } = await supabase.functions.invoke('send-email', {
       body: {
         to: ADMIN_EMAILS,
@@ -44,7 +47,8 @@ export const sendEventRegistrationEmail = async (eventName: string, registrantDa
       success: true,
       message: 'Email notification and confirmation sent successfully',
       recipients: ADMIN_EMAILS,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      data
     };
   } catch (error) {
     console.error('Error sending event registration email:', error);
