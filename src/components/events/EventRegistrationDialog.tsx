@@ -1,23 +1,9 @@
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { CalendarCheck, User, Mail, Phone, Users, Building } from "lucide-react";
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { Card, CardContent } from "@/components/ui/card";
-import { EventData, RegistrationFormData, attendeeRoles, attendeeTitles, countryCodes } from '@/types/eventTypes';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
-// Import the admin email from emailService
-import { ADMIN_EMAIL } from '@/lib/emailService';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { EventData, RegistrationFormData } from '@/types/eventTypes';
+import EventDetailCard from './EventDetailCard';
+import RegistrationForm from './RegistrationForm';
 
 interface EventRegistrationDialogProps {
   isOpen: boolean;
@@ -40,8 +26,6 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
   isSubmitting,
   formatDate
 }) => {
-  const isMobile = useIsMobile();
-  
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-xl md:max-w-2xl lg:max-w-3xl w-[95%] max-h-[90vh] overflow-y-auto p-0 gap-0 dialog-animation">
@@ -56,211 +40,19 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
           {/* Left side - Event details */}
           <div className="md:w-2/5 p-4 md:p-6">
             {currentEvent && (
-              <Card className="border-none shadow-none bg-transparent">
-                <AspectRatio ratio={4/3} className="overflow-hidden rounded-md shadow-md">
-                  <img 
-                    src={currentEvent.image} 
-                    alt={currentEvent.title} 
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
-                  />
-                </AspectRatio>
-                <CardContent className="p-4 mt-3 bg-church-blue-light bg-opacity-20 rounded-md space-y-2 border border-church-blue-light/30">
-                  <h3 className="font-bold text-lg text-church-blue-dark">{currentEvent?.title}</h3>
-                  <div className="flex items-center gap-2 text-sm md:text-base">
-                    <CalendarCheck className="h-4 w-4 text-church-blue" />
-                    <span className="font-medium">{formatDate(currentEvent?.date || '')} | {currentEvent?.time}</span>
-                  </div>
-                  <p className="text-sm md:text-base font-medium flex items-start gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-church-blue mt-1">
-                      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
-                      <circle cx="12" cy="10" r="3"></circle>
-                    </svg>
-                    <span>{currentEvent?.location}</span>
-                  </p>
-                  {currentEvent?.description && (
-                    <p className="text-sm md:text-base mt-2 text-church-neutral-700">
-                      {currentEvent.description.length > 120 
-                        ? `${currentEvent.description.substring(0, 120)}...` 
-                        : currentEvent.description}
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
+              <EventDetailCard event={currentEvent} formatDate={formatDate} />
             )}
           </div>
           
           {/* Right side - Form */}
           <div className="md:w-3/5 p-4 md:p-6 pt-2 md:pt-6">
-            <form onSubmit={onSubmit} className="space-y-5">
-              <div className="grid gap-4">
-                {/* Title selection */}
-                <div className="grid gap-2">
-                  <Label htmlFor="title" className="flex items-center gap-2 text-base">
-                    Title
-                  </Label>
-                  <select
-                    id="title"
-                    name="title"
-                    value={formData.title}
-                    onChange={onInputChange}
-                    className="flex h-10 w-full rounded-md border border-church-blue-light bg-background px-3 py-2 text-base transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-church-blue"
-                  >
-                    {attendeeTitles.map((title) => (
-                      <option key={title} value={title}>{title}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                {/* Full Name field */}
-                <div className="grid gap-2">
-                  <Label htmlFor="name" className="flex items-center gap-2 text-base">
-                    <User className="h-4 w-4 text-church-blue" />
-                    Full Name
-                  </Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    placeholder="Enter your full name"
-                    value={formData.name}
-                    onChange={onInputChange}
-                    required
-                    className="border-church-blue-light focus-visible:ring-church-blue text-base transition-all duration-300"
-                  />
-                </div>
-                
-                {/* Email field */}
-                <div className="grid gap-2">
-                  <Label htmlFor="email" className="flex items-center gap-2 text-base">
-                    <Mail className="h-4 w-4 text-church-blue" />
-                    Email Address
-                  </Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={formData.email}
-                    onChange={onInputChange}
-                    required
-                    className="border-church-blue-light focus-visible:ring-church-blue text-base transition-all duration-300"
-                  />
-                </div>
-                
-                {/* Phone with country code */}
-                <div className="grid gap-2">
-                  <Label htmlFor="phone" className="flex items-center gap-2 text-base">
-                    <Phone className="h-4 w-4 text-church-blue" />
-                    Phone Number
-                  </Label>
-                  <div className="flex space-x-2">
-                    <select
-                      id="countryCode"
-                      name="countryCode"
-                      value={formData.countryCode}
-                      onChange={onInputChange}
-                      className="flex h-10 w-2/5 rounded-md border border-church-blue-light bg-background px-3 py-2 text-base transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-church-blue"
-                    >
-                      {countryCodes.map((country) => (
-                        <option key={country.code} value={country.code}>
-                          {country.flag} {country.code} ({country.country})
-                        </option>
-                      ))}
-                    </select>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      placeholder="Phone number without country code"
-                      value={formData.phone}
-                      onChange={onInputChange}
-                      required
-                      className="border-church-blue-light focus-visible:ring-church-blue text-base transition-all duration-300 w-3/5"
-                    />
-                  </div>
-                </div>
-                
-                {/* Role selection */}
-                <div className="grid gap-2">
-                  <Label htmlFor="role" className="flex items-center gap-2 text-base">
-                    <User className="h-4 w-4 text-church-blue" />
-                    Your Role
-                  </Label>
-                  <select
-                    id="role"
-                    name="role"
-                    value={formData.role}
-                    onChange={onInputChange}
-                    required
-                    className="flex h-10 w-full rounded-md border border-church-blue-light bg-background px-3 py-2 text-base transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-church-blue"
-                  >
-                    {attendeeRoles.map((role) => (
-                      <option key={role} value={role}>{role}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                {/* Denomination field */}
-                <div className="grid gap-2">
-                  <Label htmlFor="denomination" className="flex items-center gap-2 text-base">
-                    <Building className="h-4 w-4 text-church-blue" />
-                    Denomination / Church
-                  </Label>
-                  <Input
-                    id="denomination"
-                    name="denomination"
-                    placeholder="Enter your denomination or church"
-                    value={formData.denomination}
-                    onChange={onInputChange}
-                    required
-                    className="border-church-blue-light focus-visible:ring-church-blue text-base transition-all duration-300"
-                  />
-                </div>
-                
-                {/* Number of Attendees field */}
-                <div className="grid gap-2">
-                  <Label htmlFor="numberOfAttendees" className="flex items-center gap-2 text-base">
-                    <Users className="h-4 w-4 text-church-blue" />
-                    Number of Attendees
-                  </Label>
-                  <Input
-                    id="numberOfAttendees"
-                    name="numberOfAttendees"
-                    type="number"
-                    min="1"
-                    value={formData.numberOfAttendees}
-                    onChange={onInputChange}
-                    required
-                    className="border-church-blue-light focus-visible:ring-church-blue text-base transition-all duration-300"
-                  />
-                </div>
-              </div>
-              
-              <DialogFooter className={isMobile ? "flex-col gap-3 mt-4" : "sm:justify-between gap-3 mt-4"}>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={onClose} 
-                  className="border-church-neutral-300 w-full md:w-auto text-base"
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit" 
-                  disabled={isSubmitting}
-                  className="bg-church-blue hover:bg-church-blue-dark text-white w-full md:w-auto text-base py-6 md:py-2.5 transition-all duration-300 hover:shadow-lg"
-                >
-                  {isSubmitting ? 
-                    <span className="flex items-center gap-2">
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Submitting...
-                    </span> 
-                    : "Submit Registration"
-                  }
-                </Button>
-              </DialogFooter>
-            </form>
+            <RegistrationForm 
+              formData={formData}
+              onInputChange={onInputChange}
+              onSubmit={onSubmit}
+              onClose={onClose}
+              isSubmitting={isSubmitting}
+            />
           </div>
         </div>
       </DialogContent>
