@@ -6,7 +6,9 @@
 
 // Email address for admin notifications - exported for use in components
 export const ADMIN_EMAIL = 'otenggate@gmail.com';
-export const ADMIN_EMAILS = [ADMIN_EMAIL];
+// Add an additional recipient email
+export const BACKUP_EMAIL = 'info@gategaborone.com';
+export const ADMIN_EMAILS = [ADMIN_EMAIL, BACKUP_EMAIL];
 
 import { supabase } from "@/integrations/supabase/client";
 

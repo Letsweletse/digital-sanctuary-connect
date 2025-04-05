@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { useToast } from "@/hooks/use-toast";
 import { toast as sonnerToast } from "sonner";
-import { sendEventRegistrationEmail } from '@/lib/emailService';
+import { sendEventRegistrationEmail, ADMIN_EMAILS } from '@/lib/emailService';
 import EventCard from '@/components/events/EventCard';
 import EventRegistrationDialog from '@/components/events/EventRegistrationDialog';
 import EventCategoryFilter from '@/components/events/EventCategoryFilter';
@@ -19,12 +18,12 @@ const Events = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const [formData, setFormData] = useState<RegistrationFormData>({
-    title: 'Mr', // Added required field
+    title: 'Mr',
     name: '',
     email: '',
     phone: '',
-    role: 'Individual', // Added required field
-    denomination: '', // Added required field
+    role: 'Individual',
+    denomination: '',
     numberOfAttendees: 1
   });
   
@@ -71,7 +70,7 @@ const Events = () => {
     });
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -94,6 +93,7 @@ const Events = () => {
       };
 
       console.log('Registration submitted:', registrationData);
+      console.log('Sending to emails:', ADMIN_EMAILS.join(', '));
       
       const emailResult = await sendEventRegistrationEmail(currentEvent?.title || 'Event', registrationData);
       console.log('Email service response:', emailResult);

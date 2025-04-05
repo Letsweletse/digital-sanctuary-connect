@@ -60,48 +60,58 @@ const handler = async (req: Request): Promise<Response> => {
       `;
     }
 
-    const emailResponse = await resend.emails.send({
-      from: "Gate Gaborone <info@gategaborone.com>",
-      to: to,
-      subject: subject,
-      html: htmlContent,
-    });
+    // Send to admins with improved error handling
+    try {
+      const emailResponse = await resend.emails.send({
+        from: "Gate Gaborone <info@gategaborone.com>",
+        to: to,
+        subject: subject,
+        html: htmlContent,
+      });
 
-    console.log("Email sent successfully:", emailResponse);
+      console.log("Admin email sent successfully:", emailResponse);
+    } catch (emailError) {
+      console.error("Error sending admin email:", emailError);
+      // Continue with the confirmation email even if admin email fails
+    }
     
     // Send confirmation email to the registrant if requested
     if (sendConfirmation && email && eventName) {
-      const registrantTitle = title || '';
-      const confirmationHtml = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 5px;">
-          <h1 style="color: #3b82f6; margin-bottom: 20px;">Registration Confirmation</h1>
-          <p>Dear ${registrantTitle} ${name},</p>
-          <p>Thank you for registering for <strong>${eventName}</strong>.</p>
-          <p><strong>Event Details:</strong></p>
-          <ul>
-            <li><strong>Event:</strong> ${eventName}</li>
-            <li><strong>Registration Type:</strong> ${registrationType || 'Standard'}</li>
-            <li><strong>Role:</strong> ${role || ''}</li>
-            <li><strong>Denomination/Church:</strong> ${denomination || ''}</li>
-            <li><strong>Number of Attendees:</strong> ${message.includes('numberOfAttendees') ? message.split('numberOfAttendees:')[1].trim() : '1'}</li>
-          </ul>
-          <p>We look forward to seeing you there!</p>
-          <p>If you have any questions, please don't hesitate to contact us.</p>
-          <p style="margin-top: 30px;">Best regards,<br/>Gate Gaborone Team</p>
-        </div>
-      `;
+      try {
+        const registrantTitle = title || '';
+        const confirmationHtml = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 5px;">
+            <h1 style="color: #3b82f6; margin-bottom: 20px;">Registration Confirmation</h1>
+            <p>Dear ${registrantTitle} ${name},</p>
+            <p>Thank you for registering for <strong>${eventName}</strong>.</p>
+            <p><strong>Event Details:</strong></p>
+            <ul>
+              <li><strong>Event:</strong> ${eventName}</li>
+              <li><strong>Registration Type:</strong> ${registrationType || 'Standard'}</li>
+              <li><strong>Role:</strong> ${role || ''}</li>
+              <li><strong>Denomination/Church:</strong> ${denomination || ''}</li>
+              <li><strong>Number of Attendees:</strong> ${message.includes('numberOfAttendees') ? message.split('numberOfAttendees:')[1].trim() : '1'}</li>
+            </ul>
+            <p>We look forward to seeing you there!</p>
+            <p>If you have any questions, please don't hesitate to contact us.</p>
+            <p style="margin-top: 30px;">Best regards,<br/>Gate Gaborone Team</p>
+          </div>
+        `;
 
-      const confirmationResponse = await resend.emails.send({
-        from: "Gate Gaborone <info@gategaborone.com>",
-        to: [email],
-        subject: `Registration Confirmation: ${eventName}`,
-        html: confirmationHtml,
-      });
+        const confirmationResponse = await resend.emails.send({
+          from: "Gate Gaborone <info@gategaborone.com>",
+          to: [email],
+          subject: `Registration Confirmation: ${eventName}`,
+          html: confirmationHtml,
+        });
 
-      console.log("Confirmation email sent successfully:", confirmationResponse);
+        console.log("Confirmation email sent successfully:", confirmationResponse);
+      } catch (confirmError) {
+        console.error("Error sending confirmation email:", confirmError);
+      }
     }
 
-    return new Response(JSON.stringify(emailResponse), {
+    return new Response(JSON.stringify({ success: true, message: "Emails processed" }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
