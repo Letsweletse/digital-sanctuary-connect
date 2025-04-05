@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { useToast } from "@/hooks/use-toast";
@@ -9,7 +10,7 @@ import EventCategoryFilter from '@/components/events/EventCategoryFilter';
 import ChurchCalendarEmbed from '@/components/events/ChurchCalendarEmbed';
 import { events, categories } from '@/data/eventsData';
 import { formatDate } from '@/utils/dateUtils';
-import { EventData, RegistrationFormData } from '@/types/eventTypes';
+import { EventData, RegistrationFormData, attendeeRoles, attendeeTitles } from '@/types/eventTypes';
 
 const Events = () => {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -18,9 +19,12 @@ const Events = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const [formData, setFormData] = useState<RegistrationFormData>({
+    title: 'Mr', // Added required field
     name: '',
     email: '',
     phone: '',
+    role: 'Individual', // Added required field
+    denomination: '', // Added required field
     numberOfAttendees: 1
   });
   
@@ -57,9 +61,12 @@ const Events = () => {
     setIsRegistrationOpen(false);
     setCurrentEvent(null);
     setFormData({
+      title: 'Mr',
       name: '',
       email: '',
       phone: '',
+      role: 'Individual',
+      denomination: '',
       numberOfAttendees: 1
     });
   };
