@@ -16,8 +16,9 @@ import About from "./pages/About";
 import Events from "./pages/Events";
 import Contact from "./pages/Contact";
 import Admin from "./pages/Admin";
-import Give from "./pages/Give"; // Import the new Give page
+import Give from "./pages/Give"; 
 import NotFound from "./pages/NotFound";
+import EmailTest from "./components/EmailTest"; // Import the email test component
 
 const queryClient = new QueryClient();
 
@@ -56,8 +57,9 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/events" element={<Events />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/give" element={<Give />} /> {/* Add the new Give route */}
+            <Route path="/give" element={<Give />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/email-test" element={<EmailTest />} /> {/* Add email test route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
