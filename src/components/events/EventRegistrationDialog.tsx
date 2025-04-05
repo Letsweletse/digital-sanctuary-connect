@@ -4,13 +4,19 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { CalendarCheck, User, Mail, Phone, Users } from "lucide-react";
+import { CalendarCheck, User, Mail, Phone, Users, Building } from "lucide-react";
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Card, CardContent } from "@/components/ui/card";
-import { EventData, RegistrationFormData } from '@/types/eventTypes';
+import { EventData, RegistrationFormData, attendeeRoles, attendeeTitles } from '@/types/eventTypes';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-// Importing the admin email from emailService
+// Import the admin email from emailService
 import { ADMIN_EMAIL } from '@/lib/emailService';
 
 interface EventRegistrationDialogProps {
@@ -18,7 +24,7 @@ interface EventRegistrationDialogProps {
   onClose: () => void;
   currentEvent: EventData | null;
   formData: RegistrationFormData;
-  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
   isSubmitting: boolean;
   formatDate: (dateString: string) => string;
@@ -87,6 +93,25 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
           <div className="md:w-3/5 p-4 md:p-6 pt-2 md:pt-6">
             <form onSubmit={onSubmit} className="space-y-5">
               <div className="grid gap-4">
+                {/* Title selection */}
+                <div className="grid gap-2">
+                  <Label htmlFor="title" className="flex items-center gap-2 text-base">
+                    Title
+                  </Label>
+                  <select
+                    id="title"
+                    name="title"
+                    value={formData.title}
+                    onChange={onInputChange}
+                    className="flex h-10 w-full rounded-md border border-church-blue-light bg-background px-3 py-2 text-base transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-church-blue"
+                  >
+                    {attendeeTitles.map((title) => (
+                      <option key={title} value={title}>{title}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                {/* Full Name field */}
                 <div className="grid gap-2">
                   <Label htmlFor="name" className="flex items-center gap-2 text-base">
                     <User className="h-4 w-4 text-church-blue" />
@@ -137,6 +162,44 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
                   </div>
                 </div>
                 
+                {/* Role selection */}
+                <div className="grid gap-2">
+                  <Label htmlFor="role" className="flex items-center gap-2 text-base">
+                    <User className="h-4 w-4 text-church-blue" />
+                    Your Role
+                  </Label>
+                  <select
+                    id="role"
+                    name="role"
+                    value={formData.role}
+                    onChange={onInputChange}
+                    required
+                    className="flex h-10 w-full rounded-md border border-church-blue-light bg-background px-3 py-2 text-base transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-church-blue"
+                  >
+                    {attendeeRoles.map((role) => (
+                      <option key={role} value={role}>{role}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                {/* Denomination field */}
+                <div className="grid gap-2">
+                  <Label htmlFor="denomination" className="flex items-center gap-2 text-base">
+                    <Building className="h-4 w-4 text-church-blue" />
+                    Denomination / Church
+                  </Label>
+                  <Input
+                    id="denomination"
+                    name="denomination"
+                    placeholder="Enter your denomination or church"
+                    value={formData.denomination}
+                    onChange={onInputChange}
+                    required
+                    className="border-church-blue-light focus-visible:ring-church-blue text-base transition-all duration-300"
+                  />
+                </div>
+                
+                {/* Number of Attendees field */}
                 <div className="grid gap-2">
                   <Label htmlFor="numberOfAttendees" className="flex items-center gap-2 text-base">
                     <Users className="h-4 w-4 text-church-blue" />

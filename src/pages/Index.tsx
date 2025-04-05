@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import Hero from '@/components/home/Hero';
@@ -30,9 +31,12 @@ const Index = () => {
   };
   
   const [formData, setFormData] = useState<RegistrationFormData>({
+    title: 'Mr',
     name: '',
     email: '',
     phone: '',
+    role: 'Individual',
+    denomination: '',
     numberOfAttendees: 1
   });
   
@@ -48,14 +52,17 @@ const Index = () => {
   const handleCloseRegistration = () => {
     setIsRegistrationOpen(false);
     setFormData({
+      title: 'Mr',
       name: '',
       email: '',
       phone: '',
+      role: 'Individual',
+      denomination: '',
       numberOfAttendees: 1
     });
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -73,7 +80,7 @@ const Index = () => {
         eventDate: formatDate(featuredEvent.date),
         eventTime: featuredEvent.time,
         attendee: formData,
-        message: `numberOfAttendees: ${formData.numberOfAttendees}`,
+        message: `Title: ${formData.title}, Role: ${formData.role}, Denomination: ${formData.denomination}, Number of Attendees: ${formData.numberOfAttendees}`,
         submitDate: new Date().toISOString()
       };
 
