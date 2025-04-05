@@ -1,7 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
-import { useToast } from "@/hooks/use-toast";
-import { toast as sonnerToast } from "sonner";
 import { sendEventRegistrationEmail, ADMIN_EMAILS } from '@/lib/emailService';
 import EventCard from '@/components/events/EventCard';
 import EventRegistrationDialog from '@/components/events/EventRegistrationDialog';
@@ -9,24 +8,21 @@ import EventCategoryFilter from '@/components/events/EventCategoryFilter';
 import ChurchCalendarEmbed from '@/components/events/ChurchCalendarEmbed';
 import { events, categories } from '@/data/eventsData';
 import { formatDate } from '@/utils/dateUtils';
-import { EventData, RegistrationFormData, attendeeRoles, attendeeTitles } from '@/types/eventTypes';
+import { useEventRegistration } from '@/hooks/useEventRegistration';
 
 const Events = () => {
   const [activeCategory, setActiveCategory] = useState('all');
-  const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
-  const [currentEvent, setCurrentEvent] = useState<EventData | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
-  const [formData, setFormData] = useState<RegistrationFormData>({
-    title: 'Mr',
-    name: '',
-    email: '',
-    countryCode: '+267', // Default to Botswana
-    phone: '',
-    role: 'Individual',
-    denomination: '',
-    numberOfAttendees: 1
-  });
+  
+  const {
+    isRegistrationOpen,
+    currentEvent,
+    formData,
+    isSubmitting,
+    handleOpenRegistration,
+    handleCloseRegistration,
+    handleInputChange,
+    handleSubmitRegistration
+  } = useEventRegistration();
   
   useEffect(() => {
     const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Senior%20Pastor_1743598781352.jpeg";
@@ -47,86 +43,6 @@ const Events = () => {
   const sortedEvents = [...filteredEvents].sort((a, b) => 
     new Date(a.date).getTime() - new Date(b.date).getTime()
   );
-  
-  const handleOpenRegistration = (event: EventData) => {
-    setCurrentEvent(event);
-    setIsRegistrationOpen(true);
-    sonnerToast("Registration Form Opened", {
-      description: `You're registering for ${event.title}`,
-      duration: 3000
-    });
-  };
-
-  const handleCloseRegistration = () => {
-    setIsRegistrationOpen(false);
-    setCurrentEvent(null);
-    setFormData({
-      title: 'Mr',
-      name: '',
-      email: '',
-      countryCode: '+267', // Reset to default
-      phone: '',
-      role: 'Individual',
-      denomination: '',
-      numberOfAttendees: 1
-    });
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'numberOfAttendees' ? parseInt(value) || 1 : value
-    }));
-  };
-
-  const handleSubmitRegistration = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      const registrationData = {
-        event: currentEvent?.title,
-        eventDate: currentEvent?.date ? formatDate(currentEvent.date) : '',
-        eventTime: currentEvent?.time,
-        attendee: {
-          ...formData,
-          phone: `${formData.countryCode} ${formData.phone}` // Format phone with country code
-        },
-        message: `numberOfAttendees: ${formData.numberOfAttendees}`,
-        submitDate: new Date().toISOString()
-      };
-
-      console.log('Registration submitted:', registrationData);
-      console.log('Sending to emails:', ADMIN_EMAILS.join(', '));
-      
-      const emailResult = await sendEventRegistrationEmail(currentEvent?.title || 'Event', registrationData);
-      console.log('Email service response:', emailResult);
-      
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "Registration Successful!",
-        description: `Thank you for registering for ${currentEvent?.title}. A confirmation email has been sent to ${formData.email}.`,
-      });
-      
-      sonnerToast.success("Registration Complete!", {
-        description: "Thank you for your registration. Check your email for confirmation details.",
-        duration: 5000
-      });
-      
-      handleCloseRegistration();
-    } catch (error) {
-      console.error("Error submitting registration:", error);
-      toast({
-        title: "Registration Failed",
-        description: "There was an error submitting your registration. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
   
   return (
     <Layout>

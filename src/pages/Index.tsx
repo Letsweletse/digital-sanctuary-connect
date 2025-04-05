@@ -1,22 +1,16 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import Layout from '@/components/layout/Layout';
 import Hero from '@/components/home/Hero';
 import Welcome from '@/components/home/Welcome';
-import { useToast } from "@/hooks/use-toast";
-import { toast as sonnerToast } from "sonner";
 import EventRegistrationDialog from '@/components/events/EventRegistrationDialog';
 import { formatDate } from '@/utils/dateUtils';
-import { EventData, RegistrationFormData } from '@/types/eventTypes';
-import { sendEventRegistrationEmail } from '@/lib/emailService';
+import { EventData } from '@/types/eventTypes';
 import FeaturedEvent from '@/components/home/FeaturedEvent';
 import FeaturedSections from '@/components/home/FeaturedSections';
+import { useEventRegistration } from '@/hooks/useEventRegistration';
 
 const Index = () => {
-  const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
-  
   // Featured event data
   const featuredEvent: EventData = {
     id: "featured-event-1",
@@ -30,93 +24,19 @@ const Index = () => {
     registration: true
   };
   
-  const [formData, setFormData] = useState<RegistrationFormData>({
-    title: 'Mr',
-    name: '',
-    email: '',
-    countryCode: '+267', // Default to Botswana code
-    phone: '',
-    role: 'Individual',
-    denomination: '',
-    numberOfAttendees: 1
-  });
+  const {
+    isRegistrationOpen,
+    currentEvent,
+    formData,
+    isSubmitting,
+    handleOpenRegistration,
+    handleCloseRegistration,
+    handleInputChange,
+    handleSubmitRegistration
+  } = useEventRegistration();
   
-  const handleOpenRegistration = () => {
-    setIsRegistrationOpen(true);
-    // Show a toast notification for better UX
-    sonnerToast("Registration Form Opened", {
-      description: `You're registering for ${featuredEvent.title}`,
-      duration: 3000
-    });
-  };
-
-  const handleCloseRegistration = () => {
-    setIsRegistrationOpen(false);
-    setFormData({
-      title: 'Mr',
-      name: '',
-      email: '',
-      countryCode: '+267', // Reset to default Botswana code
-      phone: '',
-      role: 'Individual',
-      denomination: '',
-      numberOfAttendees: 1
-    });
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'numberOfAttendees' ? parseInt(value) || 1 : value
-    }));
-  };
-
-  const handleSubmitRegistration = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      const registrationData = {
-        event: featuredEvent.title,
-        eventDate: formatDate(featuredEvent.date),
-        eventTime: featuredEvent.time,
-        attendee: formData,
-        message: `Title: ${formData.title}, Role: ${formData.role}, Denomination: ${formData.denomination}, Number of Attendees: ${formData.numberOfAttendees}`,
-        submitDate: new Date().toISOString()
-      };
-
-      console.log('Registration submitted:', registrationData);
-      
-      // Send the email notification
-      const emailResult = await sendEventRegistrationEmail(featuredEvent.title, registrationData);
-      console.log('Email service response:', emailResult);
-      
-      // Simulate API delay for better UX - feels more "real"
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Show success message using both toasts for better visibility
-      toast({
-        title: "Registration Successful!",
-        description: `Thank you for registering for ${featuredEvent.title}. A confirmation email has been sent to ${formData.email}.`,
-      });
-      
-      sonnerToast.success("Registration Complete!", {
-        description: "Thank you for your registration. Check your email for confirmation details.",
-        duration: 5000
-      });
-      
-      handleCloseRegistration();
-    } catch (error) {
-      console.error("Error submitting registration:", error);
-      toast({
-        title: "Registration Failed",
-        description: "There was an error submitting your registration. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+  const openFeaturedEventRegistration = () => {
+    handleOpenRegistration(featuredEvent);
   };
 
   return (
@@ -131,7 +51,7 @@ const Index = () => {
         {/* Featured Event Section */}
         <FeaturedEvent 
           featuredEvent={featuredEvent} 
-          onRegisterClick={handleOpenRegistration} 
+          onRegisterClick={openFeaturedEventRegistration} 
         />
         
         {/* Featured Sections Links */}
@@ -141,7 +61,7 @@ const Index = () => {
         <EventRegistrationDialog
           isOpen={isRegistrationOpen}
           onClose={handleCloseRegistration}
-          currentEvent={featuredEvent}
+          currentEvent={currentEvent}
           formData={formData}
           onInputChange={handleInputChange}
           onSubmit={handleSubmitRegistration}
