@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { CalendarCheck, User, Mail, Phone, Users, Building } from "lucide-react";
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Card, CardContent } from "@/components/ui/card";
-import { EventData, RegistrationFormData, attendeeRoles, attendeeTitles } from '@/types/eventTypes';
+import { EventData, RegistrationFormData, attendeeRoles, attendeeTitles, countryCodes } from '@/types/eventTypes';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -128,36 +128,52 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
                   />
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="email" className="flex items-center gap-2 text-base">
-                      <Mail className="h-4 w-4 text-church-blue" />
-                      Email Address
-                    </Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="you@example.com"
-                      value={formData.email}
+                {/* Email field */}
+                <div className="grid gap-2">
+                  <Label htmlFor="email" className="flex items-center gap-2 text-base">
+                    <Mail className="h-4 w-4 text-church-blue" />
+                    Email Address
+                  </Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={formData.email}
+                    onChange={onInputChange}
+                    required
+                    className="border-church-blue-light focus-visible:ring-church-blue text-base transition-all duration-300"
+                  />
+                </div>
+                
+                {/* Phone with country code */}
+                <div className="grid gap-2">
+                  <Label htmlFor="phone" className="flex items-center gap-2 text-base">
+                    <Phone className="h-4 w-4 text-church-blue" />
+                    Phone Number
+                  </Label>
+                  <div className="flex space-x-2">
+                    <select
+                      id="countryCode"
+                      name="countryCode"
+                      value={formData.countryCode}
                       onChange={onInputChange}
-                      required
-                      className="border-church-blue-light focus-visible:ring-church-blue text-base transition-all duration-300"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="phone" className="flex items-center gap-2 text-base">
-                      <Phone className="h-4 w-4 text-church-blue" />
-                      Phone Number
-                    </Label>
+                      className="flex h-10 w-1/3 rounded-md border border-church-blue-light bg-background px-3 py-2 text-base transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-church-blue"
+                    >
+                      {countryCodes.map((country) => (
+                        <option key={country.code} value={country.code}>
+                          {country.code} ({country.country})
+                        </option>
+                      ))}
+                    </select>
                     <Input
                       id="phone"
                       name="phone"
-                      placeholder="Your contact number"
+                      placeholder="Phone number without country code"
                       value={formData.phone}
                       onChange={onInputChange}
                       required
-                      className="border-church-blue-light focus-visible:ring-church-blue text-base transition-all duration-300"
+                      className="border-church-blue-light focus-visible:ring-church-blue text-base transition-all duration-300 w-2/3"
                     />
                   </div>
                 </div>

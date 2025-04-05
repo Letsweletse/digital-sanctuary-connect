@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +22,7 @@ const Events = () => {
     title: 'Mr',
     name: '',
     email: '',
+    countryCode: '+267', // Default to Botswana
     phone: '',
     role: 'Individual',
     denomination: '',
@@ -63,6 +65,7 @@ const Events = () => {
       title: 'Mr',
       name: '',
       email: '',
+      countryCode: '+267', // Reset to default
       phone: '',
       role: 'Individual',
       denomination: '',
@@ -87,7 +90,10 @@ const Events = () => {
         event: currentEvent?.title,
         eventDate: currentEvent?.date ? formatDate(currentEvent.date) : '',
         eventTime: currentEvent?.time,
-        attendee: formData,
+        attendee: {
+          ...formData,
+          phone: `${formData.countryCode} ${formData.phone}` // Format phone with country code
+        },
         message: `numberOfAttendees: ${formData.numberOfAttendees}`,
         submitDate: new Date().toISOString()
       };

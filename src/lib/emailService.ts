@@ -27,6 +27,7 @@ export const sendEventRegistrationEmail = async (eventName: string, registrantDa
         title: registrantData.attendee.title,
         role: registrantData.attendee.role,
         denomination: registrantData.attendee.denomination,
+        phone: registrantData.attendee.phone,
         message: registrantData.message || `numberOfAttendees: ${registrantData.attendee.numberOfAttendees}`,
         eventName: eventName,
         registrationType: registrantData.registrationType || 'Standard',

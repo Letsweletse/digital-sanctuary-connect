@@ -22,6 +22,7 @@ interface EmailRequest {
   title?: string;
   role?: string;
   denomination?: string;
+  phone?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -31,9 +32,9 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { to, subject, name, email, message, eventName, registrationType, sendConfirmation, title, role, denomination }: EmailRequest = await req.json();
+    const { to, subject, name, email, message, eventName, registrationType, sendConfirmation, title, role, denomination, phone }: EmailRequest = await req.json();
 
-    console.log("Received email request:", { to, subject, name, email, sendConfirmation, title, role, denomination });
+    console.log("Received email request:", { to, subject, name, email, sendConfirmation, title, role, denomination, phone });
 
     let htmlContent = "";
     
@@ -46,6 +47,7 @@ const handler = async (req: Request): Promise<Response> => {
         <p><strong>Title:</strong> ${title || ''}</p>
         <p><strong>Name:</strong> ${name}</p>
         <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
         <p><strong>Role:</strong> ${role || ''}</p>
         <p><strong>Denomination/Church:</strong> ${denomination || ''}</p>
         <p><strong>Message:</strong> ${message || 'No additional message provided'}</p>
@@ -90,6 +92,7 @@ const handler = async (req: Request): Promise<Response> => {
               <li><strong>Registration Type:</strong> ${registrationType || 'Standard'}</li>
               <li><strong>Role:</strong> ${role || ''}</li>
               <li><strong>Denomination/Church:</strong> ${denomination || ''}</li>
+              <li><strong>Phone:</strong> ${phone || 'Not provided'}</li>
               <li><strong>Number of Attendees:</strong> ${message.includes('numberOfAttendees') ? message.split('numberOfAttendees:')[1].trim() : '1'}</li>
             </ul>
             <p>We look forward to seeing you there!</p>
