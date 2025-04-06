@@ -26,13 +26,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Define form schema with zod
+// Define form schema with zod - enhanced validation rules
 const formSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  phone: z.string().optional(),
+  name: z.string()
+    .min(2, { message: "Name must be at least 2 characters." })
+    .max(50, { message: "Name cannot exceed 50 characters." })
+    .refine(val => /^[a-zA-Z\s'-]+$/.test(val), {
+      message: "Name should only contain letters, spaces, hyphens, and apostrophes."
+    }),
+  email: z.string()
+    .email({ message: "Please enter a valid email address." })
+    .min(5, { message: "Email must be at least 5 characters." })
+    .max(100, { message: "Email cannot exceed 100 characters." }),
+  phone: z.string()
+    .optional()
+    .refine(val => !val || /^[0-9+\s()-]{7,20}$/.test(val), {
+      message: "Please enter a valid phone number."
+    }),
   subject: z.string().min(1, { message: "Please select a subject." }),
-  message: z.string().min(10, { message: "Message must be at least 10 characters." }),
+  message: z.string()
+    .min(10, { message: "Message must be at least 10 characters." })
+    .max(2000, { message: "Message cannot exceed 2000 characters." }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -50,6 +64,7 @@ const ContactForm = () => {
       subject: "",
       message: "",
     },
+    mode: "onChange", // Real-time validation as user types
   });
 
   const onSubmit = async (data: FormValues) => {
@@ -85,8 +100,12 @@ const ContactForm = () => {
     }
   };
 
+  // Calculate character count for message field
+  const messageLength = form.watch("message")?.length || 0;
+  const messageMaxLength = 2000;
+
   return (
-    <div>
+    <div className="animate-fadeIn">
       <h2 className="text-2xl md:text-3xl font-bold text-church-neutral-900 mb-8">
         Send Us a Message
       </h2>
@@ -201,7 +220,12 @@ const ContactForm = () => {
                     {...field} 
                   />
                 </FormControl>
-                <FormMessage />
+                <div className="flex justify-between items-center mt-1">
+                  <FormMessage />
+                  <span className={`text-xs ${messageLength > messageMaxLength ? 'text-destructive' : 'text-muted-foreground'}`}>
+                    {messageLength}/{messageMaxLength}
+                  </span>
+                </div>
               </FormItem>
             )}
           />
@@ -209,7 +233,7 @@ const ContactForm = () => {
           <Button 
             type="submit" 
             className="w-full" 
-            disabled={form.formState.isSubmitting}
+            disabled={form.formState.isSubmitting || !form.formState.isValid}
           >
             {form.formState.isSubmitting ? (
               <span className="flex items-center gap-2">Sending...</span>
