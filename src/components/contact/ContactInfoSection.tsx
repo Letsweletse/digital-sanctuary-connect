@@ -5,7 +5,7 @@ import LocationMap from './LocationMap';
 
 const ContactInfoSection = () => {
   return (
-    <div>
+    <div className="flex flex-col space-y-8">
       <ContactInfoPanel />
       <LocationMap />
     </div>

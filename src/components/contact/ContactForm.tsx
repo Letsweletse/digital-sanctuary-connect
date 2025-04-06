@@ -1,42 +1,63 @@
 
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Mail, Phone, User, MessageSquare, Send } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 import { sendContactFormEmail } from '@/lib/emailService';
 
-interface ContactFormData {
-  name: string;
-  email: string;
-  phone: string;
-  subject: string;
-  message: string;
-}
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+// Define form schema with zod
+const formSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  phone: z.string().optional(),
+  subject: z.string().min(1, { message: "Please select a subject." }),
+  message: z.string().min(10, { message: "Message must be at least 10 characters." }),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 const ContactForm = () => {
   const { toast } = useToast();
-  const [formData, setFormData] = useState<ContactFormData>({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: ''
+  
+  // Initialize react-hook-form with zod validation
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      subject: "",
+      message: "",
+    },
   });
-  
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-  
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
+
+  const onSubmit = async (data: FormValues) => {
     try {
-      console.log('Form submitted:', formData);
+      console.log('Form submitted:', data);
       
       // Send email notification
-      const emailResult = await sendContactFormEmail(formData);
+      const emailResult = await sendContactFormEmail(data);
       console.log('Email result:', emailResult);
       
       if (emailResult.success) {
@@ -46,13 +67,7 @@ const ContactForm = () => {
         });
         
         // Reset form
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          subject: '',
-          message: ''
-        });
+        form.reset();
       } else {
         toast({
           title: "Error",
@@ -67,8 +82,6 @@ const ContactForm = () => {
         description: "There was a problem sending your message. Please try again.",
         variant: "destructive"
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -78,89 +91,137 @@ const ContactForm = () => {
         Send Us a Message
       </h2>
       
-      <form onSubmit={handleSubmit} className="glass-panel p-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <label htmlFor="name" className="block text-church-neutral-700 font-medium mb-2">Name</label>
-            <input 
-              type="text" 
-              id="name" 
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="glass-panel p-8 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+              control={form.control}
               name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 rounded-lg border border-church-neutral-300 focus:outline-none focus:ring-2 focus:ring-church-blue"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-church-neutral-700 font-medium">
+                    <span className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      Name
+                    </span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="Your name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          
-          <div>
-            <label htmlFor="email" className="block text-church-neutral-700 font-medium mb-2">Email</label>
-            <input 
-              type="email" 
-              id="email" 
+            
+            <FormField
+              control={form.control}
               name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 rounded-lg border border-church-neutral-300 focus:outline-none focus:ring-2 focus:ring-church-blue"
-            />
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <label htmlFor="phone" className="block text-church-neutral-700 font-medium mb-2">Phone (Optional)</label>
-            <input 
-              type="tel" 
-              id="phone" 
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-lg border border-church-neutral-300 focus:outline-none focus:ring-2 focus:ring-church-blue"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-church-neutral-700 font-medium">
+                    <span className="flex items-center gap-2">
+                      <Mail className="h-4 w-4" />
+                      Email
+                    </span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="Your email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </div>
           
-          <div>
-            <label htmlFor="subject" className="block text-church-neutral-700 font-medium mb-2">Subject</label>
-            <select 
-              id="subject" 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-church-neutral-700 font-medium">
+                    <span className="flex items-center gap-2">
+                      <Phone className="h-4 w-4" />
+                      Phone (Optional)
+                    </span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="tel" placeholder="Your phone number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
               name="subject"
-              value={formData.subject}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 rounded-lg border border-church-neutral-300 focus:outline-none focus:ring-2 focus:ring-church-blue"
-            >
-              <option value="">Select a subject</option>
-              <option value="General Inquiry">General Inquiry</option>
-              <option value="Volunteering">Volunteering</option>
-              <option value="Event Information">Event Information</option>
-              <option value="Pastoral Care">Pastoral Care</option>
-              <option value="Other">Other</option>
-            </select>
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-church-neutral-700 font-medium">Subject</FormLabel>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a subject" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="General Inquiry">General Inquiry</SelectItem>
+                      <SelectItem value="Volunteering">Volunteering</SelectItem>
+                      <SelectItem value="Event Information">Event Information</SelectItem>
+                      <SelectItem value="Pastoral Care">Pastoral Care</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
-        </div>
-        
-        <div className="mb-6">
-          <label htmlFor="message" className="block text-church-neutral-700 font-medium mb-2">Message</label>
-          <textarea 
-            id="message" 
+          
+          <FormField
+            control={form.control}
             name="message"
-            value={formData.message}
-            onChange={handleChange}
-            required
-            rows={6}
-            className="w-full px-4 py-3 rounded-lg border border-church-neutral-300 focus:outline-none focus:ring-2 focus:ring-church-blue resize-none"
-          ></textarea>
-        </div>
-        
-        <button 
-          type="submit" 
-          className="btn-primary w-full"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? 'Sending...' : 'Send Message'}
-        </button>
-      </form>
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-church-neutral-700 font-medium">
+                  <span className="flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4" />
+                    Message
+                  </span>
+                </FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Your message" 
+                    className="resize-none" 
+                    rows={6}
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <Button 
+            type="submit" 
+            className="w-full" 
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isSubmitting ? (
+              <span className="flex items-center gap-2">Sending...</span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <Send className="h-4 w-4" />
+                Send Message
+              </span>
+            )}
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 };
