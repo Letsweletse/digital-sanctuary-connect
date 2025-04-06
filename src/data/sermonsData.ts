@@ -51,7 +51,7 @@ export const sermonsData: Sermon[] = [
     thumbnailUrl: 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80',
     featured: true,
     duration: '50:05',
-    downloads: ,
+    downloads:0 ,
     views: 42,
     series: 'The Prophetic'
   }  
