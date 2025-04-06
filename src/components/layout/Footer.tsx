@@ -69,11 +69,11 @@ const Footer = () => {
               </li>
               <li className="text-white/80">
                 <span className="font-medium">Phone:</span>
-                <span className="block">+267 75507981</span>
+                <span className="block">+267 3500194 / +267 75507981</span>
               </li>
               <li className="text-white/80">
                 <span className="font-medium">Email:</span>
-                <span className="block">info@gategaborone.org</span>
+                <span className="block">otenggate@gmail.com</span>
               </li>
             </ul>
           </div>
