@@ -31,7 +31,7 @@ export const sermonsData: Sermon[] = [
     description: 'A transformative message on how our attitude shapes our Christian walk and impacts those around us.',
     tags: ['Christian Living', 'Growth', 'Mindset'],
     scripture: 'Philippians 2:5',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1591951425300-39e9c6bdad56?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80',
     duration: '38:42',
     downloads: 0,
     views: 12,
