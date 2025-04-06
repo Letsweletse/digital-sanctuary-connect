@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { useToast } from '@/hooks/use-toast';
+import { sendContactFormEmail } from '@/lib/emailService';
 
 const Contact = () => {
   const { toast } = useToast();
@@ -11,37 +12,58 @@ const Contact = () => {
     email: '',
     phone: '',
     subject: '',
-    message: '',
-    prayerRequest: false
+    message: ''
   });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
   
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    setFormData(prev => ({ ...prev, [name]: checked }));
-  };
-  
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    setIsSubmitting(true);
     
-    toast({
-      title: "Message Sent!",
-      description: "We've received your message and will get back to you soon.",
-    });
-    
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      message: '',
-      prayerRequest: false
-    });
+    try {
+      console.log('Form submitted:', formData);
+      
+      // Send email notification
+      const emailResult = await sendContactFormEmail(formData);
+      console.log('Email result:', emailResult);
+      
+      if (emailResult.success) {
+        toast({
+          title: "Message Sent!",
+          description: "We've received your message and will get back to you soon.",
+        });
+        
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          subject: '',
+          message: ''
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "There was a problem sending your message. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast({
+        title: "Error",
+        description: "There was a problem sending your message. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   return (
@@ -59,7 +81,7 @@ const Contact = () => {
                 Contact Us
               </h1>
               <p className="text-lg text-church-neutral-700">
-                Have questions, prayer requests, or want to get involved? 
+                Have questions or want to get involved? 
                 We'd love to hear from you and help in any way we can.
               </p>
             </div>
@@ -120,8 +142,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-church-neutral-900 mb-2">Email Us</h3>
-                      <p className="text-church-neutral-700">General Information: info@gategaborone.org</p>
-                      <p className="text-church-neutral-700">Prayer Requests: prayer@gategaborone.org</p>
+                      <p className="text-church-neutral-700">General Information: otenggate@gmail.com</p>
                     </div>
                   </div>
                   
@@ -248,7 +269,6 @@ const Contact = () => {
                       >
                         <option value="">Select a subject</option>
                         <option value="General Inquiry">General Inquiry</option>
-                        <option value="Prayer Request">Prayer Request</option>
                         <option value="Volunteering">Volunteering</option>
                         <option value="Event Information">Event Information</option>
                         <option value="Pastoral Care">Pastoral Care</option>
@@ -270,21 +290,12 @@ const Contact = () => {
                     ></textarea>
                   </div>
                   
-                  <div className="mb-6">
-                    <label className="flex items-center">
-                      <input 
-                        type="checkbox" 
-                        name="prayerRequest"
-                        checked={formData.prayerRequest}
-                        onChange={handleCheckboxChange}
-                        className="h-5 w-5 text-church-blue rounded border-church-neutral-300 focus:ring-church-blue"
-                      />
-                      <span className="ml-2 text-church-neutral-700">This is a confidential prayer request</span>
-                    </label>
-                  </div>
-                  
-                  <button type="submit" className="btn-primary w-full">
-                    Send Message
+                  <button 
+                    type="submit" 
+                    className="btn-primary w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
                   </button>
                 </form>
               </div>
