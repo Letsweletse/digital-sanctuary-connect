@@ -114,7 +114,7 @@ const ContactInfoPanel = () => {
           }
         >
           <p className="text-church-neutral-700">Sunday Services: 8:30 AM & 11:00 AM</p>
-          <p className="text-church-neutral-700">Wednesday Housechurch gatherings: 6:00 PM - 8:00 PM</p>
+          <p className="text-church-neutral-700">Wednesday Housechurch: 6:30 PM - 8:00 PM</p>
         </ContactInfoItem>
       </div>
     </div>

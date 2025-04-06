@@ -53,7 +53,7 @@ const Footer = () => {
               </li>
               <li className="text-white/80">
                 <span className="font-medium block">Wednesday Housechurch</span>
-                <span>6:00 PM - 8:00 PM</span>
+                <span>6:30 PM - 8:00 PM</span>
               </li>
             </ul>
           </div>

@@ -6,7 +6,7 @@ export const events: EventData[] = [
     id: '1',
     title: 'Sunday Worship Service',
     date: '2023-12-17',
-    time: '9:00 AM & 11:00 AM',
+    time: '8:30 AM & 11:00 AM',
     location: 'Main Sanctuary',
     description: 'Join us for worship, prayer, and Biblical teaching as we gather together as a church family.',
     category: 'worship',
