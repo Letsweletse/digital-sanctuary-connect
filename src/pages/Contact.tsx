@@ -192,7 +192,8 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-church-neutral-900 mb-2">Service Times</h3>
-                      <p className="text-church-neutral-700">Sunday: 8:30 AM & 11:00 AM</p>
+                      <p className="text-church-neutral-700">Sunday Services: 8:30 AM & 11:00 AM</p>
+                      <p className="text-church-neutral-700">Wednesday Housechurch gatherings: 6:00 PM - 8:00 PM</p>
                     </div>
                   </div>
                 </div>
