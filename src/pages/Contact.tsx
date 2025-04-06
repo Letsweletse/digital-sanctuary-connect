@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -27,16 +26,13 @@ const Contact = () => {
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real application, you would submit the form data to your backend
     console.log('Form submitted:', formData);
     
-    // Show success toast
     toast({
       title: "Message Sent!",
       description: "We've received your message and will get back to you soon.",
     });
     
-    // Reset form
     setFormData({
       name: '',
       email: '',
@@ -52,7 +48,6 @@ const Contact = () => {
       <Navbar />
       
       <main className="flex-grow pt-24 page-transition">
-        {/* Page Header */}
         <section className="bg-church-blue-light py-16 md:py-24">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl">
@@ -70,11 +65,9 @@ const Contact = () => {
           </div>
         </section>
         
-        {/* Contact Information & Form */}
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              {/* Contact Information */}
               <div>
                 <h2 className="text-2xl md:text-3xl font-bold text-church-neutral-900 mb-8">
                   How to Reach Us
@@ -178,12 +171,10 @@ const Contact = () => {
                     <div>
                       <h3 className="text-lg font-semibold text-church-neutral-900 mb-2">Service Times</h3>
                       <p className="text-church-neutral-700">Sunday: 8:30 AM & 11:00 AM</p>
-                      <p className="text-church-neutral-700">Wednesday: 7:00 PM</p>
                     </div>
                   </div>
                 </div>
                 
-                {/* Map */}
                 <div className="mt-8">
                   <div className="rounded-xl overflow-hidden shadow-md">
                     <iframe 
@@ -197,7 +188,6 @@ const Contact = () => {
                 </div>
               </div>
               
-              {/* Contact Form */}
               <div>
                 <h2 className="text-2xl md:text-3xl font-bold text-church-neutral-900 mb-8">
                   Send Us a Message
