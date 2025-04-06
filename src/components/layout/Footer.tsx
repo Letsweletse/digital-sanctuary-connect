@@ -51,10 +51,6 @@ const Footer = () => {
                 <span className="font-medium block">Sunday Services</span>
                 <span>8:30 AM & 11:00 AM</span>
               </li>
-              <li className="text-white/80">
-                <span className="font-medium block">Youth Group</span>
-                <span>Friday, 6:30 PM</span>
-              </li>
             </ul>
           </div>
           
