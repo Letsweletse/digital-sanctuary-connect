@@ -39,7 +39,7 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
       id: "elder1",
       name: "Peter & Naomi Taylor",
       role: "Church Elders",
-      image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Peter%20and%20Naomi%20Taylor_1743684661549.jpeg",
+      image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/155382918_883087192544125_2679451527633776926_n_1743917368955.jpeg",
       bio: "Peter and Naomi have served our church for over a decade, providing wise counsel and spiritual leadership to our congregation."
     },
     {
