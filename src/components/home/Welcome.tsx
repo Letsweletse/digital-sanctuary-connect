@@ -61,7 +61,9 @@ const Welcome = () => {
           
           {/* Welcome Message */}
           <div>
-            <span className="text-sm font-medium text-church-neutral-700">About</span>
+            <span className="text-sm font-bold text-church-neutral-700 animate-fade-in">
+    About
+</span>
             <h2 className="text-3xl md:text-4xl font-bold text-church-neutral-900 mb-6">
               Gate Gaborone
             </h2>
