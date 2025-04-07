@@ -15,8 +15,8 @@ const Hero = () => {
       {/* Content */}
       <div className="container mx-auto px-4 relative z-20 text-center">
         <div className="max-w-3xl mx-auto">
-          <span className="inline-block bg-church-gold px-3 py-1 rounded-full text-sm font-medium text-church-neutral-900 mb-6 animate-fade-in">
-            Welcome to Gate Gaborone
+          <span className="inline-block text-sm font-medium text-church-neutral-900 mb-6 animate-fade-in">
+          Welcome to Gate Gaborone
           </span>
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in tracking-wider">
             GATE GABORONE
