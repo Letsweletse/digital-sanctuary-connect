@@ -74,7 +74,7 @@ const Welcome = () => {
               <p>
                 This season, named in some circles as the 'apostolic season', was born at least two decades ago in relative obscurity 
                 and insignificance. Through this period of time, it has endured the rigorous process of spiritual and physical formation 
-                before presenting itself as a fresh biblical paradigm distinct from that of its Pentecostal/Charismatic counterparts.
+                before presenting itself as a fresh biblical paradigm distinct from that of its Pentecostal/ Charismatic counterparts.
               </p>
               <p>
                 At the heart of this season is the passionate pursuit to align the church to apostolic biblical patterns, 
@@ -84,7 +84,7 @@ const Welcome = () => {
               </p>
               <p>
                 In pursuit of its mandate, Gate Gaborone seeks to constructively and practically provide a biblical, 
-                Christocentric model of ministry, offering a deeper spiritual encounter of the family of God.
+                Christocentric model of ministry, offering a deeper spiritual encounter for the family of God.
               </p>
             </div>
             <div className="mt-8">
