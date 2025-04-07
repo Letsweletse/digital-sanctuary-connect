@@ -22,8 +22,7 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
   
   const pastorBio = `
     <p>Pastor Kobus Bezuidenhout, our Senior Pastor, has been shepherding our community for over 15+ years with wisdom and compassion.</p>
-    <p>With a doctorate in Theology from Stellenbosch University and years of mission work across Southern Africa, he brings rich insights to scripture and practical application to daily Christian living.</p>
-    <p>He and his wife have three children and have dedicated their lives to building our church community.</p>
+    
   `;
 
   // Pastor's recent sermons
