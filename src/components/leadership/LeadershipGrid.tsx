@@ -21,15 +21,15 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
   const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Senior%20Pastor_1743598781352.jpeg";
   
   const pastorBio = `
-    <p>Pastor Kobus Bezuidenhout, our Senior Pastor, has been shepherding our community for over 15+ years with wisdom and compassion.</p>
+    <p>Pastor Kobus Bezuidenhout, our Senior Pastor, has been fathering our community for over 15+ years with wisdom and grace.</p>
     
   `;
 
   // Pastor's recent sermons
   const pastorSermons = [
-    { title: "The Power of Faith", url: "https://www.youtube.com/watch?v=example1" },
-    { title: "Walking in God's Purpose", url: "https://www.youtube.com/watch?v=example2" },
-    { title: "Kingdom Principles for Today", url: "https://www.youtube.com/watch?v=example3" }
+    { title: "The Prophetic Office In Context Of The Apostolic Seasons", url: "https://www.youtube.com/watch?v=syZyhjJffmU" },
+    { title: "2nd March Sunday Sermon 2025", url: "https://www.youtube.com/watch?v=T96Pf2ngosg&t=6657s" },
+    { title: "23rd February Sunday Sermon 2025", url: "https://www.youtube.com/watch?v=HxDFrJCwL4Y" }
   ];
 
   // Elder data - Updated with the new elders information
@@ -39,7 +39,7 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
       name: "Peter & Naomi Taylor",
       role: "Church Elders",
       image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/155382918_883087192544125_2679451527633776926_n_1743917368955.jpeg",
-      bio: "Peter and Naomi have served our church for over a decade, providing wise counsel and spiritual leadership to our congregation."
+      bio: "Peter and Naomi with grace and dedication, bringing years of pastoral care experience to our congregation."
     },
     {
       id: "elder2",
@@ -53,7 +53,7 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
       name: "Thabiso & Lesogo Thwane",
       role: "Church Elders",
       image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Thabiso%20&%20Lesogo%20Thwane_1743684836732.jpeg",
-      bio: "Thabiso and Lesogo oversee our outreach programs and have been instrumental in building community partnerships throughout Gaborone."
+      bio: "Thabiso and Lesogo with grace and dedication, bringing years of pastoral care experience to our congregation.."
     }
   ];
 
