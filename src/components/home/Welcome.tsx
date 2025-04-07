@@ -62,7 +62,7 @@ const Welcome = () => {
           {/* Welcome Message */}
           <div>
             <span className="inline-block bg-church-blue-light px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4">
-              Our Vision
+              About 
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-church-neutral-900 mb-6">
               Gate Gaborone
