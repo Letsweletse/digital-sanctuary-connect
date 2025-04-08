@@ -24,7 +24,13 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
         console.error('Error sharing:', error);
       }
     } else {
-      alert('Sharing is not supported on this browser.');
+      try {
+        await navigator.clipboard.writeText(featuredEvent.registrationLink);
+        alert('Link copied to clipboard!');
+      } catch (error) {
+        console.error('Failed to copy link:', error);
+        alert('Unable to copy link. Please copy manually.');
+      }
     }
   };
 
@@ -71,10 +77,10 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
                     Register Now
                   </a>
                   <button 
-                    className="btn-secondary flex items-center gap-2 text-white px-4 py-2 rounded-lg font-medium"
+                    className="btn-secondary text-white px-4 py-2 rounded-lg font-medium flex items-center justify-center"
                     onClick={shareEvent}
                   >
-                    <Share2 size={18} /> Share
+                    <Share2 size={20} />
                   </button>
                 </div>
               </div>
