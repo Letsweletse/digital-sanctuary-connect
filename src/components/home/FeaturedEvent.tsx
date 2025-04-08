@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { EventData } from '@/types/eventTypes';
 import { formatDate } from '@/utils/dateUtils';
+import { Share2 } from 'lucide-react';
 
 interface FeaturedEventProps {
   featuredEvent: EventData;
@@ -12,22 +12,33 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
   featuredEvent,
   onRegisterClick 
 }) => {
-  // Share Links
-  const shareText = encodeURIComponent(`Join us for ${featuredEvent.title}! Register here: ${featuredEvent.registrationLink}`);
-  const whatsappShareUrl = `https://api.whatsapp.com/send?text=${shareText}`;
-  const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(featuredEvent.registrationLink)}`;
+  const shareEvent = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: featuredEvent.title,
+          text: `Join us for ${featuredEvent.title}! Register here:`,
+          url: featuredEvent.registrationLink,
+        });
+      } catch (error) {
+        console.error('Error sharing:', error);
+      }
+    } else {
+      alert('Sharing is not supported on this browser.');
+    }
+  };
 
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <span className="inline-block bg-church-blue-light px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4">
+          <span className="inline-block bg-blue-500 px-3 py-1 rounded-full text-sm font-medium text-white mb-4">
             Featured Event
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-church-neutral-900 mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
             {featuredEvent.title}
           </h2>
-          <p className="max-w-2xl mx-auto text-church-neutral-700">
+          <p className="max-w-2xl mx-auto text-gray-700">
             Join us for this special conference exploring apostolic ministry in the modern church. 
             Featuring powerful teachings, workshops, and fellowship.
           </p>
@@ -50,46 +61,35 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
                 <p className="text-white/90 mb-4">
                   {formatDate(featuredEvent.date)} at {featuredEvent.time} | {featuredEvent.location}
                 </p>
-                <button 
-                  className="btn-primary inline-block"
-                  onClick={onRegisterClick}
-                >
-                  Register Now
-                </button>
-
-                {/* Share Buttons */}
-                <div className="flex gap-4 mt-4">
+                <div className="flex gap-4">
                   <a 
-                    href={whatsappShareUrl} 
+                    href={featuredEvent.registrationLink} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="btn-secondary"
+                    className="btn-primary text-white px-4 py-2 rounded-lg font-medium"
                   >
-                    Share on WhatsApp
+                    Register Now
                   </a>
-                  <a 
-                    href={facebookShareUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="btn-secondary"
+                  <button 
+                    className="btn-secondary flex items-center gap-2 text-white px-4 py-2 rounded-lg font-medium"
+                    onClick={shareEvent}
                   >
-                    Share on Facebook
-                  </a>
+                    <Share2 size={18} /> Share
+                  </button>
                 </div>
-                
               </div>
             </div>
             <div className="p-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="text-xl font-semibold text-church-neutral-900 mb-2">Event Details</h4>
-                  <p className="text-church-neutral-700 mb-4">
+                  <h4 className="text-xl font-semibold text-gray-900 mb-2">Event Details</h4>
+                  <p className="text-gray-700 mb-4">
                     {featuredEvent.description}
                   </p>
                 </div>
                 <div>
-                  <h4 className="text-xl font-semibold text-church-neutral-900 mb-2">What to Expect</h4>
-                  <ul className="list-disc list-inside text-church-neutral-700 space-y-1">
+                  <h4 className="text-xl font-semibold text-gray-900 mb-2">What to Expect</h4>
+                  <ul className="list-disc list-inside text-gray-700 space-y-1">
                     <li>Insightful teaching from apostolic leaders</li>
                     <li>Interactive workshops and discussions</li>
                     <li>Powerful worship and ministry</li>
@@ -106,3 +106,4 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
 };
 
 export default FeaturedEvent;
+
