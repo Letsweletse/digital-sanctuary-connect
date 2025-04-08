@@ -94,3 +94,4 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
 };
 
 export default FeaturedEvent;
+
