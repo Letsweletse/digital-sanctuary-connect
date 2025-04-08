@@ -12,29 +12,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
   featuredEvent,
   onRegisterClick 
 }) => {
-  const shareEvent = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: featuredEvent.title,
-          text: `Join us for ${featuredEvent.title}! Register here:`,
-          url: featuredEvent.registrationLink,
-        });
-      } catch (error) {
-        console.error('Error sharing:', error);
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(featuredEvent.registrationLink);
-        alert('Link copied to clipboard!');
-      } catch (error) {
-        console.error('Failed to copy link:', error);
-        alert('Unable to copy link. Please copy manually.');
-      }
-    }
-  };
-
-  const whatsappShareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(`Join us for ${featuredEvent.title}! Register here: ${featuredEvent.registrationLink}`)}`;
+  const shareLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(`Join us for ${featuredEvent.title}! Register here: ${featuredEvent.registrationLink}`)}`;
 
   return (
     <section className="py-16 bg-white">
@@ -78,19 +56,13 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
                   >
                     Register Now
                   </a>
-                  <button 
-                    className="btn-secondary text-white px-4 py-2 rounded-lg font-medium flex items-center justify-center"
-                    onClick={shareEvent}
-                  >
-                    <Share2 size={20} />
-                  </button>
                   <a 
-                    href={whatsappShareUrl} 
+                    href={shareLink} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="btn-secondary text-white px-4 py-2 rounded-lg font-medium"
+                    className="btn-secondary text-white px-4 py-2 rounded-lg font-medium flex items-center justify-center"
                   >
-                    <img src="/whatsapp-icon.svg" alt="Share on WhatsApp" className="w-5 h-5" />
+                    <Share2 size={20} />
                   </a>
                 </div>
               </div>
