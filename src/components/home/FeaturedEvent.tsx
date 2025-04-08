@@ -2,7 +2,6 @@ import React from 'react';
 import { EventData } from '@/types/eventTypes';
 import { formatDate } from '@/utils/dateUtils';
 import { Share2 } from 'lucide-react';
-import { FaWhatsapp } from 'react-icons/fa';
 
 interface FeaturedEventProps {
   featuredEvent: EventData;
@@ -89,9 +88,9 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
                     href={whatsappShareUrl} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="btn-secondary text-white px-4 py-2 rounded-lg font-medium flex items-center justify-center"
+                    className="btn-secondary text-white px-4 py-2 rounded-lg font-medium"
                   >
-                    <FaWhatsapp size={20} />
+                    <img src="/whatsapp-icon.svg" alt="Share on WhatsApp" className="w-5 h-5" />
                   </a>
                 </div>
               </div>
@@ -123,4 +122,3 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
 };
 
 export default FeaturedEvent;
-
