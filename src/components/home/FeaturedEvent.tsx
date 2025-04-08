@@ -12,6 +12,11 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
   featuredEvent,
   onRegisterClick 
 }) => {
+  // Share Links
+  const shareText = encodeURIComponent(`Join us for ${featuredEvent.title}! Register here: ${featuredEvent.registrationLink}`);
+  const whatsappShareUrl = `https://api.whatsapp.com/send?text=${shareText}`;
+  const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(featuredEvent.registrationLink)}`;
+
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
@@ -51,6 +56,27 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
                 >
                   Register Now
                 </button>
+
+                {/* Share Buttons */}
+                <div className="flex gap-4 mt-4">
+                  <a 
+                    href={whatsappShareUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="btn-secondary"
+                  >
+                    Share on WhatsApp
+                  </a>
+                  <a 
+                    href={facebookShareUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="btn-secondary"
+                  >
+                    Share on Facebook
+                  </a>
+                </div>
+                
               </div>
             </div>
             <div className="p-6">
