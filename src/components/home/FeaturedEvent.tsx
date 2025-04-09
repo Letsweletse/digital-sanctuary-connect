@@ -2,7 +2,6 @@
 import React from 'react';
 import { EventData } from '@/types/eventTypes';
 import { formatDate } from '@/utils/dateUtils';
-import { Share2, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface FeaturedEventProps {
@@ -14,10 +13,10 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
   featuredEvent,
   onRegisterClick 
 }) => {
-  // Create a more detailed WhatsApp share message with event details and image
+  // Create a more detailed WhatsApp share message with event details and direct registration link
   const generateShareMessage = () => {
     const eventDate = formatDate(featuredEvent.date);
-    // Use absolute URL for registration link to ensure it works properly when shared
+    // Use absolute URL for registration link that ensures it opens the registration dialog
     const registrationUrl = `${window.location.origin}/#register-event`;
     
     // Create WhatsApp text message with event details
@@ -25,6 +24,8 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
   };
 
   // Create a WhatsApp share link with the event image and details
+  // Note: WhatsApp will preview the first image it finds in the URL's metadata
+  // We're using a direct link to the registration section which will trigger the dialog
   const whatsAppShareLink = `https://api.whatsapp.com/send?text=${generateShareMessage()}`;
 
   return (

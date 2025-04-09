@@ -40,10 +40,17 @@ const Index = () => {
     handleOpenRegistration(featuredEvent);
   };
 
-  // Check if there's a registration request in the URL
+  // Check if there's a registration request in the URL and open the registration dialog
   useEffect(() => {
-    if (window.location.hash === '#register-event') {
-      openFeaturedEventRegistration();
+    // Parse the URL hash
+    const hash = window.location.hash;
+    
+    // If the hash is #register-event, open the registration dialog
+    if (hash === '#register-event') {
+      // Small timeout to ensure the page is fully loaded
+      setTimeout(() => {
+        openFeaturedEventRegistration();
+      }, 300);
     }
   }, []);
 
