@@ -15,10 +15,10 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
   const shareLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(`Join us for ${featuredEvent.title}! Register here: ${featuredEvent.registrationLink}`)}`;
 
   return (
-    <section className="py-20 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white">
+    <section className="py-20 bg-gray-900 text-white">
       <div className="container mx-auto px-6 md:px-12 lg:px-16">
         <div className="text-center mb-14">
-          <span className="inline-block bg-gradient-to-r from-blue-500 to-teal-400 px-4 py-2 rounded-full text-lg font-semibold text-white shadow-lg">
+          <span className="inline-block bg-blue-500 px-4 py-2 rounded-full text-lg font-semibold text-white shadow-lg">
             Featured Event
           </span>
           <h2 className="text-4xl md:text-5xl font-extrabold mt-6 leading-tight">
@@ -30,14 +30,13 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
         </div>
         
         <div className="max-w-5xl mx-auto overflow-hidden rounded-xl shadow-xl">
-          <div className="relative h-96 md:h-[500px]">
+          <div className="relative">
             <img 
               src={featuredEvent.image}
               alt={featuredEvent.title}
-              className="w-full h-full object-cover transition-transform duration-500 transform group-hover:scale-105 rounded-t-xl"
+              className="w-full h-auto object-cover rounded-t-xl"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
-            <div className="absolute bottom-0 left-0 w-full p-8">
+            <div className="absolute bottom-0 left-0 w-full p-8 bg-black/60">
               <div className="inline-block px-4 py-2 rounded-full text-sm font-medium mb-3 bg-blue-500 text-white shadow-lg">
                 {featuredEvent.category.charAt(0).toUpperCase() + featuredEvent.category.slice(1)}
               </div>
@@ -50,7 +49,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
                   href={featuredEvent.registrationLink} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition-transform transform hover:scale-105"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md"
                 >
                   Register Now
                 </a>
@@ -58,7 +57,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
                   href={shareLink} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md flex items-center justify-center transition-transform transform hover:scale-105"
+                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md flex items-center justify-center"
                 >
                   <Share2 size={24} className="mr-2" />
                   Share
