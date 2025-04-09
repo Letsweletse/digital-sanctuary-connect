@@ -53,21 +53,26 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (eventName) {
       adminHtmlContent = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 24px; border: 1px solid #3b82f6; border-radius: 10px;">
-          <h1 style="color: #1e40af; margin-bottom: 20px;">New Event Registration</h1>
-          <table style="width: 100%; border-collapse: collapse; word-wrap: break-word;">
-            <tr><td><strong>Event:</strong></td><td>${eventName}</td></tr>
-            <tr><td><strong>Registration Type:</strong></td><td>${registrationType || "Standard"}</td></tr>
-            <tr><td><strong>Title:</strong></td><td>${title || ""}</td></tr>
-            <tr><td><strong>Name:</strong></td><td>${name}</td></tr>
-            <tr><td><strong>Email:</strong></td><td>${email}</td></tr>
-            <tr><td><strong>Phone:</strong></td><td>${phone || "Not provided"}</td></tr>
-            <tr><td><strong>Role:</strong></td><td>${role || ""}</td></tr>
-            <tr><td><strong>Denomination:</strong></td><td>${denomination || ""}</td></tr>
-            <tr><td><strong>Message:</strong></td><td>${message || "No additional info"}</td></tr>
-            <tr><td><strong>Location:</strong></td><td><a href="https://maps.app.goo.gl/L8oNgD2tyEnfKQnc8" style="color:#3b82f6;">View on Map</a></td></tr>
-          </table>
-          <p style="font-size: 12px; color: #999; margin-top: 20px;">This is an automated message from the Gate Gaborone website.</p>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 2px; background: linear-gradient(135deg, #3b82f6, #06b6d4); border-radius: 12px; box-shadow: 0 0 12px #3b82f6;">
+          <div style="background-color: #ffffff; color: #0f172a; border-radius: 10px; padding: 24px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+              <img src="https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png" alt="Gate Gaborone" style="max-width: 140px;" />
+            </div>
+            <h2 style="color: #1e3a8a; margin-top: 0;">New Event Registration</h2>
+            <table style="width: 100%; border-collapse: collapse; word-wrap: break-word;">
+              <tr><td style="padding: 6px 0;"><strong>Event:</strong></td><td>${eventName}</td></tr>
+              <tr><td style="padding: 6px 0;"><strong>Registration Type:</strong></td><td>${registrationType || "Standard"}</td></tr>
+              <tr><td style="padding: 6px 0;"><strong>Title:</strong></td><td>${title || ""}</td></tr>
+              <tr><td style="padding: 6px 0;"><strong>Name:</strong></td><td>${name}</td></tr>
+              <tr><td style="padding: 6px 0;"><strong>Email:</strong></td><td>${email}</td></tr>
+              <tr><td style="padding: 6px 0;"><strong>Phone:</strong></td><td>${phone || "Not provided"}</td></tr>
+              <tr><td style="padding: 6px 0;"><strong>Role:</strong></td><td>${role || ""}</td></tr>
+              <tr><td style="padding: 6px 0;"><strong>Denomination:</strong></td><td>${denomination || ""}</td></tr>
+              <tr><td style="padding: 6px 0;"><strong>Message:</strong></td><td>${message || "No additional info"}</td></tr>
+              <tr><td style="padding: 6px 0;"><strong>Location:</strong></td><td><a href="https://maps.app.goo.gl/L8oNgD2tyEnfKQnc8" style="color:#3b82f6;">View on Map</a></td></tr>
+            </table>
+            <p style="font-size: 12px; color: #666; margin-top: 20px;">Automated message from Gate Gaborone website.</p>
+          </div>
         </div>
       `;
     }
@@ -96,19 +101,19 @@ const handler = async (req: Request): Promise<Response> => {
               </a>
             </div>
             <div style="padding: 20px; background: #1e293b; border-radius: 10px;">
-              <h2 style="color: #60a5fa; margin-top: 0;">You're Registered!</h2>
+              <h2 style="color: #60a5fa; margin-top: 0;">Registration Confirmation</h2>
               <p style="margin-bottom: 10px;">Dear ${title || ""} ${name},</p>
-              <p style="margin-bottom: 16px;">Thank you for registering for <strong>${eventName}</strong>. Below are your details:</p>
+              <p style="margin-bottom: 16px;">Thank you for registering for <strong>${eventName}</strong>. Here are your registration details:</p>
               <table style="width: 100%; border-collapse: collapse; word-wrap: break-word;">
-                <tr><td style="padding: 8px 0;"><strong>Event:</strong></td><td>${eventName}</td></tr>
-                <tr><td style="padding: 8px 0;"><strong>Type:</strong></td><td>${registrationType || "Standard"}</td></tr>
-                <tr><td style="padding: 8px 0;"><strong>Role:</strong></td><td>${role || "Not provided"}</td></tr>
-                <tr><td style="padding: 8px 0;"><strong>Denomination:</strong></td><td>${denomination || "Not provided"}</td></tr>
-                <tr><td style="padding: 8px 0;"><strong>Phone:</strong></td><td>${phone || "Not provided"}</td></tr>
-                <tr><td style="padding: 8px 0;"><strong>Number of Attendees:</strong></td><td>${numAttendees}</td></tr>
-                <tr><td style="padding: 8px 0;"><strong>Location:</strong></td><td><a href="https://maps.app.goo.gl/L8oNgD2tyEnfKQnc8" style="color:#3b82f6;">View on Map</a></td></tr>
+                <tr><td style="padding: 6px 0;"><strong>Event:</strong></td><td>${eventName}</td></tr>
+                <tr><td style="padding: 6px 0;"><strong>Type:</strong></td><td>${registrationType || "Standard"}</td></tr>
+                <tr><td style="padding: 6px 0;"><strong>Role:</strong></td><td>${role || "Not provided"}</td></tr>
+                <tr><td style="padding: 6px 0;"><strong>Denomination:</strong></td><td>${denomination || "Not provided"}</td></tr>
+                <tr><td style="padding: 6px 0;"><strong>Phone:</strong></td><td>${phone || "Not provided"}</td></tr>
+                <tr><td style="padding: 6px 0;"><strong>Number of Attendees:</strong></td><td>${numAttendees}</td></tr>
+                <tr><td style="padding: 6px 0;"><strong>Location:</strong></td><td><a href="https://maps.app.goo.gl/L8oNgD2tyEnfKQnc8" style="color:#3b82f6;">View on Map</a></td></tr>
               </table>
-              <p style="margin-top: 20px;">If you have any questions, reach out to <a href="mailto:info@gategaborone.com" style="color:#60a5fa;">info@gategaborone.com</a>.</p>
+              <p style="margin-top: 20px;">If you have any questions, contact us at <a href="mailto:info@gategaborone.com" style="color:#60a5fa;">info@gategaborone.com</a>.</p>
             </div>
             <div style="text-align: center; font-size: 12px; color: #94a3b8; margin-top: 30px;">
               © ${new Date().getFullYear()} Gate Gaborone. All rights reserved.
@@ -146,6 +151,4 @@ const handler = async (req: Request): Promise<Response> => {
 
 serve(handler);
 
-
-    if (sendConfirmation && email && event
 
