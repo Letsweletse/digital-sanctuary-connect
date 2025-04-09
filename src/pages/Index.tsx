@@ -22,7 +22,7 @@ const Index = () => {
     category: "conference",
     image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg",
     registration: true,
-    registrationLink: window?.location ? `${window.location.origin}/#register-event` : "https://gateministry.org/#register-event"
+    registrationLink: "https://www.gategaborone.com/event/registernow"
   };
   
   const {
@@ -40,14 +40,15 @@ const Index = () => {
     handleOpenRegistration(featuredEvent);
   };
 
-  // Check if there's a registration request in the URL and open the registration dialog
+  // Check for registration URLs and event page loads
   useEffect(() => {
-    // Parse the URL hash
+    // Parse the URL path and hash
+    const path = window.location.pathname;
     const hash = window.location.hash;
     
-    // If the hash is #register-event, open the registration dialog
-    if (hash === '#register-event') {
-      // Small timeout to ensure the page is fully loaded
+    // Check if we're on the registration page or if there's a hash for registration
+    if (path === '/event/registernow' || hash === '#register-event') {
+      // Use a small timeout to ensure the page is fully loaded
       setTimeout(() => {
         openFeaturedEventRegistration();
       }, 300);
@@ -74,7 +75,7 @@ const Index = () => {
         {/* Featured Sections Links */}
         <FeaturedSections />
         
-        {/* Add EventRegistrationDialog component */}
+        {/* Add EventRegistrationDialog component with event image shown prominently */}
         <EventRegistrationDialog
           isOpen={isRegistrationOpen}
           onClose={handleCloseRegistration}

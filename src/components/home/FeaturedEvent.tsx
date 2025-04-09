@@ -16,8 +16,8 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
   // Create a more detailed WhatsApp share message with event details and direct registration link
   const generateShareMessage = () => {
     const eventDate = formatDate(featuredEvent.date);
-    // Use absolute URL for registration link that ensures it opens the registration dialog
-    const registrationUrl = `${window.location.origin}/#register-event`;
+    // Use a custom, more professional-looking URL for registration
+    const registrationUrl = `https://www.gategaborone.com/event/registernow`;
     
     // Create WhatsApp text message with event details
     return `*${featuredEvent.title}*%0A%0A📅 *Date:* ${eventDate}%0A⏰ *Time:* ${featuredEvent.time}%0A📍 *Location:* ${featuredEvent.location}%0A%0A${featuredEvent.description}%0A%0A🔗 *Register here:* ${registrationUrl}`;
@@ -25,7 +25,6 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
 
   // Create a WhatsApp share link with the event image and details
   // Note: WhatsApp will preview the first image it finds in the URL's metadata
-  // We're using a direct link to the registration section which will trigger the dialog
   const whatsAppShareLink = `https://api.whatsapp.com/send?text=${generateShareMessage()}`;
 
   return (

@@ -22,7 +22,7 @@ export const events: EventData[] = [
     category: 'conference',
     image: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg',
     registration: true,
-    registrationLink: 'https://gateministry.org/#register-event'
+    registrationLink: 'https://www.gategaborone.com/event/registernow'
   },
   {
     id: '5',
