@@ -17,7 +17,9 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
   // Create a more detailed WhatsApp share message with event details and image
   const generateShareMessage = () => {
     const eventDate = formatDate(featuredEvent.date);
-    return `*${featuredEvent.title}*%0A%0A📅 *Date:* ${eventDate}%0A⏰ *Time:* ${featuredEvent.time}%0A📍 *Location:* ${featuredEvent.location}%0A%0A${featuredEvent.description}%0A%0A🔗 *Register here:* ${window.location.origin}`;
+    // Use absolute URL for registration link to ensure it works properly when shared
+    const registrationUrl = `${window.location.origin}/#register-event`;
+    return `*${featuredEvent.title}*%0A%0A📅 *Date:* ${eventDate}%0A⏰ *Time:* ${featuredEvent.time}%0A📍 *Location:* ${featuredEvent.location}%0A%0A${featuredEvent.description}%0A%0A🔗 *Register here:* ${registrationUrl}`;
   };
 
   // Create a WhatsApp share link with the event image and details

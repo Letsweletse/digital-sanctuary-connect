@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Layout from '@/components/layout/Layout';
 import Hero from '@/components/home/Hero';
 import Welcome from '@/components/home/Welcome';
@@ -40,9 +40,16 @@ const Index = () => {
     handleOpenRegistration(featuredEvent);
   };
 
+  // Check if there's a registration request in the URL
+  useEffect(() => {
+    if (window.location.hash === '#register-event') {
+      openFeaturedEventRegistration();
+    }
+  }, []);
+
   return (
     <Layout>
-      <div className="page-transition" id="register-event">
+      <div className="page-transition" id="home-content">
         {/* Hero Section */}
         <Hero />
         
@@ -50,10 +57,12 @@ const Index = () => {
         <Welcome />
         
         {/* Featured Event Section */}
-        <FeaturedEvent 
-          featuredEvent={featuredEvent} 
-          onRegisterClick={openFeaturedEventRegistration} 
-        />
+        <div id="register-event">
+          <FeaturedEvent 
+            featuredEvent={featuredEvent} 
+            onRegisterClick={openFeaturedEventRegistration} 
+          />
+        </div>
         
         {/* Featured Sections Links */}
         <FeaturedSections />
