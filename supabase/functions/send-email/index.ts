@@ -145,14 +145,20 @@ const handler = async (req: Request): Promise<Response> => {
               <div style="background-color: #f0f9ff; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #3b82f6;">
                 <h2 style="color: #0f172a; font-size: 18px; margin-top: 0;">Event Details</h2>
                 <ul style="padding-left: 20px; margin-bottom: 0;">
-                  <li style="margin-bottom: 5px;"><strong>Event:</strong> ${eventName}</li>
-                  <li style="margin-bottom: 5px;"><strong>Registration Type:</strong> ${registrationType || 'Standard'}</li>
-                  <li style="margin-bottom: 5px;"><strong>Role:</strong> ${role || ''}</li>
-                  <li style="margin-bottom: 5px;"><strong>Denomination/Church:</strong> ${denomination || ''}</li>
-                  <li style="margin-bottom: 5px;"><strong>Phone:</strong> ${phone || 'Not provided'}</li>
-                  <li><strong>Number of Attendees:</strong> ${numAttendees}</li>
-                </ul>
-              </div>
+  <li style="margin-bottom: 5px;"><strong>Event:</strong> ${eventName}</li>
+  <li style="margin-bottom: 5px;"><strong>Registration Type:</strong> ${registrationType || 'Standard'}</li>
+  <li style="margin-bottom: 5px;"><strong>Role:</strong> ${role || ''}</li>
+  <li style="margin-bottom: 5px;"><strong>Denomination/Church:</strong> ${denomination || ''}</li>
+  <li style="margin-bottom: 5px;"><strong>Phone:</strong> ${phone || 'Not provided'}</li>
+  <li style="margin-bottom: 5px;">
+    <strong>Location:</strong> 
+    <a href="https://maps.app.goo.gl/L8oNgD2tyEnfKQnc8" style="color: #3b82f6;" target="_blank">
+      View on Google Maps
+    </a>
+  </li>
+  <li style="margin-bottom: 5px;"><strong>Number of Attendees:</strong> ${numAttendees}</li>
+</ul>
+
               
               <p style="margin-bottom: 15px;">We look forward to seeing you there!</p>
               <p style="margin-bottom: 15px;">If you have any questions, please don't hesitate to contact us at <a href="mailto:info@gategaborone.com" style="color: #3b82f6;">info@gategaborone.com</a>.</p>
