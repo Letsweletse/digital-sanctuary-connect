@@ -22,7 +22,7 @@ const Index = () => {
     category: "conference",
     image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg",
     registration: true,
-    registrationLink: "https://www.gategaborone.com/event/registernow"
+    registrationLink: "#register-event" // Changed to hash-based link to ensure it works on the same page
   };
   
   const {
@@ -46,13 +46,28 @@ const Index = () => {
     const path = window.location.pathname;
     const hash = window.location.hash;
     
+    // Listen for hash changes to detect registration links
+    const handleHashChange = () => {
+      if (window.location.hash === '#register-event') {
+        openFeaturedEventRegistration();
+      }
+    };
+
+    // Add event listener for hash changes
+    window.addEventListener('hashchange', handleHashChange);
+    
     // Check if we're on the registration page or if there's a hash for registration
-    if (path === '/event/registernow' || hash === '#register-event') {
+    if (path.includes('/event/registernow') || hash === '#register-event') {
       // Use a small timeout to ensure the page is fully loaded
       setTimeout(() => {
         openFeaturedEventRegistration();
       }, 300);
     }
+
+    // Cleanup event listener
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
   }, []);
 
   return (

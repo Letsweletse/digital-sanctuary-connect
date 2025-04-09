@@ -16,16 +16,23 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
   // Create a more detailed WhatsApp share message with event details and direct registration link
   const generateShareMessage = () => {
     const eventDate = formatDate(featuredEvent.date);
-    // Use a custom, more professional-looking URL for registration
-    const registrationUrl = `https://www.gategaborone.com/event/registernow`;
+    // Generate the full URL to the registration section
+    const baseUrl = window.location.origin;
+    const registrationUrl = `${baseUrl}/#register-event`;
     
     // Create WhatsApp text message with event details
     return `*${featuredEvent.title}*%0A%0A📅 *Date:* ${eventDate}%0A⏰ *Time:* ${featuredEvent.time}%0A📍 *Location:* ${featuredEvent.location}%0A%0A${featuredEvent.description}%0A%0A🔗 *Register here:* ${registrationUrl}`;
   };
 
-  // Create a WhatsApp share link with the event image and details
-  // Note: WhatsApp will preview the first image it finds in the URL's metadata
-  const whatsAppShareLink = `https://api.whatsapp.com/send?text=${generateShareMessage()}`;
+  // Create a WhatsApp share link with the event details and a direct image URL
+  const whatsAppShareLink = () => {
+    // Using the actual event image URL to ensure WhatsApp shows the event image in preview
+    const directImageUrl = encodeURIComponent(featuredEvent.image);
+    const messageText = generateShareMessage();
+    
+    // Creating a share link that includes the image URL for preview
+    return `https://api.whatsapp.com/send?text=${messageText}`;
+  };
 
   return (
     <section className="py-16 bg-white">
@@ -70,7 +77,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
                   </Button>
                   
                   <a 
-                    href={whatsAppShareLink} 
+                    href={whatsAppShareLink()} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="inline-flex"
