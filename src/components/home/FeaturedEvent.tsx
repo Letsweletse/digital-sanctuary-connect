@@ -19,6 +19,8 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
     const eventDate = formatDate(featuredEvent.date);
     // Use absolute URL for registration link to ensure it works properly when shared
     const registrationUrl = `${window.location.origin}/#register-event`;
+    
+    // Create WhatsApp text message with event details
     return `*${featuredEvent.title}*%0A%0A📅 *Date:* ${eventDate}%0A⏰ *Time:* ${featuredEvent.time}%0A📍 *Location:* ${featuredEvent.location}%0A%0A${featuredEvent.description}%0A%0A🔗 *Register here:* ${registrationUrl}`;
   };
 

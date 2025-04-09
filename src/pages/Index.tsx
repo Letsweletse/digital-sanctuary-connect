@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import Hero from '@/components/home/Hero';
 import Welcome from '@/components/home/Welcome';
