@@ -21,7 +21,8 @@ const Index = () => {
     description: "A special conference exploring apostolic ministry in the modern church. Join us for powerful teachings, workshops, and fellowship with guest speaker Thamo Naidoo.",
     category: "conference",
     image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg",
-    registration: true
+    registration: true,
+    registrationLink: window?.location ? `${window.location.origin}/#register-event` : "https://gateministry.org/#register-event"
   };
   
   const {
@@ -41,7 +42,7 @@ const Index = () => {
 
   return (
     <Layout>
-      <div className="page-transition">
+      <div className="page-transition" id="register-event">
         {/* Hero Section */}
         <Hero />
         

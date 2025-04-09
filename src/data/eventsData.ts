@@ -21,7 +21,8 @@ export const events: EventData[] = [
     description: 'A special conference exploring apostolic ministry in the modern church with guest speaker Thamo Naidoo. Join us for powerful teachings, workshops, and fellowship.',
     category: 'conference',
     image: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg',
-    registration: true
+    registration: true,
+    registrationLink: 'https://gateministry.org/#register-event'
   },
   {
     id: '5',

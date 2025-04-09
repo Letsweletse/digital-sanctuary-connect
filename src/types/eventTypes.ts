@@ -9,6 +9,7 @@ export interface EventData {
   category: string;
   image: string;
   registration?: boolean;
+  registrationLink?: string;
 }
 
 export interface EventCategory {
