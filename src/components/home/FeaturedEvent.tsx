@@ -1,8 +1,7 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
 import { EventData } from '@/types/eventTypes';
 import { formatDate } from '@/utils/dateUtils';
-import { Button } from '@/components/ui/button';
+import { Share2 } from 'lucide-react';
 
 interface FeaturedEventProps {
   featuredEvent: EventData;
@@ -13,90 +12,76 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
   featuredEvent,
   onRegisterClick 
 }) => {
-  const generateShareMessage = () => {
-    const eventDate = formatDate(featuredEvent.date);
-    const baseUrl = window.location.origin;
-    const registrationUrl = `${baseUrl}/#register-event`;
-    return `*${featuredEvent.title}*%0A%0A📅 *Date:* ${eventDate}%0A⏰ *Time:* ${featuredEvent.time}%0A📍 *Location:* ${featuredEvent.location}%0A%0A${featuredEvent.description}%0A%0A🔗 *Register here:* ${registrationUrl}%0A🖼️ *Image:* ${featuredEvent.image}`;
-  };
-
-  const whatsAppShareLink = () => {
-    const messageText = generateShareMessage();
-    return `https://api.whatsapp.com/send?text=${messageText}`;
-  };
+  const shareLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(`Join us for ${featuredEvent.title}! Register here: ${featuredEvent.registrationLink}`)}`;
 
   return (
-    <section className="py-16 bg-white">
-      <Helmet>
-        <meta property="og:title" content={featuredEvent.title} />
-        <meta property="og:description" content={featuredEvent.description} />
-        <meta property="og:image" content={featuredEvent.image} />
-        <meta property="og:url" content={window.location.href} />
-        <meta property="og:type" content="website" />
-      </Helmet>
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <span className="inline-block bg-blue-500 px-3 py-1 rounded-full text-sm font-medium text-white mb-4">
+    <section className="py-20 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white">
+      <div className="container mx-auto px-6 md:px-12 lg:px-16">
+        <div className="text-center mb-14">
+          <span className="inline-block bg-gradient-to-r from-blue-500 to-teal-400 px-4 py-2 rounded-full text-lg font-semibold text-white shadow-lg">
             Featured Event
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+          <h2 className="text-4xl md:text-5xl font-extrabold mt-6 leading-tight">
             {featuredEvent.title}
           </h2>
-          <p className="max-w-2xl mx-auto text-gray-700">
-            Join us for this special conference exploring apostolic ministry in the modern church. 
-            Featuring powerful teachings, workshops, and fellowship.
+          <p className="max-w-3xl mx-auto text-lg opacity-80 mt-4">
+            Join us for this exclusive experience featuring renowned speakers, impactful workshops, and transformative fellowship.
           </p>
         </div>
         
-        <div className="max-w-4xl mx-auto">
-          <div className="glass-panel overflow-hidden group">
-            <div className="relative h-72 md:h-96">
-              <img 
-                src={featuredEvent.image}
-                alt={featuredEvent.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
-              <div className="absolute bottom-0 left-0 w-full p-8">
-                <div className="inline-block px-3 py-1 rounded-full text-xs font-medium mb-2 bg-blue-100 text-blue-800">
-                  {featuredEvent.category.charAt(0).toUpperCase() + featuredEvent.category.slice(1)}
-                </div>
-                <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">{featuredEvent.title}</h3>
-                <p className="text-white/90 mb-4">
-                  {formatDate(featuredEvent.date)} at {featuredEvent.time} | {featuredEvent.location}
+        <div className="max-w-5xl mx-auto overflow-hidden rounded-xl shadow-xl">
+          <div className="relative h-96 md:h-[500px]">
+            <img 
+              src={featuredEvent.image}
+              alt={featuredEvent.title}
+              className="w-full h-full object-cover transition-transform duration-500 transform group-hover:scale-105 rounded-t-xl"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 w-full p-8">
+              <div className="inline-block px-4 py-2 rounded-full text-sm font-medium mb-3 bg-blue-500 text-white shadow-lg">
+                {featuredEvent.category.charAt(0).toUpperCase() + featuredEvent.category.slice(1)}
+              </div>
+              <h3 className="text-3xl font-bold text-white mb-2">{featuredEvent.title}</h3>
+              <p className="text-white/80 mb-4 text-lg">
+                {formatDate(featuredEvent.date)} at {featuredEvent.time} | {featuredEvent.location}
+              </p>
+              <div className="flex gap-5">
+                <a 
+                  href={featuredEvent.registrationLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition-transform transform hover:scale-105"
+                >
+                  Register Now
+                </a>
+                <a 
+                  href={shareLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md flex items-center justify-center transition-transform transform hover:scale-105"
+                >
+                  <Share2 size={24} className="mr-2" />
+                  Share
+                </a>
+              </div>
+            </div>
+          </div>
+          <div className="p-8 bg-gray-800 rounded-b-xl">
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <h4 className="text-2xl font-semibold text-white mb-3">Event Details</h4>
+                <p className="text-lg opacity-80 leading-relaxed">
+                  {featuredEvent.description}
                 </p>
-                <div className="flex flex-wrap gap-3">
-                  <Button 
-                    onClick={onRegisterClick}
-                    variant="default"
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
-                    Register Now
-                  </Button>
-                  
-                  <a 
-                    href={whatsAppShareLink()} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex"
-                  >
-                    <Button 
-                      variant="secondary"
-                      className="bg-green-600 hover:bg-green-700 text-white gap-2 group"
-                    >
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        width="18" 
-                        height="18" 
-                        viewBox="0 0 24 24" 
-                        fill="white"
-                        className="group-hover:scale-110 transition-transform"
-                      >
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/>
-                      </svg>
-                    </Button>
-                  </a>
-                </div>
+              </div>
+              <div>
+                <h4 className="text-2xl font-semibold text-white mb-3">What to Expect</h4>
+                <ul className="list-disc list-inside text-lg opacity-80 space-y-2">
+                  <li>Insightful teachings from expert speakers</li>
+                  <li>Exclusive networking opportunities</li>
+                  <li>Dynamic workshops and Q&A sessions</li>
+                  <li>Live worship and spiritual renewal</li>
+                </ul>
               </div>
             </div>
           </div>
