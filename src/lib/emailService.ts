@@ -21,6 +21,9 @@ export const sendEventRegistrationEmail = async (eventName: string, registrantDa
     console.log("Sending event registration email for:", eventName);
     console.log("Registration data:", registrantData);
     
+    // Generate a unique check-in ID for this registration
+    const checkInId = crypto.randomUUID();
+    
     const { data, error } = await supabase.functions.invoke('send-email', {
       body: {
         to: ADMIN_EMAILS,
@@ -38,7 +41,9 @@ export const sendEventRegistrationEmail = async (eventName: string, registrantDa
         location: registrantData.location || 'https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7',
         eventDate: registrantData.eventDate || '2025-05-10',
         eventTime: registrantData.eventTime || '9:00 AM - 1:30 PM',
-        eventImage: registrantData.eventImage || 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg'
+        eventImage: registrantData.eventImage || 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg',
+        checkInId: checkInId, // Pass the unique check-in ID
+        attendeeEmail: registrantData.attendee.email // Pass the attendee email for personalized check-in
       }
     });
     

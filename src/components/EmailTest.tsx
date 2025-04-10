@@ -38,8 +38,8 @@ const EmailTest = () => {
       
       if (response.success) {
         toast.success("Test emails sent successfully!", {
-          description: "Check your admin email and the test recipient inbox for the enhanced confirmation.",
-          duration: 5000
+          description: "Check your admin email and the test recipient inbox for the enhanced confirmation with QR codes, calendar integration, and WhatsApp sharing.",
+          duration: 8000
         });
       } else {
         throw new Error(response.message || "Unknown error");
@@ -57,16 +57,17 @@ const EmailTest = () => {
   
   return (
     <div className="p-6 bg-white rounded-lg shadow-md max-w-md mx-auto mt-8">
-      <h2 className="text-2xl font-bold mb-4">Email Testing Tool</h2>
+      <h2 className="text-2xl font-bold mb-4">Enhanced Email Testing Tool</h2>
       <p className="mb-4 text-gray-600">
-        Click the button below to send a test event registration email with enhanced features:
-        <ul className="list-disc ml-5 mt-2">
-          <li>QR code for location</li>
-          <li>QR code for check-in</li>
-          <li>iCal calendar integration</li>
-          <li>WhatsApp sharing</li>
-        </ul>
+        Click the button below to send a test event registration email with these enhanced features:
       </p>
+      <ul className="list-disc ml-5 mt-2 mb-4 text-gray-600">
+        <li>QR code for location (Google Maps)</li>
+        <li>QR code for personalized check-in</li>
+        <li>iCal calendar integration (.ics file)</li>
+        <li>WhatsApp sharing with detailed event info</li>
+        <li>Personalized check-in ID</li>
+      </ul>
       <Button 
         onClick={handleTestEmail} 
         disabled={isSending}
