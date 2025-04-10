@@ -1,14 +1,7 @@
 
 // WhatsApp notification utilities
 
-interface WhatsAppNotificationProps {
-  phone: string;
-  eventName: string;
-  eventDate: string;
-  eventTime: string;
-  location: string;
-  checkInId: string;
-}
+import { WhatsAppNotificationProps } from "../types/emailTypes.ts";
 
 interface WhatsAppResult {
   success: boolean;
@@ -32,16 +25,25 @@ export async function sendWhatsAppNotification({
 }: WhatsAppNotificationProps): Promise<WhatsAppResult> {
   try {
     // Sanitize the phone number - remove non-numeric characters except +
-    const sanitizedPhone = phone.replace(/[^\d+]/g, '');
+    let sanitizedPhone = phone.replace(/[^\d+]/g, '');
     
-    if (!sanitizedPhone) {
+    // Ensure the phone number has a "+" prefix if it's missing
+    if (!sanitizedPhone.startsWith('+')) {
+      sanitizedPhone = '+' + sanitizedPhone;
+    }
+    
+    // Quick validation
+    if (sanitizedPhone.length < 8) {
+      console.error("Phone number too short:", sanitizedPhone);
       return {
         success: false,
-        message: "Invalid phone number"
+        message: "Invalid phone number: too short"
       };
     }
+    
+    console.log("Preparing WhatsApp notification for:", sanitizedPhone);
 
-    // Create the WhatsApp message
+    // Create the WhatsApp message with better formatting
     const message = `
 📅 *Event Registration Confirmation*
 

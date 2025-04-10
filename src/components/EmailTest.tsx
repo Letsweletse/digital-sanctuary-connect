@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 const EmailTest = () => {
   const [isSending, setIsSending] = useState(false);
   const [testEmail, setTestEmail] = useState('');
+  const [testPhone, setTestPhone] = useState('+267');
   
   const handleTestEmail = async () => {
     if (!testEmail || !testEmail.includes('@')) {
@@ -31,7 +32,7 @@ const EmailTest = () => {
           title: "Mr",
           name: "Test User",
           email: testEmail, // Use the email entered by the user
-          phone: "+267 123456789",
+          phone: testPhone, // Use the phone entered by the user
           role: "Individual",
           denomination: "Test Church",
           numberOfAttendees: 2
@@ -42,6 +43,7 @@ const EmailTest = () => {
       };
       
       console.log("Sending test email to:", testEmail);
+      console.log("Sending test WhatsApp to:", testPhone);
       
       // Send the test email with enhanced features
       const response = await sendEventRegistrationEmail("Perspectives on the Apostolic", testData);
@@ -53,6 +55,14 @@ const EmailTest = () => {
           description: `Check ${testEmail} for the enhanced confirmation with QR codes, calendar integration, and social media sharing options.`,
           duration: 8000
         });
+        
+        // Show additional notification if WhatsApp was sent
+        if (response.data?.whatsappNotificationSent) {
+          toast.success("WhatsApp notification prepared!", {
+            description: "A WhatsApp message link has been generated for the admin to send.",
+            duration: 5000
+          });
+        }
       } else {
         throw new Error(response.message || "Unknown error");
       }
@@ -71,7 +81,7 @@ const EmailTest = () => {
     <Card className="p-6 bg-white rounded-lg shadow-md max-w-md mx-auto mt-8">
       <h2 className="text-2xl font-bold mb-4">Enhanced Email Testing Tool</h2>
       <p className="mb-4 text-gray-600">
-        Enter your email below to receive a test event registration confirmation with enhanced features:
+        Enter your email and phone below to receive a test event registration confirmation with enhanced features:
       </p>
       <ul className="list-disc ml-5 mt-2 mb-4 text-gray-600">
         <li>Gate Gaborone logo in the header</li>
@@ -80,6 +90,7 @@ const EmailTest = () => {
         <li>Multiple social media sharing options (WhatsApp, Facebook, Twitter, LinkedIn, Email)</li>
         <li>Gate Gaborone social media follow links</li>
         <li>Personalized check-in ID</li>
+        <li>WhatsApp notification (if phone number provided)</li>
       </ul>
       
       <div className="mb-4">
@@ -92,6 +103,21 @@ const EmailTest = () => {
           placeholder="Enter your email"
           className="mt-1"
         />
+      </div>
+      
+      <div className="mb-4">
+        <Label htmlFor="testPhone">Your WhatsApp Number</Label>
+        <Input 
+          id="testPhone" 
+          type="tel" 
+          value={testPhone} 
+          onChange={(e) => setTestPhone(e.target.value)} 
+          placeholder="e.g. +267 71234567"
+          className="mt-1"
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          Include country code (e.g. +267 for Botswana)
+        </p>
       </div>
       
       <Button 
@@ -108,7 +134,7 @@ const EmailTest = () => {
             Sending Enhanced Test Email...
           </span>
         ) : (
-          "Send Enhanced Test Email"
+          "Send Enhanced Test Email & WhatsApp"
         )}
       </Button>
       <div className="mt-4 text-sm text-gray-500">

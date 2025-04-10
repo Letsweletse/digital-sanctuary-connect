@@ -24,7 +24,9 @@ export async function processEmailRequest(req: Request): Promise<Response> {
   try {
     console.log("Starting email processing");
     const body: EmailRequest = await req.json();
-    console.log("Received email request body:", JSON.stringify(body).substring(0, 200) + "...");
+    console.log("Received email request with keys:", Object.keys(body));
+    console.log("Event info:", body.eventName, body.eventDate, body.eventTime);
+    console.log("Contact details:", body.name, body.email, body.phone);
 
     const { 
       to, 
@@ -49,6 +51,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
 
     console.log("Processing email request for event:", eventName);
     console.log("Will send confirmation email:", sendConfirmation);
+    console.log("Phone number for WhatsApp:", phone);
 
     // Use more reliable QR code generation with higher resolution and clear borders
     const locationQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(location)}&size=300x300&margin=10&qzone=2&format=png`;
@@ -111,6 +114,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
 
     let confirmationSuccess = false;
     let whatsappNotificationSent = false;
+    let whatsappNotificationLink = "";
 
     // Send confirmation email if requested
     if (sendConfirmation) {
@@ -136,7 +140,6 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       });
 
       console.log("Sending confirmation email to:", email);
-      console.log("Confirmation HTML Content first 100 chars:", confirmationHtml.substring(0, 100));
       
       try {
         // Send confirmation email with explicit content type and debugging
@@ -157,8 +160,9 @@ export async function processEmailRequest(req: Request): Promise<Response> {
         confirmationSuccess = true;
         
         // Send WhatsApp notification if phone number is provided
-        if (phone) {
+        if (phone && phone.trim() !== '') {
           try {
+            console.log("Attempting to send WhatsApp notification to:", phone);
             const whatsappResult = await sendWhatsAppNotification({
               phone,
               eventName,
@@ -167,8 +171,17 @@ export async function processEmailRequest(req: Request): Promise<Response> {
               location,
               checkInId
             });
+            
             whatsappNotificationSent = whatsappResult.success;
+            whatsappNotificationLink = whatsappResult.directLink || "";
+            
             console.log("WhatsApp notification result:", whatsappResult);
+            
+            if (whatsappResult.success) {
+              console.log("✅ WhatsApp notification link generated successfully");
+            } else {
+              console.error("❌ WhatsApp notification failed:", whatsappResult.message);
+            }
           } catch (whatsappError) {
             console.error("Error sending WhatsApp notification:", whatsappError);
             // Don't throw here - we still want to return success for the email
@@ -189,6 +202,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
         adminEmailSent: true,
         confirmationEmailSent: confirmationSuccess,
         whatsappNotificationSent,
+        whatsappNotificationLink,
         checkInId: checkInId,
       }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
