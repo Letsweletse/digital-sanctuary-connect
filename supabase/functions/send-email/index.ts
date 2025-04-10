@@ -96,7 +96,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Generate event check-in QR code with personalized URL
     const checkInQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(checkInUrl)}&size=200x200&margin=10`;
 
-    // Prepare HTML content for the admin email
+    // Prepare HTML content for the admin email (simplified)
     let adminHtmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;">
         <h1 style="color: #3b82f6;">New Event Registration</h1>
@@ -110,7 +110,6 @@ const handler = async (req: Request): Promise<Response> => {
           <tr><td><strong>Role:</strong></td><td>${role}</td></tr>
           <tr><td><strong>Denomination:</strong></td><td>${denomination}</td></tr>
           <tr><td><strong>Message:</strong></td><td>${message}</td></tr>
-          <tr><td><strong>Location:</strong></td><td><a href="${location}" style="color: #3b82f6;">View on Map</a></td></tr>
           <tr><td><strong>Check-in ID:</strong></td><td>${checkInId}</td></tr>
         </table>
       </div>
@@ -232,13 +231,14 @@ END:VCALENDAR`;
       `;
 
       // Send the confirmation email with enhanced features
-      await resend.emails.send({
+      const emailResponse = await resend.emails.send({
         from: "Gate Gaborone <info@gategaborone.com>",
         to: [email],
         subject: `Registration Confirmation: ${eventName}`,
         html: confirmationHtml,
       });
 
+      console.log("Confirmation email sent:", emailResponse);
       confirmationSuccess = true;
     }
 
@@ -253,6 +253,7 @@ END:VCALENDAR`;
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (error: any) {
+    console.error("Error in send-email function:", error);
     return new Response(
       JSON.stringify({ success: false, error: error.message }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }

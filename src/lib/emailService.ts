@@ -1,4 +1,3 @@
-
 /**
  * Email service utility for sending notifications
  * Using Supabase Edge Functions
@@ -30,43 +29,52 @@ export const sendEventRegistrationEmail = async (eventName: string, registrantDa
     const eventTime = registrantData.eventTime || '9:00 AM - 1:30 PM';
     const eventImage = registrantData.eventImage || 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg';
     
-    const { data, error } = await supabase.functions.invoke('send-email', {
-      body: {
-        to: ADMIN_EMAILS,
-        subject: `New Registration for ${eventName}`,
-        name: registrantData.attendee.name,
-        email: registrantData.attendee.email,
-        title: registrantData.attendee.title,
-        role: registrantData.attendee.role,
-        denomination: registrantData.attendee.denomination,
-        phone: registrantData.attendee.phone,
-        message: registrantData.message || `numberOfAttendees: ${registrantData.attendee.numberOfAttendees}`,
-        eventName: eventName,
-        registrationType: registrantData.registrationType || 'Standard',
-        sendConfirmation: true, // Always enable sending confirmation email to the registrant
-        location: eventLocation,
-        eventDate: eventDate,
-        eventTime: eventTime,
-        eventImage: eventImage,
-        checkInId: checkInId, // Pass the unique check-in ID
-        attendeeEmail: registrantData.attendee.email // Pass the attendee email for personalized check-in
+    // Add some error handling for the edge function call
+    try {
+      const { data, error } = await supabase.functions.invoke('send-email', {
+        body: {
+          to: ADMIN_EMAILS,
+          subject: `New Registration for ${eventName}`,
+          name: registrantData.attendee.name,
+          email: registrantData.attendee.email,
+          title: registrantData.attendee.title,
+          role: registrantData.attendee.role,
+          denomination: registrantData.attendee.denomination,
+          phone: registrantData.attendee.phone,
+          message: registrantData.message || `numberOfAttendees: ${registrantData.attendee.numberOfAttendees}`,
+          eventName: eventName,
+          registrationType: registrantData.registrationType || 'Standard',
+          sendConfirmation: true, // Always enable sending confirmation email to the registrant
+          location: eventLocation,
+          eventDate: eventDate,
+          eventTime: eventTime,
+          eventImage: eventImage,
+          checkInId: checkInId, // Pass the unique check-in ID
+          attendeeEmail: registrantData.attendee.email // Pass the attendee email for personalized check-in
+        }
+      });
+      
+      if (error) {
+        console.error('Error sending event registration email:', error);
+        return { success: false, message: error.message };
       }
-    });
-    
-    if (error) {
-      console.error('Error sending event registration email:', error);
-      return { success: false, message: error.message };
+      
+      return {
+        success: true,
+        message: 'Email notification and confirmation sent successfully',
+        recipients: ADMIN_EMAILS,
+        timestamp: new Date().toISOString(),
+        data
+      };
+    } catch (invokeError) {
+      console.error('Error invoking edge function:', invokeError);
+      return { 
+        success: false, 
+        message: invokeError instanceof Error ? invokeError.message : 'Error invoking edge function'
+      };
     }
-    
-    return {
-      success: true,
-      message: 'Email notification and confirmation sent successfully',
-      recipients: ADMIN_EMAILS,
-      timestamp: new Date().toISOString(),
-      data
-    };
   } catch (error) {
-    console.error('Error sending event registration email:', error);
+    console.error('Error preparing event registration email:', error);
     return {
       success: false,
       message: error instanceof Error ? error.message : 'Unknown error occurred'

@@ -3,11 +3,20 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { sendEventRegistrationEmail } from '@/lib/emailService';
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
 
 const EmailTest = () => {
   const [isSending, setIsSending] = useState(false);
+  const [testEmail, setTestEmail] = useState('');
   
   const handleTestEmail = async () => {
+    if (!testEmail || !testEmail.includes('@')) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    
     setIsSending(true);
     
     try {
@@ -21,7 +30,7 @@ const EmailTest = () => {
         attendee: {
           title: "Mr",
           name: "Test User",
-          email: "test@example.com", // Replace with your actual email to receive the test
+          email: testEmail, // Use the email entered by the user
           phone: "+267 123456789",
           role: "Individual",
           denomination: "Test Church",
@@ -39,7 +48,7 @@ const EmailTest = () => {
       
       if (response.success) {
         toast.success("Test emails sent successfully!", {
-          description: "Check your admin email and the test recipient inbox for the enhanced confirmation with QR codes, calendar integration, and WhatsApp sharing.",
+          description: `Check ${testEmail} for the enhanced confirmation with QR codes, calendar integration, and WhatsApp sharing.`,
           duration: 8000
         });
       } else {
@@ -57,10 +66,10 @@ const EmailTest = () => {
   };
   
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md max-w-md mx-auto mt-8">
+    <Card className="p-6 bg-white rounded-lg shadow-md max-w-md mx-auto mt-8">
       <h2 className="text-2xl font-bold mb-4">Enhanced Email Testing Tool</h2>
       <p className="mb-4 text-gray-600">
-        Click the button below to send a test event registration email with these enhanced features:
+        Enter your email below to receive a test event registration confirmation with enhanced features:
       </p>
       <ul className="list-disc ml-5 mt-2 mb-4 text-gray-600">
         <li>QR code for location (Google Maps)</li>
@@ -69,6 +78,19 @@ const EmailTest = () => {
         <li>WhatsApp sharing with detailed event info</li>
         <li>Personalized check-in ID</li>
       </ul>
+      
+      <div className="mb-4">
+        <Label htmlFor="testEmail">Your Email</Label>
+        <Input 
+          id="testEmail" 
+          type="email" 
+          value={testEmail} 
+          onChange={(e) => setTestEmail(e.target.value)} 
+          placeholder="Enter your email"
+          className="mt-1"
+        />
+      </div>
+      
       <Button 
         onClick={handleTestEmail} 
         disabled={isSending}
@@ -88,9 +110,8 @@ const EmailTest = () => {
       </Button>
       <div className="mt-4 text-sm text-gray-500">
         <p>Admin recipients: otenggate@gmail.com, info@gategaborone.com, iblimenterprise@zohomail.com</p>
-        <p className="mt-1">Test recipient: test@example.com (change in code to your email)</p>
       </div>
-    </div>
+    </Card>
   );
 };
 

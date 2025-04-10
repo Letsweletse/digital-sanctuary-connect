@@ -63,6 +63,34 @@ export const useEventRegistration = () => {
   const handleSubmitRegistration = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Form validation
+    if (!formData.name.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter your name.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!formData.email.trim() || !formData.email.includes('@')) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!formData.phone.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter your phone number.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (!currentEvent) {
       toast({
         title: "Error",
@@ -81,7 +109,9 @@ export const useEventRegistration = () => {
         eventDate: formatDate(currentEvent.date),
         eventTime: currentEvent.time,
         eventImage: currentEvent.image, // Include event image for the confirmation email
-        location: currentEvent.location, // Include location for QR code in confirmation email
+        location: currentEvent.location.includes('http') 
+          ? currentEvent.location 
+          : 'https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7', // Use location URL or default to Gate Gaborone location
         attendee: {
           ...formData,
           phone: `${formData.countryCode} ${formData.phone}` // Format phone with country code
