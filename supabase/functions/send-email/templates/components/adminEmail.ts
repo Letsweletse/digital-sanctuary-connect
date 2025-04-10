@@ -1,5 +1,5 @@
 
-import { AdminEmailProps } from "../../types/emailTypes";
+import { AdminEmailProps } from "../../types/emailTypes.ts";
 
 export function generateAdminEmailContent({
   eventName,

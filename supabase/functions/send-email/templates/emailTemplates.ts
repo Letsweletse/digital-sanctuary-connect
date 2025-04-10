@@ -1,5 +1,5 @@
 
-import { AdminEmailProps, ConfirmationEmailProps } from "../types/emailTypes";
+import { AdminEmailProps, ConfirmationEmailProps } from "../types/emailTypes.ts";
 import { generateAdminEmailContent } from "./components/adminEmail";
 import { renderEmailHeader } from "./components/emailHeader";
 import { renderEventDetails } from "./components/eventDetails";
