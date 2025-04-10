@@ -77,6 +77,8 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       checkInId
     });
 
+    console.log("Sending admin email notification to:", to);
+    
     await resend.emails.send({
       from: "Gate Gaborone <info@gategaborone.com>",
       to,
@@ -88,6 +90,8 @@ export async function processEmailRequest(req: Request): Promise<Response> {
 
     // Send confirmation email if requested
     if (sendConfirmation) {
+      console.log("Generating confirmation email for:", email);
+      
       const confirmationHtml = generateConfirmationEmailContent({
         title,
         name,
@@ -107,11 +111,15 @@ export async function processEmailRequest(req: Request): Promise<Response> {
         whatsappShareUrl
       });
 
+      console.log("Sending confirmation email to:", email);
+      
       const emailResponse = await resend.emails.send({
         from: "Gate Gaborone <info@gategaborone.com>",
         to: [email],
         subject: `Registration Confirmation: ${eventName}`,
         html: confirmationHtml,
+        // Adding text version as fallback for clients that block HTML
+        text: `Thank you for registering for ${eventName}!\n\nEvent Details:\nDate: ${eventDate}\nTime: ${eventTime}\nLocation: ${location}\nCheck-in ID: ${checkInId}\n\nVisit https://gategaborone.com for more information.`,
       });
 
       console.log("Confirmation email sent:", emailResponse);

@@ -31,6 +31,11 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
     tiktok: "https://www.tiktok.com/"
   };
 
+  // Function to handle opening follow links
+  const openFollowLink = (url: string) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <section className="py-20 bg-gray-900 text-white">
       <div className="container mx-auto px-6 md:px-12 lg:px-16">
@@ -65,7 +70,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
             <p className="text-lg opacity-80 leading-relaxed mb-4">
               {featuredEvent.description}
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 mb-6">
               <Button 
                 onClick={onRegisterClick}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md"
@@ -149,6 +154,62 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+            </div>
+            
+            {/* Follow Us Section */}
+            <div className="mt-6 pt-6 border-t border-gray-700">
+              <h4 className="text-xl font-semibold mb-3">Follow Gate Gaborone</h4>
+              <div className="flex flex-wrap gap-3">
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  className="bg-transparent border-white/20 hover:bg-blue-600 hover:border-blue-600"
+                  onClick={() => openFollowLink('https://www.facebook.com/GateGaborone')}
+                >
+                  <Facebook className="h-5 w-5" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  className="bg-transparent border-white/20 hover:bg-pink-600 hover:border-pink-600"
+                  onClick={() => openFollowLink('https://www.instagram.com/gategaborone')}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-instagram">
+                    <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+                  </svg>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  className="bg-transparent border-white/20 hover:bg-red-600 hover:border-red-600"
+                  onClick={() => openFollowLink('https://www.youtube.com/@GateGaborone')}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-youtube">
+                    <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"></path>
+                    <path d="m10 15 5-3-5-3z"></path>
+                  </svg>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  className="bg-transparent border-white/20 hover:bg-black hover:border-black"
+                  onClick={() => openFollowLink('https://twitter.com/GateGaborone')}
+                >
+                  <Twitter className="h-5 w-5" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  className="bg-transparent border-white/20 hover:bg-black hover:border-black"
+                  onClick={() => openFollowLink('https://www.tiktok.com/')}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
+                  </svg>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
