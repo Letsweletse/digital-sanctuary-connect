@@ -27,15 +27,18 @@ const Events = () => {
   } = useEventRegistration();
   
   useEffect(() => {
-    const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Senior%20Pastor_1743598781352.jpeg";
-    const img = new Image();
-    img.onload = () => {
-      console.log("Senior Pastor image loaded successfully:", pastorImage);
-    };
-    img.onerror = () => {
-      console.error("Failed to load Senior Pastor image:", pastorImage);
-    };
-    img.src = pastorImage;
+    // Preload important images to ensure they're available for emails
+    const preloadImages = [
+      "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png",
+      "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg"
+    ];
+    
+    preloadImages.forEach(imgSrc => {
+      const img = new Image();
+      img.onload = () => console.log(`Preloaded image: ${imgSrc}`);
+      img.onerror = () => console.error(`Failed to preload image: ${imgSrc}`);
+      img.src = imgSrc;
+    });
   }, []);
   
   const filteredEvents = activeCategory === 'all' 

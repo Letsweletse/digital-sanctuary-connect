@@ -97,6 +97,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
         html: adminHtmlContent,
         text: `New registration for ${eventName} from ${name} (${email})`, // Plain text fallback
         headers: {
+          "X-Entity-Ref-ID": `admin-${checkInId}`, // Unique reference ID for admin email
           "Content-Type": "text/html; charset=UTF-8"
         }
       });
@@ -136,7 +137,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       console.log("Confirmation HTML Content first 100 chars:", confirmationHtml.substring(0, 100));
       
       try {
-        // CRITICAL FIX: Ensure proper content type and HTML rendering
+        // Send confirmation email with explicit content type and debugging
         const emailResponse = await resend.emails.send({
           from: "Gate Gaborone <info@gategaborone.com>",
           to: [email],
@@ -145,7 +146,8 @@ export async function processEmailRequest(req: Request): Promise<Response> {
           text: `Thank you for registering for ${eventName}!\n\nEvent Details:\nDate: ${eventDate}\nTime: ${eventTime}\nLocation: ${location}\nCheck-in ID: ${checkInId}\n\nVisit https://gategaborone.com for more information.`,
           headers: {
             "Content-Type": "text/html; charset=UTF-8",
-            "X-Entity-Ref-ID": checkInId // Add unique reference ID to prevent email threading
+            "X-Entity-Ref-ID": checkInId, // Add unique reference ID to prevent email threading
+            "X-Mailer": "ResendWithGateGaborone"
           }
         });
 
