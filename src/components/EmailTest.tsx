@@ -11,11 +11,12 @@ const EmailTest = () => {
     setIsSending(true);
     
     try {
-      // Create sample registration data
+      // Create sample registration data with enhanced event details
       const testData = {
-        event: "Test Event",
-        eventDate: "2025-04-10",
-        eventTime: "10:00 AM",
+        event: "Perspectives on the Apostolic",
+        eventDate: "2025-05-10",
+        eventTime: "9:00 AM - 1:30 PM",
+        eventImage: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg",
         attendee: {
           title: "Mr",
           name: "Test User",
@@ -26,17 +27,18 @@ const EmailTest = () => {
           numberOfAttendees: 2
         },
         message: "This is a test registration",
-        submitDate: new Date().toISOString()
+        submitDate: new Date().toISOString(),
+        location: "https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7" // Gate Gaborone location on Google Maps
       };
       
-      // Send the test email
-      const response = await sendEventRegistrationEmail("Test Event", testData);
+      // Send the test email with enhanced features
+      const response = await sendEventRegistrationEmail("Perspectives on the Apostolic", testData);
       
       console.log("Email test response:", response);
       
       if (response.success) {
         toast.success("Test emails sent successfully!", {
-          description: "Check your admin email and the test recipient inbox.",
+          description: "Check your admin email and the test recipient inbox for the enhanced confirmation.",
           duration: 5000
         });
       } else {
@@ -57,8 +59,13 @@ const EmailTest = () => {
     <div className="p-6 bg-white rounded-lg shadow-md max-w-md mx-auto mt-8">
       <h2 className="text-2xl font-bold mb-4">Email Testing Tool</h2>
       <p className="mb-4 text-gray-600">
-        Click the button below to send a test event registration email to admin accounts
-        and a confirmation email to the test recipient.
+        Click the button below to send a test event registration email with enhanced features:
+        <ul className="list-disc ml-5 mt-2">
+          <li>QR code for location</li>
+          <li>QR code for check-in</li>
+          <li>iCal calendar integration</li>
+          <li>WhatsApp sharing</li>
+        </ul>
       </p>
       <Button 
         onClick={handleTestEmail} 
@@ -71,10 +78,10 @@ const EmailTest = () => {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            Sending Test Email...
+            Sending Enhanced Test Email...
           </span>
         ) : (
-          "Send Test Email"
+          "Send Enhanced Test Email"
         )}
       </Button>
       <div className="mt-4 text-sm text-gray-500">
