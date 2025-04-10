@@ -13,6 +13,10 @@ const EmailTest = () => {
   const [testPhone, setTestPhone] = useState('+267');
   const [debugInfo, setDebugInfo] = useState<string | null>(null);
   const [emailsSent, setEmailsSent] = useState(0);
+  const [resendInfo, setResendInfo] = useState<{checked: boolean, message: string}>({
+    checked: false,
+    message: "Checking Resend API status..."
+  });
   
   // Load email count from localStorage on component mount
   useEffect(() => {
@@ -26,6 +30,38 @@ const EmailTest = () => {
   useEffect(() => {
     localStorage.setItem('emailTestCount', emailsSent.toString());
   }, [emailsSent]);
+  
+  // Check Resend API status on component mount
+  useEffect(() => {
+    const checkResendStatus = async () => {
+      try {
+        // Send a test notification to check Resend API status
+        const response = await fetch('/api/check-resend-status', {
+          method: 'POST'
+        }).then(res => res.json());
+        
+        if (response.success) {
+          setResendInfo({
+            checked: true,
+            message: `Resend API is active. ${response.message || ''}`
+          });
+        } else {
+          setResendInfo({
+            checked: true,
+            message: `Resend API issue: ${response.message || 'Unknown error'}`
+          });
+        }
+      } catch (error) {
+        setResendInfo({
+          checked: true,
+          message: "Could not check Resend API status. View browser console for details."
+        });
+        console.error("Error checking Resend API status:", error);
+      }
+    };
+    
+    checkResendStatus();
+  }, []);
   
   const handleTestEmail = async () => {
     if (!testEmail || !testEmail.includes('@')) {
@@ -121,10 +157,32 @@ const EmailTest = () => {
           </Button>
         </div>
         <p className="text-xs text-gray-600 mt-2">
-          Note: Resend API has rate limits (100-120 emails per day for free tier). 
-          If emails are not sending, you may have reached your limit.
+          <strong>Important:</strong> This counter only tracks emails sent from this browser session.
+          To check your actual Resend API usage, visit your Resend dashboard.
         </p>
       </div>
+      
+      {resendInfo.checked && (
+        <div className={`mb-4 p-3 rounded-md border ${
+          resendInfo.message.includes('active') 
+            ? 'bg-green-50 border-green-200' 
+            : 'bg-red-50 border-red-200'
+        }`}>
+          <p className="text-sm">
+            <strong>Resend API Status:</strong> {resendInfo.message}
+          </p>
+          <p className="text-xs mt-1">
+            <a 
+              href="https://resend.com/dashboard" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="underline text-blue-600 hover:text-blue-800"
+            >
+              Visit Resend Dashboard
+            </a> to check your actual usage and limits.
+          </p>
+        </div>
+      )}
       
       <p className="mb-4 text-gray-600">
         Enter your email and phone below to receive a test event registration confirmation with enhanced features:
