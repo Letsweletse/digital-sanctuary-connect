@@ -11,12 +11,13 @@ const EmailTest = () => {
     setIsSending(true);
     
     try {
-      // Create sample registration data with enhanced event details
+      // Create comprehensive sample registration data with all enhanced email features
       const testData = {
         event: "Perspectives on the Apostolic",
         eventDate: "2025-05-10",
         eventTime: "9:00 AM - 1:30 PM",
         eventImage: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg",
+        location: "https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7", // Gate Gaborone location on Google Maps
         attendee: {
           title: "Mr",
           name: "Test User",
@@ -28,7 +29,7 @@ const EmailTest = () => {
         },
         message: "This is a test registration",
         submitDate: new Date().toISOString(),
-        location: "https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7" // Gate Gaborone location on Google Maps
+        registrationType: "Standard"
       };
       
       // Send the test email with enhanced features

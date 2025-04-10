@@ -24,6 +24,12 @@ export const sendEventRegistrationEmail = async (eventName: string, registrantDa
     // Generate a unique check-in ID for this registration
     const checkInId = crypto.randomUUID();
     
+    // Ensure we have all the required data for the enhanced confirmation email
+    const eventLocation = registrantData.location || 'https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7';
+    const eventDate = registrantData.eventDate || '2025-05-10';
+    const eventTime = registrantData.eventTime || '9:00 AM - 1:30 PM';
+    const eventImage = registrantData.eventImage || 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg';
+    
     const { data, error } = await supabase.functions.invoke('send-email', {
       body: {
         to: ADMIN_EMAILS,
@@ -37,11 +43,11 @@ export const sendEventRegistrationEmail = async (eventName: string, registrantDa
         message: registrantData.message || `numberOfAttendees: ${registrantData.attendee.numberOfAttendees}`,
         eventName: eventName,
         registrationType: registrantData.registrationType || 'Standard',
-        sendConfirmation: true, // Enable sending confirmation email to the registrant
-        location: registrantData.location || 'https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7',
-        eventDate: registrantData.eventDate || '2025-05-10',
-        eventTime: registrantData.eventTime || '9:00 AM - 1:30 PM',
-        eventImage: registrantData.eventImage || 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg',
+        sendConfirmation: true, // Always enable sending confirmation email to the registrant
+        location: eventLocation,
+        eventDate: eventDate,
+        eventTime: eventTime,
+        eventImage: eventImage,
         checkInId: checkInId, // Pass the unique check-in ID
         attendeeEmail: registrantData.attendee.email // Pass the attendee email for personalized check-in
       }

@@ -75,23 +75,27 @@ export const useEventRegistration = () => {
     setIsSubmitting(true);
 
     try {
+      // Prepare comprehensive registration data with all required fields for enhanced email
       const registrationData = {
         event: currentEvent.title,
         eventDate: formatDate(currentEvent.date),
         eventTime: currentEvent.time,
+        eventImage: currentEvent.image, // Include event image for the confirmation email
+        location: currentEvent.location, // Include location for QR code in confirmation email
         attendee: {
           ...formData,
           phone: `${formData.countryCode} ${formData.phone}` // Format phone with country code
         },
         message: `Title: ${formData.title}, Role: ${formData.role}, Denomination: ${formData.denomination}, Number of Attendees: ${formData.numberOfAttendees}`,
-        submitDate: new Date().toISOString()
+        submitDate: new Date().toISOString(),
+        registrationType: 'Standard' // Can be customized if needed
       };
 
-      console.log('Registration submitted:', registrationData);
+      console.log('Registration submitted with enhanced email data:', registrationData);
       
-      // Send the email notification
+      // Send the email notification with enhanced features
       const emailResult = await sendEventRegistrationEmail(currentEvent.title, registrationData);
-      console.log('Email service response:', emailResult);
+      console.log('Enhanced email service response:', emailResult);
       
       if (!emailResult.success) {
         throw new Error(emailResult.message || "Failed to send registration email");
@@ -100,11 +104,11 @@ export const useEventRegistration = () => {
       // Show success message using both toasts for better visibility
       toast({
         title: "Registration Successful!",
-        description: `Thank you for registering for ${currentEvent.title}. A confirmation email has been sent to ${formData.email}.`,
+        description: `Thank you for registering for ${currentEvent.title}. A confirmation email with calendar integration, QR codes, and sharing options has been sent to ${formData.email}.`,
       });
       
       sonnerToast.success("Registration Complete!", {
-        description: "Thank you for your registration. Check your email for confirmation details.",
+        description: "Check your email for confirmation with QR codes and calendar link.",
         duration: 5000
       });
       
