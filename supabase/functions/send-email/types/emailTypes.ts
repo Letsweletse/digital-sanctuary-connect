@@ -51,3 +51,12 @@ export interface ConfirmationEmailProps {
   encodedIcsContent: string;
   whatsappShareUrl: string;
 }
+
+export interface WhatsAppNotificationProps {
+  phone: string;
+  eventName: string;
+  eventDate: string;
+  eventTime: string;
+  location: string;
+  checkInId: string;
+}

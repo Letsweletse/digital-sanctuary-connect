@@ -11,6 +11,7 @@ import {
   generateIcsContent 
 } from "../utils/calendarUtils.ts";
 import { EmailRequest } from "../types/emailTypes.ts";
+import { sendWhatsAppNotification } from "../utils/whatsappUtils.ts";
 
 // Initialize Resend with API key from environment variable
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
@@ -37,7 +38,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       title, 
       role, 
       denomination, 
-      phone, 
+      phone,
       location,
       eventDate = "2025-05-10",
       eventTime = "9:00 AM - 1:30 PM",
@@ -109,6 +110,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
     }
 
     let confirmationSuccess = false;
+    let whatsappNotificationSent = false;
 
     // Send confirmation email if requested
     if (sendConfirmation) {
@@ -153,6 +155,27 @@ export async function processEmailRequest(req: Request): Promise<Response> {
 
         console.log("Confirmation email sent:", emailResponse);
         confirmationSuccess = true;
+        
+        // Send WhatsApp notification if phone number is provided
+        if (phone) {
+          try {
+            const whatsappResult = await sendWhatsAppNotification({
+              phone,
+              eventName,
+              eventDate,
+              eventTime,
+              location,
+              checkInId
+            });
+            whatsappNotificationSent = whatsappResult.success;
+            console.log("WhatsApp notification result:", whatsappResult);
+          } catch (whatsappError) {
+            console.error("Error sending WhatsApp notification:", whatsappError);
+            // Don't throw here - we still want to return success for the email
+          }
+        } else {
+          console.log("No phone number provided for WhatsApp notification");
+        }
       } catch (confirmationError) {
         console.error("Error sending confirmation email:", confirmationError);
         throw new Error(`Confirmation email failed: ${confirmationError instanceof Error ? confirmationError.message : 'Unknown error'}`);
@@ -165,6 +188,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
         message: "Emails processed",
         adminEmailSent: true,
         confirmationEmailSent: confirmationSuccess,
+        whatsappNotificationSent,
         checkInId: checkInId,
       }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }

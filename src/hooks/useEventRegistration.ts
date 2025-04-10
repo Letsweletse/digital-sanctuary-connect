@@ -134,11 +134,13 @@ export const useEventRegistration = () => {
       // Show success message using both toasts for better visibility
       toast({
         title: "Registration Successful!",
-        description: `Thank you for registering for ${currentEvent.title}. A confirmation email with calendar integration, QR codes, and sharing options has been sent to ${formData.email}.`,
+        description: `Thank you for registering for ${currentEvent.title}. A confirmation has been sent to your email and WhatsApp (if provided).`,
       });
       
+      const whatsappNotificationSent = emailResult.data?.whatsappNotificationSent;
+      
       sonnerToast.success("Registration Complete!", {
-        description: "Check your email for confirmation with QR codes and calendar link.",
+        description: `Check your email${whatsappNotificationSent ? " and WhatsApp" : ""} for confirmation with event details.`,
         duration: 5000
       });
       
