@@ -125,6 +125,9 @@ export async function processEmailRequest(req: Request): Promise<Response> {
         html: confirmationHtml,
         // Adding text version as fallback for clients that block HTML
         text: `Thank you for registering for ${eventName}!\n\nEvent Details:\nDate: ${eventDate}\nTime: ${eventTime}\nLocation: ${location}\nCheck-in ID: ${checkInId}\n\nVisit https://gategaborone.com for more information.`,
+        headers: {
+          "Content-Type": "text/html; charset=UTF-8"
+        }
       });
 
       console.log("Confirmation email sent:", emailResponse);
