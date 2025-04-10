@@ -48,7 +48,7 @@ const EmailTest = () => {
       
       if (response.success) {
         toast.success("Test emails sent successfully!", {
-          description: `Check ${testEmail} for the enhanced confirmation with QR codes, calendar integration, and WhatsApp sharing.`,
+          description: `Check ${testEmail} for the enhanced confirmation with QR codes, calendar integration, and social media sharing options.`,
           duration: 8000
         });
       } else {
@@ -72,10 +72,11 @@ const EmailTest = () => {
         Enter your email below to receive a test event registration confirmation with enhanced features:
       </p>
       <ul className="list-disc ml-5 mt-2 mb-4 text-gray-600">
-        <li>QR code for location (Google Maps)</li>
-        <li>QR code for personalized check-in</li>
+        <li>Gate Gaborone logo in the header</li>
+        <li>Higher resolution QR codes for location and check-in</li>
         <li>iCal calendar integration (.ics file)</li>
-        <li>WhatsApp sharing with detailed event info</li>
+        <li>Multiple social media sharing options (WhatsApp, Facebook, Twitter, LinkedIn, Email)</li>
+        <li>Gate Gaborone social media follow links</li>
         <li>Personalized check-in ID</li>
       </ul>
       
