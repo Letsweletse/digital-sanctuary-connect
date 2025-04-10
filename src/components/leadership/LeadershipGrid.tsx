@@ -53,7 +53,14 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
       name: "Thabiso & Lesogo Thwane",
       role: "Church Elders",
       image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Thabiso%20&%20Lesogo%20Thwane_1743684836732.jpeg",
-      bio: "Thabiso and Lesogo with grace and dedication, bringing years of pastoral care experience to our congregation.."
+      bio: "Thabiso and Lesogo with grace and dedication, bringing years of pastoral care experience to our congregation."
+    },
+    {
+      id: "elder4",
+      name: "Pastor Cynthia Harman",
+      role: "Church Elder",
+      image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/pastor-cynthia-harman.jpg",
+      bio: "Pastor Cynthia Harman serves with compassion and wisdom, bringing valuable spiritual guidance to our congregation."
     }
   ];
 

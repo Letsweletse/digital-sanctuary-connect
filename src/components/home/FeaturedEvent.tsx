@@ -1,7 +1,15 @@
+
 import React from 'react';
 import { EventData } from '@/types/eventTypes';
 import { formatDate } from '@/utils/dateUtils';
-import { Share2 } from 'lucide-react';
+import { Share2, Facebook, Twitter, Linkedin, Mail, MessageCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface FeaturedEventProps {
   featuredEvent: EventData;
@@ -12,7 +20,16 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
   featuredEvent,
   onRegisterClick 
 }) => {
-  const shareLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(`Join us for ${featuredEvent.title}! Register here: ${featuredEvent.registrationLink}`)}&media=${encodeURIComponent(featuredEvent.image)}`;
+  const eventUrl = "https://gategaborone.com/events";
+  
+  const shareData = {
+    whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(`Join me for ${featuredEvent.title}! Register here: ${eventUrl}`)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(eventUrl)}`,
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Join me at ${featuredEvent.title}! Register here: ${eventUrl}`)}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(eventUrl)}`,
+    email: `mailto:?subject=${encodeURIComponent(`Join me at ${featuredEvent.title}`)}&body=${encodeURIComponent(`I'm attending ${featuredEvent.title} on ${formatDate(featuredEvent.date)} at ${featuredEvent.time}. You should join too! Register here: ${eventUrl}`)}`,
+    tiktok: "https://www.tiktok.com/"
+  };
 
   return (
     <section className="py-20 bg-gray-900 text-white">
@@ -48,24 +65,90 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
             <p className="text-lg opacity-80 leading-relaxed mb-4">
               {featuredEvent.description}
             </p>
-            <div className="flex gap-5">
-              <a 
-                href={featuredEvent.registrationLink} 
-                target="_blank" 
-                rel="noopener noreferrer"
+            <div className="flex flex-wrap gap-4">
+              <Button 
+                onClick={onRegisterClick}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md"
               >
                 Register Now
-              </a>
-              <a 
-                href={shareLink} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md flex items-center justify-center"
-              >
-                <Share2 size={24} className="mr-2" />
-                Share
-              </a>
+              </Button>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md flex items-center">
+                    <Share2 size={20} className="mr-2" />
+                    Share
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  <DropdownMenuItem asChild>
+                    <a 
+                      href={shareData.whatsapp} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <MessageCircle className="h-4 w-4 text-green-500" />
+                      <span>WhatsApp</span>
+                    </a>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <a 
+                      href={shareData.facebook} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <Facebook className="h-4 w-4 text-blue-600" />
+                      <span>Facebook</span>
+                    </a>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <a 
+                      href={shareData.twitter} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <Twitter className="h-4 w-4 text-black" />
+                      <span>Twitter/X</span>
+                    </a>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <a 
+                      href={shareData.linkedin} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <Linkedin className="h-4 w-4 text-blue-700" />
+                      <span>LinkedIn</span>
+                    </a>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <a 
+                      href={shareData.tiktok} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                        <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
+                      </svg>
+                      <span>TikTok</span>
+                    </a>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <a 
+                      href={shareData.email} 
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <Mail className="h-4 w-4 text-gray-500" />
+                      <span>Email</span>
+                    </a>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
