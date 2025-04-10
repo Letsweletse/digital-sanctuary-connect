@@ -1,3 +1,4 @@
+
 import React from 'react';
 import ProfileCard from './ProfileCard';
 import PastorCard from './PastorCard';
@@ -31,7 +32,7 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
     { title: "23rd February Sunday Sermon 2025", url: "https://www.youtube.com/watch?v=HxDFrJCwL4Y" }
   ];
 
-  // Elder data - Updated with Pastor Cynthia Harman added to the list
+  // Elder data - Updated with the new elders information
   const elders = [
     {
       id: "elder1",
@@ -53,13 +54,6 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
       role: "Church Elders",
       image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Thabiso%20&%20Lesogo%20Thwane_1743684836732.jpeg",
       bio: "Thabiso and Lesogo with grace and dedication, bringing years of pastoral care experience to our congregation.."
-    },
-    {
-      id: "elder4",
-      name: "Pastor Cynthia Harman",
-      role: "Church Elder",
-      image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/pastor-cynthia.jpg",
-      bio: "Pastor Cynthia Harman serves our congregation with compassion and spiritual insight, bringing valuable wisdom to our leadership team."
     }
   ];
 
@@ -84,7 +78,7 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
       {/* Elders Section */}
       <div>
         <h2 className="text-3xl font-bold text-center mb-8">Church Elders</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {elders.map(elder => (
             <ProfileCard 
               key={elder.id}
