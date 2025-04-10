@@ -1,17 +1,17 @@
 
 import { AdminEmailProps, ConfirmationEmailProps } from "../types/emailTypes.ts";
-import { generateAdminEmailContent } from "./components/adminEmail";
-import { renderEmailHeader } from "./components/emailHeader";
-import { renderEventDetails } from "./components/eventDetails";
-import { renderQrCodes } from "./components/qrCodes";
-import { renderCalendarAdd } from "./components/calendarAdd";
+import { generateAdminEmailContent } from "./components/adminEmail.ts";
+import { renderEmailHeader } from "./components/emailHeader.ts";
+import { renderEventDetails } from "./components/eventDetails.ts";
+import { renderQrCodes } from "./components/qrCodes.ts";
+import { renderCalendarAdd } from "./components/calendarAdd.ts";
 import { 
   getSocialIcons, 
   renderShareWithFriends, 
   renderFollowUs 
-} from "./components/socialShare";
-import { renderEmailFooter } from "./components/emailFooter";
-import { getEmailWrapper } from "./components/emailStyles";
+} from "./components/socialShare.ts";
+import { renderEmailFooter } from "./components/emailFooter.ts";
+import { getEmailWrapper } from "./components/emailStyles.ts";
 
 export { generateAdminEmailContent };
 
