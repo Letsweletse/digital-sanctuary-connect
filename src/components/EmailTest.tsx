@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { sendEventRegistrationEmail } from '@/lib/emailService';
 import { toast } from "sonner";
@@ -12,6 +12,20 @@ const EmailTest = () => {
   const [testEmail, setTestEmail] = useState('');
   const [testPhone, setTestPhone] = useState('+267');
   const [debugInfo, setDebugInfo] = useState<string | null>(null);
+  const [emailsSent, setEmailsSent] = useState(0);
+  
+  // Load email count from localStorage on component mount
+  useEffect(() => {
+    const savedCount = localStorage.getItem('emailTestCount');
+    if (savedCount) {
+      setEmailsSent(parseInt(savedCount, 10));
+    }
+  }, []);
+  
+  // Save email count to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('emailTestCount', emailsSent.toString());
+  }, [emailsSent]);
   
   const handleTestEmail = async () => {
     if (!testEmail || !testEmail.includes('@')) {
@@ -54,6 +68,9 @@ const EmailTest = () => {
       setDebugInfo(JSON.stringify(response, null, 2));
       
       if (response.success) {
+        // Increment email count on successful send
+        setEmailsSent(prev => prev + 1);
+        
         toast.success("Test emails sent successfully!", {
           description: `Check ${testEmail} for the enhanced confirmation with QR codes, calendar integration, and social media sharing options.`,
           duration: 8000
@@ -81,9 +98,34 @@ const EmailTest = () => {
     }
   };
   
+  const resetCounter = () => {
+    setEmailsSent(0);
+    localStorage.removeItem('emailTestCount');
+    toast.info("Email counter has been reset");
+  };
+  
   return (
     <Card className="p-6 bg-white rounded-lg shadow-md max-w-md mx-auto mt-8">
       <h2 className="text-2xl font-bold mb-4">Enhanced Email Testing Tool</h2>
+      
+      <div className="mb-4 p-3 bg-yellow-50 rounded-md border border-yellow-200">
+        <div className="flex justify-between items-center">
+          <h3 className="font-bold text-md">Emails Sent This Session: {emailsSent}</h3>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-xs"
+            onClick={resetCounter}
+          >
+            Reset Counter
+          </Button>
+        </div>
+        <p className="text-xs text-gray-600 mt-2">
+          Note: Resend API has rate limits (100-120 emails per day for free tier). 
+          If emails are not sending, you may have reached your limit.
+        </p>
+      </div>
+      
       <p className="mb-4 text-gray-600">
         Enter your email and phone below to receive a test event registration confirmation with enhanced features:
       </p>
