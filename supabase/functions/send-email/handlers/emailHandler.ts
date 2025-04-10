@@ -79,6 +79,9 @@ export async function processEmailRequest(req: Request): Promise<Response> {
 
     console.log("Sending admin email notification to:", to);
     
+    // Test log for debugging
+    console.log("Admin HTML Content first 100 chars:", adminHtmlContent.substring(0, 100));
+    
     await resend.emails.send({
       from: "Gate Gaborone <info@gategaborone.com>",
       to,
@@ -112,7 +115,9 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       });
 
       console.log("Sending confirmation email to:", email);
+      console.log("Confirmation HTML Content first 100 chars:", confirmationHtml.substring(0, 100));
       
+      // Set content type to ensure proper HTML rendering
       const emailResponse = await resend.emails.send({
         from: "Gate Gaborone <info@gategaborone.com>",
         to: [email],

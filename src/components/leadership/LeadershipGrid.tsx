@@ -61,6 +61,13 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
       role: "Church Elder",
       image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/pastor-cynthia-harman.jpg",
       bio: "Pastor Cynthia Harman serves with compassion and wisdom, bringing valuable spiritual guidance to our congregation."
+    },
+    {
+      id: "elder5",
+      name: "Dave & Monica",
+      role: "Church Elders",
+      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+      bio: "Dave and Monica serve the congregation with dedication and compassion, bringing valuable insights and pastoral care to our church family."
     }
   ];
 
