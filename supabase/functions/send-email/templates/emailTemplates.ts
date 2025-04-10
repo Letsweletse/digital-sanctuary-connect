@@ -80,19 +80,19 @@ export function generateConfirmationEmailContent({
   encodedIcsContent,
   whatsappShareUrl
 }: ConfirmationEmailProps): string {
-  // Fixed logo URL with full path to ensure visibility
+  // Using absolute URLs for all images to ensure email client compatibility
   const logoUrl = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png";
   
-  // Define social media icon URLs from a reliable source
+  // Social media icons with secure, reliable CDN URLs
   const socialIcons = {
-    whatsapp: "https://cdn4.iconfinder.com/data/icons/social-messaging-ui-color-shapes-2-free/128/social-whatsapp-circle-512.png",
-    facebook: "https://cdn4.iconfinder.com/data/icons/social-messaging-ui-color-shapes-2-free/128/social-facebook-circle-512.png",
-    twitter: "https://cdn4.iconfinder.com/data/icons/social-messaging-ui-color-shapes-2-free/128/social-twitter-circle-512.png",
-    linkedin: "https://cdn4.iconfinder.com/data/icons/social-messaging-ui-color-shapes-2-free/128/social-linkedin-circle-512.png",
-    email: "https://cdn4.iconfinder.com/data/icons/social-messaging-ui-color-shapes-2-free/128/social-gmail-circle-512.png",
-    youtube: "https://cdn4.iconfinder.com/data/icons/social-messaging-ui-color-shapes-2-free/128/social-youtube-circle-512.png",
-    instagram: "https://cdn4.iconfinder.com/data/icons/social-messaging-ui-color-shapes-2-free/128/social-instagram-circle-512.png",
-    tiktok: "https://cdn4.iconfinder.com/data/icons/logos-brands-7/512/tiktok_logo-512.png"
+    whatsapp: "https://cdn-icons-png.flaticon.com/512/3670/3670051.png",
+    facebook: "https://cdn-icons-png.flaticon.com/512/5968/5968764.png",
+    twitter: "https://cdn-icons-png.flaticon.com/512/5968/5968958.png", 
+    linkedin: "https://cdn-icons-png.flaticon.com/512/3536/3536505.png",
+    email: "https://cdn-icons-png.flaticon.com/512/561/561127.png",
+    youtube: "https://cdn-icons-png.flaticon.com/512/1384/1384060.png",
+    instagram: "https://cdn-icons-png.flaticon.com/512/2111/2111463.png",
+    tiktok: "https://cdn-icons-png.flaticon.com/512/3046/3046121.png"
   };
 
   return `
@@ -103,155 +103,202 @@ export function generateConfirmationEmailContent({
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Registration Confirmation</title>
+    <!--[if mso]>
     <style type="text/css">
-      /* Essential Email-Safe CSS */
-      body, html, table, tr, td, div, p, h1, h2, h3 {
+      .fallback-text {
+        font-family: Arial, sans-serif;
+      }
+    </style>
+    <![endif]-->
+    <style type="text/css">
+      /* Base styles for better email compatibility */
+      body, html {
         margin: 0;
         padding: 0;
-        font-family: Arial, sans-serif;
+        width: 100% !important;
+        font-family: 'Segoe UI', Arial, sans-serif;
         line-height: 1.5;
+        color: #333333;
       }
-      /* Force Outlook to provide normal text spacing */
-      .ExternalClass, .ExternalClass p, 
-      .ExternalClass span, .ExternalClass font, 
-      .ExternalClass td, .ExternalClass div {
-        line-height: 100%;
-      }
-      /* Prevent WebKit and Windows mobile from changing text sizes */
-      body, table, td, p, a, li, blockquote {
-        -ms-text-size-adjust: 100%;
-        -webkit-text-size-adjust: 100%;
-      }
-      /* Force Hotmail to display emails at full width */
-      .ExternalClass {
+      table {
+        border-spacing: 0;
+        border-collapse: collapse;
+        mso-table-lspace: 0pt;
+        mso-table-rspace: 0pt;
         width: 100%;
       }
-      /* Fix for Outlook iOS App */
-      @media only screen and (min-device-width: 414px) {
-        u ~ div .email-container {
-          min-width: 414px !important;
-        }
+      table td {
+        padding: 0;
+        vertical-align: top;
+        word-break: break-word; /* For long text handling */
       }
-      /* Ensure 100% width on all browsers */
-      table, td {
-        mso-table-lspace: 0pt !important;
-        mso-table-rspace: 0pt !important;
-      }
-      /* Reset styles */
       img {
         -ms-interpolation-mode: bicubic;
-        max-width: 100%;
         border: 0;
         height: auto;
         line-height: 100%;
         outline: none;
         text-decoration: none;
+        display: block;
       }
-      /* Fix for Yahoo Mail */
-      table {
-        border-spacing: 0 !important;
-        border-collapse: collapse !important;
-        table-layout: fixed !important;
+      p {
+        margin: 0 0 15px 0;
       }
-      /* Standard Styles */
+      .wrapper {
+        width: 100%;
+        table-layout: fixed;
+        background-color: #f8fafc;
+        padding: 20px 0;
+      }
       .main-table {
         width: 100%;
         max-width: 600px;
         margin: 0 auto;
         background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
       }
       .header {
+        background-color: #ffffff;
         padding: 20px;
         text-align: center;
-        background-color: #ffffff;
       }
       .content {
         padding: 20px;
       }
-      .footer {
-        padding: 20px;
-        text-align: center;
-        color: #6b7280;
-        font-size: 14px;
+      .section {
+        margin-bottom: 20px;
+      }
+      .blue-text {
+        color: #3b82f6;
       }
       .button {
         display: inline-block;
-        padding: 12px 24px;
         background-color: #3b82f6;
-        color: white !important;
+        color: #ffffff !important;
         text-decoration: none;
-        border-radius: 6px;
         font-weight: bold;
+        padding: 12px 24px;
+        border-radius: 6px;
+        text-align: center;
         mso-padding-alt: 12px 24px;
+      }
+      .social-icon {
+        width: 40px;
+        height: 40px;
+        display: inline-block;
+        margin: 0 5px;
+      }
+      .footer {
+        background-color: #f8fafc;
+        padding: 20px;
+        text-align: center;
+        font-size: 14px;
+        color: #6b7280;
+      }
+      .data-table {
+        width: 100%;
+        background-color: #f0f9ff;
+        border-left: 4px solid #3b82f6;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .data-table td {
+        padding: 8px;
+        border-bottom: 1px solid #e5e7eb;
+        word-break: break-word;
+      }
+      .data-table tr:last-child td {
+        border-bottom: none;
+      }
+      /* For all clients */
+      .qr-code-container {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        padding: 15px;
+        text-align: center;
+        vertical-align: top;
+      }
+      .qr-code {
+        max-width: 150px;
+        height: auto;
+        margin: 0 auto 10px auto;
+        border: 1px solid #e5e7eb;
+        padding: 5px;
+        background-color: #fff;
+        display: inline-block;
+      }
+      .social-container {
+        background-color: #f0f9ff;
+        border-radius: 8px;
+        padding: 20px;
         text-align: center;
       }
       .social-button {
         display: inline-block;
-        margin: 5px;
         text-align: center;
+        margin: 5px;
       }
-      .data-table {
-        width: 100%;
-        margin-bottom: 20px;
-        border-left: 4px solid #3b82f6;
-        background-color: #f0f9ff;
-      }
-      .data-table td {
-        padding: 8px;
-        word-break: break-word;
-      }
-      /* Make it responsive */
+      /* Mobile responsiveness */
       @media screen and (max-width: 600px) {
         .main-table {
           width: 100% !important;
-        }
-        .content {
-          padding: 10px !important;
         }
         .two-column {
           width: 100% !important;
           display: block !important;
         }
+        .two-column-spacer {
+          display: none !important;
+        }
+        .qr-code-container {
+          margin-bottom: 20px;
+        }
       }
     </style>
   </head>
-  <body style="margin: 0; padding: 0; background-color: #f8fafc; word-spacing: normal;">
-    <!-- Master Table -->
-    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc;">
+  <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: 'Segoe UI', Arial, sans-serif;">
+    <!-- Email Wrapper -->
+    <table class="wrapper" width="100%" cellpadding="0" cellspacing="0" border="0">
       <tr>
         <td align="center" valign="top">
-          <!-- Email Container -->
-          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; border: 1px solid #eaeaea; border-radius: 10px; overflow: hidden; margin: 20px auto;">
+          <!-- Main Email Container -->
+          <table class="main-table" width="600" cellpadding="0" cellspacing="0" border="0" style="border: 1px solid #eaeaea; border-radius: 8px; overflow: hidden;">
             <!-- Header with Logo -->
             <tr>
-              <td align="center" style="padding: 20px; background-color: #ffffff;">
-                <img src="${logoUrl}" alt="Gate Gaborone" width="180" style="display: block; margin: 0 auto; max-width: 180px; height: auto;" />
+              <td class="header" align="center" style="padding: 20px; background-color: #ffffff;">
+                <img src="${logoUrl}" alt="Gate Gaborone" width="180" style="max-width: 180px; height: auto; display: block; margin: 0 auto;" />
+              </td>
+            </tr>
+            
+            <!-- Event Header -->
+            <tr>
+              <td align="center" style="background-color: #f0f9ff; padding: 20px 20px 10px 20px;">
+                <h1 style="margin: 0; font-size: 24px; color: #000000; text-align: center;">${eventName}</h1>
               </td>
             </tr>
             
             <!-- Event Image -->
             <tr>
-              <td align="center" style="padding: 0 20px 20px 20px;">
-                <img src="${eventImage}" alt="${eventName}" style="display: block; width: 100%; max-width: 560px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+              <td align="center" style="padding: 0 20px 20px 20px; background-color: #f0f9ff;">
+                <img src="${eventImage}" alt="${eventName}" width="560" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
               </td>
             </tr>
             
-            <!-- Confirmation Header -->
+            <!-- Confirmation Message -->
             <tr>
-              <td align="left" style="padding: 0 20px 20px 20px;">
-                <h2 style="color: #3b82f6; text-align: center; margin-bottom: 20px;">Registration Confirmation</h2>
+              <td class="content" style="padding: 20px;">
+                <h2 style="margin: 0 0 15px 0; font-size: 22px; color: #3b82f6; text-align: center;">Registration Confirmation</h2>
                 <p style="margin-bottom: 15px;">Dear ${title} ${name},</p>
-                <p style="margin-bottom: 15px;">Thank you for registering for <strong>${eventName}</strong>.</p>
-              </td>
-            </tr>
-            
-            <!-- Event Details -->
-            <tr>
-              <td align="left" style="padding: 0 20px 20px 20px;">
-                <table border="0" cellpadding="0" cellspacing="0" class="data-table" style="border-radius: 4px; overflow: hidden;">
+                <p style="margin-bottom: 20px;">Thank you for registering for <strong>${eventName}</strong>.</p>
+                
+                <!-- Event Details Table -->
+                <table class="data-table" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 25px;">
                   <tr>
                     <td colspan="2" style="padding: 10px; background-color: #f0f9ff;">
-                      <h3 style="color: #3b82f6; margin: 0;">Event Details</h3>
+                      <h3 style="margin: 0; font-size: 18px; color: #3b82f6;">Event Details</h3>
                     </td>
                   </tr>
                   <tr>
@@ -296,20 +343,37 @@ export function generateConfirmationEmailContent({
             
             <!-- QR Codes Section -->
             <tr>
-              <td align="center" style="padding: 0 20px 20px 20px;">
-                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+              <td style="padding: 0 20px 20px 20px;">
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
                   <tr>
-                    <td width="50%" align="center" class="two-column" style="padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); vertical-align: top;">
-                      <h3 style="color: #3b82f6; margin-top: 0; margin-bottom: 15px;">Event Location</h3>
-                      <img src="${locationQrCodeUrl}" alt="Location QR Code" style="max-width: 150px; height: auto; margin-bottom: 10px; border: 1px solid #e5e7eb; padding: 5px; background-color: #fff;" />
-                      <p style="font-size: 14px; color: #6b7280; margin-bottom: 0;">Scan to open in Google Maps</p>
+                    <!-- Location QR Code -->
+                    <td class="two-column" width="48%" style="vertical-align: top;">
+                      <table class="qr-code-container" width="100%" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td align="center">
+                            <h3 style="margin: 0 0 15px 0; font-size: 18px; color: #3b82f6;">Event Location</h3>
+                            <img src="${locationQrCodeUrl}" alt="Location QR Code" class="qr-code" width="150" />
+                            <p style="font-size: 14px; color: #6b7280; margin: 0;">Scan to open in Google Maps</p>
+                          </td>
+                        </tr>
+                      </table>
                     </td>
-                    <td width="10" class="two-column" style="padding: 0; font-size: 0;">&nbsp;</td>
-                    <td width="50%" align="center" class="two-column" style="padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); vertical-align: top;">
-                      <h3 style="color: #3b82f6; margin-top: 0; margin-bottom: 15px;">Quick Check-In</h3>
-                      <img src="${checkInQrCodeUrl}" alt="Check-In QR Code" style="max-width: 150px; height: auto; margin-bottom: 10px; border: 1px solid #e5e7eb; padding: 5px; background-color: #fff;" />
-                      <p style="font-size: 14px; color: #6b7280; margin-bottom: 0;">Show this code at the door for faster check-in</p>
-                      <p style="font-size: 12px; color: #6b7280; margin-top: 5px; font-style: italic;">Your Check-in ID: ${checkInId}</p>
+                    
+                    <!-- Spacer for desktop view -->
+                    <td class="two-column-spacer" width="4%">&nbsp;</td>
+                    
+                    <!-- Check-in QR Code -->
+                    <td class="two-column" width="48%" style="vertical-align: top;">
+                      <table class="qr-code-container" width="100%" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td align="center">
+                            <h3 style="margin: 0 0 15px 0; font-size: 18px; color: #3b82f6;">Quick Check-In</h3>
+                            <img src="${checkInQrCodeUrl}" alt="Check-In QR Code" class="qr-code" width="150" />
+                            <p style="font-size: 14px; color: #6b7280; margin: 0;">Show this code at the door for faster check-in</p>
+                            <p style="font-size: 12px; color: #6b7280; margin-top: 5px; font-style: italic;">Your Check-in ID: ${checkInId}</p>
+                          </td>
+                        </tr>
+                      </table>
                     </td>
                   </tr>
                 </table>
@@ -318,17 +382,17 @@ export function generateConfirmationEmailContent({
             
             <!-- Add to Calendar -->
             <tr>
-              <td align="center" style="padding: 0 20px 20px 20px;">
-                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f0f9ff; border-radius: 8px;">
+              <td style="padding: 0 20px 20px 20px;">
+                <table class="social-container" width="100%" cellpadding="0" cellspacing="0" border="0">
                   <tr>
                     <td align="center" style="padding: 20px;">
-                      <h3 style="color: #3b82f6; margin-bottom: 15px;">Add to Calendar</h3>
-                      <a href="data:text/calendar;charset=utf8,${encodedIcsContent}" download="${eventName.replace(/\\s+/g, '-')}.ics" class="button" style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                      <h3 style="margin: 0 0 15px 0; font-size: 18px; color: #3b82f6;">Add to Calendar</h3>
+                      <a href="data:text/calendar;charset=utf8,${encodedIcsContent}" download="${eventName.replace(/\s+/g, '-')}.ics" class="button" style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: white !important; text-decoration: none; border-radius: 6px; font-weight: bold;">
                         📅 Add to Calendar
                       </a>
                       <p style="font-size: 14px; color: #6b7280; margin-top: 10px;">Works with Google Calendar, Apple Calendar, Outlook and more</p>
                       <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">
-                        Note: In Gmail, you may need to download the .ics file manually or use Google Calendar directly
+                        Gmail users: Right-click the button, select "Save link as..." to download the .ics file, then import it to your calendar
                       </p>
                     </td>
                   </tr>
@@ -338,59 +402,59 @@ export function generateConfirmationEmailContent({
             
             <!-- Share with Friends -->
             <tr>
-              <td align="center" style="padding: 0 20px 20px 20px;">
-                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f0f9ff; border-radius: 8px;">
+              <td style="padding: 0 20px 20px 20px;">
+                <table class="social-container" width="100%" cellpadding="0" cellspacing="0" border="0">
                   <tr>
                     <td align="center" style="padding: 20px;">
-                      <h3 style="color: #3b82f6; margin-bottom: 15px;">Share with Friends</h3>
+                      <h3 style="margin: 0 0 15px 0; font-size: 18px; color: #3b82f6;">Share with Friends</h3>
                       
-                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 450px;">
+                      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 450px;">
                         <tr>
                           <!-- WhatsApp -->
-                          <td align="center" style="padding: 5px;">
+                          <td align="center" style="padding: 5px; width: 16.66%;">
                             <a href="${whatsappShareUrl}" target="_blank" style="text-decoration: none; display: inline-block;">
-                              <img src="${socialIcons.whatsapp}" width="40" height="40" alt="WhatsApp" style="display: block; width: 40px; height: 40px;" />
-                              <span style="display: block; font-size: 12px; margin-top: 5px; color: #333;">WhatsApp</span>
+                              <img src="${socialIcons.whatsapp}" alt="WhatsApp" width="40" height="40" style="display: block; width: 40px; max-width: 40px; height: 40px;" />
+                              <span style="display: block; font-size: 12px; margin-top: 5px; color: #333333;">WhatsApp</span>
                             </a>
                           </td>
                           
                           <!-- Facebook -->
-                          <td align="center" style="padding: 5px;">
+                          <td align="center" style="padding: 5px; width: 16.66%;">
                             <a href="https://www.facebook.com/sharer/sharer.php?u=https://gategaborone.com/events" target="_blank" style="text-decoration: none; display: inline-block;">
-                              <img src="${socialIcons.facebook}" width="40" height="40" alt="Facebook" style="display: block; width: 40px; height: 40px;" />
-                              <span style="display: block; font-size: 12px; margin-top: 5px; color: #333;">Facebook</span>
+                              <img src="${socialIcons.facebook}" alt="Facebook" width="40" height="40" style="display: block; width: 40px; max-width: 40px; height: 40px;" />
+                              <span style="display: block; font-size: 12px; margin-top: 5px; color: #333333;">Facebook</span>
                             </a>
                           </td>
                           
                           <!-- Twitter/X -->
-                          <td align="center" style="padding: 5px;">
+                          <td align="center" style="padding: 5px; width: 16.66%;">
                             <a href="https://twitter.com/intent/tweet?text=Join%20me%20at%20${encodeURIComponent(eventName)}%20at%20Gate%20Gaborone!%20Register%20here:%20https://gategaborone.com/events" target="_blank" style="text-decoration: none; display: inline-block;">
-                              <img src="${socialIcons.twitter}" width="40" height="40" alt="Twitter" style="display: block; width: 40px; height: 40px;" />
-                              <span style="display: block; font-size: 12px; margin-top: 5px; color: #333;">Twitter/X</span>
+                              <img src="${socialIcons.twitter}" alt="Twitter" width="40" height="40" style="display: block; width: 40px; max-width: 40px; height: 40px;" />
+                              <span style="display: block; font-size: 12px; margin-top: 5px; color: #333333;">Twitter/X</span>
                             </a>
                           </td>
                           
                           <!-- LinkedIn -->
-                          <td align="center" style="padding: 5px;">
+                          <td align="center" style="padding: 5px; width: 16.66%;">
                             <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://gategaborone.com/events" target="_blank" style="text-decoration: none; display: inline-block;">
-                              <img src="${socialIcons.linkedin}" width="40" height="40" alt="LinkedIn" style="display: block; width: 40px; height: 40px;" />
-                              <span style="display: block; font-size: 12px; margin-top: 5px; color: #333;">LinkedIn</span>
+                              <img src="${socialIcons.linkedin}" alt="LinkedIn" width="40" height="40" style="display: block; width: 40px; max-width: 40px; height: 40px;" />
+                              <span style="display: block; font-size: 12px; margin-top: 5px; color: #333333;">LinkedIn</span>
                             </a>
                           </td>
                           
                           <!-- TikTok -->
-                          <td align="center" style="padding: 5px;">
+                          <td align="center" style="padding: 5px; width: 16.66%;">
                             <a href="https://www.tiktok.com/" target="_blank" style="text-decoration: none; display: inline-block;">
-                              <img src="${socialIcons.tiktok}" width="40" height="40" alt="TikTok" style="display: block; width: 40px; height: 40px;" />
-                              <span style="display: block; font-size: 12px; margin-top: 5px; color: #333;">TikTok</span>
+                              <img src="${socialIcons.tiktok}" alt="TikTok" width="40" height="40" style="display: block; width: 40px; max-width: 40px; height: 40px;" />
+                              <span style="display: block; font-size: 12px; margin-top: 5px; color: #333333;">TikTok</span>
                             </a>
                           </td>
                           
                           <!-- Email -->
-                          <td align="center" style="padding: 5px;">
+                          <td align="center" style="padding: 5px; width: 16.66%;">
                             <a href="mailto:?subject=Join%20me%20at%20${encodeURIComponent(eventName)}&body=I'm%20attending%20${encodeURIComponent(eventName)}%20at%20Gate%20Gaborone%20on%20${encodeURIComponent(eventDate)}%20at%20${encodeURIComponent(eventTime)}.%20You%20should%20join%20too!%20Register%20here:%20https://gategaborone.com/events" style="text-decoration: none; display: inline-block;">
-                              <img src="${socialIcons.email}" width="40" height="40" alt="Email" style="display: block; width: 40px; height: 40px;" />
-                              <span style="display: block; font-size: 12px; margin-top: 5px; color: #333;">Email</span>
+                              <img src="${socialIcons.email}" alt="Email" width="40" height="40" style="display: block; width: 40px; max-width: 40px; height: 40px;" />
+                              <span style="display: block; font-size: 12px; margin-top: 5px; color: #333333;">Email</span>
                             </a>
                           </td>
                         </tr>
@@ -405,46 +469,52 @@ export function generateConfirmationEmailContent({
             
             <!-- Follow Us -->
             <tr>
-              <td align="center" style="padding: 0 20px 20px 20px;">
-                <h3 style="color: #3b82f6; margin-bottom: 15px;">Follow Us</h3>
-                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 350px;">
+              <td style="padding: 0 20px 20px 20px;">
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
                   <tr>
-                    <td align="center" style="padding: 5px;">
-                      <a href="https://www.facebook.com/GateGaborone" target="_blank" style="text-decoration: none; display: inline-block;">
-                        <img src="${socialIcons.facebook}" width="40" height="40" alt="Facebook" style="display: block; width: 40px; height: 40px;" />
-                      </a>
-                    </td>
-                    <td align="center" style="padding: 5px;">
-                      <a href="https://www.instagram.com/gategaborone" target="_blank" style="text-decoration: none; display: inline-block;">
-                        <img src="${socialIcons.instagram}" width="40" height="40" alt="Instagram" style="display: block; width: 40px; height: 40px;" />
-                      </a>
-                    </td>
-                    <td align="center" style="padding: 5px;">
-                      <a href="https://www.youtube.com/@GateGaborone" target="_blank" style="text-decoration: none; display: inline-block;">
-                        <img src="${socialIcons.youtube}" width="40" height="40" alt="YouTube" style="display: block; width: 40px; height: 40px;" />
-                      </a>
-                    </td>
-                    <td align="center" style="padding: 5px;">
-                      <a href="https://twitter.com/GateGaborone" target="_blank" style="text-decoration: none; display: inline-block;">
-                        <img src="${socialIcons.twitter}" width="40" height="40" alt="Twitter/X" style="display: block; width: 40px; height: 40px;" />
-                      </a>
-                    </td>
-                    <td align="center" style="padding: 5px;">
-                      <a href="https://www.tiktok.com/" target="_blank" style="text-decoration: none; display: inline-block;">
-                        <img src="${socialIcons.tiktok}" width="40" height="40" alt="TikTok" style="display: block; width: 40px; height: 40px;" />
-                      </a>
+                    <td align="center">
+                      <h3 style="margin: 0 0 15px 0; font-size: 18px; color: #3b82f6;">Follow Us</h3>
+                      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 300px;">
+                        <tr>
+                          <td align="center" style="padding: 5px;">
+                            <a href="https://www.facebook.com/GateGaborone" target="_blank" style="text-decoration: none;">
+                              <img src="${socialIcons.facebook}" width="40" height="40" alt="Facebook" style="display: block; width: 40px; height: 40px;" />
+                            </a>
+                          </td>
+                          <td align="center" style="padding: 5px;">
+                            <a href="https://www.instagram.com/gategaborone" target="_blank" style="text-decoration: none;">
+                              <img src="${socialIcons.instagram}" width="40" height="40" alt="Instagram" style="display: block; width: 40px; height: 40px;" />
+                            </a>
+                          </td>
+                          <td align="center" style="padding: 5px;">
+                            <a href="https://www.youtube.com/@GateGaborone" target="_blank" style="text-decoration: none;">
+                              <img src="${socialIcons.youtube}" width="40" height="40" alt="YouTube" style="display: block; width: 40px; height: 40px;" />
+                            </a>
+                          </td>
+                          <td align="center" style="padding: 5px;">
+                            <a href="https://twitter.com/GateGaborone" target="_blank" style="text-decoration: none;">
+                              <img src="${socialIcons.twitter}" width="40" height="40" alt="Twitter/X" style="display: block; width: 40px; height: 40px;" />
+                            </a>
+                          </td>
+                          <td align="center" style="padding: 5px;">
+                            <a href="https://www.tiktok.com/" target="_blank" style="text-decoration: none;">
+                              <img src="${socialIcons.tiktok}" width="40" height="40" alt="TikTok" style="display: block; width: 40px; height: 40px;" />
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+                      <p style="font-size: 14px; color: #6b7280; margin-top: 5px;">Stay connected with Gate Gaborone</p>
                     </td>
                   </tr>
                 </table>
-                <p style="font-size: 14px; color: #6b7280; margin-top: 5px;">Stay connected with Gate Gaborone</p>
               </td>
             </tr>
             
             <!-- Footer -->
             <tr>
-              <td align="center" style="font-size: 14px; color: #6b7280; border-top: 1px solid #e5e7eb; padding: 20px;">
-                <p>If you have any questions, please contact us at <a href="mailto:info@gategaborone.com" style="color: #3b82f6;">info@gategaborone.com</a></p>
-                <p style="margin-bottom: 0;">© 2025 Gate Gaborone. All rights reserved.</p>
+              <td class="footer" style="padding: 20px; text-align: center; font-size: 14px; color: #6b7280; border-top: 1px solid #e5e7eb;">
+                <p style="margin-bottom: 10px;">If you have any questions, please contact us at <a href="mailto:info@gategaborone.com" style="color: #3b82f6;">info@gategaborone.com</a></p>
+                <p style="margin: 0;">© 2025 Gate Gaborone. All rights reserved.</p>
               </td>
             </tr>
           </table>

@@ -39,16 +39,16 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       attendeeEmail = email
     } = body;
 
-    // Generate higher resolution QR codes (300x300 pixels) with clearer borders for better visibility
-    const locationQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(location)}&size=300x300&margin=10&qzone=2`;
+    // Use more reliable QR code generation with higher resolution and clear borders
+    const locationQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(location)}&size=300x300&margin=10&qzone=2&format=png`;
     const checkInUrl = `https://gategaborone.com/check-in/${checkInId}?email=${encodeURIComponent(attendeeEmail)}`;
-    const checkInQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(checkInUrl)}&size=300x300&margin=10&qzone=2`;
+    const checkInQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(checkInUrl)}&size=300x300&margin=10&qzone=2&format=png`;
 
     // Format dates for calendar
     const { startDateFormatted, endDateFormatted, nowFormatted } = formatDateForCalendar(eventDate, eventTime);
     
-    // Create WhatsApp share URL with richer details
-    const whatsappShareText = `Hey! I just registered for ${eventName} at Gate Gaborone. You should come too! 🙌 Date: ${eventDate}, Time: ${eventTime}. Here's the link: https://gategaborone.com/events?register=${encodeURIComponent(eventName)}`;
+    // Create WhatsApp share URL with complete details
+    const whatsappShareText = `Hey! I just registered for ${eventName} at Gate Gaborone. Join me on ${eventDate} at ${eventTime}! Register here: https://gategaborone.com/events?register=${encodeURIComponent(eventName)}`;
     const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(whatsappShareText)}`;
 
     // Generate iCal content
