@@ -11,6 +11,7 @@ const EmailTest = () => {
   const [isSending, setIsSending] = useState(false);
   const [testEmail, setTestEmail] = useState('');
   const [testPhone, setTestPhone] = useState('+267');
+  const [debugInfo, setDebugInfo] = useState<string | null>(null);
   
   const handleTestEmail = async () => {
     if (!testEmail || !testEmail.includes('@')) {
@@ -19,6 +20,7 @@ const EmailTest = () => {
     }
     
     setIsSending(true);
+    setDebugInfo(null);
     
     try {
       // Create comprehensive sample registration data with all enhanced email features
@@ -49,6 +51,7 @@ const EmailTest = () => {
       const response = await sendEventRegistrationEmail("Perspectives on the Apostolic", testData);
       
       console.log("Email test response:", response);
+      setDebugInfo(JSON.stringify(response, null, 2));
       
       if (response.success) {
         toast.success("Test emails sent successfully!", {
@@ -68,6 +71,7 @@ const EmailTest = () => {
       }
     } catch (error) {
       console.error("Error sending test email:", error);
+      setDebugInfo(error instanceof Error ? error.message : "Unknown error");
       toast.error("Failed to send test emails", {
         description: error instanceof Error ? error.message : "Unknown error occurred",
         duration: 5000
@@ -137,6 +141,14 @@ const EmailTest = () => {
           "Send Enhanced Test Email & WhatsApp"
         )}
       </Button>
+
+      {debugInfo && (
+        <div className="mt-4 p-3 bg-gray-100 rounded-md">
+          <h3 className="font-bold text-sm mb-1">Debug Information:</h3>
+          <pre className="text-xs overflow-x-auto whitespace-pre-wrap">{debugInfo}</pre>
+        </div>
+      )}
+      
       <div className="mt-4 text-sm text-gray-500">
         <p>Admin recipients: otenggate@gmail.com, info@gategaborone.com, iblimenterprise@zohomail.com</p>
       </div>

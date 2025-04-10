@@ -15,14 +15,24 @@ import { sendWhatsAppNotification } from "../utils/whatsappUtils.ts";
 
 // Initialize Resend with API key from environment variable
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+console.log("RESEND_API_KEY available:", RESEND_API_KEY ? "Yes (length: " + RESEND_API_KEY.length + ")" : "No");
+
 if (!RESEND_API_KEY) {
-  console.error("CRITICAL ERROR: RESEND_API_KEY environment variable is not set!");
+  console.error("CRITICAL ERROR: RESEND_API_KEY environment variable is not set or empty!");
 }
+
 const resend = new Resend(RESEND_API_KEY);
 
 export async function processEmailRequest(req: Request): Promise<Response> {
   try {
     console.log("Starting email processing");
+    
+    // Verify Resend configuration
+    if (!RESEND_API_KEY) {
+      console.error("ERROR: Missing RESEND_API_KEY - cannot proceed with email sending");
+      throw new Error("RESEND_API_KEY not configured. Please set this environment variable in the Supabase Edge Functions settings.");
+    }
+    
     const body: EmailRequest = await req.json();
     console.log("Received email request with keys:", Object.keys(body));
     console.log("Event info:", body.eventName, body.eventDate, body.eventTime);
@@ -94,6 +104,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
     console.log("Sending admin email notification to:", to);
     
     try {
+      console.log("Attempting to send admin email via Resend...");
       const adminResult = await resend.emails.send({
         from: "Gate Gaborone <info@gategaborone.com>",
         to,
@@ -109,7 +120,15 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       console.log("Admin email sent successfully:", adminResult);
     } catch (adminEmailError) {
       console.error("Error sending admin email:", adminEmailError);
-      throw new Error(`Admin email failed: ${adminEmailError instanceof Error ? adminEmailError.message : 'Unknown error'}`);
+      const errorDetail = adminEmailError instanceof Error ? adminEmailError.message : 'Unknown error';
+      console.error("Error details:", errorDetail);
+      
+      // Check for common Resend API errors
+      if (errorDetail.includes("API key")) {
+        throw new Error(`Resend API key error: ${errorDetail} - Please check your RESEND_API_KEY configuration.`);
+      }
+      
+      throw new Error(`Admin email failed: ${errorDetail}`);
     }
 
     let confirmationSuccess = false;
@@ -191,7 +210,15 @@ export async function processEmailRequest(req: Request): Promise<Response> {
         }
       } catch (confirmationError) {
         console.error("Error sending confirmation email:", confirmationError);
-        throw new Error(`Confirmation email failed: ${confirmationError instanceof Error ? confirmationError.message : 'Unknown error'}`);
+        const errorDetail = confirmationError instanceof Error ? confirmationError.message : 'Unknown error';
+        console.error("Error details:", errorDetail);
+        
+        // Check for common Resend API errors
+        if (errorDetail.includes("API key")) {
+          throw new Error(`Resend API key error: ${errorDetail} - Please check your RESEND_API_KEY configuration.`);
+        }
+        
+        throw new Error(`Confirmation email failed: ${errorDetail}`);
       }
     }
 
@@ -204,6 +231,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
         whatsappNotificationSent,
         whatsappNotificationLink,
         checkInId: checkInId,
+        resendKeyConfigured: !!RESEND_API_KEY
       }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
@@ -214,6 +242,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
         success: false,
         message: `Email processing failed: ${error.message || "Unknown error"}`,
         error: error.message || "Unknown error",
+        resendKeyConfigured: !!RESEND_API_KEY
       }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
