@@ -32,6 +32,11 @@ async function sendEmail(requestBody: any) {
     
     console.log("Email function response:", data);
     
+    if (!data) {
+      console.error('No data returned from send-email function');
+      return { success: false, message: 'No response data from email service' };
+    }
+    
     return {
       success: true,
       message: 'Email sent successfully',

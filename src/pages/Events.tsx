@@ -9,9 +9,11 @@ import ChurchCalendarEmbed from '@/components/events/ChurchCalendarEmbed';
 import { events, categories } from '@/data/eventsData';
 import { formatDate } from '@/utils/dateUtils';
 import { useEventRegistration } from '@/hooks/useEventRegistration';
+import EmailTest from '@/components/EmailTest';
 
 const Events = () => {
   const [activeCategory, setActiveCategory] = useState('all');
+  const [showEmailTest, setShowEmailTest] = useState(false);
   
   const {
     isRegistrationOpen,
@@ -60,9 +62,17 @@ const Events = () => {
                 Stay connected with our church community through worship services, 
                 Bible studies, fellowship gatherings, and special events.
               </p>
+              <button 
+                onClick={() => setShowEmailTest(!showEmailTest)} 
+                className="mt-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-md text-sm"
+              >
+                {showEmailTest ? "Hide Email Test" : "Show Email Test"}
+              </button>
             </div>
           </div>
         </section>
+        
+        {showEmailTest && <EmailTest />}
         
         <section className="py-16">
           <div className="container mx-auto px-4">

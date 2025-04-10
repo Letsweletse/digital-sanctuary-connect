@@ -11,6 +11,7 @@ export function getEmailStyles(): string {
       color: #333333;
       -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
+      background-color: #f8fafc;
     }
     table {
       border-spacing: 0;
@@ -31,10 +32,24 @@ export function getEmailStyles(): string {
       text-decoration: none;
       display: block;
       -ms-interpolation-mode: bicubic;
+      max-width: 100%;
     }
     p {
       margin: 0 0 15px 0;
       display: block;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      color: #333333;
+      line-height: 1.3;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    a {
+      color: #3b82f6;
+      text-decoration: underline;
+    }
+    a:hover {
+      text-decoration: none;
     }
     .main-container {
       width: 100%;
@@ -44,6 +59,29 @@ export function getEmailStyles(): string {
       border-radius: 8px;
       overflow: hidden;
     }
+    
+    /* Fix for Outlook and older clients */
+    .ExternalClass {
+      width: 100%;
+    }
+    .ExternalClass,
+    .ExternalClass p,
+    .ExternalClass span,
+    .ExternalClass font,
+    .ExternalClass td,
+    .ExternalClass div {
+      line-height: 100%;
+    }
+    
+    /* Email client specific fixes */
+    @media all {
+      .ReadMsgBody { width: 100%; }
+      .ExternalClass { width: 100%; }
+      .ExternalClass * { line-height: 100%; }
+      .gmail-fix { display: none !important; }
+    }
+    
+    /* Mobile responsiveness */
     @media only screen and (max-width: 600px) {
       .two-col {
         width: 100% !important;
@@ -54,6 +92,25 @@ export function getEmailStyles(): string {
       }
       .qr-container {
         margin-bottom: 20px !important;
+      }
+      .mobile-padding {
+        padding: 15px !important;
+      }
+      .mobile-center {
+        text-align: center !important;
+      }
+      .mobile-full-width {
+        width: 100% !important;
+      }
+      .mobile-hidden {
+        display: none !important;
+      }
+      .mobile-stack {
+        display: block !important;
+      }
+      .mobile-img {
+        height: auto !important;
+        width: 100% !important;
       }
     }
   </style>
@@ -67,15 +124,21 @@ export function getEmailWrapper(content: string): string {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
   <title>Registration Confirmation</title>
   ${getEmailStyles()}
 </head>
 <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: Arial, sans-serif; width: 100% !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
+  <!-- Fix for Gmail on iOS -->
+  <div class="gmail-fix" style="white-space: nowrap; font: 15px courier; line-height: 0;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</div>
+  
   <!--[if mso]>
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
   <tr>
   <td align="center">
   <![endif]-->
+  
   <!-- Email Wrapper -->
   <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; padding: 20px 0;">
     <tr>
@@ -87,6 +150,7 @@ export function getEmailWrapper(content: string): string {
       </td>
     </tr>
   </table>
+  
   <!--[if mso]>
   </td>
   </tr>

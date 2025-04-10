@@ -12,11 +12,18 @@ import {
 } from "../utils/calendarUtils.ts";
 import { EmailRequest } from "../types/emailTypes.ts";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+// Initialize Resend with API key from environment variable
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+if (!RESEND_API_KEY) {
+  console.error("CRITICAL ERROR: RESEND_API_KEY environment variable is not set!");
+}
+const resend = new Resend(RESEND_API_KEY);
 
 export async function processEmailRequest(req: Request): Promise<Response> {
   try {
+    console.log("Starting email processing");
     const body: EmailRequest = await req.json();
+    console.log("Received email request body:", JSON.stringify(body).substring(0, 200) + "...");
 
     const { 
       to, 
@@ -38,6 +45,9 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       checkInId = uuidv4(),
       attendeeEmail = email
     } = body;
+
+    console.log("Processing email request for event:", eventName);
+    console.log("Will send confirmation email:", sendConfirmation);
 
     // Use more reliable QR code generation with higher resolution and clear borders
     const locationQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(location)}&size=300x300&margin=10&qzone=2&format=png`;
@@ -79,19 +89,23 @@ export async function processEmailRequest(req: Request): Promise<Response> {
 
     console.log("Sending admin email notification to:", to);
     
-    // Test log for debugging
-    console.log("Admin HTML Content first 100 chars:", adminHtmlContent.substring(0, 100));
-    
-    await resend.emails.send({
-      from: "Gate Gaborone <info@gategaborone.com>",
-      to,
-      subject,
-      html: adminHtmlContent,
-      text: `New registration for ${eventName} from ${name} (${email})`, // Plain text fallback
-      headers: {
-        "Content-Type": "text/html; charset=UTF-8"
-      }
-    });
+    try {
+      const adminResult = await resend.emails.send({
+        from: "Gate Gaborone <info@gategaborone.com>",
+        to,
+        subject,
+        html: adminHtmlContent,
+        text: `New registration for ${eventName} from ${name} (${email})`, // Plain text fallback
+        headers: {
+          "Content-Type": "text/html; charset=UTF-8"
+        }
+      });
+      
+      console.log("Admin email sent successfully:", adminResult);
+    } catch (adminEmailError) {
+      console.error("Error sending admin email:", adminEmailError);
+      throw new Error(`Admin email failed: ${adminEmailError instanceof Error ? adminEmailError.message : 'Unknown error'}`);
+    }
 
     let confirmationSuccess = false;
 
@@ -121,21 +135,26 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       console.log("Sending confirmation email to:", email);
       console.log("Confirmation HTML Content first 100 chars:", confirmationHtml.substring(0, 100));
       
-      // CRITICAL FIX: Ensure proper content type and HTML rendering
-      const emailResponse = await resend.emails.send({
-        from: "Gate Gaborone <info@gategaborone.com>",
-        to: [email],
-        subject: `Registration Confirmation: ${eventName}`,
-        html: confirmationHtml,
-        text: `Thank you for registering for ${eventName}!\n\nEvent Details:\nDate: ${eventDate}\nTime: ${eventTime}\nLocation: ${location}\nCheck-in ID: ${checkInId}\n\nVisit https://gategaborone.com for more information.`,
-        headers: {
-          "Content-Type": "text/html; charset=UTF-8",
-          "X-Entity-Ref-ID": checkInId // Add unique reference ID to prevent email threading
-        }
-      });
+      try {
+        // CRITICAL FIX: Ensure proper content type and HTML rendering
+        const emailResponse = await resend.emails.send({
+          from: "Gate Gaborone <info@gategaborone.com>",
+          to: [email],
+          subject: `Registration Confirmation: ${eventName}`,
+          html: confirmationHtml,
+          text: `Thank you for registering for ${eventName}!\n\nEvent Details:\nDate: ${eventDate}\nTime: ${eventTime}\nLocation: ${location}\nCheck-in ID: ${checkInId}\n\nVisit https://gategaborone.com for more information.`,
+          headers: {
+            "Content-Type": "text/html; charset=UTF-8",
+            "X-Entity-Ref-ID": checkInId // Add unique reference ID to prevent email threading
+          }
+        });
 
-      console.log("Confirmation email sent:", emailResponse);
-      confirmationSuccess = true;
+        console.log("Confirmation email sent:", emailResponse);
+        confirmationSuccess = true;
+      } catch (confirmationError) {
+        console.error("Error sending confirmation email:", confirmationError);
+        throw new Error(`Confirmation email failed: ${confirmationError instanceof Error ? confirmationError.message : 'Unknown error'}`);
+      }
     }
 
     return new Response(
@@ -150,6 +169,13 @@ export async function processEmailRequest(req: Request): Promise<Response> {
     );
   } catch (error: any) {
     console.error("Error processing email request:", error);
-    throw error;
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: `Email processing failed: ${error.message || "Unknown error"}`,
+        error: error.message || "Unknown error",
+      }),
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+    );
   }
 }
