@@ -19,3 +19,35 @@ export interface EmailRequest {
   checkInId?: string;
   attendeeEmail?: string;
 }
+
+export interface AdminEmailProps {
+  eventName: string;
+  registrationType: string;
+  title: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+  denomination: string;
+  message: string;
+  checkInId: string;
+}
+
+export interface ConfirmationEmailProps {
+  title: string;
+  name: string;
+  eventName: string;
+  eventDate: string;
+  eventTime: string;
+  eventImage: string;
+  registrationType: string;
+  role: string;
+  denomination: string;
+  phone: string;
+  location: string;
+  checkInId: string;
+  locationQrCodeUrl: string;
+  checkInQrCodeUrl: string;
+  encodedIcsContent: string;
+  whatsappShareUrl: string;
+}
