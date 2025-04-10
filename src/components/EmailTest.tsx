@@ -41,6 +41,8 @@ const EmailTest = () => {
         registrationType: "Standard"
       };
       
+      console.log("Sending test email to:", testEmail);
+      
       // Send the test email with enhanced features
       const response = await sendEventRegistrationEmail("Perspectives on the Apostolic", testData);
       

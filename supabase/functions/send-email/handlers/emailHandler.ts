@@ -87,6 +87,10 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       to,
       subject,
       html: adminHtmlContent,
+      text: `New registration for ${eventName} from ${name} (${email})`, // Plain text fallback
+      headers: {
+        "Content-Type": "text/html; charset=UTF-8"
+      }
     });
 
     let confirmationSuccess = false;
@@ -117,16 +121,16 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       console.log("Sending confirmation email to:", email);
       console.log("Confirmation HTML Content first 100 chars:", confirmationHtml.substring(0, 100));
       
-      // Set content type to ensure proper HTML rendering
+      // CRITICAL FIX: Ensure proper content type and HTML rendering
       const emailResponse = await resend.emails.send({
         from: "Gate Gaborone <info@gategaborone.com>",
         to: [email],
         subject: `Registration Confirmation: ${eventName}`,
         html: confirmationHtml,
-        // Adding text version as fallback for clients that block HTML
         text: `Thank you for registering for ${eventName}!\n\nEvent Details:\nDate: ${eventDate}\nTime: ${eventTime}\nLocation: ${location}\nCheck-in ID: ${checkInId}\n\nVisit https://gategaborone.com for more information.`,
         headers: {
-          "Content-Type": "text/html; charset=UTF-8"
+          "Content-Type": "text/html; charset=UTF-8",
+          "X-Entity-Ref-ID": checkInId // Add unique reference ID to prevent email threading
         }
       });
 

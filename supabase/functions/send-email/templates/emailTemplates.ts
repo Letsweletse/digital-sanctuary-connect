@@ -75,7 +75,7 @@ export function generateConfirmationEmailContent({
   
   const footerContent = renderEmailFooter();
   
-  // Combine all content sections
+  // Combine all content sections - ensure proper HTML structure and nesting
   const emailContent = `
     ${headerContent}
     

@@ -19,6 +19,8 @@ import { supabase } from "@/integrations/supabase/client";
  */
 async function sendEmail(requestBody: any) {
   try {
+    console.log("Invoking send-email function with data:", JSON.stringify(requestBody).substring(0, 200) + "...");
+    
     const { data, error } = await supabase.functions.invoke('send-email', {
       body: requestBody
     });
@@ -27,6 +29,8 @@ async function sendEmail(requestBody: any) {
       console.error('Error invoking send-email function:', error);
       return { success: false, message: error.message };
     }
+    
+    console.log("Email function response:", data);
     
     return {
       success: true,
@@ -80,6 +84,8 @@ export const sendEventRegistrationEmail = async (eventName: string, registrantDa
       checkInId: checkInId, // Pass the unique check-in ID
       attendeeEmail: registrantData.attendee.email // Pass the attendee email for personalized check-in
     };
+    
+    console.log("Sending email with request body:", JSON.stringify(emailRequestBody).substring(0, 200) + "...");
     
     const result = await sendEmail(emailRequestBody);
     
