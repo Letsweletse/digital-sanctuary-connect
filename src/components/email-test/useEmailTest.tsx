@@ -133,14 +133,14 @@ export const useEmailTest = () => {
         let errorMessage = response.message || "Unknown error";
         let errorDetails = "";
         
-        // Check for Resend validation errors
-        if (response.error && response.error.includes("validation_error")) {
+        // Check for Resend validation errors in the response message
+        if (response.message && response.message.includes("validation_error")) {
           errorMessage = "Validation error from email provider";
           errorDetails = "The email service reported invalid data. Please check your inputs and try again.";
         }
         
-        // Check for Resend API key issues
-        if (response.error && response.error.includes("API key")) {
+        // Check for Resend API key issues in the response message
+        if (response.message && response.message.includes("API key")) {
           errorMessage = "API key error";
           errorDetails = "There may be an issue with the Resend API key configuration.";
         }
