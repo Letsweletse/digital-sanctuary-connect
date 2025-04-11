@@ -91,6 +91,16 @@ export function useEmailTest() {
   const [formData, setFormData] = useState<EmailTestFormData>(defaultFormData);
   const [status, setStatus] = useState<EmailStatus>(initialStatus);
   const [edgeFunction, setEdgeFunction] = useState<string>('send-email');
+  
+  // Add these properties needed by EmailTest component
+  const [testEmail, setTestEmail] = useState<string>('');
+  const [testPhone, setTestPhone] = useState<string>('+267');
+  const [emailsSent, setEmailsSent] = useState<number>(0);
+  const [debugInfo, setDebugInfo] = useState<string | null>(null);
+  const [resendInfo, setResendInfo] = useState<{ checked: boolean; message: string }>({
+    checked: false,
+    message: 'Not checked yet'
+  });
 
   // Handle form input changes
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -115,6 +125,112 @@ export function useEmailTest() {
     setFormData(defaultFormData);
     setStatus(initialStatus);
   }, []);
+
+  // Reset email counter
+  const resetCounter = useCallback(() => {
+    setEmailsSent(0);
+  }, []);
+
+  // Function to handle test email sending
+  const handleTestEmail = useCallback(async () => {
+    if (!testEmail) return;
+    
+    setStatus(prev => ({
+      ...prev,
+      isSending: true,
+      isSuccess: null,
+      error: null,
+      message: null
+    }));
+    
+    setDebugInfo(null);
+    
+    try {
+      // Prepare the test email data
+      const testEmailData = {
+        to: [testEmail],
+        subject: 'Event Registration Confirmation - Gate Gaborone',
+        name: 'Test User',
+        email: testEmail,
+        phone: testPhone,
+        message: 'This is a test event registration.',
+        eventName: 'Sunday Service',
+        eventDate: '2025-04-14',
+        eventTime: '09:00 AM - 11:00 AM',
+        location: 'Gate Gaborone Church, Block 10',
+        sendConfirmation: true,
+        checkInId: Date.now().toString(),
+        isTestEmail: true
+      };
+      
+      console.log('Sending test email with data:', testEmailData);
+      
+      const { data, error } = await supabase.functions.invoke<EmailResponse>('send-email', {
+        body: testEmailData
+      });
+      
+      if (error) {
+        throw new Error(`Failed to invoke function: ${error.message}`);
+      }
+      
+      console.log('Email test response:', data);
+      
+      if (!data) {
+        throw new Error('No response received');
+      }
+      
+      // For debugging
+      setDebugInfo(JSON.stringify(data, null, 2));
+      
+      if (data.success) {
+        setStatus({
+          isSending: false,
+          isSuccess: true,
+          adminEmailSent: data.data?.adminEmailSent || false,
+          confirmationEmailSent: data.data?.confirmationEmailSent || true,
+          whatsappSent: data.data?.whatsappNotificationSent || false,
+          whatsappLink: data.data?.whatsappNotificationLink || null,
+          resendKeyConfigured: true,
+          message: 'Test email sent successfully!',
+          error: null,
+          lastSentTo: testEmail
+        });
+        // Increment sent counter
+        setEmailsSent(prev => prev + 1);
+      } else {
+        setStatus({
+          isSending: false,
+          isSuccess: false,
+          adminEmailSent: false,
+          confirmationEmailSent: false,
+          whatsappSent: false,
+          whatsappLink: null,
+          resendKeyConfigured: data.data?.resendKeyConfigured || false,
+          message: null,
+          error: data.error || data.message || 'Failed to send test email',
+          lastSentTo: testEmail
+        });
+      }
+    } catch (err) {
+      console.error('Error sending test email:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      
+      setStatus({
+        isSending: false,
+        isSuccess: false,
+        adminEmailSent: false,
+        confirmationEmailSent: false,
+        whatsappSent: false,
+        whatsappLink: null,
+        resendKeyConfigured: null,
+        message: null,
+        error: errorMessage,
+        lastSentTo: testEmail
+      });
+      
+      setDebugInfo(errorMessage);
+    }
+  }, [testEmail, testPhone]);
 
   // Function to send a test email
   const sendTestEmail = useCallback(async () => {
@@ -251,6 +367,11 @@ export function useEmailTest() {
       }
       
       if (data) {
+        setResendInfo({
+          checked: true,
+          message: data.keyConfigured ? 'API key is active and properly configured' : 'API key is missing or invalid'
+        });
+        
         setStatus(prev => ({
           ...prev,
           isSending: false,
@@ -264,6 +385,11 @@ export function useEmailTest() {
     } catch (err) {
       console.error('Error checking Resend key status:', err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      
+      setResendInfo({
+        checked: true,
+        message: 'Failed to check API key status'
+      });
       
       setStatus(prev => ({
         ...prev,
@@ -281,6 +407,17 @@ export function useEmailTest() {
     handleInputChange,
     sendTestEmail,
     resetForm,
-    checkResendKeyStatus
+    checkResendKeyStatus,
+    // Add these to fix the TypeScript errors
+    isSending: status.isSending,
+    testEmail,
+    setTestEmail,
+    testPhone,
+    setTestPhone,
+    debugInfo,
+    emailsSent,
+    resendInfo,
+    handleTestEmail,
+    resetCounter
   };
 }

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import EmailStatusPanel from './EmailStatusPanel';
 import EmailTestForm from './EmailTestForm';
@@ -17,8 +17,14 @@ const EmailTest = () => {
     emailsSent,
     resendInfo,
     handleTestEmail,
-    resetCounter
+    resetCounter,
+    checkResendKeyStatus
   } = useEmailTest();
+  
+  // Check Resend API key status on component mount
+  useEffect(() => {
+    checkResendKeyStatus();
+  }, [checkResendKeyStatus]);
   
   return (
     <Card className="p-6 bg-white rounded-lg shadow-md max-w-md mx-auto mt-8">
