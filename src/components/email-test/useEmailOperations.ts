@@ -81,6 +81,11 @@ export function useEmailOperations(emailForm: any) {
     resendInfo,
     handleTestEmail,
     resetCounter,
-    checkResendKeyStatus: checkResendStatus
+    checkResendKeyStatus: checkResendStatus,
+    // Export these methods so they can be used in useEmailTest
+    setSendingStatus,
+    setSuccessStatus,
+    setErrorStatus,
+    updateDebugInfo
   };
 }
