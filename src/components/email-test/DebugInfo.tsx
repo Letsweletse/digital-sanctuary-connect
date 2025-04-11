@@ -13,6 +13,13 @@ const DebugInfo = ({ debugInfo }: DebugInfoProps) => {
                             debugInfo.includes('Validation error') ||
                             debugInfo.includes('400');
   
+  // Check if we have a delivery report
+  const hasDeliveryReport = debugInfo.includes('EMAIL DELIVERY MONITORING REPORT');
+  
+  // Check if we have SMS notification info
+  const hasSmsInfo = debugInfo.includes('smsNotificationSent') ||
+                    debugInfo.includes('smsNotificationDetails');
+  
   return (
     <div className={`mt-4 p-3 rounded-md ${hasValidationError ? 'bg-red-50 border border-red-200' : 'bg-gray-100'}`}>
       <h3 className={`font-bold text-sm mb-1 ${hasValidationError ? 'text-red-600' : ''}`}>
@@ -30,6 +37,20 @@ const DebugInfo = ({ debugInfo }: DebugInfoProps) => {
             <li>Missing "from" email (must use a verified domain or Resend's shared domains)</li>
             <li>API key permissions issues (check if your API key has sending privileges)</li>
           </ul>
+        </div>
+      )}
+      
+      {hasDeliveryReport && (
+        <div className="mb-2 text-sm text-green-600">
+          <p className="font-medium">📊 Email Delivery Report Available</p>
+          <p className="text-xs mt-1">The response includes detailed delivery logs and statistics</p>
+        </div>
+      )}
+      
+      {hasSmsInfo && (
+        <div className="mb-2 text-sm text-blue-600">
+          <p className="font-medium">📱 SMS Notification Information</p>
+          <p className="text-xs mt-1">Check below for SMS delivery status</p>
         </div>
       )}
       

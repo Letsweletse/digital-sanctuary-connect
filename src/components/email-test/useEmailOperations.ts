@@ -37,7 +37,11 @@ export function useEmailOperations(emailForm: any) {
       location: 'Gate Gaborone Church, Block 10',
       sendConfirmation: true,
       checkInId: Date.now().toString(),
-      isTestEmail: true
+      isTestEmail: true,
+      sendSms: true, // Enable SMS notifications for testing
+      title: 'Mr',
+      role: 'Member',
+      denomination: 'Non-denominational'
     };
     
     const result = await sendTestEmail(testEmailData);

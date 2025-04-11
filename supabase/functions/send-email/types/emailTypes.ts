@@ -18,6 +18,7 @@ export interface EmailRequest {
   eventImage?: string;
   checkInId?: string;
   attendeeEmail?: string;
+  sendSms?: boolean;
 }
 
 export interface AdminEmailProps {
@@ -59,4 +60,22 @@ export interface WhatsAppNotificationProps {
   eventTime: string;
   location: string;
   checkInId: string;
+}
+
+export interface SMSNotificationProps {
+  phone: string;
+  eventName: string;
+  eventDate: string;
+  eventTime: string;
+  location: string;
+  checkInId: string;
+}
+
+export interface EmailDeliveryLog {
+  timestamp: string;
+  recipient: string;
+  emailType: 'admin' | 'confirmation';
+  messageId?: string;
+  status: 'sent' | 'failed';
+  details?: any;
 }

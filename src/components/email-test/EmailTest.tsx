@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import EmailStatusPanel from './EmailStatusPanel';
 import EmailTestForm from './EmailTestForm';
 import DebugInfo from './DebugInfo';
+import EmailDeliveryLogs from './EmailDeliveryLogs';
 import { useEmailTest } from './useEmailTest';
 
 const EmailTest = () => {
@@ -47,16 +48,22 @@ const EmailTest = () => {
 
       <DebugInfo debugInfo={debugInfo} />
       
+      <EmailDeliveryLogs />
+      
       <div className="mt-4 text-sm text-gray-500 border-t pt-4">
-        <p className="font-medium mb-1">Common validation error troubleshooting:</p>
+        <p className="font-medium mb-1">Communication methods implemented:</p>
         <ul className="list-disc ml-5 text-xs space-y-1">
-          <li>Ensure all recipient emails are valid</li>
-          <li>Check that your Resend API key is valid and has send permissions</li>
-          <li>Verify that your sender domain is verified in Resend dashboard</li>
-          <li>Make sure you haven't exceeded Resend's free tier limits (~100 emails/day)</li>
-          <li>Check that email content doesn't contain invalid characters</li>
+          <li>Email notifications via Resend API</li>
+          <li>SMS notifications via Twilio (when configured)</li>
+          <li>WhatsApp link generation as fallback</li>
+          <li>Comprehensive delivery tracking and logging</li>
         </ul>
-        <p className="mt-2 text-xs">Admin recipients: otenggate@gmail.com, info@gategaborone.com, iblimenterprise@zohomail.com</p>
+        <p className="mt-2 text-xs">To enable SMS, add Twilio credentials in Supabase Edge Function secrets:</p>
+        <ul className="list-disc ml-5 text-xs">
+          <li>TWILIO_ACCOUNT_SID</li>
+          <li>TWILIO_AUTH_TOKEN</li>
+          <li>TWILIO_PHONE_NUMBER</li>
+        </ul>
       </div>
     </Card>
   );

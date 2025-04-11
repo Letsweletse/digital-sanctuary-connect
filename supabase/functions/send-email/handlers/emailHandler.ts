@@ -12,6 +12,8 @@ import {
 } from "../utils/calendarUtils.ts";
 import { EmailRequest } from "../types/emailTypes.ts";
 import { sendWhatsAppNotification } from "../utils/whatsappUtils.ts";
+import { sendSmsNotification } from "../utils/smsUtils.ts";
+import { logEmailDelivery, generateDeliveryReport } from "../utils/emailLogging.ts";
 
 // Initialize Resend with API key from environment variable
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
@@ -56,12 +58,14 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       eventTime = "9:00 AM - 1:30 PM",
       eventImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg",
       checkInId = uuidv4(),
-      attendeeEmail = email
+      attendeeEmail = email,
+      sendSms = true // Enable SMS by default
     } = body;
 
     console.log("Processing email request for event:", eventName);
     console.log("Will send confirmation email:", sendConfirmation);
-    console.log("Phone number for WhatsApp:", phone);
+    console.log("Phone number for notifications:", phone);
+    console.log("SMS notifications enabled:", sendSms);
 
     // Use more reliable QR code generation with higher resolution and clear borders
     const locationQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(location)}&size=300x300&margin=10&qzone=2&format=png`;
@@ -102,6 +106,8 @@ export async function processEmailRequest(req: Request): Promise<Response> {
     });
 
     console.log("Sending admin email notification to:", to);
+    let adminEmailSuccess = false;
+    let adminEmailId = null;
     
     try {
       console.log("Attempting to send admin email via Resend...");
@@ -118,10 +124,30 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       });
       
       console.log("Admin email sent successfully:", adminResult);
+      adminEmailSuccess = true;
+      adminEmailId = adminResult.id;
+      
+      // Log successful admin email delivery
+      to.forEach(recipient => {
+        logEmailDelivery(recipient, 'admin', 'sent', {
+          subject,
+          eventName,
+          from: email
+        }, adminResult.id);
+      });
     } catch (adminEmailError) {
       console.error("Error sending admin email:", adminEmailError);
       const errorDetail = adminEmailError instanceof Error ? adminEmailError.message : 'Unknown error';
       console.error("Error details:", errorDetail);
+      
+      // Log failed admin email delivery
+      to.forEach(recipient => {
+        logEmailDelivery(recipient, 'admin', 'failed', {
+          error: errorDetail,
+          subject,
+          eventName
+        });
+      });
       
       // Check for common Resend API errors
       if (errorDetail.includes("API key")) {
@@ -132,8 +158,11 @@ export async function processEmailRequest(req: Request): Promise<Response> {
     }
 
     let confirmationSuccess = false;
+    let confirmationEmailId = null;
     let whatsappNotificationSent = false;
     let whatsappNotificationLink = "";
+    let smsNotificationSent = false;
+    let smsNotificationDetails = null;
 
     // Send confirmation email if requested
     if (sendConfirmation) {
@@ -177,12 +206,20 @@ export async function processEmailRequest(req: Request): Promise<Response> {
 
         console.log("Confirmation email sent:", emailResponse);
         confirmationSuccess = true;
+        confirmationEmailId = emailResponse.id;
         
-        // Send WhatsApp notification if phone number is provided
-        if (phone && phone.trim() !== '') {
+        // Log successful confirmation email
+        logEmailDelivery(email, 'confirmation', 'sent', {
+          subject: `Registration Confirmation: ${eventName}`,
+          eventName,
+          messageId: emailResponse.id
+        }, emailResponse.id);
+        
+        // Send SMS notification if phone number and SMS flag are provided
+        if (phone && phone.trim() !== '' && sendSms) {
           try {
-            console.log("Attempting to send WhatsApp notification to:", phone);
-            const whatsappResult = await sendWhatsAppNotification({
+            console.log("Attempting to send SMS notification to:", phone);
+            const smsResult = await sendSmsNotification({
               phone,
               eventName,
               eventDate,
@@ -191,27 +228,63 @@ export async function processEmailRequest(req: Request): Promise<Response> {
               checkInId
             });
             
-            whatsappNotificationSent = whatsappResult.success;
-            whatsappNotificationLink = whatsappResult.directLink || "";
+            smsNotificationSent = smsResult.success;
+            smsNotificationDetails = smsResult;
             
-            console.log("WhatsApp notification result:", whatsappResult);
+            console.log("SMS notification result:", smsResult);
             
-            if (whatsappResult.success) {
-              console.log("✅ WhatsApp notification link generated successfully");
+            if (smsResult.success) {
+              console.log("✅ SMS notification sent successfully");
             } else {
-              console.error("❌ WhatsApp notification failed:", whatsappResult.message);
+              console.error("❌ SMS notification failed:", smsResult.message);
             }
-          } catch (whatsappError) {
-            console.error("Error sending WhatsApp notification:", whatsappError);
+          } catch (smsError) {
+            console.error("Error sending SMS notification:", smsError);
             // Don't throw here - we still want to return success for the email
           }
         } else {
-          console.log("No phone number provided for WhatsApp notification");
+          // Also try WhatsApp as a fallback
+          if (phone && phone.trim() !== '') {
+            try {
+              console.log("Attempting to send WhatsApp notification link to:", phone);
+              const whatsappResult = await sendWhatsAppNotification({
+                phone,
+                eventName,
+                eventDate,
+                eventTime,
+                location,
+                checkInId
+              });
+              
+              whatsappNotificationSent = whatsappResult.success;
+              whatsappNotificationLink = whatsappResult.directLink || "";
+              
+              console.log("WhatsApp notification result:", whatsappResult);
+              
+              if (whatsappResult.success) {
+                console.log("✅ WhatsApp notification link generated successfully");
+              } else {
+                console.error("❌ WhatsApp notification failed:", whatsappResult.message);
+              }
+            } catch (whatsappError) {
+              console.error("Error sending WhatsApp notification:", whatsappError);
+              // Don't throw here - we still want to return success for the email
+            }
+          } else {
+            console.log("No phone number provided for notifications");
+          }
         }
       } catch (confirmationError) {
         console.error("Error sending confirmation email:", confirmationError);
         const errorDetail = confirmationError instanceof Error ? confirmationError.message : 'Unknown error';
         console.error("Error details:", errorDetail);
+        
+        // Log failed confirmation email
+        logEmailDelivery(email, 'confirmation', 'failed', {
+          error: errorDetail,
+          subject: `Registration Confirmation: ${eventName}`,
+          eventName
+        });
         
         // Check for common Resend API errors
         if (errorDetail.includes("API key")) {
@@ -222,16 +295,25 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       }
     }
 
+    // Generate a delivery report for debugging
+    const deliveryReport = generateDeliveryReport();
+    console.log("\n=== EMAIL DELIVERY REPORT ===\n", deliveryReport);
+
     return new Response(
       JSON.stringify({
         success: true,
         message: "Emails processed",
-        adminEmailSent: true,
+        adminEmailSent: adminEmailSuccess,
+        adminEmailId: adminEmailId,
         confirmationEmailSent: confirmationSuccess,
+        confirmationEmailId: confirmationEmailId,
         whatsappNotificationSent,
         whatsappNotificationLink,
+        smsNotificationSent,
+        smsNotificationDetails,
         checkInId: checkInId,
-        resendKeyConfigured: !!RESEND_API_KEY
+        resendKeyConfigured: !!RESEND_API_KEY,
+        deliveryReport: deliveryReport
       }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
@@ -242,7 +324,38 @@ export async function processEmailRequest(req: Request): Promise<Response> {
         success: false,
         message: `Email processing failed: ${error.message || "Unknown error"}`,
         error: error.message || "Unknown error",
-        resendKeyConfigured: !!RESEND_API_KEY
+        resendKeyConfigured: !!RESEND_API_KEY,
+        timestamp: new Date().toISOString()
+      }),
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+    );
+  }
+}
+
+// Add an endpoint to check email delivery logs
+export async function getEmailDeliveryLogs(req: Request): Promise<Response> {
+  try {
+    // Import the log functions
+    const { getDeliveryLogs, generateDeliveryReport } = await import("../utils/emailLogging.ts");
+    
+    // Generate the report
+    const logs = getDeliveryLogs();
+    const report = generateDeliveryReport();
+    
+    return new Response(
+      JSON.stringify({
+        success: true,
+        logs,
+        report
+      }),
+      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+    );
+  } catch (error: any) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: `Failed to retrieve email logs: ${error.message || "Unknown error"}`,
+        error: error.message || "Unknown error"
       }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
