@@ -21,9 +21,9 @@ const EmailTestForm = ({
   handleTestEmail, 
   isSending 
 }: EmailTestFormProps) => {
-  // Basic email validation
+  // Enhanced email validation with length check (Resend has a 254 char limit)
   const isValidEmail = (email: string) => {
-    return email.includes('@') && email.includes('.');
+    return email.includes('@') && email.includes('.') && email.length > 0 && email.length <= 254;
   };
   
   // Basic phone validation (just checking if it starts with + and has numbers)
@@ -58,10 +58,11 @@ const EmailTestForm = ({
           onChange={(e) => setTestEmail(e.target.value)} 
           placeholder="Enter your email"
           className={`mt-1 ${!emailIsValid && testEmail ? 'border-red-500' : ''}`}
+          maxLength={254} // Resend has a 254 character limit on email addresses
         />
         {!emailIsValid && testEmail && (
           <p className="text-xs text-red-500 mt-1">
-            Please enter a valid email address
+            Please enter a valid email address (must include @ and be under 254 characters)
           </p>
         )}
       </div>
@@ -103,6 +104,11 @@ const EmailTestForm = ({
           "Send Enhanced Test Email & WhatsApp"
         )}
       </Button>
+      
+      <div className="mt-4 text-xs text-gray-500 p-3 bg-gray-50 rounded border border-gray-100">
+        <p className="font-medium">Note from Resend Technical Team:</p>
+        <p className="italic mt-1">Recent requests are failing with 400 errors due to invalid content. Please check your email format and content.</p>
+      </div>
     </>
   );
 };

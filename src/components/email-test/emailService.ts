@@ -29,11 +29,75 @@ export const checkResendKeyStatus = async () => {
 };
 
 /**
+ * Validate email data before sending
+ * This helps identify issues that might cause 400 errors from Resend
+ */
+const validateEmailData = (data: any) => {
+  // Check if recipients are valid emails
+  if (data.to) {
+    if (Array.isArray(data.to)) {
+      const invalidEmails = data.to.filter((email: string) => 
+        !email.includes('@') || email.trim() === '' || email.length > 254
+      );
+      if (invalidEmails.length > 0) {
+        return {
+          valid: false,
+          error: `Invalid email format in recipients: ${invalidEmails.join(', ')}`
+        };
+      }
+    } else if (typeof data.to === 'string') {
+      if (!data.to.includes('@') || data.to.trim() === '' || data.to.length > 254) {
+        return {
+          valid: false,
+          error: `Invalid email format in recipient: ${data.to}`
+        };
+      }
+    }
+  } else {
+    return {
+      valid: false,
+      error: 'Missing recipient email addresses'
+    };
+  }
+
+  // Validate required fields
+  if (!data.name || data.name.trim() === '') {
+    return {
+      valid: false,
+      error: 'Name is required and cannot be empty'
+    };
+  }
+
+  if (!data.email || !data.email.includes('@') || data.email.trim() === '') {
+    return {
+      valid: false,
+      error: 'Valid email is required for the sender'
+    };
+  }
+
+  // Validate email subject
+  if (!data.subject || data.subject.trim() === '') {
+    return {
+      valid: false,
+      error: 'Email subject is required'
+    };
+  }
+
+  return { valid: true };
+};
+
+/**
  * Send a test email using the edge function
  */
 export const sendTestEmail = async (testEmailData: any) => {
   try {
     console.log('Sending test email with data:', testEmailData);
+    
+    // Validate the email data before sending
+    const validation = validateEmailData(testEmailData);
+    if (!validation.valid) {
+      throw new Error(`Validation error: ${validation.error}`);
+    }
     
     const { data, error } = await supabase.functions.invoke<EmailResponse>('send-email', {
       body: testEmailData
@@ -75,17 +139,26 @@ export const invokeEmailFunction = async (edgeFunction: string, formData: EmailT
     const toEmails = formData.to.split(',').map(email => email.trim());
     
     // Validate recipient emails
-    const invalidEmails = toEmails.filter(email => !email.includes('@'));
+    const invalidEmails = toEmails.filter(email => !email.includes('@') || email.trim() === '');
     if (invalidEmails.length > 0) {
       throw new Error(`Invalid email address(es): ${invalidEmails.join(', ')}`);
     }
 
+    // Create request body with validated data
+    const requestBody = {
+      ...formData,
+      to: toEmails
+    };
+
+    // Final validation check
+    const validation = validateEmailData(requestBody);
+    if (!validation.valid) {
+      throw new Error(`Validation error: ${validation.error}`);
+    }
+
     // Invoke the Supabase edge function
     const { data, error } = await supabase.functions.invoke<EmailResponse>(edgeFunction, {
-      body: {
-        ...formData,
-        to: toEmails
-      }
+      body: requestBody
     });
 
     if (error) {
