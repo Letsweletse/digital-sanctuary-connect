@@ -1,5 +1,6 @@
+
 import { supabase } from '@/integrations/supabase/client';
-import { ImageCategory, ImageFile, isValidImageCategory } from '@/types/imageTypes';
+import { ImageCategory, ImageFile, ImageUploadResult, isValidImageCategory } from '@/types/imageTypes';
 import { fetchImagesFromSupabase, getMockImages, validateImageUrl } from '@/utils/imageUtils';
 import { sendImageUploadEmail } from '@/lib/emailService';
 
@@ -24,7 +25,7 @@ export async function fetchImages(category: ImageCategory): Promise<ImageFile[]>
   }
 }
 
-export async function uploadImage(file: File, uploadCategory: ImageCategory): Promise<{ success: boolean, image?: ImageFile }> {
+export async function uploadImage(file: File, uploadCategory: ImageCategory): Promise<ImageUploadResult> {
   try {
     // Log the upload attempt for debugging
     console.log(`Attempting to upload file: ${file.name}, type: ${file.type}, size: ${(file.size / 1024 / 1024).toFixed(2)}MB to category: ${uploadCategory}`);
@@ -39,18 +40,39 @@ export async function uploadImage(file: File, uploadCategory: ImageCategory): Pr
     // Create a path based on category for better organization
     const filePath = `${uploadCategory}/${uniqueName}`;
     
+    // Determine content type, with fallback for common file extensions
+    let contentType = file.type;
+    if (!contentType || contentType === 'application/octet-stream') {
+      // Set content type based on file extension
+      const ext = fileExt.toLowerCase();
+      if (ext === 'mp3') contentType = 'audio/mpeg';
+      else if (ext === 'wav') contentType = 'audio/wav';
+      else if (ext === 'ogg') contentType = 'audio/ogg';
+      else if (ext === 'm4a') contentType = 'audio/m4a';
+      else if (ext === 'jpg' || ext === 'jpeg') contentType = 'image/jpeg';
+      else if (ext === 'png') contentType = 'image/png';
+      else if (ext === 'gif') contentType = 'image/gif';
+      else if (ext === 'webp') contentType = 'image/webp';
+      else contentType = `application/${ext}`;
+    }
+    
+    console.log(`Determined content type: ${contentType} for file ${file.name}`);
+    
     // Store file in Supabase storage
     const { data: storageData, error: storageError } = await supabase.storage
       .from('images')
       .upload(filePath, file, {
         cacheControl: '3600',
         upsert: false,
-        contentType: file.type // Explicitly set the content type
+        contentType: contentType // Explicitly set the content type
       });
     
     if (storageError) {
       console.error('Storage upload error:', storageError);
-      return { success: false };
+      return { 
+        success: false,
+        error: storageError.message
+      };
     }
     
     console.log('File uploaded successfully to storage, path:', storageData.path);
@@ -62,7 +84,10 @@ export async function uploadImage(file: File, uploadCategory: ImageCategory): Pr
     
     if (!publicUrlData || !publicUrlData.publicUrl) {
       console.error('Failed to get public URL');
-      return { success: false };
+      return { 
+        success: false,
+        error: 'Failed to get public URL'
+      };
     }
     
     const publicUrl = publicUrlData.publicUrl;
@@ -72,7 +97,7 @@ export async function uploadImage(file: File, uploadCategory: ImageCategory): Pr
     const safeCategory: ImageCategory = isValidImageCategory(uploadCategory) ? uploadCategory : 'general';
     
     // For audio files in the sermons category, we still store them in the images table for simplicity
-    const isAudioFile = file.type.includes('audio') || fileName.toLowerCase().endsWith('.mp3');
+    const isAudioFile = contentType.includes('audio') || fileName.toLowerCase().endsWith('.mp3');
     const fileCategory = isAudioFile ? 'sermons' : safeCategory;
     
     // Store the reference in the images table
@@ -84,7 +109,8 @@ export async function uploadImage(file: File, uploadCategory: ImageCategory): Pr
           url: publicUrl,
           category: fileCategory,
           uploaded_at: new Date().toISOString(),
-          content_type: file.type || `application/${fileExt}` // Store the content type
+          content_type: contentType,
+          size: file.size
         }
       ]);
       
@@ -100,7 +126,8 @@ export async function uploadImage(file: File, uploadCategory: ImageCategory): Pr
       url: publicUrl,
       category: fileCategory,
       uploadedAt: new Date(),
-      contentType: file.type || `application/${fileExt}`
+      contentType: contentType,
+      size: file.size
     };
     
     try {
@@ -109,10 +136,18 @@ export async function uploadImage(file: File, uploadCategory: ImageCategory): Pr
       console.log('Email notification failed, but upload succeeded:', emailError);
     }
     
-    return { success: true, image: addedImage };
+    return { 
+      success: true, 
+      url: publicUrl,
+      image: addedImage
+    };
   } catch (err) {
     console.error('Error uploading file', err);
-    return { success: false };
+    const errorMsg = err instanceof Error ? err.message : 'Unknown error occurred';
+    return { 
+      success: false,
+      error: errorMsg
+    };
   }
 }
 

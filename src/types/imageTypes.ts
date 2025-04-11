@@ -23,11 +23,13 @@ export interface ImageFile {
   url: string;
   category: ImageCategory;
   uploadedAt: Date;
-  contentType?: string; // Add content type for better file handling
+  contentType: string; // Changed from optional to required
+  size?: number; // Added size for better file info
 }
 
 export interface ImageUploadResult {
   success: boolean;
   url?: string;
   error?: string;
+  image?: ImageFile;
 }

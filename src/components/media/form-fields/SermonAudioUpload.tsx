@@ -21,18 +21,26 @@ const SermonAudioUpload = ({
   const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
 
-  // Enhanced audio upload handler that accepts more audio formats
+  // Enhanced audio upload handler with better format detection
   const handleFileUpload = async (file: File, category: ImageCategory) => {
     setError(null);
     
-    // Expanded list of accepted audio formats
+    // Expanded list of accepted audio formats with more variations
     const acceptedFormats = [
       'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 
-      'audio/aac', 'audio/flac', 'audio/m4a', 'audio/x-m4a'
+      'audio/aac', 'audio/flac', 'audio/m4a', 'audio/x-m4a',
+      'audio/mp4', 'audio/x-mp3', 'audio/webm'
     ];
     
-    // Check file type
-    if (!acceptedFormats.includes(file.type) && !file.name.toLowerCase().endsWith('.mp3')) {
+    // More flexible file format checking
+    const isAcceptedFormat = 
+      acceptedFormats.includes(file.type) || 
+      file.name.toLowerCase().endsWith('.mp3') ||
+      file.name.toLowerCase().endsWith('.m4a') ||
+      file.name.toLowerCase().endsWith('.wav') ||
+      file.name.toLowerCase().endsWith('.ogg');
+    
+    if (!isAcceptedFormat) {
       const errorMsg = `Unsupported file format. Supported formats are: MP3, WAV, OGG, AAC, FLAC, M4A`;
       setError(errorMsg);
       toast({
@@ -61,20 +69,24 @@ const SermonAudioUpload = ({
     
     // Then try to upload it
     try {
+      console.log('Uploading audio file:', file.name, 'type:', file.type);
       const result = await handleAudioUpload(file, category);
+      
       if (result) {
         toast({
           title: "Audio uploaded",
           description: `File "${file.name}" has been uploaded successfully.`,
         });
+        return true;
+      } else {
+        throw new Error("Upload returned false");
       }
-      return result;
     } catch (err) {
       console.error("Audio upload error:", err);
       setError("Failed to upload audio file. Please try again.");
       toast({
         title: "Upload failed",
-        description: "There was an error uploading your audio file.",
+        description: "There was an error uploading your audio file. Check console for details.",
         variant: "destructive",
       });
       return false;
@@ -110,7 +122,11 @@ const SermonAudioUpload = ({
       <DragDropUploader 
         onFileAccepted={handleFileUpload}
         category="sermons"
-        acceptedFileTypes={['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/aac', 'audio/flac', 'audio/m4a', 'audio/x-m4a']}
+        acceptedFileTypes={[
+          'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 
+          'audio/aac', 'audio/flac', 'audio/m4a', 'audio/x-m4a',
+          'audio/mp4', 'audio/x-mp3', 'audio/webm'
+        ]}
         maxSize={50 * 1024 * 1024} // 50MB limit
       />
     </div>
