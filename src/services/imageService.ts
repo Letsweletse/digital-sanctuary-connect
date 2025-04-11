@@ -5,11 +5,13 @@ import { sendImageUploadEmail } from '@/lib/emailService';
 
 export async function fetchImages(category: ImageCategory): Promise<ImageFile[]> {
   try {
+    console.log('Fetching images from Supabase for category:', category);
     // First attempt to get images from Supabase
     const supabaseImages = await fetchImagesFromSupabase(category);
     
     // If we have images from Supabase, return them
     if (supabaseImages && supabaseImages.length > 0) {
+      console.log(`Found ${supabaseImages.length} images in Supabase`);
       return supabaseImages;
     }
     
@@ -24,6 +26,9 @@ export async function fetchImages(category: ImageCategory): Promise<ImageFile[]>
 
 export async function uploadImage(file: File, uploadCategory: ImageCategory): Promise<{ success: boolean, image?: ImageFile }> {
   try {
+    // Log the upload attempt for debugging
+    console.log(`Attempting to upload file: ${file.name}, type: ${file.type}, size: ${(file.size / 1024 / 1024).toFixed(2)}MB to category: ${uploadCategory}`);
+    
     // Keep original filename and add timestamp to avoid duplication
     const timestamp = Date.now();
     const fileName = file.name;
@@ -34,15 +39,21 @@ export async function uploadImage(file: File, uploadCategory: ImageCategory): Pr
     // Create a path based on category for better organization
     const filePath = `${uploadCategory}/${uniqueName}`;
     
-    // Store image in Supabase storage
+    // Store file in Supabase storage
     const { data: storageData, error: storageError } = await supabase.storage
       .from('images')
-      .upload(filePath, file);
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false,
+        contentType: file.type // Explicitly set the content type
+      });
     
     if (storageError) {
       console.error('Storage upload error:', storageError);
       return { success: false };
     }
+    
+    console.log('File uploaded successfully to storage, path:', storageData.path);
     
     // Get the public URL
     const { data: publicUrlData } = supabase.storage
@@ -55,9 +66,14 @@ export async function uploadImage(file: File, uploadCategory: ImageCategory): Pr
     }
     
     const publicUrl = publicUrlData.publicUrl;
+    console.log('File public URL:', publicUrl);
     
     // Validate the category
     const safeCategory: ImageCategory = isValidImageCategory(uploadCategory) ? uploadCategory : 'general';
+    
+    // For audio files in the sermons category, we still store them in the images table for simplicity
+    const isAudioFile = file.type.includes('audio') || fileName.toLowerCase().endsWith('.mp3');
+    const fileCategory = isAudioFile ? 'sermons' : safeCategory;
     
     // Store the reference in the images table
     const { data, error } = await supabase
@@ -66,32 +82,36 @@ export async function uploadImage(file: File, uploadCategory: ImageCategory): Pr
         { 
           name: fileName,
           url: publicUrl,
-          category: safeCategory,
-          uploaded_at: new Date().toISOString()
+          category: fileCategory,
+          uploaded_at: new Date().toISOString(),
+          content_type: file.type || `application/${fileExt}` // Store the content type
         }
       ]);
       
     if (error) {
       console.error('Database reference error:', error);
       // Continue even if database insert fails, we still have the URL
+    } else {
+      console.log('File reference stored in database');
     }
     
     const addedImage: ImageFile = {
       name: fileName,
       url: publicUrl,
-      category: safeCategory,
-      uploadedAt: new Date()
+      category: fileCategory,
+      uploadedAt: new Date(),
+      contentType: file.type || `application/${fileExt}`
     };
     
     try {
-      sendImageUploadEmail(fileName, safeCategory);
+      sendImageUploadEmail(fileName, fileCategory);
     } catch (emailError) {
       console.log('Email notification failed, but upload succeeded:', emailError);
     }
     
     return { success: true, image: addedImage };
   } catch (err) {
-    console.error('Error uploading image', err);
+    console.error('Error uploading file', err);
     return { success: false };
   }
 }
@@ -103,6 +123,8 @@ export async function deleteImage(image: ImageFile): Promise<boolean> {
     const fileName = urlParts[urlParts.length - 1];
     const category = image.category || 'general';
     
+    console.log(`Deleting image: ${image.name} from category: ${category}`);
+    
     // Delete from storage first
     try {
       const { error: storageError } = await supabase.storage
@@ -112,6 +134,8 @@ export async function deleteImage(image: ImageFile): Promise<boolean> {
       if (storageError) {
         console.warn('Storage deletion error:', storageError);
         // Continue anyway to remove from database
+      } else {
+        console.log('File removed from storage');
       }
     } catch (storageErr) {
       console.warn('Storage deletion failed, continuing with database deletion:', storageErr);
@@ -126,6 +150,8 @@ export async function deleteImage(image: ImageFile): Promise<boolean> {
     if (error) {
       console.error('Database deletion error:', error);
       // Still return true to allow UI to remove the image
+    } else {
+      console.log('File reference removed from database');
     }
     
     return true;
