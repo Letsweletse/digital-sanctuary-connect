@@ -14,7 +14,7 @@ const FeaturedSections: React.FC = () => {
             Get Connected
           </h2>
           <p className="max-w-2xl mx-auto text-church-neutral-700">
-            Discover different ways to get involved and grow in your faith journey at Gate Gaborone Ministries.
+            Discover different ways to get involved and grow in your faith journey at Gate Gaborone.
           </p>
         </div>
         
@@ -32,7 +32,7 @@ const FeaturedSections: React.FC = () => {
             </div>
             <div className="p-6">
               <p className="text-church-neutral-700 mb-4">
-                Watch and listen to our latest teachings to grow in your understanding of God's Word.
+                Watch and listen to our latest teachings to enhance growth in your understanding of God's Word.
               </p>
               <Link to="/sermons" className="btn-outline inline-block">
                 Browse Sermons
@@ -53,10 +53,10 @@ const FeaturedSections: React.FC = () => {
             </div>
             <div className="p-6">
               <p className="text-church-neutral-700 mb-4">
-                Join our small group ministry for fellowship, prayer, and deeper Bible study in a home setting.
+                Join our Wednesday's small groups ministry for fellowship, prayer, and deeper Bible study in a home setting.
               </p>
               <Link to="/house-church" className="btn-outline inline-block">
-                Find a Group
+                Find your House Church
               </Link>
             </div>
           </div>

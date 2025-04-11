@@ -47,7 +47,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
             {featuredEvent.title}
           </h2>
           <p className="max-w-3xl mx-auto text-lg opacity-80 mt-4">
-            Join us for this exclusive experience featuring renowned speakers, impactful workshops, and transformative fellowship.
+            Join us for this impactful experience with renowned speakers, impactful workshops, and transformative fellowship.
           </p>
         </div>
         
