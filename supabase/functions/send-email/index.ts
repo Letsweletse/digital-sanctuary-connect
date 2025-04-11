@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { corsHeaders } from "./utils/cors.ts";
 import { processEmailRequest, getEmailDeliveryLogs } from "./handlers/emailHandler.ts";
@@ -16,7 +17,26 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     // Check if this is a request for email logs
     const url = new URL(req.url);
-    if (url.pathname.endsWith("/logs") || url.searchParams.has("logs")) {
+    
+    // Parse the request body to check for logs request
+    let requestBody;
+    if (req.method === "POST") {
+      try {
+        requestBody = await req.json();
+        console.log("Request body:", requestBody);
+      } catch (e) {
+        console.log("No valid JSON body or empty body");
+        requestBody = {};
+      }
+    }
+    
+    // Check various ways the logs might be requested
+    const isLogsRequest = 
+      url.pathname.endsWith("/logs") || 
+      url.searchParams.has("logs") || 
+      (requestBody && requestBody.requestType === "logs");
+    
+    if (isLogsRequest) {
       console.log("Getting email delivery logs");
       return await getEmailDeliveryLogs(req);
     }
