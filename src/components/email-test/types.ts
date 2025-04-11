@@ -26,6 +26,7 @@ export interface EmailSuccessResponse {
   recipients: string[];
   timestamp: string;
   data: any;
+  resendKeyConfigured?: boolean;
   error?: never;
 }
 
@@ -33,6 +34,7 @@ export interface EmailErrorResponse {
   success: false;
   message: string;
   error?: string;
+  resendKeyConfigured?: boolean;
   recipients?: undefined;
   timestamp?: undefined;
   data?: undefined;

@@ -66,7 +66,7 @@ export function useEmailTest() {
         confirmationEmailSent: data.data?.confirmationEmailSent || true,
         whatsappSent: data.data?.whatsappNotificationSent || false,
         whatsappLink: data.data?.whatsappNotificationLink || null,
-        resendKeyConfigured: true,
+        resendKeyConfigured: data.resendKeyConfigured || true,
         message: 'Test email sent successfully!',
         error: null,
         lastSentTo: emailForm.testEmail
@@ -113,7 +113,7 @@ export function useEmailTest() {
           confirmationEmailSent: data.data?.confirmationEmailSent || false,
           whatsappSent: data.data?.whatsappNotificationSent || false,
           whatsappLink: data.data?.whatsappNotificationLink || null,
-          resendKeyConfigured: data.data?.resendKeyConfigured || true,
+          resendKeyConfigured: data.resendKeyConfigured || true,
           message: data.message || 'Email sent successfully',
           error: null,
           lastSentTo: emailForm.formData.to
@@ -127,7 +127,7 @@ export function useEmailTest() {
           confirmationEmailSent: false,
           whatsappSent: false,
           whatsappLink: null,
-          resendKeyConfigured: data.data?.resendKeyConfigured || false,
+          resendKeyConfigured: data.resendKeyConfigured || false,
           message: null,
           error: data.message || 'Failed to send email',
           lastSentTo: emailForm.formData.to
