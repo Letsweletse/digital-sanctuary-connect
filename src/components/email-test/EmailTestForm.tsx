@@ -21,6 +21,19 @@ const EmailTestForm = ({
   handleTestEmail, 
   isSending 
 }: EmailTestFormProps) => {
+  // Basic email validation
+  const isValidEmail = (email: string) => {
+    return email.includes('@') && email.includes('.');
+  };
+  
+  // Basic phone validation (just checking if it starts with + and has numbers)
+  const isValidPhone = (phone: string) => {
+    return phone.startsWith('+') && phone.length > 5;
+  };
+  
+  const emailIsValid = isValidEmail(testEmail);
+  const phoneIsValid = isValidPhone(testPhone);
+  
   return (
     <>
       <p className="mb-4 text-gray-600">
@@ -44,8 +57,13 @@ const EmailTestForm = ({
           value={testEmail} 
           onChange={(e) => setTestEmail(e.target.value)} 
           placeholder="Enter your email"
-          className="mt-1"
+          className={`mt-1 ${!emailIsValid && testEmail ? 'border-red-500' : ''}`}
         />
+        {!emailIsValid && testEmail && (
+          <p className="text-xs text-red-500 mt-1">
+            Please enter a valid email address
+          </p>
+        )}
       </div>
       
       <div className="mb-4">
@@ -56,16 +74,21 @@ const EmailTestForm = ({
           value={testPhone} 
           onChange={(e) => setTestPhone(e.target.value)} 
           placeholder="e.g. +267 71234567"
-          className="mt-1"
+          className={`mt-1 ${!phoneIsValid && testPhone !== '+267' ? 'border-red-500' : ''}`}
         />
         <p className="text-xs text-gray-500 mt-1">
           Include country code (e.g. +267 for Botswana)
         </p>
+        {!phoneIsValid && testPhone !== '+267' && (
+          <p className="text-xs text-red-500 mt-1">
+            Please enter a valid phone number with country code (e.g. +267 71234567)
+          </p>
+        )}
       </div>
       
       <Button 
         onClick={handleTestEmail} 
-        disabled={isSending}
+        disabled={isSending || !emailIsValid}
         className="w-full bg-church-blue hover:bg-church-blue-dark"
       >
         {isSending ? (

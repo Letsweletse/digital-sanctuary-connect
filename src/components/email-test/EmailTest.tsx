@@ -41,8 +41,16 @@ const EmailTest = () => {
 
       <DebugInfo debugInfo={debugInfo} />
       
-      <div className="mt-4 text-sm text-gray-500">
-        <p>Admin recipients: otenggate@gmail.com, info@gategaborone.com, iblimenterprise@zohomail.com</p>
+      <div className="mt-4 text-sm text-gray-500 border-t pt-4">
+        <p className="font-medium mb-1">Common validation error troubleshooting:</p>
+        <ul className="list-disc ml-5 text-xs space-y-1">
+          <li>Ensure all recipient emails are valid</li>
+          <li>Check that your Resend API key is valid and has send permissions</li>
+          <li>Verify that your sender domain is verified in Resend dashboard</li>
+          <li>Make sure you haven't exceeded Resend's free tier limits (~100 emails/day)</li>
+          <li>Check that email content doesn't contain invalid characters</li>
+        </ul>
+        <p className="mt-2 text-xs">Admin recipients: otenggate@gmail.com, info@gategaborone.com, iblimenterprise@zohomail.com</p>
       </div>
     </Card>
   );

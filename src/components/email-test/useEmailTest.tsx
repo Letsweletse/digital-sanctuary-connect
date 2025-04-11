@@ -59,9 +59,22 @@ export const useEmailTest = () => {
     checkResendStatus();
   }, []);
   
-  const handleTestEmail = async () => {
+  const validateInputs = () => {
     if (!testEmail || !testEmail.includes('@')) {
       toast.error("Please enter a valid email address");
+      return false;
+    }
+    
+    if (testPhone && testPhone !== '+267' && !testPhone.startsWith('+')) {
+      toast.warning("Phone number should include country code (e.g. +267)");
+      // Don't return false, as phone is optional
+    }
+    
+    return true;
+  };
+  
+  const handleTestEmail = async () => {
+    if (!validateInputs()) {
       return;
     }
     
@@ -116,14 +129,39 @@ export const useEmailTest = () => {
           });
         }
       } else {
-        throw new Error(response.message || "Unknown error");
+        // Extract specific error details if available
+        let errorMessage = response.message || "Unknown error";
+        let errorDetails = "";
+        
+        // Check for Resend validation errors
+        if (response.error && response.error.includes("validation_error")) {
+          errorMessage = "Validation error from email provider";
+          errorDetails = "The email service reported invalid data. Please check your inputs and try again.";
+        }
+        
+        // Check for Resend API key issues
+        if (response.error && response.error.includes("API key")) {
+          errorMessage = "API key error";
+          errorDetails = "There may be an issue with the Resend API key configuration.";
+        }
+        
+        throw new Error(`${errorMessage}${errorDetails ? ': ' + errorDetails : ''}`);
       }
     } catch (error) {
       console.error("Error sending test email:", error);
       setDebugInfo(error instanceof Error ? error.message : "Unknown error");
+      
+      // Parse errors from Resend API format
+      let errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      
+      // Check if error contains Resend API validation error
+      if (errorMessage.includes("validation_error")) {
+        errorMessage = "Email validation error: The email service reported invalid data. This may be due to format issues with name, email or phone number.";
+      }
+      
       toast.error("Failed to send test emails", {
-        description: error instanceof Error ? error.message : "Unknown error occurred",
-        duration: 5000
+        description: errorMessage,
+        duration: 6000
       });
     } finally {
       setIsSending(false);

@@ -40,19 +40,41 @@ const EmailStatusPanel = ({ emailsSent, resetCounter, resendInfo }: EmailStatusP
             ? 'bg-green-50 border-green-200' 
             : 'bg-red-50 border-red-200'
         }`}>
-          <p className="text-sm">
-            <strong>Resend API Status:</strong> {resendInfo.message}
-          </p>
-          <p className="text-xs mt-1">
-            <a 
-              href="https://resend.com/dashboard" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="underline text-blue-600 hover:text-blue-800"
-            >
-              Visit Resend Dashboard
-            </a> to check your actual usage and limits.
-          </p>
+          <div className="flex items-center gap-2">
+            <div className={`w-3 h-3 rounded-full ${
+              resendInfo.message.includes('active') ? 'bg-green-500' : 'bg-red-500'
+            }`}></div>
+            <p className="text-sm font-medium">
+              <strong>Resend API Status:</strong> {resendInfo.message}
+            </p>
+          </div>
+          
+          <div className="mt-2 text-xs space-y-1">
+            <p>
+              Free tier limits: ~100 emails per day, 10MB attachments, 5 recipients per email.
+            </p>
+            <p>
+              <span className="font-medium">Note:</span> If you're receiving validation errors, make sure your sender domain is verified.
+            </p>
+            <div className="mt-2">
+              <a 
+                href="https://resend.com/dashboard" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="underline text-blue-600 hover:text-blue-800 mr-4"
+              >
+                Resend Dashboard
+              </a>
+              <a 
+                href="https://resend.com/domains" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="underline text-blue-600 hover:text-blue-800"
+              >
+                Verify Domain
+              </a>
+            </div>
+          </div>
         </div>
       )}
     </>
