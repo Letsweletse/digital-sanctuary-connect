@@ -15,7 +15,7 @@ const EmailDeliveryLogs = () => {
     
     try {
       // Fix: Use the correct way to pass parameters to the edge function
-      // Instead of using the 'query' property, we'll pass 'logs=true' in the URL path
+      // Instead of using the 'query' property, we'll pass 'requestType: logs' in the body
       const { data, error } = await supabase.functions.invoke('send-email', {
         body: { requestType: 'logs' }
       });
