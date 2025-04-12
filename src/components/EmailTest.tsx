@@ -18,7 +18,6 @@ const EmailTest = () => {
     }
     
     setIsSending(true);
-    toast.info("Sending test email via Mailgun...", { id: "email-sending" });
     
     try {
       // Create comprehensive sample registration data with all enhanced email features
@@ -42,14 +41,10 @@ const EmailTest = () => {
         registrationType: "Standard"
       };
       
-      console.log("Sending test email with data:", JSON.stringify(testData, null, 2));
-      
       // Send the test email with enhanced features
       const response = await sendEventRegistrationEmail("Perspectives on the Apostolic", testData);
       
       console.log("Email test response:", response);
-      
-      toast.dismiss("email-sending");
       
       if (response.success) {
         toast.success("Test emails sent successfully via Mailgun!", {
@@ -61,7 +56,6 @@ const EmailTest = () => {
       }
     } catch (error) {
       console.error("Error sending test email:", error);
-      toast.dismiss("email-sending");
       toast.error("Failed to send test emails", {
         description: error instanceof Error ? error.message : "Unknown error occurred. Check Supabase logs for details.",
         duration: 5000
@@ -78,8 +72,7 @@ const EmailTest = () => {
         Enter your email below to receive a test event registration confirmation:
       </p>
       <ul className="list-disc ml-5 mt-2 mb-4 text-gray-600">
-        <li>Using Mailgun email service with domain: gategaborone.com</li>
-        <li>Secure email verification with webhook signing</li>
+        <li>Using Mailgun email service</li>
         <li>Higher resolution QR codes for location and check-in</li>
         <li>iCal calendar integration (.ics file)</li>
         <li>WhatsApp sharing option</li>
@@ -115,7 +108,7 @@ const EmailTest = () => {
           "Send Test Email via Mailgun"
         )}
       </Button>
-      <p className="mt-4 text-sm text-gray-500">Domain: gategaborone.com</p>
+      <p className="mt-4 text-sm text-gray-500">Mailgun Configured: {new Date().toLocaleString()}</p>
       <div className="mt-2 text-sm text-gray-500">
         <p>Admin recipients: otenggate@gmail.com, info@gategaborone.com, iblimenterprise@zohomail.com</p>
         <p className="mt-1 text-xs text-amber-600">Note: Check spam folder if emails don't arrive in inbox.</p>

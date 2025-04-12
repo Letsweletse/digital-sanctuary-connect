@@ -5,21 +5,19 @@ import { processEmailRequest } from "./handlers/emailHandler.ts";
 
 const handler = async (req: Request): Promise<Response> => {
   console.log("Email function called with method:", req.method);
-  console.log("Request URL:", req.url);
   
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    console.log("Handling CORS preflight request");
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     console.log("Processing email request...");
     const response = await processEmailRequest(req);
-    console.log("Email request processed with status:", response.status);
+    console.log("Email request processed successfully");
     return response;
   } catch (error: any) {
-    console.error("Fatal error in send-email function:", error);
+    console.error("Error in send-email function:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     const errorStack = error instanceof Error ? error.stack : "No stack trace available";
     
@@ -39,5 +37,4 @@ const handler = async (req: Request): Promise<Response> => {
 };
 
 console.log("Email function initialized with Mailgun provider");
-console.log("Mailgun domain: gategaborone.com");
 serve(handler);
