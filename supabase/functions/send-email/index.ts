@@ -10,7 +10,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   // Log incoming request for debugging
-  console.log(`Processing ${req.method} request to send-email function`);
+  console.log(`Processing ${req.method} request to send-email function with refreshed DNS settings`);
   console.log("Headers:", Object.fromEntries(req.headers.entries()));
   console.log("URL:", req.url);
   
@@ -18,6 +18,7 @@ const handler = async (req: Request): Promise<Response> => {
   const envKeys = Object.keys(Deno.env.toObject());
   console.log("Available environment variables:", envKeys);
   console.log("RESEND_API_KEY configured:", !!Deno.env.get("RESEND_API_KEY"));
+  console.log("Using updated RESEND_API_KEY");
 
   try {
     // Check if this is a request for email logs

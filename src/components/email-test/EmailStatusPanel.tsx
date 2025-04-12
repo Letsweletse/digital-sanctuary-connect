@@ -10,16 +10,12 @@ interface EmailStatusPanelProps {
     checked: boolean;
     message: string;
   };
-  whatsappLink?: string;
-  requiresAdminAction?: boolean;
 }
 
 const EmailStatusPanel = ({ 
   emailsSent, 
   resetCounter, 
-  resendInfo, 
-  whatsappLink,
-  requiresAdminAction = true // Default to true since that's our current implementation
+  resendInfo
 }: EmailStatusPanelProps) => {
   return (
     <div className="mb-6">
@@ -54,32 +50,6 @@ const EmailStatusPanel = ({
             {emailsSent}
           </span>
         </div>
-        
-        {whatsappLink && (
-          <div className="mt-2 pt-2 border-t border-gray-200">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-gray-700 font-medium">WhatsApp:</span>
-              <span className="text-sm text-amber-600">
-                {requiresAdminAction ? '⚠️ Link generated' : '✓ Sent'}
-              </span>
-            </div>
-            
-            {requiresAdminAction && (
-              <div className="mt-1 p-2 bg-amber-50 rounded text-xs text-amber-800">
-                <p className="font-semibold mb-1">Admin action required:</p>
-                <p>WhatsApp messages require manual sending. Click the link below to open WhatsApp and send the prepared message:</p>
-                <a 
-                  href={whatsappLink} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="mt-1 inline-flex items-center text-blue-600 hover:text-blue-800"
-                >
-                  Send WhatsApp message <ExternalLink className="ml-1" size={12} />
-                </a>
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );

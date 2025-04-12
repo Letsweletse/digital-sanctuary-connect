@@ -5,7 +5,6 @@ interface SocialIconsMap {
 
 export function getSocialIcons(): SocialIconsMap {
   return {
-    whatsapp: "https://cdn-icons-png.flaticon.com/512/3670/3670051.png",
     facebook: "https://cdn-icons-png.flaticon.com/512/5968/5968764.png",
     twitter: "https://cdn-icons-png.flaticon.com/512/5968/5968958.png", 
     linkedin: "https://cdn-icons-png.flaticon.com/512/3536/3536505.png",
@@ -20,7 +19,6 @@ interface ShareWithFriendsProps {
   eventName: string;
   eventDate: string;
   eventTime: string;
-  whatsappShareUrl: string;
   socialIcons: SocialIconsMap;
 }
 
@@ -28,7 +26,6 @@ export function renderShareWithFriends({
   eventName,
   eventDate,
   eventTime,
-  whatsappShareUrl,
   socialIcons
 }: ShareWithFriendsProps): string {
   return `
@@ -42,16 +39,8 @@ export function renderShareWithFriends({
             
             <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 450px;">
               <tr>
-                <!-- WhatsApp -->
-                <td align="center" style="padding: 5px; width: 16.66%;">
-                  <a href="${whatsappShareUrl}" target="_blank" style="text-decoration: none; display: inline-block;">
-                    <img src="${socialIcons.whatsapp}" alt="WhatsApp" width="40" height="40" style="display: block; width: 40px; max-width: 40px; height: 40px;">
-                    <span style="display: block; font-size: 12px; margin-top: 5px; color: #333333;">WhatsApp</span>
-                  </a>
-                </td>
-                
                 <!-- Facebook -->
-                <td align="center" style="padding: 5px; width: 16.66%;">
+                <td align="center" style="padding: 5px; width: 20%;">
                   <a href="https://www.facebook.com/sharer/sharer.php?u=https://gategaborone.com/events" target="_blank" style="text-decoration: none; display: inline-block;">
                     <img src="${socialIcons.facebook}" alt="Facebook" width="40" height="40" style="display: block; width: 40px; max-width: 40px; height: 40px;">
                     <span style="display: block; font-size: 12px; margin-top: 5px; color: #333333;">Facebook</span>
@@ -59,7 +48,7 @@ export function renderShareWithFriends({
                 </td>
                 
                 <!-- Twitter/X -->
-                <td align="center" style="padding: 5px; width: 16.66%;">
+                <td align="center" style="padding: 5px; width: 20%;">
                   <a href="https://twitter.com/intent/tweet?text=Join%20me%20at%20${encodeURIComponent(eventName)}%20at%20Gate%20Gaborone!%20Register%20here:%20https://gategaborone.com/events" target="_blank" style="text-decoration: none; display: inline-block;">
                     <img src="${socialIcons.twitter}" alt="Twitter" width="40" height="40" style="display: block; width: 40px; max-width: 40px; height: 40px;">
                     <span style="display: block; font-size: 12px; margin-top: 5px; color: #333333;">Twitter/X</span>
@@ -67,7 +56,7 @@ export function renderShareWithFriends({
                 </td>
                 
                 <!-- LinkedIn -->
-                <td align="center" style="padding: 5px; width: 16.66%;">
+                <td align="center" style="padding: 5px; width: 20%;">
                   <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://gategaborone.com/events" target="_blank" style="text-decoration: none; display: inline-block;">
                     <img src="${socialIcons.linkedin}" alt="LinkedIn" width="40" height="40" style="display: block; width: 40px; max-width: 40px; height: 40px;">
                     <span style="display: block; font-size: 12px; margin-top: 5px; color: #333333;">LinkedIn</span>
@@ -75,7 +64,7 @@ export function renderShareWithFriends({
                 </td>
                 
                 <!-- TikTok -->
-                <td align="center" style="padding: 5px; width: 16.66%;">
+                <td align="center" style="padding: 5px; width: 20%;">
                   <a href="https://www.tiktok.com/" target="_blank" style="text-decoration: none; display: inline-block;">
                     <img src="${socialIcons.tiktok}" alt="TikTok" width="40" height="40" style="display: block; width: 40px; max-width: 40px; height: 40px;">
                     <span style="display: block; font-size: 12px; margin-top: 5px; color: #333333;">TikTok</span>
@@ -83,7 +72,7 @@ export function renderShareWithFriends({
                 </td>
                 
                 <!-- Email -->
-                <td align="center" style="padding: 5px; width: 16.66%;">
+                <td align="center" style="padding: 5px; width: 20%;">
                   <a href="mailto:?subject=Join%20me%20at%20${encodeURIComponent(eventName)}&body=I'm%20attending%20${encodeURIComponent(eventName)}%20at%20Gate%20Gaborone%20on%20${encodeURIComponent(eventDate)}%20at%20${encodeURIComponent(eventTime)}.%20You%20should%20join%20too!%20Register%20here:%20https://gategaborone.com/events" style="text-decoration: none; display: inline-block;">
                     <img src="${socialIcons.email}" alt="Email" width="40" height="40" style="display: block; width: 40px; max-width: 40px; height: 40px;">
                     <span style="display: block; font-size: 12px; margin-top: 5px; color: #333333;">Email</span>
