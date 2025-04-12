@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const EmailDeliveryLogs = () => {
   const [loading, setLoading] = useState(false);
@@ -14,18 +15,26 @@ const EmailDeliveryLogs = () => {
     setError(null);
     
     try {
-      // Fix: Use the correct way to pass parameters to the edge function
-      // Instead of using the 'query' property, we'll pass 'requestType: logs' in the body
+      console.log("Fetching email delivery logs...");
       const { data, error } = await supabase.functions.invoke('send-email', {
         body: { requestType: 'logs' }
       });
       
       if (error) {
+        console.error("Supabase function error:", error);
         throw new Error(`Failed to fetch email logs: ${error.message}`);
       }
       
+      console.log("Email logs response:", data);
+      
       if (data?.report) {
         setReport(data.report);
+      } else if (data?.logs && data.logs.length > 0) {
+        // If there's logs but no formatted report, create a simple display
+        const logSummary = data.logs.map((log: any) => 
+          `${log.timestamp}: ${log.emailType} to ${log.recipient} - ${log.status}`
+        ).join('\n');
+        setReport(logSummary);
       } else {
         setReport("No email delivery logs available yet.");
       }
@@ -53,9 +62,11 @@ const EmailDeliveryLogs = () => {
       </div>
       
       {error && (
-        <div className="text-sm text-red-600 p-2 bg-red-50 rounded mb-2">
-          {error}
-        </div>
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4 mr-2" />
+          <AlertDescription className="text-sm">{error}</AlertDescription>
+          <p className="text-xs mt-1">Check console for more details or ensure the RESEND_API_KEY is configured.</p>
+        </Alert>
       )}
       
       {report && (

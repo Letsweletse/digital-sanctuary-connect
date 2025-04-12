@@ -32,7 +32,14 @@ export async function processEmailRequest(req: Request): Promise<Response> {
     // Verify Resend configuration
     if (!RESEND_API_KEY) {
       console.error("ERROR: Missing RESEND_API_KEY - cannot proceed with email sending");
-      throw new Error("RESEND_API_KEY not configured. Please set this environment variable in the Supabase Edge Functions settings.");
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "RESEND_API_KEY not configured. Please set this environment variable in the Supabase Edge Functions settings.",
+          resendKeyConfigured: false
+        }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
     }
     
     const body: EmailRequest = await req.json();

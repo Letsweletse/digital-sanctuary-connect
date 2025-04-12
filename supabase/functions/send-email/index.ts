@@ -45,13 +45,22 @@ const handler = async (req: Request): Promise<Response> => {
     return await processEmailRequest(req);
   } catch (error: any) {
     console.error("Error in send-email function:", error);
+    
+    // Add more detailed error information for troubleshooting
+    const errorInfo = {
+      success: false, 
+      error: error.message || "Unknown error",
+      errorType: error.name,
+      stack: error.stack,
+      timestamp: new Date().toISOString(),
+      path: new URL(req.url).pathname,
+      resendKeyConfigured: !!Deno.env.get("RESEND_API_KEY")
+    };
+    
+    console.error("Error details:", errorInfo);
+    
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: error.message || "Unknown error",
-        timestamp: new Date().toISOString(),
-        path: new URL(req.url).pathname
-      }),
+      JSON.stringify(errorInfo),
       { 
         status: 500, 
         headers: { 
