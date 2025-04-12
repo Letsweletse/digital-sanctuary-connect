@@ -1,18 +1,17 @@
-
 export interface EmailRequest {
-  to: string[];
-  subject: string;
+  to: string | string[];
+  subject?: string;
   name: string;
   email: string;
-  message: string;
-  eventName: string;
-  registrationType: string;
-  sendConfirmation: boolean;
-  title: string;
-  role: string;
-  denomination: string;
-  phone: string;
-  location: string;
+  message?: string;
+  eventName?: string;
+  registrationType?: string;
+  sendConfirmation?: boolean;
+  title?: string;
+  role?: string;
+  denomination?: string;
+  phone?: string;
+  location?: string;
   eventDate?: string;
   eventTime?: string;
   eventImage?: string;
@@ -75,7 +74,7 @@ export interface EmailDeliveryLog {
   timestamp: string;
   recipient: string;
   emailType: 'admin' | 'confirmation';
-  messageId?: string;
   status: 'sent' | 'failed';
+  messageId?: string;
   details?: any;
 }
