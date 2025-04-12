@@ -36,7 +36,7 @@ const EmailTest = () => {
           denomination: "Test Church",
           numberOfAttendees: 2
         },
-        message: "This is a test registration",
+        message: "This is a test registration for email verification",
         submitDate: new Date().toISOString(),
         registrationType: "Standard"
       };
@@ -109,7 +109,8 @@ const EmailTest = () => {
           "Send Enhanced Test Email"
         )}
       </Button>
-      <div className="mt-4 text-sm text-gray-500">
+      <p className="mt-4 text-sm text-gray-500">API Key Updated: {new Date().toLocaleString()}</p>
+      <div className="mt-2 text-sm text-gray-500">
         <p>Admin recipients: otenggate@gmail.com, info@gategaborone.com, iblimenterprise@zohomail.com</p>
       </div>
     </Card>

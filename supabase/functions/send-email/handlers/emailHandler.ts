@@ -12,6 +12,7 @@ import {
 } from "../utils/calendarUtils.ts";
 import { EmailRequest } from "../types/emailTypes.ts";
 
+// Initialize Resend with the API key from environment variable
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 export async function processEmailRequest(req: Request): Promise<Response> {
@@ -77,12 +78,17 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       checkInId
     });
 
-    await resend.emails.send({
+    console.log("Sending admin email to:", to);
+    console.log("With subject:", subject);
+    
+    const adminEmailResult = await resend.emails.send({
       from: "Gate Gaborone <info@gategaborone.com>",
       to,
       subject,
       html: adminHtmlContent,
     });
+    
+    console.log("Admin email result:", adminEmailResult);
 
     let confirmationSuccess = false;
 
@@ -107,6 +113,8 @@ export async function processEmailRequest(req: Request): Promise<Response> {
         whatsappShareUrl
       });
 
+      console.log("Sending confirmation email to:", email);
+      
       const emailResponse = await resend.emails.send({
         from: "Gate Gaborone <info@gategaborone.com>",
         to: [email],
