@@ -79,6 +79,7 @@ const EmailTest = () => {
       </p>
       <ul className="list-disc ml-5 mt-2 mb-4 text-gray-600">
         <li>Using Mailgun email service with domain: gategaborone.com</li>
+        <li>Secure email verification with webhook signing</li>
         <li>Higher resolution QR codes for location and check-in</li>
         <li>iCal calendar integration (.ics file)</li>
         <li>WhatsApp sharing option</li>

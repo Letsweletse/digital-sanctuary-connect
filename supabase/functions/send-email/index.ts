@@ -5,9 +5,11 @@ import { processEmailRequest } from "./handlers/emailHandler.ts";
 
 const handler = async (req: Request): Promise<Response> => {
   console.log("Email function called with method:", req.method);
+  console.log("Request URL:", req.url);
   
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
+    console.log("Handling CORS preflight request");
     return new Response(null, { headers: corsHeaders });
   }
 
@@ -37,4 +39,5 @@ const handler = async (req: Request): Promise<Response> => {
 };
 
 console.log("Email function initialized with Mailgun provider");
+console.log("Mailgun domain: gategaborone.com");
 serve(handler);
