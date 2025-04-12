@@ -18,7 +18,8 @@ const handler = async (req: Request): Promise<Response> => {
   const envKeys = Object.keys(Deno.env.toObject());
   console.log("Available environment variables:", envKeys);
   console.log("RESEND_API_KEY configured:", !!Deno.env.get("RESEND_API_KEY"));
-  console.log("Using updated RESEND_API_KEY");
+  console.log("RESEND_API_KEY first 5 chars:", Deno.env.get("RESEND_API_KEY")?.substring(0, 5) || "Not available");
+  console.log("Using updated RESEND_API_KEY starting with re_9Q");
 
   try {
     // Check if this is a request for email logs
@@ -77,6 +78,7 @@ const handler = async (req: Request): Promise<Response> => {
       timestamp: new Date().toISOString(),
       path: new URL(req.url).pathname,
       resendKeyConfigured: !!Deno.env.get("RESEND_API_KEY"),
+      resendKeyFirstChars: Deno.env.get("RESEND_API_KEY")?.substring(0, 5) || "Not available",
       envKeys: Object.keys(Deno.env.toObject())
     };
     

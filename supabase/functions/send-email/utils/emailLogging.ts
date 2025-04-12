@@ -1,110 +1,107 @@
+// In-memory storage for email delivery logs
+// Note: this will be cleared when the function is restarted
+const emailDeliveryLogs: EmailDeliveryLog[] = [];
 
-import { EmailDeliveryLog } from "../types/emailTypes.ts";
+interface EmailDeliveryLog {
+  id: string;
+  timestamp: string;
+  recipient: string;
+  emailType: 'admin' | 'confirmation' | 'test';
+  status: 'sent' | 'failed';
+  details: any;
+  messageId?: string;
+}
 
-// In-memory log storage (persists until function restart)
-const deliveryLogs: EmailDeliveryLog[] = [];
-
-/**
- * Log an email delivery attempt
- */
+// Add a log entry for email delivery
 export function logEmailDelivery(
   recipient: string, 
-  emailType: 'admin' | 'confirmation',
+  emailType: 'admin' | 'confirmation' | 'test', 
   status: 'sent' | 'failed',
-  details?: any,
+  details: any = {},
   messageId?: string
-): void {
+) {
   const logEntry: EmailDeliveryLog = {
+    id: crypto.randomUUID(),
     timestamp: new Date().toISOString(),
     recipient,
     emailType,
     status,
-    messageId,
-    details
+    details,
+    messageId
   };
   
-  // Add to memory logs
-  deliveryLogs.push(logEntry);
+  emailDeliveryLogs.push(logEntry);
+  console.log(`Email delivery logged: ${emailType} to ${recipient} - ${status}`);
   
-  // Log to console for debugging
-  console.log(`EMAIL DELIVERY LOG [${status.toUpperCase()}] ${emailType} to ${recipient}`, 
-    messageId ? `ID: ${messageId}` : '',
-    details ? `Details: ${JSON.stringify(details)}` : '');
-}
-
-/**
- * Get all delivery logs
- */
-export function getDeliveryLogs(): EmailDeliveryLog[] {
-  return [...deliveryLogs];
-}
-
-/**
- * Get delivery logs for a specific recipient
- */
-export function getRecipientLogs(recipient: string): EmailDeliveryLog[] {
-  return deliveryLogs.filter(log => log.recipient === recipient);
-}
-
-/**
- * Create a detailed monitoring report for diagnostics
- */
-export function generateDeliveryReport(): string {
-  if (deliveryLogs.length === 0) {
-    return "No email delivery logs available.";
+  // Keep only the last 50 logs
+  if (emailDeliveryLogs.length > 50) {
+    emailDeliveryLogs.shift();
   }
+}
+
+// Get all delivery logs
+export function getDeliveryLogs() {
+  return emailDeliveryLogs;
+}
+
+// Generate a simple report from the logs
+export function generateDeliveryReport() {
+  // Count successful and failed emails
+  const sent = emailDeliveryLogs.filter(log => log.status === 'sent').length;
+  const failed = emailDeliveryLogs.filter(log => log.status === 'failed').length;
   
-  // Success rate statistics
-  const totalAttempts = deliveryLogs.length;
-  const successfulDeliveries = deliveryLogs.filter(log => log.status === 'sent').length;
-  const failedDeliveries = totalAttempts - successfulDeliveries;
-  const successRate = (successfulDeliveries / totalAttempts) * 100;
+  // Count by type
+  const adminSent = emailDeliveryLogs.filter(log => log.emailType === 'admin' && log.status === 'sent').length;
+  const adminFailed = emailDeliveryLogs.filter(log => log.emailType === 'admin' && log.status === 'failed').length;
+  const confirmationSent = emailDeliveryLogs.filter(log => log.emailType === 'confirmation' && log.status === 'sent').length;
+  const confirmationFailed = emailDeliveryLogs.filter(log => log.emailType === 'confirmation' && log.status === 'failed').length;
+  const testSent = emailDeliveryLogs.filter(log => log.emailType === 'test' && log.status === 'sent').length;
+  const testFailed = emailDeliveryLogs.filter(log => log.emailType === 'test' && log.status === 'failed').length;
   
-  // Admin vs confirmation email stats
-  const adminEmails = deliveryLogs.filter(log => log.emailType === 'admin').length;
-  const confirmationEmails = deliveryLogs.filter(log => log.emailType === 'confirmation').length;
+  // Get recent logs
+  const recentLogs = emailDeliveryLogs
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .slice(0, 10)
+    .map(log => `${new Date(log.timestamp).toLocaleString()} - ${log.emailType} to ${log.recipient} - ${log.status}${log.status === 'failed' ? ` (${log.details.error})` : ''}`);
   
-  // Recent errors list (last 5)
-  const recentErrors = deliveryLogs
+  // Recent failures
+  const recentFailures = emailDeliveryLogs
     .filter(log => log.status === 'failed')
-    .slice(-5)
-    .map(log => ({
-      timestamp: log.timestamp,
-      recipient: log.recipient,
-      emailType: log.emailType,
-      details: log.details
-    }));
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .slice(0, 5)
+    .map(log => `${new Date(log.timestamp).toLocaleString()} - ${log.emailType} to ${log.recipient} - ${log.details.error || 'Unknown error'}`);
   
-  // Generate report
-  const report = `
+  // Format the report
+  return `
 EMAIL DELIVERY MONITORING REPORT
-===============================
-Generated: ${new Date().toISOString()}
+=================================
+Total emails processed: ${sent + failed}
+Success rate: ${sent + failed > 0 ? Math.round((sent / (sent + failed)) * 100) : 0}%
 
-SUMMARY STATISTICS:
-------------------
-Total delivery attempts: ${totalAttempts}
-Successful deliveries: ${successfulDeliveries} (${successRate.toFixed(2)}%)
-Failed deliveries: ${failedDeliveries} (${(100 - successRate).toFixed(2)}%)
+BY TYPE:
+  Admin emails:        ${adminSent} sent, ${adminFailed} failed
+  Confirmation emails: ${confirmationSent} sent, ${confirmationFailed} failed
+  Test emails:         ${testSent} sent, ${testFailed} failed
 
-Email Types:
-- Admin emails: ${adminEmails}
-- Confirmation emails: ${confirmationEmails}
+RECENT ACTIVITY:
+${recentLogs.join('\n')}
 
-RECENT ERRORS (Last 5):
----------------------
-${recentErrors.length > 0 
-  ? recentErrors.map(err => 
-      `Time: ${err.timestamp}\nRecipient: ${err.recipient}\nType: ${err.emailType}\nDetails: ${JSON.stringify(err.details)}\n`
-    ).join('\n')
-  : 'No recent errors.'}
+${recentFailures.length > 0 ? `RECENT FAILURES:\n${recentFailures.join('\n')}` : 'No recent failures'}
 
-DELIVERY LOG (Last 10 entries):
-----------------------------
-${deliveryLogs.slice(-10).map(log => 
-  `[${log.timestamp}] ${log.status.toUpperCase()} ${log.emailType} to ${log.recipient}`
-).join('\n')}
-`;
+Function uptime: ${getUptimeString()}
+Logs will be cleared on function restart
+=================================
+`.trim();
+}
 
-  return report;
+// Helper to show how long the function has been running
+let startTime = Date.now();
+
+function getUptimeString() {
+  const uptime = Date.now() - startTime;
+  const seconds = Math.floor(uptime / 1000) % 60;
+  const minutes = Math.floor(uptime / (1000 * 60)) % 60;
+  const hours = Math.floor(uptime / (1000 * 60 * 60));
+  
+  return `${hours}h ${minutes}m ${seconds}s`;
 }

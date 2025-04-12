@@ -11,105 +11,99 @@ interface EmailTestFormProps {
   setTestPhone: (phone: string) => void;
   handleTestEmail: () => void;
   isSending: boolean;
+  edgeFunction?: string;
+  setEdgeFunction?: (fn: string) => void;
 }
 
 const EmailTestForm = ({ 
   testEmail, 
   setTestEmail, 
-  testPhone, 
-  setTestPhone, 
+  testPhone,
+  setTestPhone,
   handleTestEmail, 
-  isSending 
+  isSending,
+  edgeFunction = 'send-email',
+  setEdgeFunction
 }: EmailTestFormProps) => {
-  // Enhanced email validation with length check (Resend has a 254 char limit)
-  const isValidEmail = (email: string) => {
-    return email.includes('@') && email.includes('.') && email.length > 0 && email.length <= 254;
-  };
-  
-  // Basic phone validation (just checking if it starts with + and has numbers)
-  const isValidPhone = (phone: string) => {
-    return phone.startsWith('+') && phone.length > 5;
-  };
-  
-  const emailIsValid = isValidEmail(testEmail);
-  const phoneIsValid = isValidPhone(testPhone);
-  
   return (
-    <>
-      <p className="mb-4 text-gray-600">
-        Enter your email and phone below to receive a test event registration confirmation with enhanced features:
-      </p>
-      <ul className="list-disc ml-5 mt-2 mb-4 text-gray-600">
-        <li>Gate Gaborone logo in the header</li>
-        <li>Higher resolution QR codes for location and check-in</li>
-        <li>iCal calendar integration (.ics file)</li>
-        <li>Multiple social media sharing options (WhatsApp, Facebook, Twitter, LinkedIn, Email)</li>
-        <li>Gate Gaborone social media follow links</li>
-        <li>Personalized check-in ID</li>
-        <li>WhatsApp notification (if phone number provided)</li>
-      </ul>
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium mb-3">Test Email Delivery</h3>
       
-      <div className="mb-4">
-        <Label htmlFor="testEmail">Your Email</Label>
-        <Input 
-          id="testEmail" 
-          type="email" 
-          value={testEmail} 
-          onChange={(e) => setTestEmail(e.target.value)} 
-          placeholder="Enter your email"
-          className={`mt-1 ${!emailIsValid && testEmail ? 'border-red-500' : ''}`}
-          maxLength={254} // Resend has a 254 character limit on email addresses
-        />
-        {!emailIsValid && testEmail && (
-          <p className="text-xs text-red-500 mt-1">
-            Please enter a valid email address (must include @ and be under 254 characters)
+      <div className="space-y-3">
+        <div>
+          <Label htmlFor="testEmail" className="text-sm font-medium">
+            Test Email Address
+          </Label>
+          <Input
+            id="testEmail"
+            type="email"
+            placeholder="your-email@example.com"
+            value={testEmail}
+            onChange={(e) => setTestEmail(e.target.value)}
+            className="mt-1 w-full"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Enter an email address where you can verify receipt
           </p>
-        )}
-      </div>
-      
-      <div className="mb-4">
-        <Label htmlFor="testPhone">Your WhatsApp Number</Label>
-        <Input 
-          id="testPhone" 
-          type="tel" 
-          value={testPhone} 
-          onChange={(e) => setTestPhone(e.target.value)} 
-          placeholder="e.g. +267 71234567"
-          className={`mt-1 ${!phoneIsValid && testPhone !== '+267' ? 'border-red-500' : ''}`}
-        />
-        <p className="text-xs text-gray-500 mt-1">
-          Include country code (e.g. +267 for Botswana)
-        </p>
-        {!phoneIsValid && testPhone !== '+267' && (
-          <p className="text-xs text-red-500 mt-1">
-            Please enter a valid phone number with country code (e.g. +267 71234567)
+        </div>
+        
+        <div>
+          <Label htmlFor="testPhone" className="text-sm font-medium">
+            Test Phone Number (Optional)
+          </Label>
+          <Input
+            id="testPhone"
+            type="tel"
+            placeholder="+26777123456"
+            value={testPhone}
+            onChange={(e) => setTestPhone(e.target.value)}
+            className="mt-1 w-full"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Enter a phone number to test SMS notifications
           </p>
+        </div>
+        
+        {setEdgeFunction && (
+          <div>
+            <Label htmlFor="edgeFunction" className="text-sm font-medium">
+              Edge Function
+            </Label>
+            <div className="flex gap-2 mt-1">
+              <select
+                id="edgeFunction"
+                value={edgeFunction}
+                onChange={(e) => setEdgeFunction(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md"
+              >
+                <option value="send-email">send-email</option>
+                <option value="check-resend-status">check-resend-status</option>
+              </select>
+            </div>
+          </div>
         )}
       </div>
       
-      <Button 
-        onClick={handleTestEmail} 
-        disabled={isSending || !emailIsValid}
-        className="w-full bg-church-blue hover:bg-church-blue-dark"
-      >
-        {isSending ? (
-          <span className="flex items-center gap-2">
-            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Sending Enhanced Test Email...
-          </span>
-        ) : (
-          "Send Enhanced Test Email & WhatsApp"
-        )}
-      </Button>
-      
-      <div className="mt-4 text-xs text-gray-500 p-3 bg-gray-50 rounded border border-gray-100">
-        <p className="font-medium">Note from Resend Technical Team:</p>
-        <p className="italic mt-1">Recent requests are failing with 400 errors due to invalid content. Please check your email format and content.</p>
+      <div className="flex justify-end">
+        <Button 
+          type="button" 
+          onClick={handleTestEmail} 
+          disabled={isSending || !testEmail}
+        >
+          {isSending ? "Sending..." : "Send Test Email"}
+        </Button>
       </div>
-    </>
+      
+      <div className="text-xs text-gray-500 mt-1 border-t pt-2">
+        <p>This will test the full email delivery pipeline:</p>
+        <ol className="list-decimal ml-5 space-y-1">
+          <li>Frontend to Supabase Edge Function</li>
+          <li>Edge Function to Resend API</li>
+          <li>Resend API to your inbox</li>
+          <li>Email tracking and delivery logs</li>
+        </ol>
+      </div>
+    </div>
   );
 };
 

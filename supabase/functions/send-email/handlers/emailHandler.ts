@@ -17,6 +17,7 @@ import { logEmailDelivery, generateDeliveryReport } from "../utils/emailLogging.
 // Initialize Resend with API key from environment variable
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 console.log("RESEND_API_KEY available:", RESEND_API_KEY ? "Yes (length: " + RESEND_API_KEY.length + ")" : "No");
+console.log("RESEND_API_KEY starts with:", RESEND_API_KEY?.substring(0, 5) || "N/A");
 
 if (!RESEND_API_KEY) {
   console.error("CRITICAL ERROR: RESEND_API_KEY environment variable is not set or empty!");
@@ -30,6 +31,7 @@ console.log("Refreshing DNS configuration for email delivery");
 export async function processEmailRequest(req: Request): Promise<Response> {
   try {
     console.log("Starting email processing with refreshed DNS configuration");
+    console.log("Using Resend API key starting with:", RESEND_API_KEY?.substring(0, 5) || "N/A");
     
     // Verify Resend configuration
     if (!RESEND_API_KEY) {
@@ -187,7 +189,6 @@ export async function processEmailRequest(req: Request): Promise<Response> {
         locationQrCodeUrl,
         checkInQrCodeUrl,
         encodedIcsContent,
-        // Removed WhatsApp sharing URL
       });
 
       console.log("Sending confirmation email to:", email);
@@ -300,6 +301,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
         message: `Email processing failed: ${error.message || "Unknown error"}`,
         error: error.message || "Unknown error",
         resendKeyConfigured: !!RESEND_API_KEY,
+        resendKeyFirstChars: RESEND_API_KEY?.substring(0, 5) || "N/A",
         timestamp: new Date().toISOString()
       }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }

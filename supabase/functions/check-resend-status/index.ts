@@ -46,7 +46,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
     
     console.log("RESEND_API_KEY found with length:", RESEND_API_KEY.length);
-    console.log("RESEND_API_KEY starts with:", RESEND_API_KEY.substring(0, 3) + "...");
+    console.log("RESEND_API_KEY starts with:", RESEND_API_KEY.substring(0, 5) + "...");
     
     // Validate API key format (simple check for Resend key format)
     if (!RESEND_API_KEY.startsWith('re_')) {
@@ -56,7 +56,7 @@ const handler = async (req: Request): Promise<Response> => {
           success: false,
           message: "The provided RESEND_API_KEY appears to be invalid. Resend API keys should start with 're_'.",
           keyConfigured: false,
-          keyFormat: RESEND_API_KEY.substring(0, 3) + "..."
+          keyFormat: RESEND_API_KEY.substring(0, 5) + "..."
         }),
         { 
           status: 400, 
