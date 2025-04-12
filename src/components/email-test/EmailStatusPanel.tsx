@@ -60,14 +60,15 @@ const EmailStatusPanel = ({
             <div className="flex items-center justify-between mb-1">
               <span className="text-gray-700 font-medium">WhatsApp:</span>
               <span className="text-sm text-amber-600">
-                {requiresAdminAction ? '⚠️ Link generated' : '✓ Sent'}
+                {requiresAdminAction ? '⚠️ Admin action required' : '✓ Sent directly'}
               </span>
             </div>
             
             {requiresAdminAction && (
               <div className="mt-1 p-2 bg-amber-50 rounded text-xs text-amber-800">
                 <p className="font-semibold mb-1">Admin action required:</p>
-                <p>WhatsApp messages require manual sending. Click the link below to open WhatsApp and send the prepared message:</p>
+                <p>WhatsApp messages require manual sending. To enable automatic sending, configure the WhatsApp Business API in Supabase secrets.</p>
+                <p className="mt-1 mb-1">For now, click the link below to open WhatsApp and send the prepared message:</p>
                 <a 
                   href={whatsappLink} 
                   target="_blank" 

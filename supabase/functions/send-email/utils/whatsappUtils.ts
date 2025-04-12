@@ -7,14 +7,14 @@ interface WhatsAppResult {
   success: boolean;
   message: string;
   directLink?: string;
-  isLink: boolean; // Add this flag to clarify this is a link, not direct sending
+  isLink: boolean; // This flag indicates if this is a link or direct sending
 }
 
 /**
- * Generate a WhatsApp notification link using click-to-chat API
+ * Send a WhatsApp notification using the official WhatsApp Business API
  * 
- * This generates a link that needs to be clicked by an admin to send the message
- * We track this as "prepared" rather than "sent" since it requires manual action
+ * This function attempts to send a WhatsApp message directly if possible,
+ * falling back to generating a click-to-chat link that needs manual sending
  */
 export async function sendWhatsAppNotification({
   phone,
@@ -43,7 +43,7 @@ export async function sendWhatsAppNotification({
       };
     }
     
-    console.log("Preparing WhatsApp notification link for:", sanitizedPhone);
+    console.log("Processing WhatsApp notification for:", sanitizedPhone);
 
     // Create the WhatsApp message with better formatting
     const message = `
@@ -62,7 +62,63 @@ We're looking forward to seeing you there! Save this message for quick check-in.
 - Gate Gaborone Church
     `;
 
-    // Generate the WhatsApp API link - this is a deep link that will open WhatsApp with the message
+    // Check if we have WhatsApp Business API credentials
+    const whatsappBusinessToken = Deno.env.get("WHATSAPP_BUSINESS_TOKEN");
+    const whatsappBusinessPhoneId = Deno.env.get("WHATSAPP_BUSINESS_PHONE_ID");
+    
+    // If we have WhatsApp Business API credentials, try to send directly
+    if (whatsappBusinessToken && whatsappBusinessPhoneId) {
+      try {
+        console.log("Attempting direct WhatsApp send via Business API");
+        
+        // Prepare the WhatsApp API request
+        const whatsappApiUrl = `https://graph.facebook.com/v19.0/${whatsappBusinessPhoneId}/messages`;
+        
+        // Format the message for WhatsApp API
+        const apiPayload = {
+          messaging_product: "whatsapp",
+          recipient_type: "individual",
+          to: sanitizedPhone,
+          type: "text",
+          text: { 
+            body: message
+          }
+        };
+        
+        // Send the request to WhatsApp Business API
+        const response = await fetch(whatsappApiUrl, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${whatsappBusinessToken}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(apiPayload)
+        });
+        
+        const result = await response.json();
+        console.log("WhatsApp Business API response:", result);
+        
+        if (response.ok && result.messages && result.messages.length > 0) {
+          console.log("✅ WhatsApp notification sent successfully via Business API");
+          return {
+            success: true,
+            message: "WhatsApp notification sent successfully via Business API",
+            isLink: false
+          };
+        } else {
+          console.error("❌ WhatsApp Business API error:", result);
+          throw new Error("WhatsApp Business API error: " + JSON.stringify(result));
+        }
+      } catch (apiError) {
+        console.error("Error with WhatsApp Business API:", apiError);
+        console.log("Falling back to WhatsApp link generation...");
+        // Fall back to link generation on API error
+      }
+    } else {
+      console.log("WhatsApp Business API credentials not configured, using link generation fallback");
+    }
+
+    // Fallback to generating a WhatsApp deep link
     const whatsappLink = `https://wa.me/${sanitizedPhone}?text=${encodeURIComponent(message)}`;
     
     console.log("Generated WhatsApp notification link for:", sanitizedPhone);
