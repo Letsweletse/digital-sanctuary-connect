@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { EmailResponse, EmailTestFormData } from './types';
 
@@ -13,6 +12,17 @@ export const checkResendKeyStatus = async () => {
     
     if (error) {
       console.error('Error invoking check-resend-status function:', error);
+      
+      // Check if this is a Supabase auth issue
+      if (error.message.includes('No API key found') || 
+          error.message.includes('JWT') || 
+          error.status === 401) {
+        return {
+          success: false,
+          error: `Supabase authentication error: ${error.message}. Try refreshing the page to get a new session.`
+        };
+      }
+      
       throw new Error(`Failed to check Resend API key status: ${error.message}`);
     }
     
@@ -110,6 +120,17 @@ export const sendTestEmail = async (testEmailData: any) => {
     
     if (error) {
       console.error('Error invoking send-email function:', error);
+      
+      // Check if this is a Supabase auth issue
+      if (error.message.includes('No API key found') || 
+          error.message.includes('JWT') || 
+          error.status === 401) {
+        return {
+          success: false,
+          error: `Supabase authentication error: ${error.message}. Try refreshing the page to get a new session.`
+        };
+      }
+      
       throw new Error(`Failed to invoke function: ${error.message}`);
     }
     
@@ -174,6 +195,17 @@ export const invokeEmailFunction = async (edgeFunction: string, formData: EmailT
 
     if (error) {
       console.error('Error invoking edge function:', error);
+      
+      // Check if this is a Supabase auth issue
+      if (error.message.includes('No API key found') || 
+          error.message.includes('JWT') || 
+          error.status === 401) {
+        return {
+          success: false,
+          error: `Supabase authentication error: ${error.message}. Try refreshing the page to get a new session.`
+        };
+      }
+      
       return {
         success: false,
         error: `Failed to invoke the ${edgeFunction} function: ${error.message}`

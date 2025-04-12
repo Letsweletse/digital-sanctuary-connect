@@ -25,14 +25,49 @@ const DebugInfo = ({ debugInfo }: DebugInfoProps) => {
   const hasSmsInfo = debugInfo.includes('smsNotificationSent') ||
                     debugInfo.includes('smsNotificationDetails');
   
+  // Check for Supabase authentication issues
+  const hasSupabaseAuthError = debugInfo.includes('No API key found') ||
+                              debugInfo.includes('apikey request header') ||
+                              debugInfo.includes('JWT') ||
+                              debugInfo.includes('401') ||
+                              debugInfo.includes('Supabase authentication error');
+  
   return (
-    <div className={`mt-4 p-3 rounded-md ${hasValidationError || hasApiKeyError ? 'bg-red-50 border border-red-200' : 'bg-gray-100'}`}>
-      <h3 className={`font-bold text-sm mb-1 ${hasValidationError || hasApiKeyError ? 'text-red-600' : ''}`}>
+    <div className={`mt-4 p-3 rounded-md ${
+      hasValidationError || hasApiKeyError || hasSupabaseAuthError 
+        ? 'bg-red-50 border border-red-200' 
+        : 'bg-gray-100'
+    }`}>
+      <h3 className={`font-bold text-sm mb-1 ${
+        hasValidationError || hasApiKeyError || hasSupabaseAuthError 
+          ? 'text-red-600' 
+          : ''
+      }`}>
         {hasValidationError ? 'Error Information:' : 
-         hasApiKeyError ? 'API Key Configuration Error:' : 'Debug Information:'}
+         hasApiKeyError ? 'API Key Configuration Error:' :
+         hasSupabaseAuthError ? 'Supabase Authentication Error:' : 'Debug Information:'}
       </h3>
       
-      {hasApiKeyError && (
+      {hasSupabaseAuthError && (
+        <div className="mb-2 text-sm text-red-600">
+          <p>Supabase authentication issue detected. This likely means:</p>
+          <ul className="list-disc pl-5 mt-1 text-xs">
+            <li>Your Supabase session has expired</li>
+            <li>The anon key is missing or incorrect</li>
+            <li>The JWT token is invalid or missing</li>
+            <li>Your browser's local storage has been cleared</li>
+          </ul>
+          <p className="mt-2 text-xs font-medium">Try these solutions:</p>
+          <ul className="list-disc pl-5 mt-1 text-xs">
+            <li>Refresh the page to get a new session</li>
+            <li>Check browser console for more specific errors</li>
+            <li>Make sure you're using the correct Supabase URL and anon key</li>
+            <li>Try signing out and signing back in (if auth is enabled)</li>
+          </ul>
+        </div>
+      )}
+      
+      {hasApiKeyError && !hasSupabaseAuthError && (
         <div className="mb-2 text-sm text-red-600">
           <p>Resend API key configuration issue detected. Please check:</p>
           <ul className="list-disc pl-5 mt-1 text-xs">
@@ -45,7 +80,7 @@ const DebugInfo = ({ debugInfo }: DebugInfoProps) => {
         </div>
       )}
       
-      {hasValidationError && !hasApiKeyError && (
+      {hasValidationError && !hasApiKeyError && !hasSupabaseAuthError && (
         <div className="mb-2 text-sm text-red-600">
           <p>Resend API validation error detected (400 Bad Request). Common causes:</p>
           <ul className="list-disc pl-5 mt-1 text-xs">

@@ -68,20 +68,47 @@ const handler = async (req: Request): Promise<Response> => {
       // For now, let's just check if we can initialize Resend
       console.log("Resend client initialized successfully with API key: " + RESEND_API_KEY.substring(0, 5) + "...");
       
-      return new Response(
-        JSON.stringify({
-          success: true,
-          message: "Resend API key is properly configured. To check actual usage, visit your Resend dashboard.",
-          keyConfigured: true
-        }),
-        { 
-          status: 200, 
-          headers: { 
-            "Content-Type": "application/json",
-            ...corsHeaders
-          } 
-        }
-      );
+      // Try to make a simple API call to verify the key works
+      try {
+        // Instead of sending an email, we'll try to get domains which is a lighter operation
+        const domainsResponse = await resend.domains.list();
+        console.log("Successfully verified API key by listing domains");
+        
+        return new Response(
+          JSON.stringify({
+            success: true,
+            message: "Resend API key is properly configured and working.",
+            keyConfigured: true,
+            domains: domainsResponse
+          }),
+          { 
+            status: 200, 
+            headers: { 
+              "Content-Type": "application/json",
+              ...corsHeaders
+            } 
+          }
+        );
+      } catch (apiCallError) {
+        // The API key might be valid in format but doesn't have correct permissions
+        console.error("Error making test API call with Resend:", apiCallError);
+        return new Response(
+          JSON.stringify({
+            success: false,
+            message: `Resend API key appears valid but failed a test request: ${apiCallError instanceof Error ? apiCallError.message : 'Unknown error'}.`,
+            keyConfigured: false,
+            validFormat: true,
+            error: apiCallError instanceof Error ? apiCallError.message : 'Unknown error'
+          }),
+          { 
+            status: 400, 
+            headers: { 
+              "Content-Type": "application/json",
+              ...corsHeaders
+            } 
+          }
+        );
+      }
     } catch (resendError) {
       console.error("Error connecting to Resend API:", resendError);
       return new Response(
