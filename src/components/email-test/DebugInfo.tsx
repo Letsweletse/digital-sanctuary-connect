@@ -13,6 +13,11 @@ const DebugInfo = ({ debugInfo }: DebugInfoProps) => {
                             debugInfo.includes('Validation error') ||
                             debugInfo.includes('400');
   
+  // Check if we have an API key configuration error
+  const hasApiKeyError = debugInfo.includes('API key') ||
+                        debugInfo.includes('RESEND_API_KEY') ||
+                        debugInfo.includes('not configured');
+  
   // Check if we have a delivery report
   const hasDeliveryReport = debugInfo.includes('EMAIL DELIVERY MONITORING REPORT');
   
@@ -21,12 +26,26 @@ const DebugInfo = ({ debugInfo }: DebugInfoProps) => {
                     debugInfo.includes('smsNotificationDetails');
   
   return (
-    <div className={`mt-4 p-3 rounded-md ${hasValidationError ? 'bg-red-50 border border-red-200' : 'bg-gray-100'}`}>
-      <h3 className={`font-bold text-sm mb-1 ${hasValidationError ? 'text-red-600' : ''}`}>
-        {hasValidationError ? 'Error Information:' : 'Debug Information:'}
+    <div className={`mt-4 p-3 rounded-md ${hasValidationError || hasApiKeyError ? 'bg-red-50 border border-red-200' : 'bg-gray-100'}`}>
+      <h3 className={`font-bold text-sm mb-1 ${hasValidationError || hasApiKeyError ? 'text-red-600' : ''}`}>
+        {hasValidationError ? 'Error Information:' : 
+         hasApiKeyError ? 'API Key Configuration Error:' : 'Debug Information:'}
       </h3>
       
-      {hasValidationError && (
+      {hasApiKeyError && (
+        <div className="mb-2 text-sm text-red-600">
+          <p>Resend API key configuration issue detected. Please check:</p>
+          <ul className="list-disc pl-5 mt-1 text-xs">
+            <li>The API key has been properly set in Supabase Edge Function secrets</li>
+            <li>The API key format is correct (should start with 're_')</li>
+            <li>The API key has not expired or been revoked</li>
+            <li>Your Resend account is active and in good standing</li>
+            <li>You've verified your domain in the Resend dashboard</li>
+          </ul>
+        </div>
+      )}
+      
+      {hasValidationError && !hasApiKeyError && (
         <div className="mb-2 text-sm text-red-600">
           <p>Resend API validation error detected (400 Bad Request). Common causes:</p>
           <ul className="list-disc pl-5 mt-1 text-xs">

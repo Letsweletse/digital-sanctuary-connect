@@ -52,11 +52,22 @@ export function useEmailOperations(emailForm: any) {
     if (result.success && result.data) {
       setSuccessStatus(result.data, emailForm.testEmail);
     } else {
+      // Determine if the issue is with the Resend API key
+      const isApiKeyIssue = 
+        result.error?.includes('API key') || 
+        result.error?.includes('authentication') || 
+        (result.data?.resendKeyConfigured === false);
+      
       setErrorStatus(
         result.error || 'Failed to send test email', 
         emailForm.testEmail, 
-        result.data?.resendKeyConfigured
+        !isApiKeyIssue && result.data?.resendKeyConfigured
       );
+      
+      // Show more helpful error for API key issues
+      if (isApiKeyIssue) {
+        console.error('Resend API key issue detected:', result.error);
+      }
     }
   }, [emailForm.testEmail, emailForm.testPhone, setSendingStatus, setSuccessStatus, setErrorStatus, updateDebugInfo]);
 
@@ -69,11 +80,13 @@ export function useEmailOperations(emailForm: any) {
     if (result.success && result.data) {
       const data = result.data;
       updateResendInfo(
-        data.keyConfigured, 
-        data.keyConfigured ? 'API key is active and properly configured' : 'API key is missing or invalid'
+        data.keyConfigured || data.success, 
+        data.keyConfigured || data.success 
+          ? 'API key is active and properly configured' 
+          : (data.message || 'API key is missing or invalid')
       );
     } else {
-      updateResendInfo(false, 'Failed to check API key status');
+      updateResendInfo(false, 'Failed to check API key status: ' + (result.error || 'Unknown error'));
     }
   }, [setSendingStatus, updateResendInfo]);
 

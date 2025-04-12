@@ -26,7 +26,27 @@ const handler = async (req: Request): Promise<Response> => {
       return new Response(
         JSON.stringify({
           success: false,
-          message: "RESEND_API_KEY not configured in Supabase Edge Functions secrets."
+          message: "RESEND_API_KEY not configured in Supabase Edge Functions secrets.",
+          keyConfigured: false
+        }),
+        { 
+          status: 400, 
+          headers: { 
+            "Content-Type": "application/json",
+            ...corsHeaders
+          } 
+        }
+      );
+    }
+    
+    // Validate API key format (simple check for Resend key format)
+    if (!RESEND_API_KEY.startsWith('re_')) {
+      console.error("RESEND_API_KEY appears to be invalid (should start with 're_')");
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "The provided RESEND_API_KEY appears to be invalid. Resend API keys should start with 're_'.",
+          keyConfigured: false
         }),
         { 
           status: 400, 
@@ -46,12 +66,13 @@ const handler = async (req: Request): Promise<Response> => {
     try {
       // This will throw an error if the API key is invalid or has issues
       // For now, let's just check if we can initialize Resend
-      console.log("Resend client initialized successfully");
+      console.log("Resend client initialized successfully with API key: " + RESEND_API_KEY.substring(0, 5) + "...");
       
       return new Response(
         JSON.stringify({
           success: true,
-          message: "Resend API key is properly configured. To check actual usage, visit your Resend dashboard."
+          message: "Resend API key is properly configured. To check actual usage, visit your Resend dashboard.",
+          keyConfigured: true
         }),
         { 
           status: 200, 
@@ -66,7 +87,8 @@ const handler = async (req: Request): Promise<Response> => {
       return new Response(
         JSON.stringify({
           success: false,
-          message: `Could not verify Resend API: ${resendError instanceof Error ? resendError.message : 'Unknown error'}`
+          message: `Could not verify Resend API: ${resendError instanceof Error ? resendError.message : 'Unknown error'}`,
+          keyConfigured: false
         }),
         { 
           status: 500, 
@@ -82,7 +104,8 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(
       JSON.stringify({
         success: false,
-        message: `Server error: ${error instanceof Error ? error.message : 'Unknown error'}`
+        message: `Server error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        keyConfigured: false
       }),
       { 
         status: 500, 

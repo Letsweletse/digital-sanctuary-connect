@@ -7,11 +7,16 @@ import { EmailResponse, EmailTestFormData } from './types';
  */
 export const checkResendKeyStatus = async () => {
   try {
+    console.log("Checking Resend API key status...");
+    
     const { data, error } = await supabase.functions.invoke('check-resend-status');
     
     if (error) {
+      console.error('Error invoking check-resend-status function:', error);
       throw new Error(`Failed to check Resend API key status: ${error.message}`);
     }
+    
+    console.log("Resend API key status response:", data);
     
     return {
       success: true,
@@ -104,6 +109,7 @@ export const sendTestEmail = async (testEmailData: any) => {
     });
     
     if (error) {
+      console.error('Error invoking send-email function:', error);
       throw new Error(`Failed to invoke function: ${error.message}`);
     }
     
@@ -111,6 +117,11 @@ export const sendTestEmail = async (testEmailData: any) => {
     
     if (!data) {
       throw new Error('No response received');
+    }
+    
+    // Check if we got an error response even though the HTTP status was 200
+    if (data.success === false) {
+      throw new Error(data.message || data.error || 'Unknown error occurred');
     }
     
     return {
@@ -173,6 +184,11 @@ export const invokeEmailFunction = async (edgeFunction: string, formData: EmailT
 
     if (!data) {
       throw new Error('No response data received from edge function');
+    }
+
+    // Check if the response indicates an error despite a successful HTTP request
+    if (data.success === false) {
+      throw new Error(data.message || data.error || 'Unknown error in edge function response');
     }
 
     return {
