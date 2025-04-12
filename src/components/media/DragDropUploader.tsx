@@ -62,12 +62,6 @@ const DragDropUploader = ({
     }, 200);
     
     try {
-      // Check if it's an audio file with category "sermons" but has a non-standard MIME type
-      if (category === "sermons" && file.name.toLowerCase().endsWith('.mp3') && !file.type.includes('audio')) {
-        console.log("Detected MP3 file with non-standard MIME type, proceeding anyway");
-        // Proceed anyway - the file extension suggests it's an audio file
-      }
-      
       const result = await handleFile(file, category);
       setUploadSuccess(result);
       setUploadPercent(100);
@@ -76,7 +70,7 @@ const DragDropUploader = ({
         console.log(`Upload successful for ${file.name} to category ${category}`);
         toast({
           title: "Upload Complete",
-          description: "Your file has been uploaded successfully.",
+          description: "Your image has been uploaded successfully.",
         });
         
         // Send email notification to admins
@@ -90,7 +84,7 @@ const DragDropUploader = ({
         setErrorMessage("Upload failed. Please try again.");
         toast({
           title: "Upload Failed",
-          description: "There was a problem uploading your file.",
+          description: "There was a problem uploading your image.",
           variant: "destructive",
         });
       }
@@ -100,7 +94,7 @@ const DragDropUploader = ({
       setErrorMessage(err instanceof Error ? err.message : "Unknown error");
       toast({
         title: "Upload Failed",
-        description: "Could not process file. Please try again.",
+        description: "Could not process image. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -133,34 +127,13 @@ const DragDropUploader = ({
     }
   };
   
-  // Custom validator function for both image and audio files
-  const fileValidator = (file: File) => {
-    // For sermons category, allow audio files even if the MIME type isn't recognized correctly
-    if (category === "sermons" && file.name.toLowerCase().endsWith('.mp3')) {
-      return null;
-    }
-    
-    // Standard validation
-    if (!acceptedFileTypes.includes(file.type)) {
-      return {
-        code: "file-invalid-type",
-        message: `File type not supported. Please upload ${acceptedFileTypes.join(', ')} files.`
-      };
-    }
-    
-    if (file.size > fileSizeLimit) {
-      return {
-        code: "file-too-large",
-        message: `File is too large. Maximum size is ${formatFileSize(fileSizeLimit)}.`
-      };
-    }
-    
-    return null;
-  };
-  
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
     onDrop,
-    validator: fileValidator,
+    accept: acceptedFileTypes.reduce((obj: any, type) => {
+      obj[type] = [];
+      return obj;
+    }, {}),
+    maxSize: fileSizeLimit,
     multiple: false
   });
   
@@ -231,9 +204,7 @@ const DragDropUploader = ({
             <>
               <UploadIcon className="h-10 w-10 text-muted-foreground" />
               <div className="space-y-2">
-                <p className="text-base font-medium">
-                  {category === 'sermons' ? 'Drag & drop audio file here' : 'Drag & drop image here'}
-                </p>
+                <p className="text-base font-medium">Drag & drop image here</p>
                 <p className="text-sm text-muted-foreground">
                   Or click to browse files
                 </p>
@@ -242,14 +213,12 @@ const DragDropUploader = ({
                 </Badge>
                 <div className="flex justify-center">
                   <Button variant="secondary" size="sm" className="mt-2">
-                    {category === 'sermons' ? 'Select Audio' : 'Select Image'}
+                    Select Image
                   </Button>
                 </div>
-                {category !== 'sermons' && (
-                  <p className="text-xs text-muted-foreground mt-2">
-                    You can also paste an image from your clipboard
-                  </p>
-                )}
+                <p className="text-xs text-muted-foreground mt-2">
+                  You can also paste an image from your clipboard
+                </p>
               </div>
             </>
           )}

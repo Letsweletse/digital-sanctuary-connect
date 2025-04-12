@@ -10,7 +10,6 @@ export const useEventRegistration = () => {
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
   const [currentEvent, setCurrentEvent] = useState<EventData | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [whatsappLink, setWhatsappLink] = useState<string | null>(null);
   const { toast } = useToast();
   
   const [formData, setFormData] = useState<RegistrationFormData>({
@@ -37,7 +36,6 @@ export const useEventRegistration = () => {
   const handleCloseRegistration = () => {
     setIsRegistrationOpen(false);
     setCurrentEvent(null);
-    setWhatsappLink(null);
     resetFormData();
   };
   
@@ -103,7 +101,6 @@ export const useEventRegistration = () => {
     }
     
     setIsSubmitting(true);
-    setWhatsappLink(null);
 
     try {
       // Prepare comprehensive registration data with all required fields for enhanced email
@@ -134,39 +131,16 @@ export const useEventRegistration = () => {
         throw new Error(emailResult.message || "Failed to send registration email");
       }
       
-      // Check for WhatsApp notification link (which requires admin action)
-      const whatsappNotificationLink = emailResult.data?.whatsappNotificationLink;
-      const whatsappRequiresAction = emailResult.data?.whatsappLinkRequiresAction !== false; // Default to true
-      
-      if (whatsappNotificationLink) {
-        setWhatsappLink(whatsappNotificationLink);
-      }
-      
       // Show success message using both toasts for better visibility
       toast({
         title: "Registration Successful!",
-        description: `Thank you for registering for ${currentEvent.title}. A confirmation has been sent to your email.`,
+        description: `Thank you for registering for ${currentEvent.title}. A confirmation email with calendar integration, QR codes, and sharing options has been sent to ${formData.email}.`,
       });
-      
-      const whatsappNotificationSent = emailResult.data?.whatsappNotificationSent;
       
       sonnerToast.success("Registration Complete!", {
-        description: `Check your email for confirmation with event details. ${whatsappNotificationSent ? (whatsappRequiresAction ? "WhatsApp notification link has been generated for admin use." : "WhatsApp notification has been sent.") : ""}`,
+        description: "Check your email for confirmation with QR codes and calendar link.",
         duration: 5000
       });
-      
-      // If we have a WhatsApp link and we're an admin, show a special toast with the link
-      if (whatsappNotificationLink && whatsappRequiresAction) {
-        sonnerToast("WhatsApp Notification Ready", {
-          description: "As an admin, you can click the button below to send the WhatsApp message manually.",
-          action: {
-            label: "Send WhatsApp",
-            onClick: () => window.open(whatsappNotificationLink, '_blank')
-          },
-          duration: 0, // Keep it visible until dismissed
-          style: { backgroundColor: "#f0fbf8", borderColor: "#34d399" }
-        });
-      }
       
       handleCloseRegistration();
     } catch (error) {
@@ -191,7 +165,6 @@ export const useEventRegistration = () => {
     currentEvent,
     formData,
     isSubmitting,
-    whatsappLink,
     handleOpenRegistration,
     handleCloseRegistration,
     handleInputChange,
