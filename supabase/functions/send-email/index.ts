@@ -14,10 +14,10 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     console.log("Processing email request...");
     const response = await processEmailRequest(req);
-    console.log("Email request processed successfully");
+    console.log("Email request processed with status:", response.status);
     return response;
   } catch (error: any) {
-    console.error("Error in send-email function:", error);
+    console.error("Fatal error in send-email function:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     const errorStack = error instanceof Error ? error.stack : "No stack trace available";
     

@@ -41,7 +41,7 @@ async function sendMailgunEmail(from: string, to: string[], subject: string, htm
     console.log("Mailgun API response:", result);
     
     if (!response.ok) {
-      throw new Error(`Mailgun API error: ${result.message || "Unknown error"}`);
+      throw new Error(`Mailgun API error: ${JSON.stringify(result)}`);
     }
     
     return result;
@@ -54,6 +54,7 @@ async function sendMailgunEmail(from: string, to: string[], subject: string, htm
 export async function processEmailRequest(req: Request): Promise<Response> {
   try {
     const body: EmailRequest = await req.json();
+    console.log("Received email request body:", JSON.stringify(body));
 
     const { 
       to, 
@@ -75,6 +76,19 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       checkInId = uuidv4(),
       attendeeEmail = email
     } = body;
+
+    // Validate required fields
+    if (!to || !subject || !name || !email) {
+      console.error("Missing required fields in email request");
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Missing required fields in email request",
+          received: { to, subject, name, email }
+        }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
     // Generate higher resolution QR codes (300x300 pixels) with clearer borders for better visibility
     const locationQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(location)}&size=300x300&margin=10&qzone=2`;
@@ -117,15 +131,31 @@ export async function processEmailRequest(req: Request): Promise<Response> {
     console.log("Sending admin email to:", to);
     console.log("With subject:", subject);
     
-    // Send admin email using Mailgun
-    const adminEmailResult = await sendMailgunEmail(
-      "Gate Gaborone <info@gategaborone.com>",
-      Array.isArray(to) ? to : [to],
-      subject,
-      adminHtmlContent
-    );
+    // Convert 'to' to array if it's not already
+    const toArray = Array.isArray(to) ? to : [to];
+    console.log("Prepared recipient array:", toArray);
     
-    console.log("Admin email result:", adminEmailResult);
+    // Send admin email using Mailgun
+    let adminEmailResult;
+    try {
+      adminEmailResult = await sendMailgunEmail(
+        "Gate Gaborone <info@gategaborone.com>",
+        toArray,
+        subject,
+        adminHtmlContent
+      );
+      console.log("Admin email result:", adminEmailResult);
+    } catch (error) {
+      console.error("Failed to send admin email:", error);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: `Admin email failed: ${error instanceof Error ? error.message : String(error)}`,
+          provider: "Mailgun"
+        }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
     let confirmationSuccess = false;
 
@@ -152,16 +182,22 @@ export async function processEmailRequest(req: Request): Promise<Response> {
 
       console.log("Sending confirmation email to:", email);
       
-      // Send confirmation email using Mailgun
-      const emailResponse = await sendMailgunEmail(
-        "Gate Gaborone <info@gategaborone.com>",
-        [email],
-        `Registration Confirmation: ${eventName}`,
-        confirmationHtml
-      );
+      try {
+        // Send confirmation email using Mailgun
+        const emailResponse = await sendMailgunEmail(
+          "Gate Gaborone <info@gategaborone.com>",
+          [email],
+          `Registration Confirmation: ${eventName}`,
+          confirmationHtml
+        );
 
-      console.log("Confirmation email sent:", emailResponse);
-      confirmationSuccess = true;
+        console.log("Confirmation email sent:", emailResponse);
+        confirmationSuccess = true;
+      } catch (error) {
+        console.error("Failed to send confirmation email:", error);
+        // Don't fail the whole operation if just the confirmation email fails
+        // Still return success for the admin email
+      }
     }
 
     return new Response(
@@ -177,6 +213,15 @@ export async function processEmailRequest(req: Request): Promise<Response> {
     );
   } catch (error: any) {
     console.error("Error processing email request:", error);
-    throw error;
+    return new Response(
+      JSON.stringify({ 
+        success: false, 
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : "No stack trace available",
+        provider: "Mailgun",
+        timestamp: new Date().toISOString()
+      }),
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+    );
   }
 }
