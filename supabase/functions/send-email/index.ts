@@ -13,6 +13,11 @@ const handler = async (req: Request): Promise<Response> => {
   console.log(`Processing ${req.method} request to send-email function`);
   console.log("Headers:", Object.fromEntries(req.headers.entries()));
   console.log("URL:", req.url);
+  
+  // Log environment variables available (without values for security)
+  const envKeys = Object.keys(Deno.env.toObject());
+  console.log("Available environment variables:", envKeys);
+  console.log("RESEND_API_KEY configured:", !!Deno.env.get("RESEND_API_KEY"));
 
   try {
     // Check if this is a request for email logs
@@ -22,12 +27,27 @@ const handler = async (req: Request): Promise<Response> => {
     let requestBody;
     if (req.method === "POST") {
       try {
-        requestBody = await req.json();
-        console.log("Request body:", requestBody);
+        const bodyText = await req.text();
+        console.log("Request body text:", bodyText.substring(0, 200) + (bodyText.length > 200 ? "..." : ""));
+        
+        try {
+          requestBody = JSON.parse(bodyText);
+          console.log("Parsed request body:", JSON.stringify(requestBody).substring(0, 200) + "...");
+        } catch (parseError) {
+          console.error("Error parsing JSON body:", parseError);
+          requestBody = {};
+        }
       } catch (e) {
-        console.log("No valid JSON body or empty body");
+        console.log("Error reading request body:", e);
         requestBody = {};
       }
+      
+      // Create a new Request with the parsed body for further processing
+      req = new Request(req.url, {
+        method: req.method,
+        headers: req.headers,
+        body: JSON.stringify(requestBody)
+      });
     }
     
     // Check various ways the logs might be requested
@@ -45,6 +65,7 @@ const handler = async (req: Request): Promise<Response> => {
     return await processEmailRequest(req);
   } catch (error: any) {
     console.error("Error in send-email function:", error);
+    console.error("Error stack:", error.stack);
     
     // Add more detailed error information for troubleshooting
     const errorInfo = {
@@ -54,7 +75,8 @@ const handler = async (req: Request): Promise<Response> => {
       stack: error.stack,
       timestamp: new Date().toISOString(),
       path: new URL(req.url).pathname,
-      resendKeyConfigured: !!Deno.env.get("RESEND_API_KEY")
+      resendKeyConfigured: !!Deno.env.get("RESEND_API_KEY"),
+      envKeys: Object.keys(Deno.env.toObject())
     };
     
     console.error("Error details:", errorInfo);

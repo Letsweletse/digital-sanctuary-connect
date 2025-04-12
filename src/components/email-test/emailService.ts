@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { EmailResponse, EmailTestFormData } from './types';
 
@@ -14,8 +15,8 @@ export const checkResendKeyStatus = async () => {
       console.error('Error invoking check-resend-status function:', error);
       
       // Check if this is a Supabase auth issue
-      if (error.message.includes('No API key found') || 
-          error.message.includes('JWT') || 
+      if (error.message?.includes('No API key found') || 
+          error.message?.includes('JWT') || 
           error.status === 401) {
         return {
           success: false,
@@ -114,16 +115,19 @@ export const sendTestEmail = async (testEmailData: any) => {
       throw new Error(`Validation error: ${validation.error}`);
     }
     
+    console.log('Invoking send-email function with validated data');
+    
     const { data, error } = await supabase.functions.invoke<EmailResponse>('send-email', {
       body: testEmailData
     });
     
     if (error) {
       console.error('Error invoking send-email function:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       
       // Check if this is a Supabase auth issue
-      if (error.message.includes('No API key found') || 
-          error.message.includes('JWT') || 
+      if (error.message?.includes('No API key found') || 
+          error.message?.includes('JWT') || 
           error.status === 401) {
         return {
           success: false,
@@ -131,18 +135,28 @@ export const sendTestEmail = async (testEmailData: any) => {
         };
       }
       
-      throw new Error(`Failed to invoke function: ${error.message}`);
+      return {
+        success: false,
+        error: `Edge Function Error: ${error.message || 'Unknown error'}. Check Edge Function logs in Supabase dashboard for details.`
+      };
     }
     
     console.log('Email test response:', data);
     
     if (!data) {
-      throw new Error('No response received');
+      return {
+        success: false,
+        error: 'No response received from edge function (null data).'
+      };
     }
     
     // Check if we got an error response even though the HTTP status was 200
     if (data.success === false) {
-      throw new Error(data.message || data.error || 'Unknown error occurred');
+      return {
+        success: false,
+        error: data.message || data.error || 'Unknown error occurred',
+        data: data
+      };
     }
     
     return {
@@ -189,16 +203,18 @@ export const invokeEmailFunction = async (edgeFunction: string, formData: EmailT
     }
 
     // Invoke the Supabase edge function
+    console.log(`Sending request to ${edgeFunction} edge function...`);
     const { data, error } = await supabase.functions.invoke<EmailResponse>(edgeFunction, {
       body: requestBody
     });
 
     if (error) {
       console.error('Error invoking edge function:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       
       // Check if this is a Supabase auth issue
-      if (error.message.includes('No API key found') || 
-          error.message.includes('JWT') || 
+      if (error.message?.includes('No API key found') || 
+          error.message?.includes('JWT') || 
           error.status === 401) {
         return {
           success: false,
@@ -208,19 +224,27 @@ export const invokeEmailFunction = async (edgeFunction: string, formData: EmailT
       
       return {
         success: false,
-        error: `Failed to invoke the ${edgeFunction} function: ${error.message}`
+        error: `Failed to invoke the ${edgeFunction} function: ${error.message || 'Unknown error'}`,
+        details: error
       };
     }
 
     console.log('Edge function response:', data);
 
     if (!data) {
-      throw new Error('No response data received from edge function');
+      return {
+        success: false,
+        error: 'No response data received from edge function (null data)'
+      };
     }
 
     // Check if the response indicates an error despite a successful HTTP request
     if (data.success === false) {
-      throw new Error(data.message || data.error || 'Unknown error in edge function response');
+      return {
+        success: false,
+        error: data.message || data.error || 'Unknown error in edge function response',
+        data: data
+      };
     }
 
     return {

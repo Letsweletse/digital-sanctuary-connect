@@ -19,6 +19,11 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     console.log("Checking Resend API key configuration...");
+    console.log("Request headers:", Object.fromEntries(req.headers.entries()));
+    
+    // Log Deno.env keys for debugging
+    const envKeys = Object.keys(Deno.env.toObject());
+    console.log("Available environment variables:", envKeys);
     
     // Check if API key is configured
     if (!RESEND_API_KEY) {
@@ -27,7 +32,8 @@ const handler = async (req: Request): Promise<Response> => {
         JSON.stringify({
           success: false,
           message: "RESEND_API_KEY not configured in Supabase Edge Functions secrets.",
-          keyConfigured: false
+          keyConfigured: false,
+          envKeys: envKeys
         }),
         { 
           status: 400, 
@@ -39,6 +45,9 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
     
+    console.log("RESEND_API_KEY found with length:", RESEND_API_KEY.length);
+    console.log("RESEND_API_KEY starts with:", RESEND_API_KEY.substring(0, 3) + "...");
+    
     // Validate API key format (simple check for Resend key format)
     if (!RESEND_API_KEY.startsWith('re_')) {
       console.error("RESEND_API_KEY appears to be invalid (should start with 're_')");
@@ -46,7 +55,8 @@ const handler = async (req: Request): Promise<Response> => {
         JSON.stringify({
           success: false,
           message: "The provided RESEND_API_KEY appears to be invalid. Resend API keys should start with 're_'.",
-          keyConfigured: false
+          keyConfigured: false,
+          keyFormat: RESEND_API_KEY.substring(0, 3) + "..."
         }),
         { 
           status: 400, 
@@ -72,7 +82,7 @@ const handler = async (req: Request): Promise<Response> => {
       try {
         // Instead of sending an email, we'll try to get domains which is a lighter operation
         const domainsResponse = await resend.domains.list();
-        console.log("Successfully verified API key by listing domains");
+        console.log("Successfully verified API key by listing domains:", domainsResponse);
         
         return new Response(
           JSON.stringify({
@@ -115,7 +125,8 @@ const handler = async (req: Request): Promise<Response> => {
         JSON.stringify({
           success: false,
           message: `Could not verify Resend API: ${resendError instanceof Error ? resendError.message : 'Unknown error'}`,
-          keyConfigured: false
+          keyConfigured: false,
+          error: resendError instanceof Error ? resendError.message : 'Unknown error'
         }),
         { 
           status: 500, 
@@ -132,7 +143,8 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({
         success: false,
         message: `Server error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        keyConfigured: false
+        keyConfigured: false,
+        error: error instanceof Error ? error.stack : 'Unknown error'
       }),
       { 
         status: 500, 
