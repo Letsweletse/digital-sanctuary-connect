@@ -12,8 +12,8 @@ import {
 import { EmailRequest } from "../types/emailTypes.ts";
 
 // Mailgun configuration
-const MAILGUN_DOMAIN = "sandbox4a3755c6088d4a97a05a85818e8ce3ee.mailgun.org";
-const MAILGUN_API_KEY = "9e9cd1d2091311c29239132e392c675d-2b77fbb2-6645c964";
+const MAILGUN_DOMAIN = "gategaborone.com";
+const MAILGUN_API_KEY = "33d7b3113afd786a314ddd95dc279853-2b77fbb2-21075f6d";
 const MAILGUN_API_URL = `https://api.mailgun.net/v3/${MAILGUN_DOMAIN}/messages`;
 
 // Function to send email using Mailgun API
