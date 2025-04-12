@@ -1,8 +1,7 @@
 
 import React from 'react';
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { toast } from "sonner";
+import { Link } from 'react-router-dom';
+import { ExternalLink } from 'lucide-react';
 
 interface EmailStatusPanelProps {
   emailsSent: number;
@@ -11,73 +10,78 @@ interface EmailStatusPanelProps {
     checked: boolean;
     message: string;
   };
+  whatsappLink?: string;
+  requiresAdminAction?: boolean;
 }
 
-const EmailStatusPanel = ({ emailsSent, resetCounter, resendInfo }: EmailStatusPanelProps) => {
+const EmailStatusPanel = ({ 
+  emailsSent, 
+  resetCounter, 
+  resendInfo, 
+  whatsappLink,
+  requiresAdminAction = true // Default to true since that's our current implementation
+}: EmailStatusPanelProps) => {
   return (
-    <>
-      <div className="mb-4 p-3 bg-yellow-50 rounded-md border border-yellow-200">
-        <div className="flex justify-between items-center">
-          <h3 className="font-bold text-md">Emails Sent This Session: {emailsSent}</h3>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="text-xs"
-            onClick={resetCounter}
+    <div className="mb-6">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-lg font-medium">Email Status</h3>
+        
+        {emailsSent > 0 && (
+          <button 
+            onClick={resetCounter} 
+            className="text-xs text-gray-500 hover:text-gray-700"
           >
-            Reset Counter
-          </Button>
-        </div>
-        <p className="text-xs text-gray-600 mt-2">
-          <strong>Important:</strong> This counter only tracks emails sent from this browser session.
-          To check your actual Resend API usage, visit your Resend dashboard.
-        </p>
+            Reset counter
+          </button>
+        )}
       </div>
       
-      {resendInfo.checked && (
-        <div className={`mb-4 p-3 rounded-md border ${
-          resendInfo.message.includes('active') 
-            ? 'bg-green-50 border-green-200' 
-            : 'bg-red-50 border-red-200'
-        }`}>
-          <div className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full ${
-              resendInfo.message.includes('active') ? 'bg-green-500' : 'bg-red-500'
-            }`}></div>
-            <p className="text-sm font-medium">
-              <strong>Resend API Status:</strong> {resendInfo.message}
-            </p>
-          </div>
-          
-          <div className="mt-2 text-xs space-y-1">
-            <p>
-              Free tier limits: ~100 emails per day, 10MB attachments, 5 recipients per email.
-            </p>
-            <p>
-              <span className="font-medium">Note:</span> If you're receiving validation errors, make sure your sender domain is verified.
-            </p>
-            <div className="mt-2">
-              <a 
-                href="https://resend.com/dashboard" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="underline text-blue-600 hover:text-blue-800 mr-4"
-              >
-                Resend Dashboard
-              </a>
-              <a 
-                href="https://resend.com/domains" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="underline text-blue-600 hover:text-blue-800"
-              >
-                Verify Domain
-              </a>
-            </div>
-          </div>
+      <div className="bg-gray-100 rounded-md p-3 mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-gray-700 font-medium">Resend API:</span>
+          {resendInfo.checked ? (
+            <span className={`text-sm ${resendInfo.message.includes('active') ? 'text-green-600' : 'text-red-600'}`}>
+              {resendInfo.message.includes('active') ? '✓ Active' : '✗ Issue detected'}
+            </span>
+          ) : (
+            <span className="text-sm text-gray-500">Not checked</span>
+          )}
         </div>
-      )}
-    </>
+        
+        <div className="flex items-center justify-between">
+          <span className="text-gray-700 font-medium">Emails sent:</span>
+          <span className={`text-sm font-medium ${emailsSent > 0 ? 'text-green-600' : 'text-gray-500'}`}>
+            {emailsSent}
+          </span>
+        </div>
+        
+        {whatsappLink && (
+          <div className="mt-2 pt-2 border-t border-gray-200">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-gray-700 font-medium">WhatsApp:</span>
+              <span className="text-sm text-amber-600">
+                {requiresAdminAction ? '⚠️ Link generated' : '✓ Sent'}
+              </span>
+            </div>
+            
+            {requiresAdminAction && (
+              <div className="mt-1 p-2 bg-amber-50 rounded text-xs text-amber-800">
+                <p className="font-semibold mb-1">Admin action required:</p>
+                <p>WhatsApp messages require manual sending. Click the link below to open WhatsApp and send the prepared message:</p>
+                <a 
+                  href={whatsappLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="mt-1 inline-flex items-center text-blue-600 hover:text-blue-800"
+                >
+                  Send WhatsApp message <ExternalLink className="ml-1" size={12} />
+                </a>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

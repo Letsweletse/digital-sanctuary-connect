@@ -1,4 +1,3 @@
-
 import { Resend } from "npm:resend@2.0.0";
 import { v4 as uuidv4 } from "https://deno.land/std@0.190.0/uuid/mod.ts";
 import { corsHeaders } from "../utils/cors.ts";
@@ -168,6 +167,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
     let confirmationEmailId = null;
     let whatsappNotificationSent = false;
     let whatsappNotificationLink = "";
+    let whatsappLinkRequiresAction = true; // New flag to indicate manual action needed
     let smsNotificationSent = false;
     let smsNotificationDetails = null;
 
@@ -244,16 +244,73 @@ export async function processEmailRequest(req: Request): Promise<Response> {
               console.log("✅ SMS notification sent successfully");
             } else {
               console.error("❌ SMS notification failed:", smsResult.message);
+              
+              // Fallback to WhatsApp if SMS fails
+              if (phone && phone.trim() !== '') {
+                try {
+                  console.log("SMS failed, attempting WhatsApp notification link for:", phone);
+                  const whatsappResult = await sendWhatsAppNotification({
+                    phone,
+                    eventName,
+                    eventDate,
+                    eventTime,
+                    location,
+                    checkInId
+                  });
+                  
+                  whatsappNotificationSent = whatsappResult.success;
+                  whatsappNotificationLink = whatsappResult.directLink || "";
+                  whatsappLinkRequiresAction = whatsappResult.isLink; // This will be true
+                
+                  console.log("WhatsApp notification result:", whatsappResult);
+                  
+                  if (whatsappResult.success) {
+                    console.log("✅ WhatsApp notification link generated successfully (requires admin action)");
+                  } else {
+                    console.error("❌ WhatsApp notification failed:", whatsappResult.message);
+                  }
+                } catch (whatsappError) {
+                  console.error("Error sending WhatsApp notification:", whatsappError);
+                }
+              }
             }
           } catch (smsError) {
             console.error("Error sending SMS notification:", smsError);
-            // Don't throw here - we still want to return success for the email
+            
+            // Also try WhatsApp as a fallback
+            if (phone && phone.trim() !== '') {
+              try {
+                console.log("SMS errored, attempting WhatsApp notification link for:", phone);
+                const whatsappResult = await sendWhatsAppNotification({
+                  phone,
+                  eventName,
+                  eventDate,
+                  eventTime,
+                  location,
+                  checkInId
+                });
+                
+                whatsappNotificationSent = whatsappResult.success;
+                whatsappNotificationLink = whatsappResult.directLink || "";
+                whatsappLinkRequiresAction = whatsappResult.isLink; // This will be true
+                
+                console.log("WhatsApp notification result:", whatsappResult);
+                
+                if (whatsappResult.success) {
+                  console.log("✅ WhatsApp notification link generated successfully (requires admin action)");
+                } else {
+                  console.error("❌ WhatsApp notification failed:", whatsappResult.message);
+                }
+              } catch (whatsappError) {
+                console.error("Error sending WhatsApp notification:", whatsappError);
+              }
+            }
           }
         } else {
-          // Also try WhatsApp as a fallback
+          // Also try WhatsApp as a primary option if SMS is not configured
           if (phone && phone.trim() !== '') {
             try {
-              console.log("Attempting to send WhatsApp notification link to:", phone);
+              console.log("SMS not configured, attempting WhatsApp notification link for:", phone);
               const whatsappResult = await sendWhatsAppNotification({
                 phone,
                 eventName,
@@ -265,17 +322,17 @@ export async function processEmailRequest(req: Request): Promise<Response> {
               
               whatsappNotificationSent = whatsappResult.success;
               whatsappNotificationLink = whatsappResult.directLink || "";
-              
+              whatsappLinkRequiresAction = whatsappResult.isLink; // This will be true
+                
               console.log("WhatsApp notification result:", whatsappResult);
               
               if (whatsappResult.success) {
-                console.log("✅ WhatsApp notification link generated successfully");
+                console.log("✅ WhatsApp notification link generated successfully (requires admin action)");
               } else {
                 console.error("❌ WhatsApp notification failed:", whatsappResult.message);
               }
             } catch (whatsappError) {
               console.error("Error sending WhatsApp notification:", whatsappError);
-              // Don't throw here - we still want to return success for the email
             }
           } else {
             console.log("No phone number provided for notifications");
@@ -316,11 +373,17 @@ export async function processEmailRequest(req: Request): Promise<Response> {
         confirmationEmailId: confirmationEmailId,
         whatsappNotificationSent,
         whatsappNotificationLink,
+        whatsappLinkRequiresAction, // Include this new flag in the response
         smsNotificationSent,
         smsNotificationDetails,
         checkInId: checkInId,
         resendKeyConfigured: !!RESEND_API_KEY,
-        deliveryReport: deliveryReport
+        deliveryReport: deliveryReport,
+        notificationStatus: {
+          email: confirmationSuccess ? "sent" : "failed",
+          sms: smsNotificationSent ? "sent" : "failed",
+          whatsapp: whatsappNotificationSent ? (whatsappLinkRequiresAction ? "link_generated" : "sent") : "failed"
+        }
       }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
@@ -339,7 +402,6 @@ export async function processEmailRequest(req: Request): Promise<Response> {
   }
 }
 
-// Add an endpoint to check email delivery logs
 export async function getEmailDeliveryLogs(req: Request): Promise<Response> {
   try {
     // Import the log functions

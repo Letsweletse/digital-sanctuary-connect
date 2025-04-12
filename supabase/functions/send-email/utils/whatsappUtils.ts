@@ -7,13 +7,14 @@ interface WhatsAppResult {
   success: boolean;
   message: string;
   directLink?: string;
+  isLink: boolean; // Add this flag to clarify this is a link, not direct sending
 }
 
 /**
- * Generate and send a WhatsApp notification using click-to-chat links
+ * Generate a WhatsApp notification link using click-to-chat API
  * 
- * This works by creating a URL that will open WhatsApp and pre-fill a message
- * We track this as "sent" even though it requires the admin to click the link
+ * This generates a link that needs to be clicked by an admin to send the message
+ * We track this as "prepared" rather than "sent" since it requires manual action
  */
 export async function sendWhatsAppNotification({
   phone,
@@ -37,11 +38,12 @@ export async function sendWhatsAppNotification({
       console.error("Phone number too short:", sanitizedPhone);
       return {
         success: false,
-        message: "Invalid phone number: too short"
+        message: "Invalid phone number: too short",
+        isLink: false
       };
     }
     
-    console.log("Preparing WhatsApp notification for:", sanitizedPhone);
+    console.log("Preparing WhatsApp notification link for:", sanitizedPhone);
 
     // Create the WhatsApp message with better formatting
     const message = `
@@ -68,14 +70,16 @@ We're looking forward to seeing you there! Save this message for quick check-in.
     
     return {
       success: true,
-      message: "WhatsApp notification link generated successfully",
-      directLink: whatsappLink
+      message: "WhatsApp notification link generated successfully. Note: An admin must click this link to send the message.",
+      directLink: whatsappLink,
+      isLink: true  // This flag indicates this is a link, not an actual sent message
     };
   } catch (error) {
     console.error("Error in WhatsApp notification:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Unknown error in WhatsApp notification"
+      message: error instanceof Error ? error.message : "Unknown error in WhatsApp notification",
+      isLink: false
     };
   }
 }
