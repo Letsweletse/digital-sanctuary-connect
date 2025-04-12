@@ -9,9 +9,11 @@ import ChurchCalendarEmbed from '@/components/events/ChurchCalendarEmbed';
 import { events, categories } from '@/data/eventsData';
 import { formatDate } from '@/utils/dateUtils';
 import { useEventRegistration } from '@/hooks/useEventRegistration';
+import EmailTest from '@/components/EmailTest';
 
 const Events = () => {
   const [activeCategory, setActiveCategory] = useState('all');
+  const [showEmailTest, setShowEmailTest] = useState(false);
   
   const {
     isRegistrationOpen,
@@ -25,15 +27,18 @@ const Events = () => {
   } = useEventRegistration();
   
   useEffect(() => {
-    const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Senior%20Pastor_1743598781352.jpeg";
-    const img = new Image();
-    img.onload = () => {
-      console.log("Senior Pastor image loaded successfully:", pastorImage);
-    };
-    img.onerror = () => {
-      console.error("Failed to load Senior Pastor image:", pastorImage);
-    };
-    img.src = pastorImage;
+    // Preload important images to ensure they're available for emails
+    const preloadImages = [
+      "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png",
+      "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg"
+    ];
+    
+    preloadImages.forEach(imgSrc => {
+      const img = new Image();
+      img.onload = () => console.log(`Preloaded image: ${imgSrc}`);
+      img.onerror = () => console.error(`Failed to preload image: ${imgSrc}`);
+      img.src = imgSrc;
+    });
   }, []);
   
   const filteredEvents = activeCategory === 'all' 
@@ -60,9 +65,17 @@ const Events = () => {
                 Stay connected with our church community through worship services, 
                 Bible studies, fellowship gatherings, and special events.
               </p>
+              <button 
+                onClick={() => setShowEmailTest(!showEmailTest)} 
+                className="mt-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-md text-sm"
+              >
+                {showEmailTest ? "Hide Email Test" : "Show Email Test"}
+              </button>
             </div>
           </div>
         </section>
+        
+        {showEmailTest && <EmailTest />}
         
         <section className="py-16">
           <div className="container mx-auto px-4">

@@ -80,12 +80,12 @@ const Welcome = () => {
               </p>
               <p>
                 At the heart of this season is the passionate pursuit to align the church to apostolic biblical patterns, 
-                free from conformity to secular and humanistic influences. GGB serves as an apostolic center in the heart of the 
+                free from conformity to secular and humanistic influences. GGB serves as an <strong>Apostolic Centre</strong> in the heart of the 
                 economic capital of Botswana. Its mandate is to be a strategic gate for the presentation, proclamation, and modeling 
                 of the apostolic message to the nations.
               </p>
               <p>
-                In pursuit of its mandate, Gate Gaborone seeks to constructively and practically provide a biblical, 
+                In pursuit of its mandate, Gate Gaborone seeks to constructively and practically provide a <strong>Biblical patterns</strong>, 
                 Christocentric model of ministry, offering a deeper spiritual encounter for the family of God.
               </p>
             </div>
