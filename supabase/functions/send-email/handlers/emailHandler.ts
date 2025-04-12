@@ -1,5 +1,4 @@
 
-import { Resend } from "npm:resend@2.0.0";
 import { v4 as uuidv4 } from "https://deno.land/std@0.190.0/uuid/mod.ts";
 import { corsHeaders } from "../utils/cors.ts";
 import { 
@@ -12,8 +11,45 @@ import {
 } from "../utils/calendarUtils.ts";
 import { EmailRequest } from "../types/emailTypes.ts";
 
-// Initialize Resend with the API key from environment variable
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+// Mailgun configuration
+const MAILGUN_DOMAIN = "sandbox4a3755c6088d4a97a05a85818e8ce3ee.mailgun.org";
+const MAILGUN_API_KEY = "9e9cd1d2091311c29239132e392c675d-2b77fbb2-6645c964";
+const MAILGUN_API_URL = `https://api.mailgun.net/v3/${MAILGUN_DOMAIN}/messages`;
+
+// Function to send email using Mailgun API
+async function sendMailgunEmail(from: string, to: string[], subject: string, html: string) {
+  console.log(`Sending email via Mailgun to: ${to.join(", ")}`);
+  
+  const formData = new FormData();
+  formData.append("from", from);
+  to.forEach(recipient => formData.append("to", recipient));
+  formData.append("subject", subject);
+  formData.append("html", html);
+  
+  const authHeader = `Basic ${btoa(`api:${MAILGUN_API_KEY}`)}`;
+  
+  try {
+    const response = await fetch(MAILGUN_API_URL, {
+      method: "POST",
+      headers: {
+        "Authorization": authHeader,
+      },
+      body: formData,
+    });
+    
+    const result = await response.json();
+    console.log("Mailgun API response:", result);
+    
+    if (!response.ok) {
+      throw new Error(`Mailgun API error: ${result.message || "Unknown error"}`);
+    }
+    
+    return result;
+  } catch (error) {
+    console.error("Error sending email with Mailgun:", error);
+    throw error;
+  }
+}
 
 export async function processEmailRequest(req: Request): Promise<Response> {
   try {
@@ -81,12 +117,13 @@ export async function processEmailRequest(req: Request): Promise<Response> {
     console.log("Sending admin email to:", to);
     console.log("With subject:", subject);
     
-    const adminEmailResult = await resend.emails.send({
-      from: "Gate Gaborone <info@gategaborone.com>",
-      to,
+    // Send admin email using Mailgun
+    const adminEmailResult = await sendMailgunEmail(
+      "Gate Gaborone <info@gategaborone.com>",
+      Array.isArray(to) ? to : [to],
       subject,
-      html: adminHtmlContent,
-    });
+      adminHtmlContent
+    );
     
     console.log("Admin email result:", adminEmailResult);
 
@@ -115,12 +152,13 @@ export async function processEmailRequest(req: Request): Promise<Response> {
 
       console.log("Sending confirmation email to:", email);
       
-      const emailResponse = await resend.emails.send({
-        from: "Gate Gaborone <info@gategaborone.com>",
-        to: [email],
-        subject: `Registration Confirmation: ${eventName}`,
-        html: confirmationHtml,
-      });
+      // Send confirmation email using Mailgun
+      const emailResponse = await sendMailgunEmail(
+        "Gate Gaborone <info@gategaborone.com>",
+        [email],
+        `Registration Confirmation: ${eventName}`,
+        confirmationHtml
+      );
 
       console.log("Confirmation email sent:", emailResponse);
       confirmationSuccess = true;
@@ -129,10 +167,11 @@ export async function processEmailRequest(req: Request): Promise<Response> {
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Emails processed",
+        message: "Emails processed using Mailgun",
         adminEmailSent: true,
         confirmationEmailSent: confirmationSuccess,
         checkInId: checkInId,
+        emailProvider: "Mailgun"
       }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );

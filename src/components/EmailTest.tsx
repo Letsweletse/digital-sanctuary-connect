@@ -47,8 +47,8 @@ const EmailTest = () => {
       console.log("Email test response:", response);
       
       if (response.success) {
-        toast.success("Test emails sent successfully!", {
-          description: `Check ${testEmail} for the enhanced confirmation with QR codes, calendar integration, and social media sharing options.`,
+        toast.success("Test emails sent successfully via Mailgun!", {
+          description: `Check ${testEmail} and your spam folder for the confirmation email.`,
           duration: 8000
         });
       } else {
@@ -57,7 +57,7 @@ const EmailTest = () => {
     } catch (error) {
       console.error("Error sending test email:", error);
       toast.error("Failed to send test emails", {
-        description: error instanceof Error ? error.message : "Unknown error occurred",
+        description: error instanceof Error ? error.message : "Unknown error occurred. Check Supabase logs for details.",
         duration: 5000
       });
     } finally {
@@ -67,16 +67,15 @@ const EmailTest = () => {
   
   return (
     <Card className="p-6 bg-white rounded-lg shadow-md max-w-md mx-auto mt-8">
-      <h2 className="text-2xl font-bold mb-4">Enhanced Email Testing Tool</h2>
+      <h2 className="text-2xl font-bold mb-4">Email Testing Tool (Mailgun)</h2>
       <p className="mb-4 text-gray-600">
-        Enter your email below to receive a test event registration confirmation with enhanced features:
+        Enter your email below to receive a test event registration confirmation:
       </p>
       <ul className="list-disc ml-5 mt-2 mb-4 text-gray-600">
-        <li>Gate Gaborone logo in the header</li>
+        <li>Using Mailgun email service</li>
         <li>Higher resolution QR codes for location and check-in</li>
         <li>iCal calendar integration (.ics file)</li>
-        <li>Multiple social media sharing options (WhatsApp, Facebook, Twitter, LinkedIn, Email)</li>
-        <li>Gate Gaborone social media follow links</li>
+        <li>WhatsApp sharing option</li>
         <li>Personalized check-in ID</li>
       </ul>
       
@@ -103,15 +102,16 @@ const EmailTest = () => {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            Sending Enhanced Test Email...
+            Sending Test Email...
           </span>
         ) : (
-          "Send Enhanced Test Email"
+          "Send Test Email via Mailgun"
         )}
       </Button>
-      <p className="mt-4 text-sm text-gray-500">API Key Updated: {new Date().toLocaleString()}</p>
+      <p className="mt-4 text-sm text-gray-500">Mailgun Configured: {new Date().toLocaleString()}</p>
       <div className="mt-2 text-sm text-gray-500">
         <p>Admin recipients: otenggate@gmail.com, info@gategaborone.com, iblimenterprise@zohomail.com</p>
+        <p className="mt-1 text-xs text-amber-600">Note: Check spam folder if emails don't arrive in inbox.</p>
       </div>
     </Card>
   );
