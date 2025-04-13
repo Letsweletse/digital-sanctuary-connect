@@ -8,6 +8,7 @@ interface ApiKeyTestResult {
   error?: string;
   timestamp: string;
   details?: any;
+  connectionVerified?: boolean;
 }
 
 /**
@@ -20,6 +21,7 @@ export const testApiKey = async (apiKey: string): Promise<ApiKeyTestResult> => {
       message: "No API key provided",
       error: "API key is missing or empty",
       timestamp: new Date().toISOString(),
+      connectionVerified: false
     };
   }
 
@@ -30,6 +32,7 @@ export const testApiKey = async (apiKey: string): Promise<ApiKeyTestResult> => {
       message: "API key has incorrect format",
       error: "API key should start with 're_'",
       timestamp: new Date().toISOString(),
+      connectionVerified: false
     };
   }
 
@@ -40,16 +43,39 @@ export const testApiKey = async (apiKey: string): Promise<ApiKeyTestResult> => {
     logMessage(0, `Testing API key: ${apiKey.substring(0, 10)}...`);
     
     // Try to get account info to check if the API key is valid
-    const { data, error } = await resend.domains.list();
+    let data;
+    let error;
+    
+    try {
+      const result = await resend.domains.list();
+      data = result.data;
+      error = result.error;
+    } catch (apiError) {
+      // Handle connection errors separately
+      return {
+        status: "error",
+        message: `Failed to connect to Resend API: ${apiError instanceof Error ? apiError.message : "Unknown error"}`,
+        error: apiError instanceof Error ? apiError.message : "Connection error",
+        timestamp: new Date().toISOString(),
+        connectionVerified: false,
+        details: apiError
+      };
+    }
     
     if (error) {
       logMessage(0, "API key test failed:", error);
       
+      // Check if this is an authentication error
+      const isAuthError = error.message?.includes("Unauthorized") || 
+                         error.message?.includes("authentication") || 
+                         error.statusCode === 401;
+      
       return {
         status: "invalid",
-        message: `API key is invalid: ${error.message}`,
+        message: isAuthError ? `API key is invalid: ${error.message}` : `Error with Resend API: ${error.message}`,
         error: error.message,
         timestamp: new Date().toISOString(),
+        connectionVerified: true, // We connected but the key was invalid
         details: error,
       };
     }
@@ -61,6 +87,7 @@ export const testApiKey = async (apiKey: string): Promise<ApiKeyTestResult> => {
         message: "API key test returned no data",
         error: "Empty response from Resend API",
         timestamp: new Date().toISOString(),
+        connectionVerified: true // We connected but got an empty response
       };
     }
     
@@ -82,6 +109,7 @@ export const testApiKey = async (apiKey: string): Promise<ApiKeyTestResult> => {
             : "API key is valid but no verified domains found")
         : "API key is valid but no domains are configured",
       timestamp: new Date().toISOString(),
+      connectionVerified: true,
       details: {
         domains: {
           count: data.length,
@@ -106,6 +134,7 @@ export const testApiKey = async (apiKey: string): Promise<ApiKeyTestResult> => {
         : "Error testing API key",
       error: errorMessage,
       timestamp: new Date().toISOString(),
+      connectionVerified: false,
       details: error
     };
   }

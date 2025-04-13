@@ -1,3 +1,12 @@
+
+import { Resend } from "npm:resend@2.0.0";
+import { logMessage } from "../utils/logger.ts";
+
+interface EmailResult {
+  id: string;
+  retryCount: number;
+}
+
 export const handleEmailSending = async (
   resend: Resend, 
   emailData: any, 
@@ -15,7 +24,9 @@ export const handleEmailSending = async (
       result = await resend.emails.send(emailData);
       logMessage("Email sent successfully", { messageId: result.id, attempt: retryCount + 1 });
 
-      trackDeliveryMetrics(true, { to: emailData.to });
+      // Update metrics
+      deliveryMetrics.successfulDeliveries++;
+      deliveryMetrics.emailsSent.push(emailData.to.join(', '));
 
       return {
         id: result.id,
@@ -25,7 +36,7 @@ export const handleEmailSending = async (
       retryCount++;
       lastError = sendError;
 
-      // 🔍 New: Log full error detail
+      // 🔍 Log full error detail
       console.error("Resend Send Error", {
         name: sendError.name,
         message: sendError.message,
@@ -44,14 +55,15 @@ export const handleEmailSending = async (
           message: sendError.message,
           timestamp: new Date().toISOString()
         };
-        break; // Stop retrying
+        break; // Stop retrying for domain verification errors
       }
 
       if (retryCount >= maxRetries) {
+        deliveryMetrics.failedDeliveries++;
         throw sendError;
       }
 
-      // Retry delay
+      // Retry with exponential backoff
       const delay = Math.min(100 * Math.pow(2, retryCount) + Math.random() * 100, 2000);
       await new Promise(resolve => setTimeout(resolve, delay));
     }
