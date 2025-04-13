@@ -8,7 +8,8 @@ import EmailDeliveryLogs from './EmailDeliveryLogs';
 import ConnectionStatus from './ConnectionStatus';
 import { useEmailTest } from './useEmailTest';
 import { Button } from '@/components/ui/button';
-import { Bug } from 'lucide-react';
+import { Bug, ShieldAlert } from 'lucide-react';
+import EmailProviderHealth from './EmailProviderHealth';
 
 const EmailTest = () => {
   const {
@@ -24,13 +25,27 @@ const EmailTest = () => {
     resendInfo,
     handleTestEmail,
     resetCounter,
-    checkResendKeyStatus
+    checkResendKeyStatus,
+    providerHealth,
+    checkProviderHealth,
+    useRedundancySystem,
+    setUseRedundancySystem
   } = useEmailTest();
   
-  // Check Resend API key status on component mount
+  // Check Resend API key status and provider health on component mount
   useEffect(() => {
     checkResendKeyStatus();
-  }, [checkResendKeyStatus]);
+    checkProviderHealth();
+    
+    // Set up regular health checks
+    const healthCheckInterval = setInterval(() => {
+      checkProviderHealth();
+    }, 60000); // Check every minute
+    
+    return () => {
+      clearInterval(healthCheckInterval);
+    };
+  }, [checkResendKeyStatus, checkProviderHealth]);
   
   // Handle test registration
   const handleTestRegistration = () => {
@@ -49,6 +64,13 @@ const EmailTest = () => {
       <h2 className="text-2xl font-bold mb-4">Enhanced Email Testing Tool</h2>
       
       <ConnectionStatus />
+      
+      <EmailProviderHealth 
+        providerHealth={providerHealth}
+        onRefresh={checkProviderHealth}
+        useRedundancySystem={useRedundancySystem}
+        setUseRedundancySystem={setUseRedundancySystem}
+      />
       
       <EmailStatusPanel 
         emailsSent={emailsSent} 
@@ -89,8 +111,10 @@ const EmailTest = () => {
       <div className="mt-4 text-sm text-gray-500 border-t pt-4">
         <p className="font-medium mb-1">Communication methods implemented:</p>
         <ul className="list-disc ml-5 text-xs space-y-1">
-          <li>Email notifications via Resend API</li>
+          <li>Email notifications via Resend API (primary)</li>
+          <li>Email notifications via SendGrid (fallback)</li>
           <li>SMS notifications via Twilio (when configured)</li>
+          <li>Redundant delivery system with automatic failover</li>
           <li>Comprehensive delivery tracking and logging</li>
         </ul>
         <p className="mt-2 text-xs">To enable SMS, add Twilio credentials in Supabase Edge Function secrets:</p>

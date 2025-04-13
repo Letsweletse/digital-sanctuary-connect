@@ -3,10 +3,50 @@ import { useCallback, useState, useEffect } from 'react';
 import { useEmailForm } from './useEmailForm';
 import { useEmailOperations } from './useEmailOperations';
 import { invokeEmailFunction } from './services/edgeFunctionService';
+import { sendEmailWithRedundancy, checkEmailProvidersHealth } from './services/emailRedundancyManager';
 
 export function useEmailTest() {
   const emailForm = useEmailForm();
   const emailOperations = useEmailOperations(emailForm);
+  const [useRedundancySystem, setUseRedundancySystem] = useState<boolean>(true);
+  const [providerHealth, setProviderHealth] = useState({
+    checking: false,
+    primary: {
+      available: false,
+      message: 'Not checked'
+    },
+    fallback: {
+      available: false,
+      message: 'Not checked'
+    }
+  });
+  
+  // Function to check the health of email providers
+  const checkProviderHealth = useCallback(async () => {
+    setProviderHealth(prev => ({
+      ...prev,
+      checking: true
+    }));
+    
+    try {
+      const healthStatus = await checkEmailProvidersHealth();
+      
+      setProviderHealth({
+        checking: false,
+        primary: healthStatus.primary,
+        fallback: healthStatus.fallback,
+        lastChecked: new Date()
+      });
+    } catch (error) {
+      console.error('Error checking provider health:', error);
+      
+      setProviderHealth(prev => ({
+        ...prev,
+        checking: false,
+        lastChecked: new Date()
+      }));
+    }
+  }, []);
   
   // Listen for test registration events
   useEffect(() => {
@@ -55,15 +95,36 @@ export function useEmailTest() {
     };
     
     try {
-      emailOperations.updateDebugInfo("Sending registration test to edge function...");
-      const result = await invokeEmailFunction(emailForm.edgeFunction, testRegistrationData);
+      emailOperations.updateDebugInfo("Sending registration test...");
+      
+      let result;
+      if (useRedundancySystem) {
+        // Use the redundancy system
+        emailOperations.updateDebugInfo("Using redundancy system with automatic failover...");
+        result = await sendEmailWithRedundancy(testRegistrationData);
+      } else {
+        // Use direct function invocation
+        emailOperations.updateDebugInfo("Using primary provider only...");
+        result = await invokeEmailFunction(emailForm.edgeFunction, testRegistrationData);
+      }
       
       // For debugging
       emailOperations.updateDebugInfo(result.data ? JSON.stringify(result.data, null, 2) : JSON.stringify(result, null, 2));
       console.log("Registration test result:", result);
       
       if (result.success && result.data) {
-        emailOperations.setSuccessStatus(result.data, email || emailForm.testEmail);
+        const successData = {
+          ...result.data,
+          fallbackUsed: result.fallbackUsed,
+          provider: result.provider
+        };
+        
+        emailOperations.setSuccessStatus(successData, email || emailForm.testEmail);
+        
+        // Show additional info if fallback was used
+        if (result.fallbackUsed) {
+          emailOperations.updateDebugInfo(`Primary provider failed, email was sent via fallback (${result.provider}). Primary error: ${result.primaryError}`);
+        }
       } else {
         emailOperations.setErrorStatus(
           result.error || 'Failed to send test registration email', 
@@ -77,13 +138,22 @@ export function useEmailTest() {
       emailOperations.setErrorStatus(errorMessage, email || emailForm.testEmail, false);
       emailOperations.updateDebugInfo(`Unexpected client-side error in test registration: ${errorMessage}`);
     }
-  }, [emailForm.edgeFunction, emailForm.testEmail, emailForm.testPhone, emailOperations]);
+  }, [emailForm.edgeFunction, emailForm.testEmail, emailForm.testPhone, emailOperations, useRedundancySystem]);
   
   // Function to send a test email with the form data
   const sendTestEmailWithForm = useCallback(async () => {
     emailOperations.setSendingStatus();
-
-    const result = await invokeEmailFunction(emailForm.edgeFunction, emailForm.formData);
+    
+    let result;
+    if (useRedundancySystem) {
+      // Use the redundancy system
+      emailOperations.updateDebugInfo("Using redundancy system with automatic failover...");
+      result = await sendEmailWithRedundancy(emailForm.formData);
+    } else {
+      // Use direct function invocation
+      emailOperations.updateDebugInfo("Using primary provider only...");
+      result = await invokeEmailFunction(emailForm.edgeFunction, emailForm.formData);
+    }
 
     if (result.success && result.data) {
       const data = result.data;
@@ -91,6 +161,11 @@ export function useEmailTest() {
       // Handle successful response
       if (data.success) {
         emailOperations.setSuccessStatus(data, emailForm.formData.to);
+        
+        // Show additional info if fallback was used
+        if (result.fallbackUsed) {
+          emailOperations.updateDebugInfo(`Primary provider failed, email was sent via fallback (${result.provider}). Primary error: ${result.primaryError}`);
+        }
       } else {
         // Handle error response
         emailOperations.setErrorStatus(data.message || 'Failed to send email', emailForm.formData.to, data.resendKeyConfigured);
@@ -99,13 +174,17 @@ export function useEmailTest() {
       // Handle error
       emailOperations.setErrorStatus(result.error || 'Unknown error occurred', emailForm.formData.to, null);
     }
-  }, [emailForm.edgeFunction, emailForm.formData, emailOperations]);
+  }, [emailForm.edgeFunction, emailForm.formData, emailOperations, useRedundancySystem]);
 
   // Combine all the hooks and functions
   return {
     ...emailForm,
     ...emailOperations,
     sendTestEmail: sendTestEmailWithForm,
-    sendTestRegistrationEmail
+    sendTestRegistrationEmail,
+    providerHealth,
+    checkProviderHealth,
+    useRedundancySystem,
+    setUseRedundancySystem
   };
 }

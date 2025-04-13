@@ -1,8 +1,46 @@
 
 project_id = "lojchdvtwypjqupsjynf"
 
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+
+[db]
+port = 54322
+
+[studio]
+enabled = true
+port = 54323
+api_url = "http://localhost"
+
+[inbucket]
+enabled = true
+port = 54324
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+
+[realtime]
+enabled = true
+
+[storage]
+enabled = true
+
+[analytics]
+enabled = false
+
+[vector]
+enabled = false
+
 [functions.send-email]
-verify_jwt = false
+verify_jwt = true
+import_map = "./send-email/import_map.json"
 
 [functions.check-resend-status]
-verify_jwt = false
+verify_jwt = true
+import_map = "./check-resend-status/import_map.json"
+
+[functions.email-fallback]
+verify_jwt = true
