@@ -5,6 +5,7 @@ import EmailStatusPanel from './EmailStatusPanel';
 import EmailTestForm from './EmailTestForm';
 import DebugInfo from './DebugInfo';
 import EmailDeliveryLogs from './EmailDeliveryLogs';
+import ConnectionStatus from './ConnectionStatus';
 import { useEmailTest } from './useEmailTest';
 import { Button } from '@/components/ui/button';
 import { Bug } from 'lucide-react';
@@ -46,6 +47,8 @@ const EmailTest = () => {
   return (
     <Card className="p-6 bg-white rounded-lg shadow-md max-w-md mx-auto mt-8">
       <h2 className="text-2xl font-bold mb-4">Enhanced Email Testing Tool</h2>
+      
+      <ConnectionStatus />
       
       <EmailStatusPanel 
         emailsSent={emailsSent} 

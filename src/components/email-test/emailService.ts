@@ -9,7 +9,15 @@ export const checkResendKeyStatus = async () => {
   try {
     console.log("Checking Resend API key status...");
     
-    const { data, error } = await supabase.functions.invoke('check-resend-status');
+    // Add a timestamp to prevent caching
+    const timestamp = new Date().getTime();
+    
+    const { data, error } = await supabase.functions.invoke('check-resend-status', {
+      body: { 
+        timestamp,
+        checkType: 'connection-test' 
+      }
+    });
     
     if (error) {
       console.error('Error invoking check-resend-status function:', error);
@@ -117,8 +125,14 @@ export const sendTestEmail = async (testEmailData: any) => {
     
     console.log('Invoking send-email function with validated data');
     
+    // Add a timestamp to prevent caching
+    const requestData = {
+      ...testEmailData,
+      timestamp: new Date().getTime()
+    };
+    
     const { data, error } = await supabase.functions.invoke<EmailResponse>('send-email', {
-      body: testEmailData
+      body: requestData
     });
     
     if (error) {
@@ -177,24 +191,29 @@ export const sendTestEmail = async (testEmailData: any) => {
 /**
  * Invoke the edge function with form data
  */
-export const invokeEmailFunction = async (edgeFunction: string, formData: EmailTestFormData) => {
+export const invokeEmailFunction = async (edgeFunction: string, formData: EmailTestFormData | any) => {
   try {
     console.log(`Invoking ${edgeFunction} function with form data:`, formData);
     
-    // Prepare the email recipients array
-    const toEmails = formData.to.split(',').map(email => email.trim());
+    // If formData contains a 'to' property as a string, convert it to an array
+    let requestBody = { ...formData };
     
-    // Validate recipient emails
-    const invalidEmails = toEmails.filter(email => !email.includes('@') || email.trim() === '');
-    if (invalidEmails.length > 0) {
-      throw new Error(`Invalid email address(es): ${invalidEmails.join(', ')}`);
+    if (typeof requestBody.to === 'string') {
+      // Prepare the email recipients array
+      const toEmails = requestBody.to.split(',').map((email: string) => email.trim());
+      
+      // Validate recipient emails
+      const invalidEmails = toEmails.filter((email: string) => !email.includes('@') || email.trim() === '');
+      if (invalidEmails.length > 0) {
+        throw new Error(`Invalid email address(es): ${invalidEmails.join(', ')}`);
+      }
+      
+      // Update the requestBody with the array of emails
+      requestBody.to = toEmails;
     }
 
-    // Create request body with validated data
-    const requestBody = {
-      ...formData,
-      to: toEmails
-    };
+    // Add a timestamp to prevent caching issues
+    requestBody.timestamp = new Date().getTime();
 
     // Final validation check
     const validation = validateEmailData(requestBody);

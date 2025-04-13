@@ -20,6 +20,15 @@ export const supabase = createClient<Database>(
     global: {
       headers: {
         'x-client-info': 'lovable-email-app'
+      },
+      fetch: (url, options) => {
+        // Add a request timestamp to prevent caching
+        const urlObj = new URL(url);
+        urlObj.searchParams.set('_t', Date.now().toString());
+        return fetch(urlObj.toString(), {
+          ...options,
+          credentials: 'same-origin'
+        });
       }
     }
   }
@@ -37,8 +46,29 @@ export const checkSupabaseConnection = async () => {
       };
     }
     
+    // Test connection to an edge function
+    try {
+      const { error: functionError } = await supabase.functions.invoke('check-resend-status', {
+        body: { connectionTest: true }
+      });
+      
+      if (functionError) {
+        console.error("Edge function connection error:", functionError);
+        return {
+          connected: true,
+          edgeFunctionsConnected: false,
+          session: data.session,
+          isSignedIn: !!data.session,
+          error: `Edge functions not reachable: ${functionError.message}`
+        };
+      }
+    } catch (functionErr) {
+      console.error("Error testing edge function connectivity:", functionErr);
+    }
+    
     return {
       connected: true,
+      edgeFunctionsConnected: true,
       session: data.session,
       isSignedIn: !!data.session
     };
