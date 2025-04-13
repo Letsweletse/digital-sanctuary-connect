@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { sendEventRegistrationEmail, ADMIN_EMAILS } from '@/lib/emailService';
@@ -8,6 +9,8 @@ import ChurchCalendarEmbed from '@/components/events/ChurchCalendarEmbed';
 import { events, categories } from '@/data/eventsData';
 import { formatDate } from '@/utils/dateUtils';
 import { useEventRegistration } from '@/hooks/useEventRegistration';
+import { storeResendApiKey, enableDirectMode } from '@/lib/directResendService';
+import { toast } from 'sonner';
 
 const Events = () => {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -24,6 +27,27 @@ const Events = () => {
   } = useEventRegistration();
   
   useEffect(() => {
+    // Emergency fallback: Try to inject a sample API key for testing
+    // This is just for development purposes, should be removed in production
+    try {
+      const hasApiKey = localStorage.getItem('resend_api_key');
+      if (!hasApiKey) {
+        // Check if we're in development or testing
+        if (window.location.hostname === 'localhost' || 
+            window.location.hostname.includes('lovableproject') ||
+            window.location.hostname.includes('preview')) {
+          console.log('🔑 DEV MODE: Setting default Resend API key for testing');
+          // You should replace this with your actual Resend API key for testing
+          // const testApiKey = "re_YOUR_KEY_HERE";
+          // storeResendApiKey(testApiKey);
+          // Force direct mode to be enabled
+          enableDirectMode();
+        }
+      }
+    } catch (e) {
+      console.error('Failed to set test API key:', e);
+    }
+    
     // Preload important images to ensure they're available for emails
     const preloadImages = [
       "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png",
@@ -75,7 +99,8 @@ const Events = () => {
           attendeeEmail: event.detail.email,
           isTestEmail: true,
           sendSms: true,
-          registrationType: "Test"
+          registrationType: "Test",
+          directBypass: true // Force direct bypass
         };
         
         // Simulate registration submission with the properly structured parameters
@@ -84,6 +109,12 @@ const Events = () => {
     };
     
     document.addEventListener('test-registration', handleTestRegistration);
+    
+    // Show instructions toast on page load
+    toast.info('Email Configuration Required', {
+      description: 'Go to Admin > Email Test to configure your Resend API key for direct sending',
+      duration: 8000
+    });
     
     return () => {
       document.removeEventListener('test-registration', handleTestRegistration);

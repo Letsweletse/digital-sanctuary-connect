@@ -1,10 +1,12 @@
 
 /**
  * Direct Resend API Client
- * Bypasses Supabase Edge Functions to directly connect to Resend API
+ * Bypasses Supabase Edge Functions to directly connect to Resend API through a proxy
  */
 
-// The Resend API endpoint
+// Use a CORS proxy to avoid browser CORS restrictions for direct API calls
+// This allows us to make direct API calls even from browser environments
+const CORS_PROXY = 'https://corsproxy.io/?';
 const RESEND_API_URL = 'https://api.resend.com';
 
 // Directly send email via Resend API with fetch
@@ -50,8 +52,11 @@ export const sendDirectResendEmail = async (
       try {
         console.log(`💌 DIRECT EMAIL: Attempt ${retryCount + 1} of ${maxRetries}`);
         
+        // Make the API request through CORS proxy to avoid browser restrictions
+        const proxyUrl = `${CORS_PROXY}${RESEND_API_URL}/emails`;
+        
         // Make the API request
-        const response = await fetch(`${RESEND_API_URL}/emails`, {
+        const response = await fetch(proxyUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -33,7 +33,26 @@ export const handleEmailSending = async (
     try {
       logMessage(`Email sending attempt ${retryCount + 1} of ${maxRetries}`, { to: emailData.to });
 
-      result = await resend.emails.send(emailData);
+      // Make sure the from field is properly set
+      if (!emailData.from) {
+        emailData.from = "info@gategaborone.com";
+        logMessage("No from address provided, using default", { from: emailData.from });
+      }
+
+      // Add debug info and sending time
+      const enhancedEmailData = {
+        ...emailData,
+        text: emailData.text ? 
+          `${emailData.text}\n\n---\nSent at: ${new Date().toISOString()}` : 
+          `This email was sent at: ${new Date().toISOString()}`,
+        headers: {
+          ...emailData.headers,
+          "X-Entity-Ref-ID": `send-email-${Date.now()}`,
+          "X-Priority": "1"
+        }
+      };
+
+      result = await resend.emails.send(enhancedEmailData);
       logMessage("Email sent successfully", { 
         messageId: result.id, 
         attempt: retryCount + 1,
