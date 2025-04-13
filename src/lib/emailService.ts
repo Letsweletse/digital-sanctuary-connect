@@ -54,40 +54,40 @@ async function sendEmail(requestBody: any) {
 /**
  * Sends event registration notification to church admins
  */
-export const sendEventRegistrationEmail = async (eventName: string, registrantData: any) => {
+export const sendEventRegistrationEmail = async (registrationData: any, recipientEmail?: string) => {
   try {
-    console.log("Sending event registration email for:", eventName);
-    console.log("Registration data:", registrantData);
+    console.log("Sending event registration email for:", registrationData.eventName);
+    console.log("Registration data:", registrationData);
     
     // Generate a unique check-in ID for this registration
-    const checkInId = crypto.randomUUID();
+    const checkInId = registrationData.checkInId || crypto.randomUUID();
     
     // Ensure we have all the required data for the enhanced confirmation email
-    const eventLocation = registrantData.location || 'https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7';
-    const eventDate = registrantData.eventDate || '2025-05-10';
-    const eventTime = registrantData.eventTime || '9:00 AM - 1:30 PM';
-    const eventImage = registrantData.eventImage || 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg';
+    const eventLocation = registrationData.location || 'https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7';
+    const eventDate = registrationData.eventDate || '2025-05-10';
+    const eventTime = registrationData.eventTime || '9:00 AM - 1:30 PM';
+    const eventImage = registrationData.eventImage || 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg';
     
     // Prepare the email request body with all required fields
     const emailRequestBody = {
       to: ADMIN_EMAILS,
-      subject: `New Registration for ${eventName}`,
-      name: registrantData.attendee.name,
-      email: registrantData.attendee.email,
-      title: registrantData.attendee.title,
-      role: registrantData.attendee.role,
-      denomination: registrantData.attendee.denomination,
-      phone: registrantData.attendee.phone,
-      message: registrantData.message || `numberOfAttendees: ${registrantData.attendee.numberOfAttendees}`,
-      eventName: eventName,
-      registrationType: registrantData.registrationType || 'Standard',
-      sendConfirmation: true, // Always enable sending confirmation email to the registrant
+      subject: registrationData.subject || `New Registration for ${registrationData.eventName}`,
+      name: registrationData.name,
+      email: registrationData.email,
+      title: registrationData.title,
+      role: registrationData.role,
+      denomination: registrationData.denomination,
+      phone: registrationData.phone,
+      message: registrationData.message || '',
+      eventName: registrationData.eventName,
+      registrationType: registrationData.registrationType || 'Standard',
+      sendConfirmation: registrationData.sendConfirmation || true,
       location: eventLocation,
       eventDate: eventDate,
       eventTime: eventTime,
       eventImage: eventImage,
-      checkInId: checkInId, // Pass the unique check-in ID
-      attendeeEmail: registrantData.attendee.email // Pass the attendee email for personalized check-in
+      checkInId: checkInId,
+      attendeeEmail: recipientEmail || registrationData.email
     };
     
     console.log("Sending email with request body:", JSON.stringify(emailRequestBody).substring(0, 200) + "...");

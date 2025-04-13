@@ -57,11 +57,10 @@ const Events = () => {
           denomination: "Non-denominational"
         };
         
-        // Simulate registration submission
-        sendEventRegistrationEmail({
-          to: ADMIN_EMAILS,
-          subject: "New Event Registration (Test)",
+        // Assemble registration data object
+        const registrationData = {
           ...testFormData,
+          subject: "New Event Registration (Test)",
           eventName: testEvent.title,
           eventDate: testEvent.date,
           eventTime: testEvent.time,
@@ -72,7 +71,10 @@ const Events = () => {
           isTestEmail: true,
           sendSms: true,
           registrationType: "Test"
-        }, event.detail.email || "test@example.com");
+        };
+        
+        // Simulate registration submission with the properly structured parameters
+        sendEventRegistrationEmail(registrationData, event.detail.email || "test@example.com");
       }
     };
     
