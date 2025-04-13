@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -11,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LogoProvider } from '@/components/layout/LogoContext';
+import EmailTest from '@/components/EmailTest';
 
 const Admin = () => {
   const [authenticated, setAuthenticated] = useState(false);
@@ -95,6 +95,7 @@ const Admin = () => {
                     <TabsTrigger value="images">General Images</TabsTrigger>
                     <TabsTrigger value="audio">Audio Sermons</TabsTrigger>
                     <TabsTrigger value="youtube">YouTube Videos</TabsTrigger>
+                    <TabsTrigger value="email-test">Email Test</TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value="logo" className="space-y-8">
@@ -152,6 +153,18 @@ const Admin = () => {
                           To update videos, simply upload new content to your YouTube channel.
                         </p>
                       </div>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="email-test" className="space-y-8">
+                    <div className="glass-panel p-8">
+                      <h2 className="text-2xl font-bold text-church-neutral-900 mb-6">
+                        Email Delivery Testing
+                      </h2>
+                      <p className="text-church-neutral-700 mb-6">
+                        Use this tool to test email notifications and verify delivery systems.
+                      </p>
+                      <EmailTest />
                     </div>
                   </TabsContent>
                 </Tabs>
