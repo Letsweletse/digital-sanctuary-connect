@@ -4,12 +4,13 @@ import { useEmailForm } from './useEmailForm';
 import { useEmailOperations } from './useEmailOperations';
 import { invokeEmailFunction } from './services/edgeFunctionService';
 import { sendEmailWithRedundancy, checkEmailProvidersHealth } from './services/emailRedundancyManager';
+import { ProviderHealth } from './types';
 
 export function useEmailTest() {
   const emailForm = useEmailForm();
   const emailOperations = useEmailOperations(emailForm);
   const [useRedundancySystem, setUseRedundancySystem] = useState<boolean>(true);
-  const [providerHealth, setProviderHealth] = useState({
+  const [providerHealth, setProviderHealth] = useState<ProviderHealth>({
     checking: false,
     primary: {
       available: false,

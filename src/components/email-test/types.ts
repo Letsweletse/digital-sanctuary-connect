@@ -1,3 +1,4 @@
+
 export interface EmailForm {
   to: string;
   subject: string;
@@ -62,11 +63,43 @@ export interface ProviderHealth {
   checking: boolean;
   primary: {
     available: boolean;
-    message?: string;
+    message: string;
   };
   fallback: {
     available: boolean;
-    message?: string;
+    message: string;
   };
   lastChecked?: Date;
+}
+
+// Add the missing EmailTestFormData interface
+export interface EmailTestFormData {
+  to: string;
+  subject: string;
+  name: string;
+  email: string;
+  message: string;
+  sendConfirmation?: boolean;
+  isTestEmail?: boolean;
+}
+
+// Add the missing defaultFormData
+export const defaultFormData: EmailTestFormData = {
+  to: "",
+  subject: "Test Email",
+  name: "Test User",
+  email: "",
+  message: "This is a test email to verify email delivery.",
+  sendConfirmation: true,
+  isTestEmail: true
+};
+
+// Add a type for the redundancy manager response
+export interface RedundancyResponse {
+  success: boolean;
+  data?: any;
+  error?: string;
+  provider?: string;
+  fallbackUsed?: boolean;
+  primaryError?: string;
 }

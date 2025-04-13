@@ -1,129 +1,133 @@
 
-import { sendTestEmail } from './emailTestService';
+import { supabase } from '@/integrations/supabase/client';
 import { sendFallbackEmail } from './fallbackEmailService';
 import { invokeEmailFunction } from './edgeFunctionService';
+import { RedundancyResponse, ProviderHealth } from '../types';
 
 /**
- * Email redundancy manager to handle failover between different email providers
+ * Check the health of both email providers
  */
-export const sendEmailWithRedundancy = async (emailData: any): Promise<{
-  success: boolean;
-  data?: any;
-  error?: string;
-  provider?: string;
-  fallbackUsed?: boolean;
-}> => {
+export const checkEmailProvidersHealth = async (): Promise<Omit<ProviderHealth, 'checking' | 'lastChecked'>> => {
   try {
-    console.log('Sending email with redundancy management...');
+    console.log('Checking health of email providers...');
     
-    // Add reliability tracking to the request
-    const requestWithTracking = {
-      ...emailData,
-      reliabilityTracking: {
-        attemptTimestamp: Date.now(),
-        clientType: 'web-redundancy-system',
-        retryCount: 0
-      }
-    };
+    // Check primary provider (Resend)
+    let primaryAvailable = false;
+    let primaryMessage = 'Not available';
     
-    // First try with primary provider (Resend via send-email function)
-    console.log('Attempting primary email provider...');
-    const primaryResult = await sendTestEmail(requestWithTracking);
-    
-    if (primaryResult.success) {
-      console.log('Primary email provider succeeded');
-      return {
-        ...primaryResult,
-        provider: 'primary',
-        fallbackUsed: false
-      };
+    try {
+      const primaryCheck = await supabase.functions.invoke('check-resend-status', {
+        body: { checkType: 'health-check' }
+      });
+      
+      primaryAvailable = primaryCheck.data?.success === true;
+      primaryMessage = primaryCheck.data?.message || 'Status unknown';
+      
+      console.log('Primary provider health check:', primaryCheck.data);
+    } catch (err) {
+      console.error('Error checking primary provider health:', err);
+      primaryMessage = err instanceof Error ? err.message : 'Error checking availability';
     }
     
-    // If primary fails, try with fallback provider
-    console.log('Primary email provider failed, switching to fallback...');
-    console.log('Failure reason:', primaryResult.error);
+    // Check fallback provider (SendGrid)
+    let fallbackAvailable = false;
+    let fallbackMessage = 'Not available';
     
-    // Update tracking information
-    const fallbackRequest = {
-      ...requestWithTracking,
-      reliabilityTracking: {
-        ...requestWithTracking.reliabilityTracking,
-        retryCount: 1,
-        primaryProviderError: primaryResult.error,
-        failoverTimestamp: Date.now()
+    try {
+      const fallbackCheck = await supabase.functions.invoke('email-fallback', {
+        body: { checkType: 'health-check' }
+      });
+      
+      fallbackAvailable = fallbackCheck.data?.success === true;
+      fallbackMessage = fallbackCheck.data?.message || 'Status unknown';
+      
+      console.log('Fallback provider health check:', fallbackCheck.data);
+    } catch (err) {
+      console.error('Error checking fallback provider health:', err);
+      fallbackMessage = err instanceof Error ? err.message : 'Error checking availability';
+    }
+    
+    return {
+      primary: {
+        available: primaryAvailable,
+        message: primaryMessage
+      },
+      fallback: {
+        available: fallbackAvailable,
+        message: fallbackMessage
       }
     };
-    
-    const fallbackResult = await sendFallbackEmail(fallbackRequest);
-    
-    // Return fallback result with additional info
-    return {
-      ...fallbackResult,
-      fallbackUsed: true,
-      primaryError: primaryResult.error
-    };
-  } catch (err) {
-    console.error('Error in email redundancy manager:', err);
-    const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+  } catch (error) {
+    console.error('Error in checkEmailProvidersHealth:', error);
     
     return {
-      success: false,
-      error: `Both primary and fallback providers failed. Error: ${errorMessage}`,
-      fallbackUsed: true
+      primary: {
+        available: false,
+        message: 'Error checking status'
+      },
+      fallback: {
+        available: false,
+        message: 'Error checking status'
+      }
     };
   }
 };
 
 /**
- * Check the health of all email providers
+ * Send an email with redundancy - try primary provider (Resend) first,
+ * then fall back to secondary provider (SendGrid) if primary fails
  */
-export const checkEmailProvidersHealth = async (): Promise<{
-  primary: {
-    available: boolean;
-    message?: string;
-  };
-  fallback: {
-    available: boolean;
-    message?: string;
-  };
-}> => {
-  const result = {
-    primary: {
-      available: false,
-      message: 'Not checked'
-    },
-    fallback: {
-      available: false,
-      message: 'Not checked'
-    }
-  };
-  
+export const sendEmailWithRedundancy = async (emailData: any): Promise<RedundancyResponse> => {
   try {
-    // Check primary provider (Resend)
-    const primaryCheck = await invokeEmailFunction('check-resend-status', {
-      checkType: 'health-check',
-      timestamp: Date.now()
-    });
+    console.log('Attempting to send email via primary provider (Resend)...');
     
-    result.primary.available = primaryCheck.success;
-    result.primary.message = primaryCheck.success 
-      ? 'Provider is available'
-      : primaryCheck.error || 'Provider is unavailable';
+    // Try primary provider first
+    const primaryResult = await invokeEmailFunction('send-email', emailData);
     
-    // Check fallback provider
-    const fallbackCheck = await invokeEmailFunction('email-fallback', {
-      checkType: 'health-check',
-      timestamp: Date.now()
-    });
+    // If primary provider succeeds, return the result
+    if (primaryResult.success) {
+      console.log('Email sent successfully via primary provider');
+      return {
+        ...primaryResult,
+        fallbackUsed: false,
+        provider: 'primary'
+      };
+    }
     
-    result.fallback.available = fallbackCheck.success;
-    result.fallback.message = fallbackCheck.success
-      ? 'Provider is available'
-      : fallbackCheck.error || 'Provider is unavailable';
+    // If primary provider fails, log the error
+    console.error('Primary provider failed:', primaryResult.error);
     
-    return result;
+    // Try fallback provider
+    console.log('Attempting to send email via fallback provider...');
+    const fallbackResult = await sendFallbackEmail(emailData);
+    
+    if (fallbackResult.success) {
+      console.log('Email sent successfully via fallback provider');
+      return {
+        ...fallbackResult,
+        fallbackUsed: true,
+        primaryError: primaryResult.error
+      };
+    }
+    
+    // If both providers fail, return the primary error
+    console.error('Both providers failed. Primary error:', primaryResult.error);
+    console.error('Fallback error:', fallbackResult.error);
+    
+    return {
+      success: false,
+      error: `All providers failed. Primary: ${primaryResult.error}, Fallback: ${fallbackResult.error}`,
+      fallbackUsed: true,
+      primaryError: primaryResult.error
+    };
   } catch (err) {
-    console.error('Error checking email providers health:', err);
-    return result;
+    console.error('Error in sendEmailWithRedundancy:', err);
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+    
+    return {
+      success: false,
+      error: errorMessage,
+      fallbackUsed: false
+    };
   }
 };
