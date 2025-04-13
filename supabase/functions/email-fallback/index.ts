@@ -1,6 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { corsHeaders } from "../send-email/utils/cors.ts";
+import { corsHeaders } from "./utils/cors.ts";
 
 // Track function uptime and request count
 const functionStartTime = Date.now();
