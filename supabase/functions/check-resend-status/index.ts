@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 
@@ -14,8 +13,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Get API key - use the verified key
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "re_FYtCFWri_39ciqWYc9CEKpoa3JdkWdSwN";
+// Get API key from environment or use the provided key
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "re_hthmXL4A_LjaqCxvdzaHoz4QK6rif6UVb";
 
 // Initialize Resend client
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
@@ -39,6 +38,7 @@ const handler = async (req: Request): Promise<Response> => {
   log(currentRequest, "Checking Resend API key status");
   log(currentRequest, "Function uptime:", Math.floor((Date.now() - functionStartTime) / 1000) + " seconds");
   log(currentRequest, "Total requests handled:", currentRequest);
+  log(currentRequest, "API key first 10 chars:", RESEND_API_KEY.substring(0, 10));
   
   try {
     // Get environment info for debugging
