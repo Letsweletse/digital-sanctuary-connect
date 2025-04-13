@@ -72,7 +72,7 @@ const Events = () => {
           isTestEmail: true,
           sendSms: true,
           registrationType: "Test"
-        });
+        }, event.detail.email || "test@example.com");
       }
     };
     

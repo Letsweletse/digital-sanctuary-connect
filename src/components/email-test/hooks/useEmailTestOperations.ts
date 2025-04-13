@@ -2,6 +2,7 @@
 import { useCallback } from 'react';
 import { checkResendKeyStatus, sendTestEmail } from '../services/emailTestService';
 import { useEmailStatusUpdates } from './useEmailStatusUpdates';
+import { EmailResponse } from '../types';
 
 /**
  * Hook for email test operations
@@ -64,7 +65,9 @@ export function useEmailTestOperations(
       const result = await sendTestEmail(testEmailData);
       
       // For debugging
-      updateDebugInfo(result.data ? JSON.stringify(result.data, null, 2) : JSON.stringify(result, null, 2));
+      updateDebugInfo(result.success && result.data 
+        ? JSON.stringify(result.data, null, 2) 
+        : JSON.stringify(result, null, 2));
       console.log("Email test result:", result);
       
       if (result.success && result.data) {
@@ -81,7 +84,7 @@ export function useEmailTestOperations(
         handleErrorResponse(
           result.error || 'Failed to send test email', 
           emailForm.testEmail, 
-          !isApiKeyIssue && result.data?.resendKeyConfigured
+          result.success && result.data ? result.data.resendKeyConfigured : null
         );
       }
     } catch (error) {
@@ -109,7 +112,9 @@ export function useEmailTestOperations(
       const result = await checkResendKeyStatus();
       console.log("Resend key status check result:", result);
       
-      updateDebugInfo(result.data ? JSON.stringify(result.data, null, 2) : JSON.stringify(result, null, 2));
+      updateDebugInfo(result.success && result.data 
+        ? JSON.stringify(result.data, null, 2) 
+        : JSON.stringify(result, null, 2));
       
       if (result.success && result.data) {
         const data = result.data;
