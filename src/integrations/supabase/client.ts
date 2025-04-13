@@ -24,7 +24,13 @@ export const supabase = createClient<Database>(
       fetch: (url, options) => {
         // Add a request timestamp to prevent caching
         const urlObj = new URL(url);
-        urlObj.searchParams.set('_t', Date.now().toString());
+        
+        // Handle Supabase RLS timestamp filter issues
+        // Skip adding timestamp to database queries as this causes filtering issues
+        if (!url.includes('/rest/v1/')) {
+          urlObj.searchParams.set('_t', Date.now().toString());
+        }
+        
         return fetch(urlObj.toString(), {
           ...options,
           credentials: 'same-origin'
@@ -37,19 +43,29 @@ export const supabase = createClient<Database>(
 // Helper to check the auth state
 export const checkSupabaseConnection = async () => {
   try {
-    const { data, error } = await supabase.auth.getSession();
-    if (error) {
-      console.error("Supabase connection error:", error);
+    console.log("Checking Supabase connection status...");
+    
+    // First try to get the session
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError) {
+      console.error("Supabase session error:", sessionError);
       return {
         connected: false,
-        error: error.message
+        error: `Authentication error: ${sessionError.message}`
       };
     }
     
-    // Test connection to an edge function
+    // Then test the connection to edge functions
     try {
+      // Add a timestamp to prevent caching
+      const timestamp = new Date().getTime();
+      
       const { error: functionError } = await supabase.functions.invoke('check-resend-status', {
-        body: { connectionTest: true }
+        body: { 
+          timestamp,
+          connectionTest: true 
+        }
       });
       
       if (functionError) {
@@ -57,21 +73,29 @@ export const checkSupabaseConnection = async () => {
         return {
           connected: true,
           edgeFunctionsConnected: false,
-          session: data.session,
-          isSignedIn: !!data.session,
+          session: sessionData.session,
+          isSignedIn: !!sessionData.session,
           error: `Edge functions not reachable: ${functionError.message}`
         };
       }
+      
+      return {
+        connected: true,
+        edgeFunctionsConnected: true,
+        session: sessionData.session,
+        isSignedIn: !!sessionData.session
+      };
     } catch (functionErr) {
       console.error("Error testing edge function connectivity:", functionErr);
+      
+      return {
+        connected: true,
+        edgeFunctionsConnected: false,
+        session: sessionData.session,
+        isSignedIn: !!sessionData.session,
+        error: functionErr instanceof Error ? functionErr.message : 'Unknown error connecting to edge functions'
+      };
     }
-    
-    return {
-      connected: true,
-      edgeFunctionsConnected: true,
-      session: data.session,
-      isSignedIn: !!data.session
-    };
   } catch (err) {
     console.error("Error checking Supabase connection:", err);
     return {
@@ -79,4 +103,30 @@ export const checkSupabaseConnection = async () => {
       error: err instanceof Error ? err.message : 'Unknown error'
     };
   }
+};
+
+// Helper to retry failed operations with exponential backoff
+export const retryOperation = async <T>(
+  operation: () => Promise<T>,
+  maxRetries: number = 3,
+  delay: number = 1000
+): Promise<T> => {
+  let lastError: any;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      console.warn(`Operation failed (attempt ${attempt + 1}/${maxRetries}):`, error);
+      lastError = error;
+      
+      // Exponential backoff with jitter
+      const jitter = Math.random() * 0.3 + 0.85; // Random factor between 0.85 and 1.15
+      const waitTime = delay * Math.pow(2, attempt) * jitter;
+      
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+    }
+  }
+  
+  throw lastError;
 };

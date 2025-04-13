@@ -1,5 +1,5 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, retryOperation } from '@/integrations/supabase/client';
 import { validateEmailData } from './emailValidationService';
 import { EmailResponse } from '../types';
 import { checkResendKeyStatus } from './resendStatusService';
@@ -25,52 +25,41 @@ export const sendTestEmail = async (testEmailData: any) => {
       timestamp: new Date().getTime()
     };
     
-    const { data, error } = await supabase.functions.invoke<EmailResponse>('send-email', {
-      body: requestData
-    });
-    
-    if (error) {
-      console.error('Error invoking send-email function:', error);
-      console.error('Error details:', JSON.stringify(error, null, 2));
+    // Use retry operation for better resilience
+    const result = await retryOperation(async () => {
+      const { data, error } = await supabase.functions.invoke<EmailResponse>('send-email', {
+        body: requestData
+      });
       
-      // Check if this is a Supabase auth issue
-      if (error.message?.includes('No API key found') || 
-          error.message?.includes('JWT') || 
-          error.status === 401) {
-        return {
-          success: false,
-          error: `Supabase authentication error: ${error.message}. Try refreshing the page to get a new session.`
-        };
+      if (error) {
+        console.error('Error invoking send-email function:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
+        
+        // Check if this is a Supabase auth issue
+        if (error.message?.includes('No API key found') || 
+            error.message?.includes('JWT') || 
+            error.status === 401) {
+          throw new Error(`Supabase authentication error: ${error.message}. Try refreshing the page to get a new session.`);
+        }
+        
+        throw new Error(`Edge Function Error: ${error.message || 'Unknown error'}. Check Edge Function logs in Supabase dashboard for details.`);
       }
       
-      return {
-        success: false,
-        error: `Edge Function Error: ${error.message || 'Unknown error'}. Check Edge Function logs in Supabase dashboard for details.`
-      };
-    }
+      if (!data) {
+        throw new Error('No response received from edge function (null data).');
+      }
+      
+      // Check if we got an error response even though the HTTP status was 200
+      if (data.success === false) {
+        throw new Error(data.message || data.error || 'Unknown error occurred');
+      }
+      
+      return { success: true, data };
+    }, 2);
     
-    console.log('Email test response:', data);
+    console.log('Email test response:', result);
+    return result;
     
-    if (!data) {
-      return {
-        success: false,
-        error: 'No response received from edge function (null data).'
-      };
-    }
-    
-    // Check if we got an error response even though the HTTP status was 200
-    if (data.success === false) {
-      return {
-        success: false,
-        error: data.message || data.error || 'Unknown error occurred',
-        data: data
-      };
-    }
-    
-    return {
-      success: true,
-      data
-    };
   } catch (err) {
     console.error('Error sending test email:', err);
     const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';

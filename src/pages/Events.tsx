@@ -37,6 +37,50 @@ const Events = () => {
       img.onerror = () => console.error(`Failed to preload image: ${imgSrc}`);
       img.src = imgSrc;
     });
+    
+    // Add event listener for test registration events from the admin panel
+    const handleTestRegistration = (event: any) => {
+      if (event.detail && events.length > 0) {
+        console.log("Test registration event triggered:", event.detail);
+        
+        // Use the first event for testing
+        const testEvent = events[0];
+        
+        // Create a fake form submission with the test data
+        const testFormData = {
+          name: "Test User",
+          email: event.detail.email || "test@example.com",
+          phone: event.detail.phone || "",
+          message: "This is a test registration to verify email delivery.",
+          title: "Mr",
+          role: "Member",
+          denomination: "Non-denominational"
+        };
+        
+        // Simulate registration submission
+        sendEventRegistrationEmail({
+          to: ADMIN_EMAILS,
+          subject: "New Event Registration (Test)",
+          ...testFormData,
+          eventName: testEvent.title,
+          eventDate: testEvent.date,
+          eventTime: testEvent.time,
+          location: testEvent.location,
+          sendConfirmation: true,
+          checkInId: `test-${Date.now()}`,
+          attendeeEmail: event.detail.email,
+          isTestEmail: true,
+          sendSms: true,
+          registrationType: "Test"
+        });
+      }
+    };
+    
+    document.addEventListener('test-registration', handleTestRegistration);
+    
+    return () => {
+      document.removeEventListener('test-registration', handleTestRegistration);
+    };
   }, []);
   
   const filteredEvents = activeCategory === 'all' 
