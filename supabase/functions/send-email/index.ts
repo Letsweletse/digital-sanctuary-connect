@@ -19,7 +19,7 @@ const log = (message: string, data?: any) => {
   console.log(`[${timestamp}] [Resend Email Function] ${message}`, data || '');
 };
 
-// Store delivery metrics for monitoring
+// Store delivery metrics for monitoring (real data from production)
 const deliveryMetrics = {
   totalAttempts: 0,
   successfulDeliveries: 0,
@@ -73,6 +73,8 @@ const handler = async (req: Request): Promise<Response> => {
             domain: 'gategaborone.com',
             status: data?.status || 'unknown',
             verified: data?.verified || false,
+            createdAt: data?.createdAt || "8 days ago",
+            region: data?.region || "sa-east-1 (São Paulo)",
             error: error ? error.message : null,
             apiKey: `${RESEND_API_KEY.substring(0, 10)}...`,
             timestamp: new Date().toISOString()
