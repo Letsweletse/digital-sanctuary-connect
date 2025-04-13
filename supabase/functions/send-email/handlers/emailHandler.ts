@@ -15,13 +15,22 @@ import { sendSmsNotification } from "../utils/smsUtils.ts";
 import { logEmailDelivery, generateDeliveryReport } from "../utils/emailLogging.ts";
 
 // Initialize Resend with API key from environment variable
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "re_FYtCFWri_39ciqWYc9CEKpoa3JdkWdSwN";
 console.log("RESEND_API_KEY available:", RESEND_API_KEY ? "Yes (length: " + RESEND_API_KEY.length + ")" : "No");
 console.log("RESEND_API_KEY starts with:", RESEND_API_KEY?.substring(0, 5) || "N/A");
 
 if (!RESEND_API_KEY) {
   console.error("CRITICAL ERROR: RESEND_API_KEY environment variable is not set or empty!");
 }
+
+// Check if the API key is passed in the request (for debugging)
+const getApiKey = (req: EmailRequest): string => {
+  if (req.apiKey && typeof req.apiKey === 'string' && req.apiKey.startsWith('re_')) {
+    console.log("Using API key from request");
+    return req.apiKey;
+  }
+  return RESEND_API_KEY;
+};
 
 const resend = new Resend(RESEND_API_KEY);
 
@@ -50,6 +59,11 @@ export async function processEmailRequest(req: Request): Promise<Response> {
     console.log("Received email request with keys:", Object.keys(body));
     console.log("Event info:", body.eventName, body.eventDate, body.eventTime);
     console.log("Contact details:", body.name, body.email, body.phone);
+    
+    // Create a new resend instance with the API key from the request if provided
+    const apiKey = getApiKey(body);
+    const resendClient = apiKey !== RESEND_API_KEY ? new Resend(apiKey) : resend;
+    console.log("Using Resend client with API key starting with:", apiKey.substring(0, 5));
 
     const { 
       to, 
@@ -70,13 +84,17 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       eventImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg",
       checkInId = uuidv4(),
       attendeeEmail = email,
-      sendSms = true // Enable SMS by default
+      sendSms = true, // Enable SMS by default
+      forceHtml = true, // Force HTML email
+      priority = "high" // Default priority
     } = body;
 
     console.log("Processing email request for event:", eventName);
     console.log("Will send confirmation email:", sendConfirmation);
     console.log("Phone number for notifications:", phone);
     console.log("SMS notifications enabled:", sendSms);
+    console.log("Force HTML email:", forceHtml);
+    console.log("Email priority:", priority);
 
     // Use more reliable QR code generation with higher resolution and clear borders
     const locationQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(location)}&size=300x300&margin=10&qzone=2&format=png`;
@@ -118,7 +136,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
     
     try {
       console.log("Attempting to send admin email via Resend...");
-      const adminResult = await resend.emails.send({
+      const adminResult = await resendClient.emails.send({
         from: "Gate Gaborone <info@gategaborone.com>",
         to,
         subject,

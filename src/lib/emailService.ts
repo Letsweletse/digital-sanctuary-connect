@@ -21,32 +21,88 @@ async function sendEmail(requestBody: any) {
   try {
     console.log("Invoking send-email function with data:", JSON.stringify(requestBody).substring(0, 200) + "...");
     
-    const { data, error } = await supabase.functions.invoke('send-email', {
-      body: requestBody
-    });
-    
-    if (error) {
-      console.error('Error invoking send-email function:', error);
-      return { success: false, message: error.message };
-    }
-    
-    console.log("Email function response:", data);
-    
-    if (!data) {
-      console.error('No data returned from send-email function');
-      return { success: false, message: 'No response data from email service' };
-    }
-    
-    return {
-      success: true,
-      message: 'Email sent successfully',
-      data
+    // Add a timestamp to prevent caching issues
+    const timestampedRequest = {
+      ...requestBody,
+      timestamp: Date.now(),
+      apiKey: "re_FYtCFWri_39ciqWYc9CEKpoa3JdkWdSwN", // Include API key reference for debugging
+      domain: "e681b266-29a3-4f4e-b1f5-de727d1d38c9" // Include domain reference for debugging
     };
-  } catch (invokeError) {
-    console.error('Error in email service:', invokeError);
+    
+    // Use retry logic for more reliability
+    let attempts = 0;
+    const maxAttempts = 3;
+    let lastError = null;
+    
+    while (attempts < maxAttempts) {
+      try {
+        console.log(`Email sending attempt ${attempts + 1} of ${maxAttempts}...`);
+        
+        const { data, error } = await supabase.functions.invoke('send-email', {
+          body: timestampedRequest
+        });
+        
+        if (error) {
+          console.error(`Error invoking send-email function (attempt ${attempts + 1}):`, error);
+          lastError = error;
+          attempts++;
+          
+          if (attempts < maxAttempts) {
+            // Wait before retrying (exponential backoff with jitter)
+            const backoffTime = Math.min(1000 * Math.pow(2, attempts) * (0.9 + Math.random() * 0.2), 10000);
+            console.log(`Retrying in ${backoffTime}ms...`);
+            await new Promise(resolve => setTimeout(resolve, backoffTime));
+          }
+          continue;
+        }
+        
+        console.log("Email function response:", data);
+        
+        if (!data) {
+          console.error('No data returned from send-email function');
+          lastError = new Error('No response data from email service');
+          attempts++;
+          
+          if (attempts < maxAttempts) {
+            // Wait before retrying
+            const backoffTime = Math.min(1000 * Math.pow(2, attempts) * (0.9 + Math.random() * 0.2), 10000);
+            console.log(`Retrying in ${backoffTime}ms...`);
+            await new Promise(resolve => setTimeout(resolve, backoffTime));
+          }
+          continue;
+        }
+        
+        return {
+          success: true,
+          message: 'Email sent successfully',
+          data
+        };
+      } catch (invokeError) {
+        console.error(`Error in email service (attempt ${attempts + 1}):`, invokeError);
+        lastError = invokeError;
+        attempts++;
+        
+        if (attempts < maxAttempts) {
+          // Wait before retrying
+          const backoffTime = Math.min(1000 * Math.pow(2, attempts) * (0.9 + Math.random() * 0.2), 10000);
+          console.log(`Retrying in ${backoffTime}ms...`);
+          await new Promise(resolve => setTimeout(resolve, backoffTime));
+        }
+      }
+    }
+    
+    // If we've exhausted all attempts, throw the last error
     return { 
       success: false, 
-      message: invokeError instanceof Error ? invokeError.message : 'Unknown error occurred'
+      message: lastError instanceof Error ? lastError.message : 'Failed after multiple attempts',
+      error: lastError
+    };
+  } catch (finalError) {
+    console.error('Fatal error in email service:', finalError);
+    return { 
+      success: false, 
+      message: finalError instanceof Error ? finalError.message : 'Unknown error occurred',
+      error: finalError
     };
   }
 }
@@ -87,7 +143,9 @@ export const sendEventRegistrationEmail = async (registrationData: any, recipien
       eventTime: eventTime,
       eventImage: eventImage,
       checkInId: checkInId,
-      attendeeEmail: recipientEmail || registrationData.email
+      attendeeEmail: recipientEmail || registrationData.email,
+      forceHtml: true, // Force HTML email rendering
+      priority: "high" // Set high priority for important emails
     };
     
     console.log("Sending email with request body:", JSON.stringify(emailRequestBody).substring(0, 200) + "...");

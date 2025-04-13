@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { toast as sonnerToast } from "sonner";
@@ -108,26 +107,30 @@ export const useEventRegistration = () => {
     try {
       // Prepare comprehensive registration data with all required fields for enhanced email
       const registrationData = {
-        event: currentEvent.title,
+        subject: `New Registration for ${currentEvent.title}`,
+        name: formData.name,
+        email: formData.email,
+        phone: `${formData.countryCode} ${formData.phone}`,
+        title: formData.title,
+        role: formData.role,
+        denomination: formData.denomination,
+        eventName: currentEvent.title,
         eventDate: formatDate(currentEvent.date),
         eventTime: currentEvent.time,
-        eventImage: currentEvent.image, // Include event image for the confirmation email
+        eventImage: currentEvent.image,
         location: currentEvent.location.includes('http') 
           ? currentEvent.location 
-          : 'https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7', // Use location URL or default to Gate Gaborone location
-        attendee: {
-          ...formData,
-          phone: `${formData.countryCode} ${formData.phone}` // Format phone with country code
-        },
-        message: `Title: ${formData.title}, Role: ${formData.role}, Denomination: ${formData.denomination}, Number of Attendees: ${formData.numberOfAttendees}`,
-        submitDate: new Date().toISOString(),
-        registrationType: 'Standard' // Can be customized if needed
+          : 'https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7',
+        message: `Number of Attendees: ${formData.numberOfAttendees}`,
+        sendConfirmation: true,
+        registrationType: 'Standard',
+        checkInId: crypto.randomUUID()
       };
 
       console.log('Registration submitted with enhanced email data:', registrationData);
       
-      // Send the email notification with enhanced features
-      const emailResult = await sendEventRegistrationEmail(currentEvent.title, registrationData);
+      // Send the email notification with enhanced features - use the new parameter format
+      const emailResult = await sendEventRegistrationEmail(registrationData);
       console.log('Enhanced email service response:', emailResult);
       
       if (!emailResult.success) {

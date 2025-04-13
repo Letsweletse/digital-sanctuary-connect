@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { sendEventRegistrationEmail, ADMIN_EMAILS } from '@/lib/emailService';
@@ -59,8 +58,14 @@ const Events = () => {
         
         // Assemble registration data object
         const registrationData = {
-          ...testFormData,
           subject: "New Event Registration (Test)",
+          name: testFormData.name,
+          email: testFormData.email,
+          phone: testFormData.phone,
+          title: testFormData.title,
+          role: testFormData.role,
+          denomination: testFormData.denomination,
+          message: testFormData.message,
           eventName: testEvent.title,
           eventDate: testEvent.date,
           eventTime: testEvent.time,
