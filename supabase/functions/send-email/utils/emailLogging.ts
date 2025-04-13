@@ -1,98 +1,74 @@
-// In-memory storage for email delivery logs
-// Note: this will be cleared when the function is restarted
-const emailDeliveryLogs: EmailDeliveryLog[] = [];
-
-interface EmailDeliveryLog {
-  id: string;
+// Store delivery logs for monitoring
+const deliveryLogs: {
   timestamp: string;
   recipient: string;
-  emailType: 'admin' | 'confirmation' | 'test';
+  emailType: string;
   status: 'sent' | 'failed';
-  details: any;
-  messageId?: string;
-}
+  details?: any;
+  id?: string;
+}[] = [];
 
-// Add a log entry for email delivery
-export function logEmailDelivery(
-  recipient: string, 
-  emailType: 'admin' | 'confirmation' | 'test', 
+// Log email delivery attempts
+export const logEmailDelivery = (
+  recipient: string,
+  emailType: string,
   status: 'sent' | 'failed',
-  details: any = {},
-  messageId?: string
-) {
-  const logEntry: EmailDeliveryLog = {
-    id: crypto.randomUUID(),
-    timestamp: new Date().toISOString(),
+  details?: any,
+  id?: string
+) => {
+  // Add timestamp to each log entry
+  const timestamp = new Date().toISOString();
+  
+  // Create structured log entry
+  const logEntry = {
+    timestamp,
     recipient,
     emailType,
     status,
     details,
-    messageId
+    id
   };
   
-  emailDeliveryLogs.push(logEntry);
-  console.log(`Email delivery logged: ${emailType} to ${recipient} - ${status}`);
+  // Add to the in-memory logs array
+  deliveryLogs.unshift(logEntry);
   
-  // Keep only the last 50 logs
-  if (emailDeliveryLogs.length > 50) {
-    emailDeliveryLogs.shift();
+  // Trim logs if they get too large (keep last 100)
+  if (deliveryLogs.length > 100) {
+    deliveryLogs.length = 100;
   }
-}
-
-// Get all delivery logs
-export function getDeliveryLogs() {
-  return emailDeliveryLogs;
-}
-
-// Generate a simple report from the logs
-export function generateDeliveryReport() {
-  // Count successful and failed emails
-  const sent = emailDeliveryLogs.filter(log => log.status === 'sent').length;
-  const failed = emailDeliveryLogs.filter(log => log.status === 'failed').length;
   
-  // Count by type
-  const adminSent = emailDeliveryLogs.filter(log => log.emailType === 'admin' && log.status === 'sent').length;
-  const adminFailed = emailDeliveryLogs.filter(log => log.emailType === 'admin' && log.status === 'failed').length;
-  const confirmationSent = emailDeliveryLogs.filter(log => log.emailType === 'confirmation' && log.status === 'sent').length;
-  const confirmationFailed = emailDeliveryLogs.filter(log => log.emailType === 'confirmation' && log.status === 'failed').length;
-  const testSent = emailDeliveryLogs.filter(log => log.emailType === 'test' && log.status === 'sent').length;
-  const testFailed = emailDeliveryLogs.filter(log => log.emailType === 'test' && log.status === 'failed').length;
+  // Log to console for server-side debugging
+  console.log(`[EMAIL LOG] ${timestamp} - ${status.toUpperCase()} - To: ${recipient} - Type: ${emailType}`, details || '');
   
-  // Get recent logs
-  const recentLogs = emailDeliveryLogs
-    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-    .slice(0, 10)
-    .map(log => `${new Date(log.timestamp).toLocaleString()} - ${log.emailType} to ${log.recipient} - ${log.status}${log.status === 'failed' ? ` (${log.details.error})` : ''}`);
+  return logEntry;
+};
+
+// Get delivery logs for monitoring
+export const getDeliveryLogs = () => {
+  return deliveryLogs;
+};
+
+// Generate a delivery report for monitoring
+export const generateDeliveryReport = () => {
+  const totalEmails = deliveryLogs.length;
+  const successfulEmails = deliveryLogs.filter(log => log.status === 'sent').length;
+  const failedEmails = deliveryLogs.filter(log => log.status === 'failed').length;
   
-  // Recent failures
-  const recentFailures = emailDeliveryLogs
-    .filter(log => log.status === 'failed')
-    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-    .slice(0, 5)
-    .map(log => `${new Date(log.timestamp).toLocaleString()} - ${log.emailType} to ${log.recipient} - ${log.details.error || 'Unknown error'}`);
+  const lastError = deliveryLogs.find(log => log.status === 'failed')?.details || null;
   
-  // Format the report
-  return `
-EMAIL DELIVERY MONITORING REPORT
-=================================
-Total emails processed: ${sent + failed}
-Success rate: ${sent + failed > 0 ? Math.round((sent / (sent + failed)) * 100) : 0}%
-
-BY TYPE:
-  Admin emails:        ${adminSent} sent, ${adminFailed} failed
-  Confirmation emails: ${confirmationSent} sent, ${confirmationFailed} failed
-  Test emails:         ${testSent} sent, ${testFailed} failed
-
-RECENT ACTIVITY:
-${recentLogs.join('\n')}
-
-${recentFailures.length > 0 ? `RECENT FAILURES:\n${recentFailures.join('\n')}` : 'No recent failures'}
-
-Function uptime: ${getUptimeString()}
-Logs will be cleared on function restart
-=================================
-`.trim();
-}
+  const lastSuccessful = deliveryLogs.find(log => log.status === 'sent') || null;
+  
+  return {
+    totalDelivered: successfulEmails,
+    totalFailed: failedEmails,
+    totalAttempts: totalEmails,
+    successRate: totalEmails > 0 ? (successfulEmails / totalEmails) * 100 : 0,
+    lastErrorDetails: lastError,
+    lastSuccessfulDelivery: lastSuccessful,
+    timeGenerated: new Date().toISOString(),
+    reportTitle: 'EMAIL DELIVERY MONITORING REPORT'
+  };
+};
 
 // Helper to show how long the function has been running
 let startTime = Date.now();

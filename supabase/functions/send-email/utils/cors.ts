@@ -2,10 +2,15 @@
 // CORS headers for cross-origin requests
 export const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, content-length, accept",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Max-Age": "86400"
 };
 
 // Handle CORS preflight requests
 export const handleCorsRequest = () => {
-  return new Response(null, { headers: corsHeaders });
+  return new Response(null, { 
+    status: 204,
+    headers: corsHeaders 
+  });
 };
