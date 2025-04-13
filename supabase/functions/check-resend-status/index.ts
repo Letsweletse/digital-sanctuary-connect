@@ -2,267 +2,149 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 
-// Initialize Resend with API key from environment variable
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+// Track function uptime and request count
+const functionStartTime = Date.now();
+let requestCount = 0;
 
-// Set up CORS headers
+// Create CORS headers
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Monitor and log important details about the function's environment
-let functionStartTime = Date.now();
-let requestCount = 0;
-let lastSuccessfulCheck = null;
-let lastErrorDetails = null;
+// Get API key
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+
+// Initialize Resend client if API key is configured
+const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 const handler = async (req: Request): Promise<Response> => {
+  // Increment request counter
+  requestCount++;
+  const currentRequest = requestCount;
+  
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Increment request counter for monitoring
-  requestCount++;
-  const currentRequestNumber = requestCount;
-  console.log(`[Request #${currentRequestNumber}] Handling check-resend-status request`);
-
+  // Log request for debugging
+  console.log(`[Request #${currentRequest}] Checking Resend API key status`);
+  console.log(`[Request #${currentRequest}] Function uptime:`, Math.floor((Date.now() - functionStartTime) / 1000), "seconds");
+  console.log(`[Request #${currentRequest}] Total requests handled:`, currentRequest);
+  
   try {
-    console.log(`[Request #${currentRequestNumber}] Checking Resend API key configuration...`);
-    console.log(`[Request #${currentRequestNumber}] Request headers:`, Object.fromEntries(req.headers.entries()));
+    // Get environment info for debugging
+    const envKeys = Object.keys(Deno.env.toObject());
+    console.log(`[Request #${currentRequest}] Available env vars:`, envKeys);
+    console.log(`[Request #${currentRequest}] RESEND_API_KEY configured:`, !!RESEND_API_KEY);
     
-    // Check for connection test parameter
-    let requestBody = {};
-    try {
-      requestBody = await req.json();
-      console.log(`[Request #${currentRequestNumber}] Request body:`, requestBody);
-    } catch (e) {
-      console.log(`[Request #${currentRequestNumber}] No request body or invalid JSON`);
+    if (RESEND_API_KEY) {
+      console.log(`[Request #${currentRequest}] RESEND_API_KEY first 5 chars:`, RESEND_API_KEY.substring(0, 5));
     }
     
-    const isConnectionTest = requestBody?.connectionTest === true;
-    if (isConnectionTest) {
-      console.log(`[Request #${currentRequestNumber}] Processing connection test only`);
+    // Parse request body
+    let requestBody;
+    try {
+      requestBody = await req.json();
+      console.log(`[Request #${currentRequest}] Request body:`, JSON.stringify(requestBody));
+    } catch (e) {
+      console.log(`[Request #${currentRequest}] No request body or invalid JSON`);
+      requestBody = {};
+    }
+
+    // Check if API key is configured
+    if (!RESEND_API_KEY) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          keyConfigured: false,
+          message: "RESEND_API_KEY not configured. Please set this in Edge Function secrets.",
+          timestamp: new Date().toISOString(),
+          functionUptime: `${Math.floor((Date.now() - functionStartTime) / 1000)} seconds`
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders,
+          },
+        }
+      );
+    }
+
+    // Test API key by making a simple call to Resend
+    try {
+      // Make a simple API call to check if the key is valid
+      const domains = await resend?.domains.list();
+      
+      console.log(`[Request #${currentRequest}] API check successful. Domains:`, domains);
+      
       return new Response(
         JSON.stringify({
           success: true,
-          message: "Edge function connection successful",
-          functionUptime: Math.floor((Date.now() - functionStartTime) / 1000) + " seconds",
-          requestCount: requestCount,
-          timestamp: new Date().toISOString()
-        }),
-        { 
-          status: 200, 
-          headers: { 
-            "Content-Type": "application/json",
-            ...corsHeaders
-          } 
-        }
-      );
-    }
-    
-    // Log Deno.env keys for debugging
-    const envKeys = Object.keys(Deno.env.toObject());
-    console.log(`[Request #${currentRequestNumber}] Available environment variables:`, envKeys);
-    
-    // Check if API key is configured
-    if (!RESEND_API_KEY) {
-      console.error(`[Request #${currentRequestNumber}] RESEND_API_KEY not configured`);
-      lastErrorDetails = {
-        error: "API key missing",
-        timestamp: new Date().toISOString()
-      };
-      
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "RESEND_API_KEY not configured in Supabase Edge Functions secrets.",
-          keyConfigured: false,
-          envKeys: envKeys,
-          functionUptime: Math.floor((Date.now() - functionStartTime) / 1000) + " seconds",
-          requestCount: requestCount,
-          lastSuccessfulCheck: lastSuccessfulCheck
-        }),
-        { 
-          status: 400, 
-          headers: { 
-            "Content-Type": "application/json",
-            ...corsHeaders
-          } 
-        }
-      );
-    }
-    
-    console.log(`[Request #${currentRequestNumber}] RESEND_API_KEY found with length:`, RESEND_API_KEY.length);
-    console.log(`[Request #${currentRequestNumber}] RESEND_API_KEY starts with:`, RESEND_API_KEY.substring(0, 5) + "...");
-    
-    // Validate API key format (simple check for Resend key format)
-    if (!RESEND_API_KEY.startsWith('re_')) {
-      console.error(`[Request #${currentRequestNumber}] RESEND_API_KEY appears to be invalid (should start with 're_')`);
-      lastErrorDetails = {
-        error: "API key invalid format",
-        timestamp: new Date().toISOString()
-      };
-      
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "The provided RESEND_API_KEY appears to be invalid. Resend API keys should start with 're_'.",
-          keyConfigured: false,
-          keyFormat: RESEND_API_KEY.substring(0, 5) + "...",
-          functionUptime: Math.floor((Date.now() - functionStartTime) / 1000) + " seconds",
-          requestCount: requestCount,
-          lastSuccessfulCheck: lastSuccessfulCheck
-        }),
-        { 
-          status: 400, 
-          headers: { 
-            "Content-Type": "application/json",
-            ...corsHeaders
-          } 
-        }
-      );
-    }
-    
-    // Initialize Resend client
-    const resend = new Resend(RESEND_API_KEY);
-    
-    // Get API key details to check usage
-    console.log(`[Request #${currentRequestNumber}] Requesting API key details from Resend...`);
-    try {
-      // This will throw an error if the API key is invalid or has issues
-      // For now, let's just check if we can initialize Resend
-      console.log(`[Request #${currentRequestNumber}] Resend client initialized successfully with API key: ` + RESEND_API_KEY.substring(0, 5) + "...");
-      
-      // Try to make a simple API call to verify the key works
-      try {
-        // Send a test ping email to verify connectivity
-        // Instead of sending an actual email, we'll try to get domains which is a lighter operation
-        const domainsResponse = await resend.domains.list();
-        console.log(`[Request #${currentRequestNumber}] Successfully verified API key by listing domains:`, domainsResponse);
-        
-        lastSuccessfulCheck = {
+          keyConfigured: true,
+          message: "Resend API key is valid and working correctly.",
+          domains: domains?.data || [],
           timestamp: new Date().toISOString(),
-          domains: domainsResponse?.data?.length || 0
-        };
-        
-        return new Response(
-          JSON.stringify({
-            success: true,
-            message: "Resend API key is properly configured and working.",
-            keyConfigured: true,
-            domains: domainsResponse,
-            functionUptime: Math.floor((Date.now() - functionStartTime) / 1000) + " seconds",
-            requestCount: requestCount,
-            lastSuccessfulCheck: lastSuccessfulCheck,
-            systemInfo: {
-              heapSize: Deno.memoryUsage().heapUsed / 1024 / 1024 + " MB",
-              timestamp: new Date().toISOString()
-            }
-          }),
-          { 
-            status: 200, 
-            headers: { 
-              "Content-Type": "application/json",
-              ...corsHeaders
-            } 
-          }
-        );
-      } catch (apiCallError) {
-        // The API key might be valid in format but doesn't have correct permissions
-        console.error(`[Request #${currentRequestNumber}] Error making test API call with Resend:`, apiCallError);
-        lastErrorDetails = {
-          error: "API call failed",
-          message: apiCallError instanceof Error ? apiCallError.message : "Unknown error",
-          timestamp: new Date().toISOString()
-        };
-        
-        return new Response(
-          JSON.stringify({
-            success: false,
-            message: `Resend API key appears valid but failed a test request: ${apiCallError instanceof Error ? apiCallError.message : 'Unknown error'}.`,
-            keyConfigured: false,
-            validFormat: true,
-            error: apiCallError instanceof Error ? apiCallError.message : 'Unknown error',
-            functionUptime: Math.floor((Date.now() - functionStartTime) / 1000) + " seconds",
-            requestCount: requestCount,
-            lastSuccessfulCheck: lastSuccessfulCheck,
-            lastErrorDetails: lastErrorDetails
-          }),
-          { 
-            status: 400, 
-            headers: { 
-              "Content-Type": "application/json",
-              ...corsHeaders
-            } 
-          }
-        );
-      }
-    } catch (resendError) {
-      console.error(`[Request #${currentRequestNumber}] Error connecting to Resend API:`, resendError);
-      lastErrorDetails = {
-        error: "Resend connection failed",
-        message: resendError instanceof Error ? resendError.message : "Unknown error",
-        timestamp: new Date().toISOString()
-      };
+          functionUptime: `${Math.floor((Date.now() - functionStartTime) / 1000)} seconds`,
+          requestCount: currentRequest
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders,
+          },
+        }
+      );
+    } catch (apiError) {
+      console.error(`[Request #${currentRequest}] API key test failed:`, apiError);
       
       return new Response(
         JSON.stringify({
           success: false,
-          message: `Could not verify Resend API: ${resendError instanceof Error ? resendError.message : 'Unknown error'}`,
-          keyConfigured: false,
-          error: resendError instanceof Error ? resendError.message : 'Unknown error',
-          functionUptime: Math.floor((Date.now() - functionStartTime) / 1000) + " seconds",
-          requestCount: requestCount,
-          lastSuccessfulCheck: lastSuccessfulCheck,
-          lastErrorDetails: lastErrorDetails
+          keyConfigured: true,
+          message: `API key appears to be invalid or not working: ${apiError instanceof Error ? apiError.message : "Unknown error"}`,
+          error: apiError instanceof Error ? apiError.message : "Unknown error",
+          timestamp: new Date().toISOString(),
+          functionUptime: `${Math.floor((Date.now() - functionStartTime) / 1000)} seconds`
         }),
-        { 
-          status: 500, 
-          headers: { 
+        {
+          status: 200,
+          headers: {
             "Content-Type": "application/json",
-            ...corsHeaders
-          } 
+            ...corsHeaders,
+          },
         }
       );
     }
   } catch (error) {
-    console.error(`[Request #${currentRequestNumber}] Error in check-resend-status function:`, error);
-    lastErrorDetails = {
-      error: "Function error",
-      message: error instanceof Error ? error.message : "Unknown error",
-      stack: error instanceof Error ? error.stack : undefined,
-      timestamp: new Date().toISOString()
-    };
+    console.error(`[Request #${currentRequest}] Error in check-resend-status:`, error);
     
     return new Response(
       JSON.stringify({
         success: false,
-        message: `Server error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        keyConfigured: false,
-        error: error instanceof Error ? error.stack : 'Unknown error',
-        functionUptime: Math.floor((Date.now() - functionStartTime) / 1000) + " seconds",
-        requestCount: requestCount,
-        lastSuccessfulCheck: lastSuccessfulCheck,
-        lastErrorDetails: lastErrorDetails
+        error: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : null,
+        timestamp: new Date().toISOString(),
+        functionUptime: `${Math.floor((Date.now() - functionStartTime) / 1000)} seconds`
       }),
-      { 
-        status: 500, 
-        headers: { 
+      {
+        status: 500,
+        headers: {
           "Content-Type": "application/json",
-          ...corsHeaders
-        } 
+          ...corsHeaders,
+        },
       }
     );
   }
 };
 
-// Log startup information
-console.log("Edge function check-resend-status starting up at", new Date().toISOString());
+// Log function initialization
+console.log("check-resend-status function starting at:", new Date().toISOString());
 console.log("RESEND_API_KEY configured:", !!RESEND_API_KEY);
 if (RESEND_API_KEY) {
-  console.log("RESEND_API_KEY format valid:", RESEND_API_KEY.startsWith('re_'));
   console.log("RESEND_API_KEY starts with:", RESEND_API_KEY.substring(0, 5) + "...");
 }
 
@@ -271,8 +153,7 @@ addEventListener("beforeunload", (event) => {
   console.log("Edge function shutting down at", new Date().toISOString());
   console.log("Function ran for", Math.floor((Date.now() - functionStartTime) / 1000), "seconds");
   console.log("Handled", requestCount, "requests");
-  console.log("Last successful check:", lastSuccessfulCheck);
-  console.log("Last error details:", lastErrorDetails);
+  console.log("Shutdown reason:", event.detail?.reason || "unknown");
 });
 
 serve(handler);
