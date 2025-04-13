@@ -2,7 +2,7 @@
 import { useCallback, useState, useEffect } from 'react';
 import { useEmailForm } from './useEmailForm';
 import { useEmailOperations } from './useEmailOperations';
-import { invokeEmailFunction } from './emailService';
+import { invokeEmailFunction } from './services/edgeFunctionService';
 
 export function useEmailTest() {
   const emailForm = useEmailForm();
