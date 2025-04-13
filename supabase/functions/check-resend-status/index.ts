@@ -5,6 +5,8 @@ import { Resend } from "npm:resend@2.0.0";
 // Track function uptime and request count
 const functionStartTime = Date.now();
 let requestCount = 0;
+let successfulChecks = 0;
+let failedChecks = 0;
 
 // Create CORS headers
 const corsHeaders = {
@@ -18,6 +20,11 @@ const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "re_FYtCFWri_39ciqWYc9C
 // Initialize Resend client
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
+// Helper for structured logging
+const log = (requestId: number, message: string, data?: any) => {
+  console.log(`[Request #${requestId}] ${message}`, data ? JSON.stringify(data).substring(0, 200) + "..." : "");
+};
+
 const handler = async (req: Request): Promise<Response> => {
   // Increment request counter
   requestCount++;
@@ -29,39 +36,45 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   // Log request for debugging
-  console.log(`[Request #${currentRequest}] Checking Resend API key status`);
-  console.log(`[Request #${currentRequest}] Function uptime:`, Math.floor((Date.now() - functionStartTime) / 1000), "seconds");
-  console.log(`[Request #${currentRequest}] Total requests handled:`, currentRequest);
+  log(currentRequest, "Checking Resend API key status");
+  log(currentRequest, "Function uptime:", Math.floor((Date.now() - functionStartTime) / 1000) + " seconds");
+  log(currentRequest, "Total requests handled:", currentRequest);
   
   try {
     // Get environment info for debugging
     const envKeys = Object.keys(Deno.env.toObject());
-    console.log(`[Request #${currentRequest}] Available env vars:`, envKeys);
-    console.log(`[Request #${currentRequest}] RESEND_API_KEY configured:`, !!RESEND_API_KEY);
+    log(currentRequest, "Available env vars:", envKeys);
+    log(currentRequest, "RESEND_API_KEY configured:", !!RESEND_API_KEY);
     
     if (RESEND_API_KEY) {
-      console.log(`[Request #${currentRequest}] RESEND_API_KEY first 5 chars:`, RESEND_API_KEY.substring(0, 5));
+      log(currentRequest, "RESEND_API_KEY first 5 chars:", RESEND_API_KEY.substring(0, 5));
     }
     
     // Parse request body
     let requestBody;
     try {
       requestBody = await req.json();
-      console.log(`[Request #${currentRequest}] Request body:`, JSON.stringify(requestBody));
+      log(currentRequest, "Request body:", requestBody);
     } catch (e) {
-      console.log(`[Request #${currentRequest}] No request body or invalid JSON`);
+      log(currentRequest, "No request body or invalid JSON");
       requestBody = {};
     }
 
     // Check if API key is configured
     if (!RESEND_API_KEY) {
+      failedChecks++;
       return new Response(
         JSON.stringify({
           success: false,
           keyConfigured: false,
           message: "RESEND_API_KEY not configured. Using the provided fallback key.",
           timestamp: new Date().toISOString(),
-          functionUptime: `${Math.floor((Date.now() - functionStartTime) / 1000)} seconds`
+          functionUptime: `${Math.floor((Date.now() - functionStartTime) / 1000)} seconds`,
+          metrics: {
+            successfulChecks,
+            failedChecks,
+            totalRequests: requestCount
+          }
         }),
         {
           status: 200,
@@ -75,21 +88,49 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Test API key by making a simple call to Resend
     try {
-      // Make a simple API call to check if the key is valid
-      const domains = await resend?.domains.list();
+      // Do a lightweight API call to check key validity
+      const { data, error } = await resend.emails.send({
+        from: "Gate Gaborone <info@gategaborone.com>",
+        to: ["test@resend.dev"], // This is a special test address that doesn't actually send emails
+        subject: "API Key Test",
+        text: "This is a test to verify the API key is working.",
+        tags: [{ name: "test", value: "true" }]
+      });
       
-      console.log(`[Request #${currentRequest}] API check successful. Domains:`, domains);
+      let isKeyValid = true;
+      let message = "Resend API key is valid and working correctly.";
+      
+      // Check for error response
+      if (error) {
+        // Some errors indicate the key is valid but other issues exist
+        if (error.statusCode === 400 && !error.message.includes("API key is invalid")) {
+          // 400 error but not an invalid key (e.g. domain not verified)
+          message = "Resend API key is valid but there are other issues: " + error.message;
+        } else {
+          isKeyValid = false;
+          message = "API key appears to be invalid: " + error.message;
+        }
+      }
+      
+      log(currentRequest, "API check result:", { isKeyValid, message });
+      
+      isKeyValid ? successfulChecks++ : failedChecks++;
       
       return new Response(
         JSON.stringify({
-          success: true,
+          success: isKeyValid,
           keyConfigured: true,
-          message: "Resend API key is valid and working correctly.",
-          domains: domains?.data || [],
+          message: message,
+          lastTestedAt: new Date().toISOString(),
           apiKeyFirstChars: RESEND_API_KEY.substring(0, 5),
           timestamp: new Date().toISOString(),
           functionUptime: `${Math.floor((Date.now() - functionStartTime) / 1000)} seconds`,
-          requestCount: currentRequest
+          requestCount: currentRequest,
+          metrics: {
+            successfulChecks,
+            failedChecks,
+            totalRequests: requestCount
+          }
         }),
         {
           status: 200,
@@ -100,7 +141,8 @@ const handler = async (req: Request): Promise<Response> => {
         }
       );
     } catch (apiError) {
-      console.error(`[Request #${currentRequest}] API key test failed:`, apiError);
+      failedChecks++;
+      log(currentRequest, "API key test failed:", apiError);
       
       return new Response(
         JSON.stringify({
@@ -110,7 +152,12 @@ const handler = async (req: Request): Promise<Response> => {
           error: apiError instanceof Error ? apiError.message : "Unknown error",
           apiKeyFirstChars: RESEND_API_KEY.substring(0, 5),
           timestamp: new Date().toISOString(),
-          functionUptime: `${Math.floor((Date.now() - functionStartTime) / 1000)} seconds`
+          functionUptime: `${Math.floor((Date.now() - functionStartTime) / 1000)} seconds`,
+          metrics: {
+            successfulChecks,
+            failedChecks,
+            totalRequests: requestCount
+          }
         }),
         {
           status: 200,
@@ -122,7 +169,8 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
   } catch (error) {
-    console.error(`[Request #${currentRequest}] Error in check-resend-status:`, error);
+    failedChecks++;
+    log(currentRequest, "Error in check-resend-status:", error);
     
     return new Response(
       JSON.stringify({
@@ -130,7 +178,12 @@ const handler = async (req: Request): Promise<Response> => {
         error: error instanceof Error ? error.message : "Unknown error",
         stack: error instanceof Error ? error.stack : null,
         timestamp: new Date().toISOString(),
-        functionUptime: `${Math.floor((Date.now() - functionStartTime) / 1000)} seconds`
+        functionUptime: `${Math.floor((Date.now() - functionStartTime) / 1000)} seconds`,
+        metrics: {
+          successfulChecks,
+          failedChecks,
+          totalRequests: requestCount
+        }
       }),
       {
         status: 500,
@@ -155,6 +208,7 @@ addEventListener("beforeunload", (event) => {
   console.log("Edge function shutting down at", new Date().toISOString());
   console.log("Function ran for", Math.floor((Date.now() - functionStartTime) / 1000), "seconds");
   console.log("Handled", requestCount, "requests");
+  console.log("Status checks:", { successful: successfulChecks, failed: failedChecks });
   console.log("Shutdown reason:", event.detail?.reason || "unknown");
 });
 
