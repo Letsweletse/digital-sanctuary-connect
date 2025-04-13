@@ -26,7 +26,7 @@ export const handleEmailSending = async (
 
       // Update metrics
       deliveryMetrics.successfulDeliveries++;
-      deliveryMetrics.emailsSent.push(emailData.to.join(', '));
+      deliveryMetrics.emailsSent.push(Array.isArray(emailData.to) ? emailData.to.join(', ') : emailData.to);
 
       return {
         id: result.id,
@@ -48,7 +48,9 @@ export const handleEmailSending = async (
 
       logMessage(`Email send attempt ${retryCount} failed`, { error: sendError.message });
 
-      if (sendError.message?.includes("domain is not verified")) {
+      if (sendError.message?.includes("domain is not verified") || 
+          sendError.message?.includes("verification") ||
+          sendError.message?.includes("invalid")) {
         deliveryMetrics.domainVerificationErrors++;
         deliveryMetrics.lastError = {
           code: sendError.statusCode || 403,
@@ -70,8 +72,10 @@ export const handleEmailSending = async (
   }
 
   // Handle domain verification fallback
-  if (lastError?.message?.includes("domain is not verified")) {
-    const enhancedError = new Error("Domain verification required");
+  if (lastError?.message?.includes("domain is not verified") || 
+      lastError?.message?.includes("verification") ||
+      lastError?.message?.includes("invalid")) {
+    const enhancedError = new Error("Domain verification required or API key issue");
     Object.assign(enhancedError, {
       statusCode: lastError.statusCode || 403,
       verificationRequired: true,

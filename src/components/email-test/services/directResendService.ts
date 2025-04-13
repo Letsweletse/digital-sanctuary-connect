@@ -1,5 +1,5 @@
 
-import { getStoredResendApiKey, sendDirectResendEmail } from '@/lib/directResendService';
+import { getStoredResendApiKey, sendDirectResendEmail, enableDirectMode } from '@/lib/directResendService';
 import { prepareEmailData } from './emailValidationService';
 
 /**
@@ -23,8 +23,14 @@ export async function sendDirectToResend(emailData: any) {
     // Prepare the email data
     const prepared = prepareEmailData(emailData);
     
+    // Force direct mode to be enabled since we're using this method
+    enableDirectMode();
+    
     // Send directly to Resend API
     const result = await sendDirectResendEmail(apiKey, prepared);
+    
+    // Log the result detail for debugging
+    console.log('Direct to Resend result:', JSON.stringify(result).substring(0, 500));
     
     return {
       ...result,
@@ -79,4 +85,13 @@ export async function testDirectResendApiKey(apiKey?: string): Promise<{
       message: error instanceof Error ? error.message : 'Unknown error testing API key'
     };
   }
+}
+
+/**
+ * Force the direct mode for an event registration
+ */
+export function forceDirectModeForRegistration() {
+  enableDirectMode();
+  console.log('Direct mode forced for registration');
+  return true;
 }

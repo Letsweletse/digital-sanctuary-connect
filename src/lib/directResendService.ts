@@ -38,34 +38,70 @@ export const sendDirectResendEmail = async (
       reply_to: emailData.replyTo || from
     };
     
-    // Make the API request
-    const response = await fetch(`${RESEND_API_URL}/emails`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify(payload)
-    });
+    console.log('Sending direct email with data:', JSON.stringify(payload).substring(0, 300));
     
-    // Parse the response
-    const result = await response.json();
+    // Make the API request with retries
+    let retryCount = 0;
+    const maxRetries = 3;
+    let lastError = null;
     
-    if (!response.ok) {
-      console.error('Direct Resend API error:', result);
-      throw new Error(result.message || 'Failed to send email via Resend API');
+    while (retryCount < maxRetries) {
+      try {
+        // Make the API request
+        const response = await fetch(`${RESEND_API_URL}/emails`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify(payload)
+        });
+        
+        // Parse the response
+        const result = await response.json();
+        
+        if (!response.ok) {
+          console.error('Direct Resend API error:', result);
+          
+          // If this is a validation error or domain verification issue, stop retrying
+          if (response.status === 400 || 
+              (result.message && (
+                result.message.includes('domain') || 
+                result.message.includes('verification')
+              ))) {
+            throw new Error(result.message || 'Failed to send email via Resend API');
+          }
+          
+          // For other errors, retry
+          throw new Error(result.message || 'Failed to send email via Resend API');
+        }
+        
+        console.log('Email sent directly via Resend API:', result);
+        
+        return {
+          success: true,
+          message: 'Email sent directly via Resend API',
+          provider: 'direct-resend',
+          data: result,
+          id: result.id,
+          timestamp: new Date().toISOString()
+        };
+      } catch (retryError) {
+        retryCount++;
+        lastError = retryError;
+        
+        if (retryCount < maxRetries) {
+          // Add delay before retry with exponential backoff
+          const delay = Math.min(100 * Math.pow(2, retryCount), 2000);
+          console.log(`Retrying direct email send after ${delay}ms (attempt ${retryCount+1} of ${maxRetries})`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        } else {
+          break;
+        }
+      }
     }
     
-    console.log('Email sent directly via Resend API:', result);
-    
-    return {
-      success: true,
-      message: 'Email sent directly via Resend API',
-      provider: 'direct-resend',
-      data: result,
-      id: result.id,
-      timestamp: new Date().toISOString()
-    };
+    throw lastError || new Error('Failed after multiple retry attempts');
   } catch (error) {
     console.error('Error in direct Resend service:', error);
     
@@ -91,6 +127,9 @@ export const getStoredResendApiKey = (): string | null => {
 export const storeResendApiKey = (apiKey: string): void => {
   try {
     localStorage.setItem('resend_api_key', apiKey);
+    // Also enable direct mode when storing a key
+    localStorage.setItem('use_direct_resend_mode', 'true');
+    console.log('Stored Resend API key and enabled direct mode');
   } catch (e) {
     console.error('Failed to store Resend API key:', e);
   }
@@ -100,7 +139,27 @@ export const storeResendApiKey = (apiKey: string): void => {
 export const clearStoredResendApiKey = (): void => {
   try {
     localStorage.removeItem('resend_api_key');
+    localStorage.removeItem('use_direct_resend_mode');
   } catch (e) {
     console.error('Failed to clear Resend API key:', e);
+  }
+};
+
+// Check if direct mode is enabled
+export const isDirectModeEnabled = (): boolean => {
+  try {
+    return localStorage.getItem('use_direct_resend_mode') === 'true';
+  } catch (e) {
+    return false;
+  }
+};
+
+// Force enable direct mode
+export const enableDirectMode = (): void => {
+  try {
+    localStorage.setItem('use_direct_resend_mode', 'true');
+    console.log('Direct Resend mode enabled');
+  } catch (e) {
+    console.error('Failed to enable direct mode:', e);
   }
 };

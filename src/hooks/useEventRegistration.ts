@@ -1,9 +1,11 @@
+
 import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { toast as sonnerToast } from "sonner";
 import { EventData, RegistrationFormData } from '@/types/eventTypes';
 import { sendEventRegistrationEmail } from '@/lib/emailService';
 import { formatDate } from '@/utils/dateUtils';
+import { enableDirectMode } from '@/lib/directResendService';
 
 export const useEventRegistration = () => {
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
@@ -105,6 +107,9 @@ export const useEventRegistration = () => {
     setWhatsappLink(null);
 
     try {
+      // Make sure we use direct mode for registration
+      enableDirectMode();
+      
       // Prepare comprehensive registration data with all required fields for enhanced email
       const registrationData = {
         subject: `New Registration for ${currentEvent.title}`,
@@ -124,12 +129,19 @@ export const useEventRegistration = () => {
         message: `Number of Attendees: ${formData.numberOfAttendees}`,
         sendConfirmation: true,
         registrationType: 'Standard',
-        checkInId: crypto.randomUUID()
+        checkInId: crypto.randomUUID(),
+        directBypass: true // Force direct bypass
       };
 
       console.log('Registration submitted with enhanced email data:', registrationData);
       
-      // Send the email notification with enhanced features - use the new parameter format
+      // First show a toast to provide feedback that we're processing
+      sonnerToast.info("Processing registration...", {
+        description: "Please wait while we register you for the event",
+        duration: 3000
+      });
+      
+      // Send the email notification with enhanced features and direct bypass
       const emailResult = await sendEventRegistrationEmail(registrationData);
       console.log('Enhanced email service response:', emailResult);
       

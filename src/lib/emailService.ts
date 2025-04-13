@@ -11,8 +11,9 @@ export const ZOHO_EMAIL = 'iblimenterprise@zohomail.com';
 export const ADMIN_EMAILS = [ADMIN_EMAIL, BACKUP_EMAIL, ZOHO_EMAIL];
 
 import { supabase } from "@/integrations/supabase/client";
-import { sendDirectToResend } from "@/components/email-test/services/directResendService";
-import { getStoredResendApiKey } from "./directResendService";
+import { sendDirectToResend, forceDirectModeForRegistration } from "@/components/email-test/services/directResendService";
+import { getStoredResendApiKey, isDirectModeEnabled, enableDirectMode } from "./directResendService";
+import { toast } from "sonner";
 
 /**
  * Base email sending function with direct Resend fallback
@@ -28,11 +29,16 @@ async function sendEmail(requestBody: any) {
       timestamp: Date.now()
     };
     
-    // First check if we have a direct API key and should use it
+    // Check if we have a direct API key and should use it
     const directApiKey = getStoredResendApiKey();
-    const useDirectMode = localStorage.getItem('use_direct_resend_mode') === 'true';
     
-    if (directApiKey && useDirectMode) {
+    // Force direct mode to be enabled for all email sends
+    if (directApiKey) {
+      enableDirectMode();
+    }
+    
+    // If direct mode is enabled, try that first
+    if (directApiKey && isDirectModeEnabled()) {
       console.log("Using direct Resend API mode...");
       try {
         const directResult = await sendDirectToResend(timestampedRequest);
@@ -44,11 +50,24 @@ async function sendEmail(requestBody: any) {
             data: directResult
           };
         } else {
-          console.error("Direct Resend API send failed, falling back to Edge Functions");
+          console.error("Direct Resend API send failed:", directResult.message);
+          
+          // Show toast notification for debugging
+          toast.error("Direct email send failed", {
+            description: directResult.message || "Unknown error",
+            duration: 5000
+          });
         }
       } catch (directError) {
         console.error("Error in direct Resend API send:", directError);
       }
+    } else if (!directApiKey) {
+      // If no direct API key, show a message
+      console.error("No direct Resend API key configured. Set it up in Admin > Email Test.");
+      toast.error("Email configuration issue", {
+        description: "No direct Resend API key configured. Set it up in Admin > Email Test.",
+        duration: 5000
+      });
     }
     
     // Use retry logic for more reliability
@@ -72,6 +91,7 @@ async function sendEmail(requestBody: any) {
           // If this is the last attempt and we have a direct API key, try that as a final fallback
           if (attempts >= maxAttempts && directApiKey) {
             console.log("Edge Function failed after all attempts, trying direct Resend API as last resort...");
+            enableDirectMode(); // Force direct mode
             try {
               const emergencyDirectResult = await sendDirectToResend(timestampedRequest);
               if (emergencyDirectResult.success) {
@@ -138,6 +158,7 @@ async function sendEmail(requestBody: any) {
     // If we have a direct API key, try that as a final fallback
     if (directApiKey) {
       console.log("Edge Function failed after all attempts, trying direct Resend API as last resort...");
+      enableDirectMode(); // Force direct mode
       try {
         const emergencyDirectResult = await sendDirectToResend(timestampedRequest);
         if (emergencyDirectResult.success) {
@@ -181,6 +202,9 @@ export const sendEventRegistrationEmail = async (registrationData: any, recipien
     console.log("Sending event registration email for:", registrationData.eventName);
     console.log("Registration data:", registrationData);
     
+    // Force direct mode for registration emails
+    forceDirectModeForRegistration();
+    
     // Generate a unique check-in ID for this registration
     const checkInId = registrationData.checkInId || crypto.randomUUID();
     
@@ -211,16 +235,27 @@ export const sendEventRegistrationEmail = async (registrationData: any, recipien
       checkInId: checkInId,
       attendeeEmail: recipientEmail || registrationData.email,
       forceHtml: true, // Force HTML email rendering
-      priority: "high" // Set high priority for important emails
+      priority: "high", // Set high priority for important emails
+      directBypass: true // Force direct bypass
     };
     
     console.log("Sending email with request body:", JSON.stringify(emailRequestBody).substring(0, 200) + "...");
+    
+    // First show toast to provide feedback
+    toast.info("Sending registration confirmation...", {
+      duration: 3000,
+    });
     
     const result = await sendEmail(emailRequestBody);
     
     if (!result.success) {
       throw new Error(result.message || "Failed to send registration email");
     }
+    
+    toast.success("Registration email sent successfully", {
+      description: "Check your inbox for confirmation email",
+      duration: 5000
+    });
     
     return {
       success: true,
@@ -231,6 +266,12 @@ export const sendEventRegistrationEmail = async (registrationData: any, recipien
     };
   } catch (error) {
     console.error('Error preparing event registration email:', error);
+    
+    toast.error("Registration email failed", {
+      description: error instanceof Error ? error.message : "Unknown error occurred",
+      duration: 5000
+    });
+    
     return {
       success: false,
       message: error instanceof Error ? error.message : 'Unknown error occurred'
@@ -267,7 +308,7 @@ export const sendContactFormEmail = async (formData: any) => {
   } catch (error) {
     console.error('Error sending contact form email:', error);
     return {
-      success: false, 
+      success: false,
       message: error instanceof Error ? error.message : 'Unknown error occurred'
     };
   }
