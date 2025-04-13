@@ -12,10 +12,10 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Get API key
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+// Get API key - use the verified key
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "re_hthmXL4A_LjaqCxvdzaHoz4QK6rif6UVb";
 
-// Initialize Resend client if API key is configured
+// Initialize Resend client
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 const handler = async (req: Request): Promise<Response> => {
@@ -59,7 +59,7 @@ const handler = async (req: Request): Promise<Response> => {
         JSON.stringify({
           success: false,
           keyConfigured: false,
-          message: "RESEND_API_KEY not configured. Please set this in Edge Function secrets.",
+          message: "RESEND_API_KEY not configured. Using the provided fallback key.",
           timestamp: new Date().toISOString(),
           functionUptime: `${Math.floor((Date.now() - functionStartTime) / 1000)} seconds`
         }),
@@ -86,6 +86,7 @@ const handler = async (req: Request): Promise<Response> => {
           keyConfigured: true,
           message: "Resend API key is valid and working correctly.",
           domains: domains?.data || [],
+          apiKeyFirstChars: RESEND_API_KEY.substring(0, 5),
           timestamp: new Date().toISOString(),
           functionUptime: `${Math.floor((Date.now() - functionStartTime) / 1000)} seconds`,
           requestCount: currentRequest
@@ -107,6 +108,7 @@ const handler = async (req: Request): Promise<Response> => {
           keyConfigured: true,
           message: `API key appears to be invalid or not working: ${apiError instanceof Error ? apiError.message : "Unknown error"}`,
           error: apiError instanceof Error ? apiError.message : "Unknown error",
+          apiKeyFirstChars: RESEND_API_KEY.substring(0, 5),
           timestamp: new Date().toISOString(),
           functionUptime: `${Math.floor((Date.now() - functionStartTime) / 1000)} seconds`
         }),

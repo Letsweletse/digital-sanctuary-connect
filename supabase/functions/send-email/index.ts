@@ -9,8 +9,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Get API key from environment
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "re_FYtCFWri_39ciqWYc9CEKpoa3JdkWdSwN";
+// Get API key from environment or use the provided verified key
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "re_hthmXL4A_LjaqCxvdzaHoz4QK6rif6UVb";
 const resend = new Resend(RESEND_API_KEY);
 
 // Logging function
@@ -26,6 +26,26 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const body = await req.json();
+    
+    // Check if this is a request for logs
+    if (body.requestType === 'logs') {
+      log("Logs request received");
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Email logs feature not available in this simplified version",
+          timestamp: new Date().toISOString()
+        }),
+        { 
+          status: 200, 
+          headers: { 
+            "Content-Type": "application/json", 
+            ...corsHeaders 
+          } 
+        }
+      );
+    }
+    
     log("Received email request", { to: body.to, subject: body.subject });
 
     // Basic validation
@@ -36,13 +56,14 @@ const handler = async (req: Request): Promise<Response> => {
     // Prepare email data
     const emailData = {
       from: "Gate Gaborone <info@gategaborone.com>",
-      to: body.to,
+      to: Array.isArray(body.to) ? body.to : [body.to],
       subject: body.subject,
-      html: body.html || body.text || "No content provided",
+      html: body.html || `<p>${body.text || "No content provided"}</p>`,
       text: body.text || "No text content provided"
     };
 
     // Send email via Resend
+    log("Sending email with Resend API", { to: emailData.to, subject: emailData.subject });
     const result = await resend.emails.send(emailData);
 
     log("Email sent successfully", { messageId: result.id });
@@ -51,7 +72,9 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({
         success: true,
         messageId: result.id,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        apiKeyUsed: `${RESEND_API_KEY.substring(0, 5)}...`,
+        recipientCount: Array.isArray(body.to) ? body.to.length : 1
       }),
       { 
         status: 200, 
@@ -68,7 +91,8 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({
         success: false,
         error: error.message,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        apiKeyUsed: `${RESEND_API_KEY.substring(0, 5)}...`
       }),
       { 
         status: 500, 
