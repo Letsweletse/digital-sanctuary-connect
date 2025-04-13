@@ -1,132 +1,47 @@
 
 import { corsHeaders } from "../utils/cors.ts";
-import { logMessage, trackMetrics } from "../utils/logger.ts";
 import { testApiKey } from "../services/keyTester.ts";
-import { resend } from "../index.ts";
+import { logMessage, trackMetrics } from "../utils/logger.ts";
+import { metrics } from "../index.ts";
 
-// Handle API key history check request
-export const handleApiKeyHistoryCheck = async (requestId: number, currentApiKey: string, functionStartTime: number) => {
-  // Previous API keys for verification
-  const previousKeys = [
-    "re_FYtCFWri_39ciqWYc9CEKpoa3JdkWdSwN",
-    "re_9Qv59yHG_NMEwVDtURcNbdNoiYHjGhSmH",
-    "re_hthmXL4A_LjaqCxvdzaHoz4QK6rif6UVb"
-  ];
-  
-  const keyResults = [];
-  
-  // Current key test
-  const currentKeyResult = await testApiKey(currentApiKey, requestId);
-  keyResults.push({
-    key: `${currentApiKey.substring(0, 10)}...`,
-    isCurrent: true,
-    ...currentKeyResult
-  });
-  
-  // Previous keys tests
-  for (const prevKey of previousKeys) {
-    if (prevKey !== currentApiKey) { // Skip if same as current key
-      const result = await testApiKey(prevKey, requestId);
-      keyResults.push({
-        key: `${prevKey.substring(0, 10)}...`,
-        isCurrent: false,
-        ...result
-      });
-    }
-  }
-  
-  return new Response(
-    JSON.stringify({
-      success: true,
-      message: "API key history check completed",
-      currentKey: `${currentApiKey.substring(0, 10)}...`,
-      keyResults,
-      timestamp: new Date().toISOString(),
-      functionUptime: `${Math.floor((Date.now() - functionStartTime) / 1000)} seconds`,
-      requestCount: requestId
-    }),
-    {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        ...corsHeaders,
-      },
-    }
-  );
-};
-
-// Handle API key status check request
-export const handleApiKeyStatusCheck = async (requestId: number, apiKey: string, functionStartTime: number) => {
-  // Do a real API call to check key validity - not just a mock check
+// Handle API key status check
+export const handleApiKeyStatusCheck = async (
+  requestId: number, 
+  apiKey: string,
+  functionStartTime: number
+): Promise<Response> => {
   try {
-    // First, try to get domain info (this is a real data operation)
-    const domainResponse = await resend?.domains.get('gategaborone.com');
+    logMessage(requestId, "Testing API key...");
     
-    if (domainResponse?.error) {
-      logMessage(requestId, "Domain check failed but API may still be valid", domainResponse.error);
-    } else {
-      logMessage(requestId, "Domain check successful", { 
-        domain: 'gategaborone.com',
-        verified: domainResponse?.data?.verified,
-        status: domainResponse?.data?.status
-      });
-    }
+    const testResult = await testApiKey(apiKey);
+    const keyStatus = testResult.status;
     
-    // Next do a lightweight email send test
-    const { data, error } = await resend?.emails.send({
-      from: "Gate Gaborone <info@gategaborone.com>",
-      to: ["test@resend.dev"], // Special test address that doesn't actually send emails
-      subject: "API Key Validation Test",
-      text: "This is a test to verify the API key is working.",
-      tags: [{ name: "test", value: "true" }]
-    }) || { data: null, error: { message: "Resend client not initialized" } };
+    // Track success or failure in metrics
+    trackMetrics(keyStatus === "valid");
     
-    let isKeyValid = true;
-    let message = "Resend API key is valid and working correctly.";
-    let domainVerified = domainResponse?.data?.verified || false;
-    let domainStatus = domainResponse?.data?.status || "unknown";
+    logMessage(requestId, `API key test result: ${keyStatus}`);
     
-    // Check for error response
-    if (error) {
-      // Some errors indicate the key is valid but other issues exist
-      if (error.statusCode === 400 && !error.message.includes("API key is invalid")) {
-        // 400 error but not an invalid key (e.g. domain not verified)
-        message = "Resend API key is valid but there are other issues: " + error.message;
-      } else if (error.message?.includes("domain is not verified")) {
-        // Domain verification error (key valid but domain needs verification)
-        isKeyValid = true;
-        domainVerified = false;
-        message = "API key is valid but domain needs verification: " + error.message;
-      } else {
-        isKeyValid = false;
-        message = "API key appears to be invalid: " + error.message;
-      }
-    }
+    // Calculate uptime in seconds
+    const uptime = Math.floor((Date.now() - functionStartTime) / 1000);
     
-    logMessage(requestId, "API check result:", { isKeyValid, message });
-    
-    trackMetrics(isKeyValid);
+    // Get uptime in a human-readable format
+    const seconds = uptime % 60;
+    const minutes = Math.floor(uptime / 60) % 60;
+    const hours = Math.floor(uptime / 3600);
+    const uptimeString = `${hours}h ${minutes}m ${seconds}s`;
     
     return new Response(
       JSON.stringify({
-        success: isKeyValid,
-        keyConfigured: true,
-        message: message,
-        domainVerified,
-        domainStatus,
-        domainDetails: domainResponse?.data,
-        domainVerificationRequired: !domainVerified,
-        lastTestedAt: new Date().toISOString(),
-        apiKeyFirstChars: apiKey.substring(0, 5),
-        apiKey: `${apiKey.substring(0, 10)}...`,
+        success: keyStatus === "valid",
+        keyConfigured: keyStatus === "valid",
+        message: testResult.message,
         timestamp: new Date().toISOString(),
-        functionUptime: `${Math.floor((Date.now() - functionStartTime) / 1000)} seconds`,
-        requestCount: requestId,
-        metrics: {
-          successfulChecks: 0,
-          failedChecks: 0,
-          totalRequests: requestId
-        }
+        apiKey: apiKey ? `${apiKey.substring(0, 10)}...` : "Not configured",
+        apiKeyValid: keyStatus === "valid",
+        functionUptime: uptimeString,
+        requestsHandled: metrics.requestCount,
+        error: keyStatus !== "valid" ? testResult.error : null,
+        detailedStatus: testResult,
       }),
       {
         status: 200,
@@ -136,27 +51,89 @@ export const handleApiKeyStatusCheck = async (requestId: number, apiKey: string,
         },
       }
     );
-  } catch (apiError) {
-    trackMetrics(false);
-    logMessage(requestId, "API key test failed:", apiError);
+  } catch (error) {
+    metrics.failedChecks++;
+    logMessage(requestId, "Error testing API key:", error);
     
     return new Response(
       JSON.stringify({
         success: false,
-        keyConfigured: true,
-        message: `API key appears to be invalid or not working: ${apiError instanceof Error ? apiError.message : "Unknown error"}`,
-        error: apiError instanceof Error ? apiError.message : "Unknown error",
-        apiKeyFirstChars: apiKey.substring(0, 5),
+        keyConfigured: false,
+        message: `Error testing API key: ${error instanceof Error ? error.message : "Unknown error"}`,
         timestamp: new Date().toISOString(),
-        functionUptime: `${Math.floor((Date.now() - functionStartTime) / 1000)} seconds`,
+        apiKey: apiKey ? `${apiKey.substring(0, 10)}...` : "Not configured",
+      }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
+      }
+    );
+  }
+};
+
+// Handle API key history check
+export const handleApiKeyHistoryCheck = async (
+  requestId: number, 
+  apiKey: string,
+  functionStartTime: number
+): Promise<Response> => {
+  try {
+    logMessage(requestId, "Checking API key usage history...");
+    
+    const testResult = await testApiKey(apiKey);
+    const keyStatus = testResult.status;
+    
+    // Track success or failure in metrics
+    trackMetrics(keyStatus === "valid");
+    
+    // Calculate uptime in seconds
+    const uptime = Math.floor((Date.now() - functionStartTime) / 1000);
+    
+    return new Response(
+      JSON.stringify({
+        success: keyStatus === "valid",
+        keyConfigured: keyStatus === "valid",
+        message: testResult.message,
+        timestamp: new Date().toISOString(),
+        apiKey: apiKey ? `${apiKey.substring(0, 10)}...` : "Not configured",
         metrics: {
-          successfulChecks: 0,
-          failedChecks: 0,
-          totalRequests: requestId
-        }
+          totalRequests: metrics.requestCount,
+          successfulChecks: metrics.successfulChecks,
+          failedChecks: metrics.failedChecks,
+          successRate: metrics.requestCount > 0 
+            ? (metrics.successfulChecks / metrics.requestCount) * 100 
+            : 0,
+        },
+        uptime: {
+          seconds: uptime,
+          formatted: `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m ${uptime % 60}s`,
+          startTime: new Date(Date.now() - uptime * 1000).toISOString(),
+        },
       }),
       {
         status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
+      }
+    );
+  } catch (error) {
+    metrics.failedChecks++;
+    logMessage(requestId, "Error checking API key history:", error);
+    
+    return new Response(
+      JSON.stringify({
+        success: false,
+        keyConfigured: false,
+        message: `Error checking API key history: ${error instanceof Error ? error.message : "Unknown error"}`,
+        timestamp: new Date().toISOString(),
+      }),
+      {
+        status: 500,
         headers: {
           "Content-Type": "application/json",
           ...corsHeaders,

@@ -1,53 +1,82 @@
 
+import { corsHeaders } from "../utils/cors.ts";
 import { Resend } from "npm:resend@2.0.0";
 import { logMessage } from "../utils/logger.ts";
-import { corsHeaders } from "../utils/cors.ts";
 
 export const handleDomainVerification = async (resend: Resend): Promise<Response> => {
-  logMessage("Domain verification check requested");
-  
   try {
-    const { data, error } = await resend.domains.get('gategaborone.com');
+    logMessage("Checking domain verification status");
+    
+    // Get list of domains
+    const { data, error } = await resend.domains.list();
+    
+    if (error) {
+      logMessage("Error checking domains:", error);
+      
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: `Error checking domains: ${error.message}`,
+          timestamp: new Date().toISOString()
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders
+          }
+        }
+      );
+    }
+    
+    // Format the domain data
+    const domainsData = Array.isArray(data) ? data.map(domain => ({
+      id: domain.id,
+      name: domain.name,
+      status: domain.status,
+      region: domain.region,
+      createdAt: domain.created_at
+    })) : [];
+    
+    // Check if any domains are verified
+    const hasVerifiedDomains = domainsData.some(domain => domain.status === 'verified');
+    
+    // Get the primary domain (if any)
+    const primaryDomain = domainsData.find(domain => domain.status === 'verified');
     
     return new Response(
       JSON.stringify({
-        success: !error,
-        domain: 'gategaborone.com',
-        status: data?.status || 'unknown',
-        verified: data?.verified || false,
-        createdAt: data?.createdAt || "8 days ago",
-        region: data?.region || "sa-east-1 (São Paulo)",
-        error: error ? error.message : null,
-        apiKey: `${Deno.env.get("RESEND_API_KEY")?.substring(0, 10) || "re_bGSLW5ST_".substring(0, 10)}...`,
+        success: true,
+        hasVerifiedDomains,
+        primaryDomain: primaryDomain?.name || null,
+        domains: domainsData,
+        count: domainsData.length,
+        verifiedCount: domainsData.filter(d => d.status === 'verified').length,
         timestamp: new Date().toISOString()
       }),
-      { 
-        status: 200, 
-        headers: { 
-          "Content-Type": "application/json", 
-          ...corsHeaders 
-        } 
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders
+        }
       }
     );
-  } catch (err) {
-    logMessage("Domain verification check error", err);
+  } catch (error) {
+    logMessage("Unexpected error checking domains:", error);
     
     return new Response(
       JSON.stringify({
         success: false,
-        domain: 'gategaborone.com',
-        status: 'error',
-        verified: false,
-        error: err instanceof Error ? err.message : 'Unknown error',
-        apiKey: `${Deno.env.get("RESEND_API_KEY")?.substring(0, 10) || "re_bGSLW5ST_".substring(0, 10)}...`,
+        message: `Unexpected error checking domains: ${error instanceof Error ? error.message : "Unknown error"}`,
         timestamp: new Date().toISOString()
       }),
-      { 
-        status: 200, 
-        headers: { 
-          "Content-Type": "application/json", 
-          ...corsHeaders 
-        } 
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders
+        }
       }
     );
   }

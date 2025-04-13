@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Bug, ShieldAlert } from 'lucide-react';
 import EmailProviderHealth from './EmailProviderHealth';
 import DomainVerificationChecker from './DomainVerificationChecker';
+import ApiKeyTester from './ApiKeyTester';
 
 const EmailTest = () => {
   const {
@@ -65,6 +66,8 @@ const EmailTest = () => {
       <h2 className="text-2xl font-bold mb-4">Enhanced Email Testing Tool</h2>
       
       <ConnectionStatus />
+      
+      <ApiKeyTester />
       
       <EmailProviderHealth 
         providerHealth={providerHealth}

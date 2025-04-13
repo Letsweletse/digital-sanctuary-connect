@@ -2,69 +2,111 @@
 import { Resend } from "npm:resend@2.0.0";
 import { logMessage } from "../utils/logger.ts";
 
-// Helper function to test a specific API key
-export async function testApiKey(apiKey: string, requestId: number) {
+interface ApiKeyTestResult {
+  status: "valid" | "invalid" | "error";
+  message: string;
+  error?: string;
+  timestamp: string;
+  details?: any;
+}
+
+/**
+ * Test if a Resend API key is valid by making a simple API call
+ */
+export const testApiKey = async (apiKey: string): Promise<ApiKeyTestResult> => {
+  if (!apiKey || apiKey.trim() === "") {
+    return {
+      status: "invalid",
+      message: "No API key provided",
+      error: "API key is missing or empty",
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  // Quick format validation (Resend keys start with re_)
+  if (!apiKey.startsWith("re_")) {
+    return {
+      status: "invalid",
+      message: "API key has incorrect format",
+      error: "API key should start with 're_'",
+      timestamp: new Date().toISOString(),
+    };
+  }
+
   try {
-    const tempResend = new Resend(apiKey);
+    // Create a Resend client with the provided key
+    const resend = new Resend(apiKey);
     
-    // First check domain information
-    const domainResult = await tempResend.domains.get('gategaborone.com');
+    logMessage(0, `Testing API key: ${apiKey.substring(0, 10)}...`);
     
-    // Then do a test email
-    const { data, error } = await tempResend.emails.send({
-      from: "Gate Gaborone <info@gategaborone.com>",
-      to: ["test@resend.dev"],
-      subject: "API Key Test",
-      text: "This is a key validation test.",
-    });
+    // Try to get account info to check if the API key is valid
+    const { data, error } = await resend.domains.list();
     
     if (error) {
-      // Analyze the error to determine key validity and domain status
-      if (error.message?.includes("domain is not verified")) {
-        return {
-          isValid: true,
-          domainVerified: false,
-          domainDetails: domainResult.data,
-          statusCode: error.statusCode,
-          message: error.message,
-          error: "Domain not verified"
-        };
-      } else if (error.statusCode === 400 && !error.message.includes("API key is invalid")) {
-        return {
-          isValid: true,
-          domainVerified: false,
-          domainDetails: domainResult.data,
-          statusCode: error.statusCode,
-          message: error.message,
-          error: "Configuration issue"
-        };
-      } else {
-        return {
-          isValid: false,
-          domainVerified: false,
-          statusCode: error.statusCode,
-          message: error.message,
-          error: "Invalid key"
-        };
-      }
+      logMessage(0, "API key test failed:", error);
+      
+      return {
+        status: "invalid",
+        message: `API key is invalid: ${error.message}`,
+        error: error.message,
+        timestamp: new Date().toISOString(),
+        details: error,
+      };
+    }
+    
+    // Check if we got a proper response
+    if (!data) {
+      return {
+        status: "error",
+        message: "API key test returned no data",
+        error: "Empty response from Resend API",
+        timestamp: new Date().toISOString(),
+      };
+    }
+    
+    // Key is valid - check if domains are set up
+    let domainsFound = false;
+    let domainVerified = false;
+    
+    if (Array.isArray(data) && data.length > 0) {
+      domainsFound = true;
+      // Check if any domain is verified
+      domainVerified = data.some(domain => domain.status === "verified");
     }
     
     return {
-      isValid: true,
-      domainVerified: domainResult.data?.verified || false,
-      domainStatus: domainResult.data?.status || "unknown",
-      domainDetails: domainResult.data,
-      statusCode: 200,
-      message: "Key valid" + (domainResult.data?.verified ? " and domain verified" : " but domain verification status unknown")
+      status: "valid",
+      message: domainsFound 
+        ? (domainVerified 
+            ? "API key is valid and has verified domains" 
+            : "API key is valid but no verified domains found")
+        : "API key is valid but no domains are configured",
+      timestamp: new Date().toISOString(),
+      details: {
+        domains: {
+          count: data.length,
+          verified: data.filter(d => d.status === "verified").length,
+          list: data.map(d => ({ id: d.id, name: d.name, status: d.status }))
+        }
+      }
     };
   } catch (error) {
-    logMessage(requestId, `Test failed for key ${apiKey.substring(0, 5)}...`, error);
+    logMessage(0, "Error testing API key:", error);
+    
+    // Check for specific error types
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const isAuthError = errorMessage.includes("Unauthorized") || 
+                        errorMessage.includes("401") ||
+                        errorMessage.includes("API key");
+    
     return {
-      isValid: false,
-      domainVerified: false,
-      statusCode: 500,
-      message: error instanceof Error ? error.message : "Unknown error",
-      error: "Test failed"
+      status: "error",
+      message: isAuthError 
+        ? "API key authentication failed" 
+        : "Error testing API key",
+      error: errorMessage,
+      timestamp: new Date().toISOString(),
+      details: error
     };
   }
-}
+};
