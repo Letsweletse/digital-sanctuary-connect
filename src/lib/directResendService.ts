@@ -13,7 +13,7 @@ export const sendDirectResendEmail = async (
   emailData: any
 ): Promise<any> => {
   try {
-    console.log('Bypassing Supabase Edge Functions, sending directly to Resend API');
+    console.log('💌 DIRECT EMAIL: Bypassing Supabase Edge Functions, sending directly to Resend API');
     
     // Validate required parameters
     if (!apiKey) {
@@ -34,11 +34,12 @@ export const sendDirectResendEmail = async (
       subject: emailData.subject,
       html: emailData.html || emailData.message || `<p>${emailData.message || ''}</p>`,
       text: emailData.text,
-      // Add any other Resend-specific parameters here
       reply_to: emailData.replyTo || from
     };
     
-    console.log('Sending direct email with data:', JSON.stringify(payload).substring(0, 300));
+    console.log('💌 DIRECT EMAIL: Sending to:', payload.to.join(', '));
+    console.log('💌 DIRECT EMAIL: Subject:', payload.subject);
+    console.log('💌 DIRECT EMAIL: From:', payload.from);
     
     // Make the API request with retries
     let retryCount = 0;
@@ -47,6 +48,8 @@ export const sendDirectResendEmail = async (
     
     while (retryCount < maxRetries) {
       try {
+        console.log(`💌 DIRECT EMAIL: Attempt ${retryCount + 1} of ${maxRetries}`);
+        
         // Make the API request
         const response = await fetch(`${RESEND_API_URL}/emails`, {
           method: 'POST',
@@ -60,8 +63,11 @@ export const sendDirectResendEmail = async (
         // Parse the response
         const result = await response.json();
         
+        // Log full response for debugging
+        console.log('💌 DIRECT EMAIL: Full Resend API response:', JSON.stringify(result, null, 2));
+        
         if (!response.ok) {
-          console.error('Direct Resend API error:', result);
+          console.error('💌 DIRECT EMAIL: Resend API error:', result);
           
           // If this is a validation error or domain verification issue, stop retrying
           if (response.status === 400 || 
@@ -76,7 +82,7 @@ export const sendDirectResendEmail = async (
           throw new Error(result.message || 'Failed to send email via Resend API');
         }
         
-        console.log('Email sent directly via Resend API:', result);
+        console.log('💌 DIRECT EMAIL: Success! Email sent with ID:', result.id);
         
         return {
           success: true,
@@ -90,10 +96,12 @@ export const sendDirectResendEmail = async (
         retryCount++;
         lastError = retryError;
         
+        console.error(`💌 DIRECT EMAIL: Attempt ${retryCount} failed:`, retryError);
+        
         if (retryCount < maxRetries) {
           // Add delay before retry with exponential backoff
           const delay = Math.min(100 * Math.pow(2, retryCount), 2000);
-          console.log(`Retrying direct email send after ${delay}ms (attempt ${retryCount+1} of ${maxRetries})`);
+          console.log(`💌 DIRECT EMAIL: Retrying direct email send after ${delay}ms (attempt ${retryCount+1} of ${maxRetries})`);
           await new Promise(resolve => setTimeout(resolve, delay));
         } else {
           break;
@@ -103,7 +111,7 @@ export const sendDirectResendEmail = async (
     
     throw lastError || new Error('Failed after multiple retry attempts');
   } catch (error) {
-    console.error('Error in direct Resend service:', error);
+    console.error('💌 DIRECT EMAIL: Error in direct Resend service:', error);
     
     return {
       success: false,
@@ -119,6 +127,7 @@ export const getStoredResendApiKey = (): string | null => {
   try {
     return localStorage.getItem('resend_api_key');
   } catch (e) {
+    console.error('Failed to retrieve Resend API key from localStorage:', e);
     return null;
   }
 };
@@ -129,7 +138,7 @@ export const storeResendApiKey = (apiKey: string): void => {
     localStorage.setItem('resend_api_key', apiKey);
     // Also enable direct mode when storing a key
     localStorage.setItem('use_direct_resend_mode', 'true');
-    console.log('Stored Resend API key and enabled direct mode');
+    console.log('✅ Stored Resend API key and enabled direct mode');
   } catch (e) {
     console.error('Failed to store Resend API key:', e);
   }
@@ -140,6 +149,7 @@ export const clearStoredResendApiKey = (): void => {
   try {
     localStorage.removeItem('resend_api_key');
     localStorage.removeItem('use_direct_resend_mode');
+    console.log('❌ Cleared Resend API key and disabled direct mode');
   } catch (e) {
     console.error('Failed to clear Resend API key:', e);
   }
@@ -150,6 +160,7 @@ export const isDirectModeEnabled = (): boolean => {
   try {
     return localStorage.getItem('use_direct_resend_mode') === 'true';
   } catch (e) {
+    console.error('Failed to check if direct mode is enabled:', e);
     return false;
   }
 };
@@ -158,8 +169,19 @@ export const isDirectModeEnabled = (): boolean => {
 export const enableDirectMode = (): void => {
   try {
     localStorage.setItem('use_direct_resend_mode', 'true');
-    console.log('Direct Resend mode enabled');
+    console.log('🚀 Direct Resend mode enabled - will bypass Supabase Edge Functions');
   } catch (e) {
     console.error('Failed to enable direct mode:', e);
+  }
+};
+
+// Force direct mode with feedback
+export const forceDirectMode = (): void => {
+  try {
+    localStorage.setItem('use_direct_resend_mode', 'true');
+    console.log('⚠️ Direct Resend mode FORCED - will bypass Supabase Edge Functions');
+    return;
+  } catch (e) {
+    console.error('Failed to force direct mode:', e);
   }
 };

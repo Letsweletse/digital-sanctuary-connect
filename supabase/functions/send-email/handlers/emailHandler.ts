@@ -14,6 +14,16 @@ export const handleEmailSending = async (
 ): Promise<EmailResult> => {
   logMessage("Sending email with Resend API", { to: emailData.to, subject: emailData.subject });
 
+  // Log the full email data for debugging
+  console.log("DETAILED EMAIL DATA:", JSON.stringify({
+    to: emailData.to,
+    subject: emailData.subject,
+    from: emailData.from || "default-from@example.com",
+    hasHtml: !!emailData.html,
+    hasText: !!emailData.text,
+    timestamp: new Date().toISOString()
+  }, null, 2));
+
   let result;
   let retryCount = 0;
   let lastError = null;
@@ -21,8 +31,14 @@ export const handleEmailSending = async (
 
   while (retryCount < maxRetries) {
     try {
+      logMessage(`Email sending attempt ${retryCount + 1} of ${maxRetries}`, { to: emailData.to });
+
       result = await resend.emails.send(emailData);
-      logMessage("Email sent successfully", { messageId: result.id, attempt: retryCount + 1 });
+      logMessage("Email sent successfully", { 
+        messageId: result.id, 
+        attempt: retryCount + 1,
+        to: Array.isArray(emailData.to) ? emailData.to.join(', ') : emailData.to
+      });
 
       // Update metrics
       deliveryMetrics.successfulDeliveries++;
@@ -42,11 +58,15 @@ export const handleEmailSending = async (
         message: sendError.message,
         statusCode: sendError.statusCode,
         cause: sendError.cause,
-        response: sendError.response,
+        response: sendError.response ? JSON.stringify(sendError.response) : null,
         stack: sendError.stack
       });
 
-      logMessage(`Email send attempt ${retryCount} failed`, { error: sendError.message });
+      logMessage(`Email send attempt ${retryCount} failed`, { 
+        error: sendError.message,
+        to: Array.isArray(emailData.to) ? emailData.to.join(', ') : emailData.to,
+        statusCode: sendError.statusCode || 'unknown'
+      });
 
       if (sendError.message?.includes("domain is not verified") || 
           sendError.message?.includes("verification") ||
@@ -67,6 +87,7 @@ export const handleEmailSending = async (
 
       // Retry with exponential backoff
       const delay = Math.min(100 * Math.pow(2, retryCount) + Math.random() * 100, 2000);
+      logMessage(`Retrying in ${delay}ms...`, { attempt: retryCount });
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
