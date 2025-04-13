@@ -10,6 +10,7 @@ import { useEmailTest } from './useEmailTest';
 import { Button } from '@/components/ui/button';
 import { Bug, ShieldAlert } from 'lucide-react';
 import EmailProviderHealth from './EmailProviderHealth';
+import DomainVerificationChecker from './DomainVerificationChecker';
 
 const EmailTest = () => {
   const {
@@ -103,6 +104,8 @@ const EmailTest = () => {
           This will simulate a full registration flow to test end-to-end email delivery
         </p>
       </div>
+
+      <DomainVerificationChecker />
 
       <DebugInfo debugInfo={debugInfo} />
       
