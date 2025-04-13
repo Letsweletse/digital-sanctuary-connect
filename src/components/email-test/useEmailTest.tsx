@@ -1,10 +1,10 @@
-
 import { useCallback, useState, useEffect } from 'react';
 import { useEmailForm } from './useEmailForm';
 import { useEmailOperations } from './useEmailOperations';
 import { invokeEmailFunction } from './services/edgeFunctionService';
 import { sendEmailWithRedundancy, checkEmailProvidersHealth } from './services/emailRedundancyManager';
 import { ProviderHealth } from './types';
+import { toast } from 'sonner';
 
 export function useEmailTest() {
   const emailForm = useEmailForm();
@@ -38,6 +38,17 @@ export function useEmailTest() {
         fallback: healthStatus.fallback,
         lastChecked: new Date()
       });
+
+      // Added toast notifications for provider health
+      if (healthStatus.primary.available) {
+        toast.success('Primary Email Provider is Healthy', {
+          description: healthStatus.primary.message
+        });
+      } else {
+        toast.warning('Primary Email Provider has Issues', {
+          description: healthStatus.primary.message
+        });
+      }
     } catch (error) {
       console.error('Error checking provider health:', error);
       
@@ -46,6 +57,10 @@ export function useEmailTest() {
         checking: false,
         lastChecked: new Date()
       }));
+
+      toast.error('Failed to Check Provider Health', {
+        description: error instanceof Error ? error.message : 'Unknown error occurred'
+      });
     }
   }, []);
   
