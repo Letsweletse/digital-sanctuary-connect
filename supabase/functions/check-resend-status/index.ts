@@ -15,7 +15,7 @@ const corsHeaders = {
 };
 
 // Get API key from environment or use the provided key
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "re_9Qv59yHG_NMEwVDtURcNbdNoiYHjGhSmH";
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "re_FYtCFWri_39ciqWYc9CEKpoa3JdkWdSwN";
 
 // Initialize Resend client
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;

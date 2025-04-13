@@ -10,7 +10,7 @@ const corsHeaders = {
 };
 
 // Get API key from environment or use the provided verified key
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "re_9Qv59yHG_NMEwVDtURcNbdNoiYHjGhSmH";
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "re_FYtCFWri_39ciqWYc9CEKpoa3JdkWdSwN";
 const resend = new Resend(RESEND_API_KEY);
 
 // Logging function with timestamps
