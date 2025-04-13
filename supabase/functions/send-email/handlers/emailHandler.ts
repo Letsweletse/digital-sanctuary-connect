@@ -1,357 +1,77 @@
 
 import { Resend } from "npm:resend@2.0.0";
-import { v4 as uuidv4 } from "https://deno.land/std@0.190.0/uuid/mod.ts";
-import { corsHeaders } from "../utils/cors.ts";
-import { 
-  generateAdminEmailContent, 
-  generateConfirmationEmailContent 
-} from "../templates/emailTemplates.ts";
-import { 
-  formatDateForCalendar, 
-  generateIcsContent 
-} from "../utils/calendarUtils.ts";
-import { EmailRequest } from "../types/emailTypes.ts";
-import { sendSmsNotification } from "../utils/smsUtils.ts";
-import { logEmailDelivery, generateDeliveryReport } from "../utils/emailLogging.ts";
+import { logMessage } from "../utils/logger.ts";
+import { trackDeliveryMetrics } from "../utils/logger.ts";
 
-// Initialize Resend with API key from environment variable
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "re_FYtCFWri_39ciqWYc9CEKpoa3JdkWdSwN";
-console.log("RESEND_API_KEY available:", RESEND_API_KEY ? "Yes (length: " + RESEND_API_KEY.length + ")" : "No");
-console.log("RESEND_API_KEY starts with:", RESEND_API_KEY?.substring(0, 5) || "N/A");
-
-if (!RESEND_API_KEY) {
-  console.error("CRITICAL ERROR: RESEND_API_KEY environment variable is not set or empty!");
+interface EmailResult {
+  id: string;
+  retryCount: number;
 }
 
-// Check if the API key is passed in the request (for debugging)
-const getApiKey = (req: EmailRequest): string => {
-  if (req.apiKey && typeof req.apiKey === 'string' && req.apiKey.startsWith('re_')) {
-    console.log("Using API key from request");
-    return req.apiKey;
-  }
-  return RESEND_API_KEY;
-};
-
-const resend = new Resend(RESEND_API_KEY);
-
-// Manually refresh DNS settings for reliable email delivery
-console.log("Refreshing DNS configuration for email delivery");
-
-export async function processEmailRequest(req: Request): Promise<Response> {
-  try {
-    console.log("Starting email processing with refreshed DNS configuration");
-    console.log("Using Resend API key starting with:", RESEND_API_KEY?.substring(0, 5) || "N/A");
-    
-    // Verify Resend configuration
-    if (!RESEND_API_KEY) {
-      console.error("ERROR: Missing RESEND_API_KEY - cannot proceed with email sending");
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "RESEND_API_KEY not configured. Please set this environment variable in the Supabase Edge Functions settings.",
-          resendKeyConfigured: false
-        }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-    
-    const body: EmailRequest = await req.json();
-    console.log("Received email request with keys:", Object.keys(body));
-    console.log("Event info:", body.eventName, body.eventDate, body.eventTime);
-    console.log("Contact details:", body.name, body.email, body.phone);
-    
-    // Create a new resend instance with the API key from the request if provided
-    const apiKey = getApiKey(body);
-    const resendClient = apiKey !== RESEND_API_KEY ? new Resend(apiKey) : resend;
-    console.log("Using Resend client with API key starting with:", apiKey.substring(0, 5));
-
-    const { 
-      to, 
-      subject, 
-      name, 
-      email, 
-      message, 
-      eventName, 
-      registrationType, 
-      sendConfirmation, 
-      title, 
-      role, 
-      denomination, 
-      phone,
-      location,
-      eventDate = "2025-05-10",
-      eventTime = "9:00 AM - 1:30 PM",
-      eventImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg",
-      checkInId = uuidv4(),
-      attendeeEmail = email,
-      sendSms = true, // Enable SMS by default
-      forceHtml = true, // Force HTML email
-      priority = "high" // Default priority
-    } = body;
-
-    console.log("Processing email request for event:", eventName);
-    console.log("Will send confirmation email:", sendConfirmation);
-    console.log("Phone number for notifications:", phone);
-    console.log("SMS notifications enabled:", sendSms);
-    console.log("Force HTML email:", forceHtml);
-    console.log("Email priority:", priority);
-
-    // Use more reliable QR code generation with higher resolution and clear borders
-    const locationQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(location)}&size=300x300&margin=10&qzone=2&format=png`;
-    const checkInUrl = `https://gategaborone.com/check-in/${checkInId}?email=${encodeURIComponent(attendeeEmail)}`;
-    const checkInQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(checkInUrl)}&size=300x300&margin=10&qzone=2&format=png`;
-
-    // Format dates for calendar
-    const { startDateFormatted, endDateFormatted, nowFormatted } = formatDateForCalendar(eventDate, eventTime);
-
-    // Generate iCal content
-    const icsContent = generateIcsContent({
-      eventName,
-      startDateFormatted,
-      endDateFormatted,
-      nowFormatted,
-      location,
-      message: message || "",
-      checkInId
-    });
-    const encodedIcsContent = encodeURIComponent(icsContent);
-
-    // Prepare and send admin email
-    const adminHtmlContent = generateAdminEmailContent({
-      eventName,
-      registrationType,
-      title,
-      name,
-      email,
-      phone,
-      role,
-      denomination,
-      message,
-      checkInId
-    });
-
-    console.log("Sending admin email notification to:", to);
-    let adminEmailSuccess = false;
-    let adminEmailId = null;
-    
+export const handleEmailSending = async (
+  resend: Resend, 
+  emailData: any, 
+  deliveryMetrics: any
+): Promise<EmailResult> => {
+  logMessage("Sending email with Resend API", { to: emailData.to, subject: emailData.subject });
+  
+  let result;
+  let retryCount = 0;
+  let lastError = null;
+  const maxRetries = 3;
+  
+  while (retryCount < maxRetries) {
     try {
-      console.log("Attempting to send admin email via Resend...");
-      const adminResult = await resendClient.emails.send({
-        from: "Gate Gaborone <info@gategaborone.com>",
-        to,
-        subject,
-        html: adminHtmlContent,
-        text: `New registration for ${eventName} from ${name} (${email})`, // Plain text fallback
-        headers: {
-          "X-Entity-Ref-ID": `admin-${checkInId}`, // Unique reference ID for admin email
-          "Content-Type": "text/html; charset=UTF-8"
-        }
+      result = await resend.emails.send(emailData);
+      logMessage("Email sent successfully", { messageId: result.id, attempt: retryCount + 1 });
+      
+      trackDeliveryMetrics(true, {
+        to: emailData.to
       });
       
-      console.log("Admin email sent successfully:", adminResult);
-      adminEmailSuccess = true;
-      adminEmailId = adminResult.id;
+      return {
+        id: result.id,
+        retryCount
+      };
+    } catch (sendError: any) {
+      lastError = sendError;
+      retryCount++;
+      logMessage(`Email send attempt ${retryCount} failed`, { error: sendError.message });
       
-      // Log successful admin email delivery
-      to.forEach(recipient => {
-        logEmailDelivery(recipient, 'admin', 'sent', {
-          subject,
-          eventName,
-          from: email
-        }, adminResult.id);
-      });
-    } catch (adminEmailError) {
-      console.error("Error sending admin email:", adminEmailError);
-      const errorDetail = adminEmailError instanceof Error ? adminEmailError.message : 'Unknown error';
-      console.error("Error details:", errorDetail);
-      
-      // Log failed admin email delivery
-      to.forEach(recipient => {
-        logEmailDelivery(recipient, 'admin', 'failed', {
-          error: errorDetail,
-          subject,
-          eventName
-        });
-      });
-      
-      // Check for common Resend API errors
-      if (errorDetail.includes("API key")) {
-        throw new Error(`Resend API key error: ${errorDetail} - Please check your RESEND_API_KEY configuration.`);
+      // Check for domain verification errors
+      if (sendError.message?.includes("domain is not verified")) {
+        deliveryMetrics.domainVerificationErrors++;
+        deliveryMetrics.lastError = {
+          code: sendError.statusCode || 403,
+          message: sendError.message,
+          timestamp: new Date().toISOString()
+        };
+        
+        // No point retrying for domain verification errors
+        break;
       }
       
-      throw new Error(`Admin email failed: ${errorDetail}`);
-    }
-
-    let confirmationSuccess = false;
-    let confirmationEmailId = null;
-    let smsNotificationSent = false;
-    let smsNotificationDetails = null;
-
-    // Send confirmation email if requested
-    if (sendConfirmation) {
-      console.log("Generating confirmation email for:", email);
-      
-      const confirmationHtml = generateConfirmationEmailContent({
-        title,
-        name,
-        eventName,
-        eventDate,
-        eventTime,
-        eventImage,
-        registrationType,
-        role,
-        denomination,
-        phone,
-        location,
-        checkInId,
-        locationQrCodeUrl,
-        checkInQrCodeUrl,
-        encodedIcsContent,
-      });
-
-      console.log("Sending confirmation email to:", email);
-      
-      try {
-        // Send confirmation email with explicit content type and debugging
-        const emailResponse = await resend.emails.send({
-          from: "Gate Gaborone <info@gategaborone.com>",
-          to: [email],
-          subject: `Registration Confirmation: ${eventName}`,
-          html: confirmationHtml,
-          text: `Thank you for registering for ${eventName}!\n\nEvent Details:\nDate: ${eventDate}\nTime: ${eventTime}\nLocation: ${location}\nCheck-in ID: ${checkInId}\n\nVisit https://gategaborone.com for more information.`,
-          headers: {
-            "Content-Type": "text/html; charset=UTF-8",
-            "X-Entity-Ref-ID": checkInId, // Add unique reference ID to prevent email threading
-            "X-Mailer": "ResendWithGateGaborone"
-          }
-        });
-
-        console.log("Confirmation email sent:", emailResponse);
-        confirmationSuccess = true;
-        confirmationEmailId = emailResponse.id;
-        
-        // Log successful confirmation email
-        logEmailDelivery(email, 'confirmation', 'sent', {
-          subject: `Registration Confirmation: ${eventName}`,
-          eventName,
-          messageId: emailResponse.id
-        }, emailResponse.id);
-        
-        // Send SMS notification if phone number and SMS flag are provided
-        if (phone && phone.trim() !== '' && sendSms) {
-          try {
-            console.log("Attempting to send SMS notification to:", phone);
-            const smsResult = await sendSmsNotification({
-              phone,
-              eventName,
-              eventDate,
-              eventTime,
-              location,
-              checkInId
-            });
-            
-            smsNotificationSent = smsResult.success;
-            smsNotificationDetails = smsResult;
-            
-            console.log("SMS notification result:", smsResult);
-            
-            if (smsResult.success) {
-              console.log("✅ SMS notification sent successfully");
-            } else {
-              console.error("❌ SMS notification failed:", smsResult.message);
-            }
-          } catch (smsError) {
-            console.error("Error sending SMS notification:", smsError);
-          }
-        } else {
-          console.log("No phone number provided for SMS notifications or SMS disabled");
-        }
-      } catch (confirmationError) {
-        console.error("Error sending confirmation email:", confirmationError);
-        const errorDetail = confirmationError instanceof Error ? confirmationError.message : 'Unknown error';
-        console.error("Error details:", errorDetail);
-        
-        // Log failed confirmation email
-        logEmailDelivery(email, 'confirmation', 'failed', {
-          error: errorDetail,
-          subject: `Registration Confirmation: ${eventName}`,
-          eventName
-        });
-        
-        // Check for common Resend API errors
-        if (errorDetail.includes("API key")) {
-          throw new Error(`Resend API key error: ${errorDetail} - Please check your RESEND_API_KEY configuration.`);
-        }
-        
-        throw new Error(`Confirmation email failed: ${errorDetail}`);
+      if (retryCount >= maxRetries) {
+        throw sendError;
       }
+      
+      // Exponential backoff with jitter
+      const delay = Math.min(100 * Math.pow(2, retryCount) + Math.random() * 100, 2000);
+      await new Promise(resolve => setTimeout(resolve, delay));
     }
-
-    // Generate a delivery report for debugging
-    const deliveryReport = generateDeliveryReport();
-    console.log("\n=== EMAIL DELIVERY REPORT ===\n", deliveryReport);
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: "Emails processed",
-        adminEmailSent: adminEmailSuccess,
-        adminEmailId: adminEmailId,
-        confirmationEmailSent: confirmationSuccess,
-        confirmationEmailId: confirmationEmailId,
-        smsNotificationSent,
-        smsNotificationDetails,
-        checkInId: checkInId,
-        resendKeyConfigured: !!RESEND_API_KEY,
-        deliveryReport: deliveryReport,
-        notificationStatus: {
-          email: confirmationSuccess ? "sent" : "failed",
-          sms: smsNotificationSent ? "sent" : "failed"
-        }
-      }),
-      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
-  } catch (error: any) {
-    console.error("Error processing email request:", error);
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message: `Email processing failed: ${error.message || "Unknown error"}`,
-        error: error.message || "Unknown error",
-        resendKeyConfigured: !!RESEND_API_KEY,
-        resendKeyFirstChars: RESEND_API_KEY?.substring(0, 5) || "N/A",
-        timestamp: new Date().toISOString()
-      }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
   }
-}
-
-export async function getEmailDeliveryLogs(req: Request): Promise<Response> {
-  try {
-    // Import the log functions
-    const { getDeliveryLogs, generateDeliveryReport } = await import("../utils/emailLogging.ts");
-    
-    // Generate the report
-    const logs = getDeliveryLogs();
-    const report = generateDeliveryReport();
-    
-    return new Response(
-      JSON.stringify({
-        success: true,
-        logs,
-        report
-      }),
-      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
-  } catch (error: any) {
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message: `Failed to retrieve email logs: ${error.message || "Unknown error"}`,
-        error: error.message || "Unknown error"
-      }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
+  
+  // If we get here with domain verification error, throw it with additional info
+  if (lastError && lastError.message?.includes("domain is not verified")) {
+    const enhancedError = new Error("Domain verification required");
+    Object.assign(enhancedError, { 
+      statusCode: lastError.statusCode || 403,
+      verificationRequired: true,
+      to: emailData.to
+    });
+    throw enhancedError;
   }
+  
+  // Should never get here if all retries failed, as we throw in the loop
+  throw lastError || new Error("Failed to send email after multiple attempts");
 }
