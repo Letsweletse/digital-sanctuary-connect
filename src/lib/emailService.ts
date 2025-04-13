@@ -1,7 +1,6 @@
-
 /**
  * Email service utility for sending notifications
- * Using Supabase Edge Functions
+ * Using Supabase Edge Functions with direct Resend API fallback
  */
 
 // Email address for admin notifications - exported for use in components
@@ -12,22 +11,45 @@ export const ZOHO_EMAIL = 'iblimenterprise@zohomail.com';
 export const ADMIN_EMAILS = [ADMIN_EMAIL, BACKUP_EMAIL, ZOHO_EMAIL];
 
 import { supabase } from "@/integrations/supabase/client";
+import { sendDirectToResend } from "@/components/email-test/services/directResendService";
+import { getStoredResendApiKey } from "./directResendService";
 
 /**
- * Base email sending function
+ * Base email sending function with direct Resend fallback
  * @param requestBody - The email request data to send
  */
 async function sendEmail(requestBody: any) {
   try {
-    console.log("Invoking send-email function with data:", JSON.stringify(requestBody).substring(0, 200) + "...");
+    console.log("Preparing to send email:", JSON.stringify(requestBody).substring(0, 200) + "...");
     
     // Add a timestamp to prevent caching issues
     const timestampedRequest = {
       ...requestBody,
-      timestamp: Date.now(),
-      apiKey: "re_FYtCFWri_39ciqWYc9CEKpoa3JdkWdSwN", // Include API key reference for debugging
-      domain: "e681b266-29a3-4f4e-b1f5-de727d1d38c9" // Include domain reference for debugging
+      timestamp: Date.now()
     };
+    
+    // First check if we have a direct API key and should use it
+    const directApiKey = getStoredResendApiKey();
+    const useDirectMode = localStorage.getItem('use_direct_resend_mode') === 'true';
+    
+    if (directApiKey && useDirectMode) {
+      console.log("Using direct Resend API mode...");
+      try {
+        const directResult = await sendDirectToResend(timestampedRequest);
+        if (directResult.success) {
+          console.log("Email sent successfully via direct Resend API");
+          return {
+            success: true,
+            message: 'Email sent successfully via direct Resend API',
+            data: directResult
+          };
+        } else {
+          console.error("Direct Resend API send failed, falling back to Edge Functions");
+        }
+      } catch (directError) {
+        console.error("Error in direct Resend API send:", directError);
+      }
+    }
     
     // Use retry logic for more reliability
     let attempts = 0;
@@ -36,7 +58,7 @@ async function sendEmail(requestBody: any) {
     
     while (attempts < maxAttempts) {
       try {
-        console.log(`Email sending attempt ${attempts + 1} of ${maxAttempts}...`);
+        console.log(`Email sending attempt ${attempts + 1} of ${maxAttempts} via Edge Function...`);
         
         const { data, error } = await supabase.functions.invoke('send-email', {
           body: timestampedRequest
@@ -46,6 +68,28 @@ async function sendEmail(requestBody: any) {
           console.error(`Error invoking send-email function (attempt ${attempts + 1}):`, error);
           lastError = error;
           attempts++;
+          
+          // If this is the last attempt and we have a direct API key, try that as a final fallback
+          if (attempts >= maxAttempts && directApiKey) {
+            console.log("Edge Function failed after all attempts, trying direct Resend API as last resort...");
+            try {
+              const emergencyDirectResult = await sendDirectToResend(timestampedRequest);
+              if (emergencyDirectResult.success) {
+                console.log("Email sent successfully via emergency direct Resend API");
+                return {
+                  success: true,
+                  message: 'Email sent successfully via emergency direct Resend API fallback',
+                  data: {
+                    ...emergencyDirectResult,
+                    bypassMode: true,
+                    edgeFunctionError: lastError?.message || 'Edge Function failed after multiple attempts'
+                  }
+                };
+              }
+            } catch (directFallbackError) {
+              console.error("Emergency direct Resend API fallback also failed:", directFallbackError);
+            }
+          }
           
           if (attempts < maxAttempts) {
             // Wait before retrying (exponential backoff with jitter)
@@ -88,6 +132,28 @@ async function sendEmail(requestBody: any) {
           console.log(`Retrying in ${backoffTime}ms...`);
           await new Promise(resolve => setTimeout(resolve, backoffTime));
         }
+      }
+    }
+    
+    // If we have a direct API key, try that as a final fallback
+    if (directApiKey) {
+      console.log("Edge Function failed after all attempts, trying direct Resend API as last resort...");
+      try {
+        const emergencyDirectResult = await sendDirectToResend(timestampedRequest);
+        if (emergencyDirectResult.success) {
+          console.log("Email sent successfully via emergency direct Resend API");
+          return {
+            success: true,
+            message: 'Email sent successfully via emergency direct Resend API fallback',
+            data: {
+              ...emergencyDirectResult,
+              bypassMode: true,
+              edgeFunctionError: lastError instanceof Error ? lastError.message : 'Edge Function failed after multiple attempts'
+            }
+          };
+        }
+      } catch (directFallbackError) {
+        console.error("Emergency direct Resend API fallback also failed:", directFallbackError);
       }
     }
     

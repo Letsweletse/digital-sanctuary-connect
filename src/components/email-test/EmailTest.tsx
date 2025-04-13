@@ -12,6 +12,7 @@ import { Bug, ShieldAlert } from 'lucide-react';
 import EmailProviderHealth from './EmailProviderHealth';
 import DomainVerificationChecker from './DomainVerificationChecker';
 import ApiKeyTester from './ApiKeyTester';
+import DirectResendKeyForm from './DirectResendKeyForm';
 
 const EmailTest = () => {
   const {
@@ -31,7 +32,10 @@ const EmailTest = () => {
     providerHealth,
     checkProviderHealth,
     useRedundancySystem,
-    setUseRedundancySystem
+    setUseRedundancySystem,
+    directBypassMode,
+    setDirectBypassMode,
+    hasDirectApiKey
   } = useEmailTest();
   
   // Check Resend API key status and provider health on component mount
@@ -69,11 +73,16 @@ const EmailTest = () => {
       
       <ApiKeyTester />
       
+      <DirectResendKeyForm />
+      
       <EmailProviderHealth 
         providerHealth={providerHealth}
         onRefresh={checkProviderHealth}
         useRedundancySystem={useRedundancySystem}
         setUseRedundancySystem={setUseRedundancySystem}
+        directBypassMode={directBypassMode}
+        setDirectBypassMode={setDirectBypassMode}
+        hasDirectApiKey={hasDirectApiKey}
       />
       
       <EmailStatusPanel 
@@ -119,6 +128,7 @@ const EmailTest = () => {
         <ul className="list-disc ml-5 text-xs space-y-1">
           <li>Email notifications via Resend API (primary)</li>
           <li>Email notifications via SendGrid (fallback)</li>
+          <li>Direct Resend API access (bypassing Edge Functions)</li>
           <li>SMS notifications via Twilio (when configured)</li>
           <li>Redundant delivery system with automatic failover</li>
           <li>Comprehensive delivery tracking and logging</li>

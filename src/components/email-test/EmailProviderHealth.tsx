@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Loader2, RefreshCw, CheckCircle, XCircle, Shield } from 'lucide-react';
+import { Loader2, RefreshCw, CheckCircle, XCircle, Shield, Zap } from 'lucide-react';
 
 interface EmailProviderHealthProps {
   providerHealth: {
@@ -20,13 +20,19 @@ interface EmailProviderHealthProps {
   onRefresh: () => void;
   useRedundancySystem: boolean;
   setUseRedundancySystem: (value: boolean) => void;
+  directBypassMode?: boolean;
+  setDirectBypassMode?: (value: boolean) => void;
+  hasDirectApiKey?: boolean;
 }
 
 const EmailProviderHealth = ({
   providerHealth,
   onRefresh,
   useRedundancySystem,
-  setUseRedundancySystem
+  setUseRedundancySystem,
+  directBypassMode = false,
+  setDirectBypassMode,
+  hasDirectApiKey = false
 }: EmailProviderHealthProps) => {
   return (
     <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
@@ -81,7 +87,7 @@ const EmailProviderHealth = ({
         </div>
       </div>
       
-      <div className="mt-3 pt-2 border-t border-gray-200">
+      <div className="mt-3 pt-2 border-t border-gray-200 space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Shield className="h-4 w-4 text-blue-500" />
@@ -97,6 +103,28 @@ const EmailProviderHealth = ({
           When enabled, emails will automatically failover to the backup provider if the primary one fails
         </p>
       </div>
+      
+      {setDirectBypassMode && (
+        <div className="mt-2 pt-2 border-t border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Zap className={`h-4 w-4 ${directBypassMode ? 'text-orange-500' : 'text-gray-400'}`} />
+              <span className="text-xs font-medium">Direct Resend API Mode:</span>
+            </div>
+            <Switch
+              checked={directBypassMode}
+              onCheckedChange={setDirectBypassMode}
+              aria-label="Toggle direct API mode"
+              disabled={!hasDirectApiKey}
+            />
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            {hasDirectApiKey 
+              ? "Bypasses Supabase Edge Functions entirely and connects directly to Resend API" 
+              : "Add your Resend API key above to enable direct API mode"}
+          </p>
+        </div>
+      )}
       
       {providerHealth.lastChecked && (
         <div className="mt-1 text-xs text-gray-500">

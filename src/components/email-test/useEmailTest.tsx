@@ -5,11 +5,14 @@ import { invokeEmailFunction } from './services/edgeFunctionService';
 import { sendEmailWithRedundancy, checkEmailProvidersHealth } from './services/emailRedundancyManager';
 import { ProviderHealth } from './types';
 import { toast } from 'sonner';
+import { getStoredResendApiKey } from '@/lib/directResendService';
+import { sendDirectToResend } from './services/directResendService';
 
 export function useEmailTest() {
   const emailForm = useEmailForm();
   const emailOperations = useEmailOperations(emailForm);
   const [useRedundancySystem, setUseRedundancySystem] = useState<boolean>(true);
+  const [directBypassMode, setDirectBypassMode] = useState<boolean>(false);
   const [providerHealth, setProviderHealth] = useState<ProviderHealth>({
     checking: false,
     primary: {
@@ -22,7 +25,13 @@ export function useEmailTest() {
     }
   });
   
-  // Function to check the health of email providers
+  const [hasDirectApiKey, setHasDirectApiKey] = useState<boolean>(false);
+  
+  useEffect(() => {
+    const apiKey = getStoredResendApiKey();
+    setHasDirectApiKey(!!apiKey);
+  }, []);
+  
   const checkProviderHealth = useCallback(async () => {
     setProviderHealth(prev => ({
       ...prev,
@@ -39,7 +48,6 @@ export function useEmailTest() {
         lastChecked: new Date()
       });
 
-      // Added toast notifications for provider health
       if (healthStatus.primary.available) {
         toast.success('Primary Email Provider is Healthy', {
           description: healthStatus.primary.message
@@ -48,6 +56,14 @@ export function useEmailTest() {
         toast.warning('Primary Email Provider has Issues', {
           description: healthStatus.primary.message
         });
+        
+        const apiKey = getStoredResendApiKey();
+        if (apiKey && !directBypassMode) {
+          setDirectBypassMode(true);
+          toast.info('Direct Resend API Mode Activated', {
+            description: 'Due to issues with Edge Functions, direct Resend API access has been activated automatically.'
+          });
+        }
       }
     } catch (error) {
       console.error('Error checking provider health:', error);
@@ -62,32 +78,26 @@ export function useEmailTest() {
         description: error instanceof Error ? error.message : 'Unknown error occurred'
       });
     }
-  }, []);
+  }, [directBypassMode]);
   
-  // Listen for test registration events
   useEffect(() => {
     const handleTestRegistration = (event: CustomEvent) => {
       console.log('Test registration event triggered:', event.detail);
       
-      // Trigger a test registration email with the form data
       sendTestRegistrationEmail(event.detail.email, event.detail.phone);
     };
     
-    // Add event listener (with type assertion)
     document.addEventListener('test-registration', handleTestRegistration as EventListener);
     
-    // Clean up the event listener
     return () => {
       document.removeEventListener('test-registration', handleTestRegistration as EventListener);
     };
   }, [emailForm.testEmail, emailForm.testPhone]);
   
-  // Function to send a test registration email
   const sendTestRegistrationEmail = useCallback(async (email: string, phone: string) => {
     emailOperations.setSendingStatus();
     emailOperations.updateDebugInfo("Initiating test registration email - preparing request...");
     
-    // Prepare the test registration email data
     const testRegistrationData = {
       to: ["info@gategaborone.com", "otenggate@gmail.com"],
       subject: 'New Event Registration (Test)',
@@ -114,17 +124,18 @@ export function useEmailTest() {
       emailOperations.updateDebugInfo("Sending registration test...");
       
       let result;
-      if (useRedundancySystem) {
-        // Use the redundancy system
+      
+      if (directBypassMode && hasDirectApiKey) {
+        emailOperations.updateDebugInfo("Using direct Resend API access (bypassing Supabase)...");
+        result = await sendDirectToResend(testRegistrationData);
+      } else if (useRedundancySystem) {
         emailOperations.updateDebugInfo("Using redundancy system with automatic failover...");
         result = await sendEmailWithRedundancy(testRegistrationData);
       } else {
-        // Use direct function invocation
         emailOperations.updateDebugInfo("Using primary provider only...");
         result = await invokeEmailFunction(emailForm.edgeFunction, testRegistrationData);
       }
       
-      // For debugging
       emailOperations.updateDebugInfo(result.data ? JSON.stringify(result.data, null, 2) : JSON.stringify(result, null, 2));
       console.log("Registration test result:", result);
       
@@ -132,13 +143,18 @@ export function useEmailTest() {
         const successData = {
           ...result.data,
           fallbackUsed: result.fallbackUsed,
-          provider: result.provider
+          provider: result.provider,
+          bypassMode: result.bypassMode
         };
         
         emailOperations.setSuccessStatus(successData, email || emailForm.testEmail);
         
-        // Show additional info if fallback was used
-        if (result.fallbackUsed) {
+        if (result.bypassMode) {
+          emailOperations.updateDebugInfo(`Email sent via direct Resend API access, bypassing Supabase Edge Functions.`);
+          toast.success('Email Sent via Direct API', {
+            description: 'Successfully sent email using direct Resend API access.'
+          });
+        } else if (result.fallbackUsed) {
           emailOperations.updateDebugInfo(`Primary provider failed, email was sent via fallback (${result.provider}). Primary error: ${result.primaryError}`);
         }
       } else {
@@ -154,19 +170,20 @@ export function useEmailTest() {
       emailOperations.setErrorStatus(errorMessage, email || emailForm.testEmail, false);
       emailOperations.updateDebugInfo(`Unexpected client-side error in test registration: ${errorMessage}`);
     }
-  }, [emailForm.edgeFunction, emailForm.testEmail, emailForm.testPhone, emailOperations, useRedundancySystem]);
+  }, [emailForm.edgeFunction, emailForm.testEmail, emailForm.testPhone, emailOperations, useRedundancySystem, directBypassMode, hasDirectApiKey]);
   
-  // Function to send a test email with the form data
   const sendTestEmailWithForm = useCallback(async () => {
     emailOperations.setSendingStatus();
     
     let result;
-    if (useRedundancySystem) {
-      // Use the redundancy system
+    
+    if (directBypassMode && hasDirectApiKey) {
+      emailOperations.updateDebugInfo("Using direct Resend API access (bypassing Supabase)...");
+      result = await sendDirectToResend(emailForm.formData);
+    } else if (useRedundancySystem) {
       emailOperations.updateDebugInfo("Using redundancy system with automatic failover...");
       result = await sendEmailWithRedundancy(emailForm.formData);
     } else {
-      // Use direct function invocation
       emailOperations.updateDebugInfo("Using primary provider only...");
       result = await invokeEmailFunction(emailForm.edgeFunction, emailForm.formData);
     }
@@ -174,25 +191,25 @@ export function useEmailTest() {
     if (result.success && result.data) {
       const data = result.data;
       
-      // Handle successful response
       if (data.success) {
         emailOperations.setSuccessStatus(data, emailForm.formData.to);
         
-        // Show additional info if fallback was used
-        if (result.fallbackUsed) {
+        if (result.bypassMode) {
+          emailOperations.updateDebugInfo(`Email sent via direct Resend API access, bypassing Supabase Edge Functions.`);
+          toast.success('Email Sent via Direct API', {
+            description: 'Successfully sent email using direct Resend API access.'
+          });
+        } else if (result.fallbackUsed) {
           emailOperations.updateDebugInfo(`Primary provider failed, email was sent via fallback (${result.provider}). Primary error: ${result.primaryError}`);
         }
       } else {
-        // Handle error response
         emailOperations.setErrorStatus(data.message || 'Failed to send email', emailForm.formData.to, data.resendKeyConfigured);
       }
     } else {
-      // Handle error
       emailOperations.setErrorStatus(result.error || 'Unknown error occurred', emailForm.formData.to, null);
     }
-  }, [emailForm.edgeFunction, emailForm.formData, emailOperations, useRedundancySystem]);
+  }, [emailForm.edgeFunction, emailForm.formData, emailOperations, useRedundancySystem, directBypassMode, hasDirectApiKey]);
 
-  // Combine all the hooks and functions
   return {
     ...emailForm,
     ...emailOperations,
@@ -201,6 +218,9 @@ export function useEmailTest() {
     providerHealth,
     checkProviderHealth,
     useRedundancySystem,
-    setUseRedundancySystem
+    setUseRedundancySystem,
+    directBypassMode,
+    setDirectBypassMode,
+    hasDirectApiKey
   };
 }

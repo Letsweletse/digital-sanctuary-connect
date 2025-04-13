@@ -1,6 +1,8 @@
 
 import { invokeEmailFunction } from './edgeFunctionService';
 import { prepareEmailData } from './emailValidationService';
+import { sendDirectToResend } from './directResendService';
+import { getStoredResendApiKey } from '@/lib/directResendService';
 
 /**
  * Check the health of email providers
@@ -61,6 +63,13 @@ export const checkEmailProvidersHealth = async () => {
                                     (fallbackError instanceof Error ? fallbackError.message : 'Unknown error');
     }
     
+    // Check if we have direct Resend API access configured
+    const directApiKey = getStoredResendApiKey();
+    if (directApiKey) {
+      console.log('Direct Resend API access is configured');
+      // We don't need to test it here, just note that it's configured
+    }
+    
     console.log('Provider health check results:', healthStatus);
     return healthStatus;
   } catch (error) {
@@ -73,11 +82,36 @@ export const checkEmailProvidersHealth = async () => {
 
 /**
  * Send email with redundancy - automatically fallback if primary fails
- * Enhanced with better direct to Resend routing
+ * Enhanced with better direct to Resend routing and bypass options
  */
 export const sendEmailWithRedundancy = async (emailData: any) => {
   const prepared = prepareEmailData(emailData);
   console.log('Sending email with redundancy system, data:', prepared);
+  
+  // Check if direct bypass mode is enabled
+  const useDirectMode = localStorage.getItem('use_direct_resend_mode') === 'true';
+  const directApiKey = getStoredResendApiKey();
+  
+  if (useDirectMode && directApiKey) {
+    console.log('Direct Resend API mode is enabled, bypassing Edge Functions');
+    try {
+      const directResult = await sendDirectToResend(prepared);
+      
+      if (directResult.success) {
+        console.log('Successfully sent via direct Resend API!');
+        return {
+          success: true,
+          provider: 'direct-resend',
+          bypassMode: true,
+          data: directResult
+        };
+      }
+      
+      console.warn('Direct Resend API failed, falling back to regular flow:', directResult.message);
+    } catch (directError) {
+      console.error('Error in direct Resend API mode:', directError);
+    }
+  }
   
   // First try direct primary provider
   try {
@@ -102,34 +136,34 @@ export const sendEmailWithRedundancy = async (emailData: any) => {
     
     // If we hit edge function shutdown or non-2xx error, try direct Resend API
     // This is an enhancement to bypass Supabase Edge Functions when they're failing
-    if (primaryResult.error?.includes('non-2xx status code') || 
+    if ((primaryResult.error?.includes('non-2xx status code') || 
         primaryResult.error?.includes('shutdown') ||
-        primaryResult.statusCode >= 500) {
+        primaryResult.statusCode >= 500) && 
+        directApiKey) {
       
       console.log('Attempting direct Resend API connection (bypassing Supabase)...');
       
-      // We'll use the fallback provider as a proxy to Resend
-      // This logic could be expanded with a direct Resend client implementation
-      const directFallbackResult = await invokeEmailFunction('email-fallback', {
-        ...prepared,
-        useDirectResend: true,
-        timestamp: Date.now(),
-        bypassSupabase: true
-      });
-      
-      if (directFallbackResult.success) {
-        console.log('Successfully sent via direct connection!');
-        return {
-          success: true,
-          provider: 'direct-resend',
-          fallbackUsed: true,
-          primaryError: primaryResult.error || 'Edge Function error',
-          data: directFallbackResult.data
-        };
+      try {
+        // Try direct Resend API access as first fallback
+        const directFallbackResult = await sendDirectToResend(prepared);
+        
+        if (directFallbackResult.success) {
+          console.log('Successfully sent via direct Resend API connection!');
+          return {
+            success: true,
+            provider: 'direct-resend',
+            fallbackUsed: true,
+            bypassMode: true,
+            primaryError: primaryResult.error || 'Edge Function error',
+            data: directFallbackResult
+          };
+        }
+      } catch (directError) {
+        console.error('Error in direct Resend fallback:', directError);
       }
     }
     
-    // Try fallback provider if direct connection also failed
+    // Try email-fallback endpoint if direct connection also failed
     console.log('Attempting to send via fallback provider...');
     const fallbackResult = await invokeEmailFunction('email-fallback', {
       ...prepared,
@@ -158,6 +192,27 @@ export const sendEmailWithRedundancy = async (emailData: any) => {
     
   } catch (error) {
     console.error('Error in email redundancy system:', error);
+    
+    // Try direct Resend if available
+    if (directApiKey) {
+      try {
+        console.log('Attempting direct Resend API as emergency fallback...');
+        const directEmergencyResult = await sendDirectToResend(prepared);
+        
+        if (directEmergencyResult.success) {
+          return {
+            success: true,
+            provider: 'emergency-direct-resend',
+            fallbackUsed: true,
+            bypassMode: true,
+            primaryError: error instanceof Error ? error.message : 'System error',
+            data: directEmergencyResult
+          };
+        }
+      } catch (directError) {
+        console.error('Error in emergency direct Resend:', directError);
+      }
+    }
     
     // Try fallback as last resort
     try {

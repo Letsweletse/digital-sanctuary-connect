@@ -2,7 +2,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 import { corsHeaders, handleCorsRequest } from "./utils/cors.ts";
-import { testApiKey } from "./services/keyTester.ts";
+import { testApiKey, testExternalApiKey } from "./services/keyTester.ts";
 import { logMessage, trackMetrics } from "./utils/logger.ts";
 import { handleApiKeyStatusCheck, handleApiKeyHistoryCheck } from "./handlers/statusHandler.ts";
 
@@ -15,7 +15,7 @@ export const metrics = {
 };
 
 // Get API key from environment or use the provided key
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "re_bGSLW5ST_HXvVo4ZUjY88qADUKpSd42Ac";
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "";
 
 // Initialize Resend client
 export const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
@@ -33,12 +33,36 @@ const handler = async (req: Request): Promise<Response> => {
   logMessage(currentRequest, "Checking Resend API key status");
   logMessage(currentRequest, "Function uptime:", Math.floor((Date.now() - functionStartTime) / 1000) + " seconds");
   logMessage(currentRequest, "Total requests handled:", currentRequest);
-  logMessage(currentRequest, "API key first 10 chars:", RESEND_API_KEY.substring(0, 10));
   
   try {
     // Parse request
     const requestData = await req.json().catch(() => ({}));
     const checkHistory = requestData.checkHistory === true;
+    const checkType = requestData.checkType || 'status-check';
+    const externalApiKey = requestData.externalApiKey;
+    
+    // If this is a request to test an external API key
+    if (checkType === 'direct-key-test' && externalApiKey) {
+      logMessage(currentRequest, "Testing external API key");
+      
+      const testResult = await testExternalApiKey(externalApiKey);
+      
+      return new Response(
+        JSON.stringify({
+          success: testResult.valid,
+          message: testResult.message,
+          details: testResult.details,
+          timestamp: new Date().toISOString()
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders
+          }
+        }
+      );
+    }
     
     if (checkHistory) {
       return handleApiKeyHistoryCheck(currentRequest, RESEND_API_KEY, functionStartTime);
@@ -54,7 +78,7 @@ const handler = async (req: Request): Promise<Response> => {
         success: false,
         message: `Error checking API key: ${error instanceof Error ? error.message : "Unknown error"}`,
         timestamp: new Date().toISOString(),
-        apiKey: RESEND_API_KEY ? `${RESEND_API_KEY.substring(0, 10)}...` : "Not configured",
+        apiKey: RESEND_API_KEY ? `${RESEND_API_KEY.substring(0, 5)}...` : "Not configured",
       }),
       {
         status: 500,
