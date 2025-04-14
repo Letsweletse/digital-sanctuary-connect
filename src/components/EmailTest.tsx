@@ -20,6 +20,8 @@ const EmailTest = () => {
     setIsSending(true);
     
     try {
+      console.log("Starting test email process");
+      
       // Create comprehensive sample registration data with all enhanced email features
       const testData = {
         event: "Perspectives on the Apostolic",
@@ -40,6 +42,8 @@ const EmailTest = () => {
         submitDate: new Date().toISOString(),
         registrationType: "Standard"
       };
+      
+      console.log("Test data prepared:", testData);
       
       // Send the test email with enhanced features
       const response = await sendEventRegistrationEmail("Perspectives on the Apostolic", testData);

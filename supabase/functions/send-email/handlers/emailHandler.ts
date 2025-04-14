@@ -12,11 +12,14 @@ import {
 } from "../utils/calendarUtils.ts";
 import { EmailRequest } from "../types/emailTypes.ts";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+// Use the new API key provided by the user
+const resend = new Resend("re_Ma9SdYa9_B4rHHamBxbzyfNEeHbjcnvdA");
 
 export async function processEmailRequest(req: Request): Promise<Response> {
   try {
+    console.log("Processing email request...");
     const body: EmailRequest = await req.json();
+    console.log("Request body received:", JSON.stringify(body));
 
     const { 
       to, 
@@ -77,17 +80,21 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       checkInId
     });
 
-    await resend.emails.send({
+    console.log("Sending admin email to:", to);
+    const adminEmailResponse = await resend.emails.send({
       from: "Gate Gaborone <info@gategaborone.com>",
       to,
       subject,
       html: adminHtmlContent,
     });
-
+    
+    console.log("Admin email response:", adminEmailResponse);
+    
     let confirmationSuccess = false;
 
     // Send confirmation email if requested
     if (sendConfirmation) {
+      console.log("Sending confirmation email to:", email);
       const confirmationHtml = generateConfirmationEmailContent({
         title,
         name,
@@ -114,7 +121,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
         html: confirmationHtml,
       });
 
-      console.log("Confirmation email sent:", emailResponse);
+      console.log("Confirmation email response:", emailResponse);
       confirmationSuccess = true;
     }
 
@@ -130,6 +137,13 @@ export async function processEmailRequest(req: Request): Promise<Response> {
     );
   } catch (error: any) {
     console.error("Error processing email request:", error);
-    throw error;
+    return new Response(
+      JSON.stringify({ 
+        success: false, 
+        error: error.message,
+        stack: error.stack
+      }),
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+    );
   }
 }

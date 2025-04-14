@@ -19,6 +19,8 @@ import { supabase } from "@/integrations/supabase/client";
  */
 async function sendEmail(requestBody: any) {
   try {
+    console.log("Calling Supabase function with request body:", JSON.stringify(requestBody));
+    
     const { data, error } = await supabase.functions.invoke('send-email', {
       body: requestBody
     });
@@ -27,6 +29,8 @@ async function sendEmail(requestBody: any) {
       console.error('Error invoking send-email function:', error);
       return { success: false, message: error.message };
     }
+    
+    console.log("Email function response:", data);
     
     return {
       success: true,
