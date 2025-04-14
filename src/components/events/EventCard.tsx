@@ -1,11 +1,11 @@
 
 import React from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { EventCategory, EventData } from '@/types/eventTypes';
+import { EventCategoryObject, EventData } from '@/types/eventTypes';
 
 interface EventCardProps {
   event: EventData;
-  categories: EventCategory[];
+  categories: EventCategoryObject[];
   formatDate: (dateString: string) => string;
   onRegister: (event: EventData) => void;
 }

@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { EventCategory } from '@/types/eventTypes';
+import { EventCategoryObject } from '@/types/eventTypes';
 
 interface EventCategoryFilterProps {
-  categories: EventCategory[];
+  categories: EventCategoryObject[];
   activeCategory: string;
   onCategoryChange: (categoryId: string) => void;
 }

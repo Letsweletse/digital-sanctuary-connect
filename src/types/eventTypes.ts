@@ -1,5 +1,12 @@
 
-export type EventCategory = 'worship' | 'bible-study' | 'fellowship' | 'outreach' | 'youth' | 'children' | 'conference';
+// Define the category string literals
+export type EventCategoryType = 'worship' | 'bible-study' | 'fellowship' | 'outreach' | 'youth' | 'children' | 'conference';
+
+// Define the category object interface
+export interface EventCategoryObject {
+  id: string;
+  name: string;
+}
 
 export interface EventData {
   id: string;
@@ -8,16 +15,11 @@ export interface EventData {
   time: string;
   location: string;
   description: string;
-  category: EventCategory;
+  category: EventCategoryType;
   image: string;
   registration?: boolean;
   registrationLink?: string;
   endDate?: string; // Optional field for multi-day events
-}
-
-export interface EventCategory {
-  id: string;
-  name: string;
 }
 
 export interface RegistrationFormData {
@@ -31,3 +33,30 @@ export interface RegistrationFormData {
   numberOfAttendees: number;
   message?: string;
 }
+
+// Add the missing type definitions
+export const attendeeTitles = ['Mr', 'Mrs', 'Ms', 'Dr', 'Rev', 'Pastor', 'Bishop', 'Elder', 'Other'];
+
+export const attendeeRoles = [
+  'Individual', 
+  'Pastor', 
+  'Church Leader', 
+  'Minister', 
+  'Deacon', 
+  'Elder', 
+  'Youth Leader', 
+  'Worship Leader',
+  'Church Member',
+  'Other'
+];
+
+export const countryCodes = [
+  { code: '+267', country: 'Botswana', flag: '🇧🇼' },
+  { code: '+27', country: 'South Africa', flag: '🇿🇦' },
+  { code: '+260', country: 'Zambia', flag: '🇿🇲' },
+  { code: '+263', country: 'Zimbabwe', flag: '🇿🇼' },
+  { code: '+264', country: 'Namibia', flag: '🇳🇦' },
+  { code: '+266', country: 'Lesotho', flag: '🇱🇸' },
+  { code: '+1', country: 'USA/Canada', flag: '🇺🇸' },
+  { code: '+44', country: 'UK', flag: '🇬🇧' }
+];

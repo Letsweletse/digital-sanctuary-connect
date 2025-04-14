@@ -1,5 +1,5 @@
 
-import { EventData, EventCategory } from '@/types/eventTypes';
+import { EventData, EventCategoryObject, EventCategoryType } from '@/types/eventTypes';
 
 export const events: EventData[] = [
   {
@@ -29,7 +29,7 @@ export const events: EventData[] = [
   }
 ];
 
-export const categories: EventCategory[] = [
+export const categories: EventCategoryObject[] = [
   { id: 'all', name: 'All Events' },
   { id: 'worship', name: 'Worship Services' },
   { id: 'bible-study', name: 'Bible Studies' },
