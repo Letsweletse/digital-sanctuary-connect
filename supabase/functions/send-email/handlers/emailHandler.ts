@@ -27,7 +27,7 @@ export const handleEmailSending = async (
   let result;
   let retryCount = 0;
   let lastError = null;
-  const maxRetries = 3;
+  const maxRetries = 5; // Increased from 3 to 5 for SMTP transient failures
 
   while (retryCount < maxRetries) {
     try {
@@ -39,7 +39,7 @@ export const handleEmailSending = async (
         logMessage("No from address provided, using default", { from: emailData.from });
       }
 
-      // Add debug info and sending time
+      // Add SMTP retry information to force hard-retry
       const enhancedEmailData = {
         ...emailData,
         text: emailData.text ? 
@@ -47,12 +47,23 @@ export const handleEmailSending = async (
           `This email was sent at: ${new Date().toISOString()}`,
         headers: {
           ...emailData.headers,
-          "X-Entity-Ref-ID": `send-email-${Date.now()}`,
+          "X-Entity-Ref-ID": `send-email-${Date.now()}-${retryCount}`,
           "X-Priority": "1",
           "X-MSMail-Priority": "High",
-          "Importance": "high"
+          "Importance": "high",
+          "X-Retry-Count": `${retryCount}`,
+          "X-Resend-SMTP-Force": "true" // Force SMTP delivery attempt
         }
       };
+
+      // For retries, add increasing backoff delay
+      if (retryCount > 0) {
+        const backoffDelay = Math.min(500 * Math.pow(2, retryCount) + Math.random() * 500, 10000);
+        logMessage(`Implementing backoff delay of ${backoffDelay}ms before retry ${retryCount + 1}...`, {
+          attempt: retryCount + 1
+        });
+        await new Promise(resolve => setTimeout(resolve, backoffDelay));
+      }
 
       result = await resend.emails.send(enhancedEmailData);
       logMessage("Email sent successfully", { 
@@ -88,6 +99,21 @@ export const handleEmailSending = async (
         to: Array.isArray(emailData.to) ? emailData.to.join(', ') : emailData.to,
         statusCode: sendError.statusCode || 'unknown'
       });
+
+      // Special handling for SMTP transient failures
+      if (sendError.message?.includes("temporary communication failure") || 
+          sendError.message?.includes("transient") ||
+          sendError.message?.includes("SMTP")) {
+        logMessage("SMTP transient failure detected, will retry with longer backoff", {
+          attempt: retryCount,
+          message: sendError.message
+        });
+        
+        // For SMTP failures, use longer exponential backoff
+        const smtpBackoffDelay = Math.min(2000 * Math.pow(2, retryCount) + Math.random() * 1000, 30000);
+        await new Promise(resolve => setTimeout(resolve, smtpBackoffDelay));
+        continue;
+      }
 
       if (sendError.message?.includes("domain is not verified") || 
           sendError.message?.includes("verification") ||

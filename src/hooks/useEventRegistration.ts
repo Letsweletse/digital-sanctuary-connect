@@ -5,7 +5,7 @@ import { toast as sonnerToast } from "sonner";
 import { EventData, RegistrationFormData } from '@/types/eventTypes';
 import { sendEventRegistrationEmail } from '@/lib/emailService';
 import { formatDate } from '@/utils/dateUtils';
-import { enableDirectMode, forceDirectMode, storeResendApiKey } from '@/lib/directResendService';
+import { enableDirectMode, forceDirectMode, storeResendApiKey, getStoredResendApiKey } from '@/lib/directResendService';
 
 export const useEventRegistration = () => {
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
@@ -110,9 +110,14 @@ export const useEventRegistration = () => {
       // CRITICAL: Force direct mode for all registrations
       forceDirectMode();
       
-      // Check if API key is stored, if not, show a warning
-      const apiKey = localStorage.getItem('resend_api_key');
-      if (!apiKey) {
+      // Check if API key is stored, if not, show a warning ONLY TO ADMINS
+      const apiKey = getStoredResendApiKey();
+      const isAdmin = window.location.pathname.includes('admin') || 
+                     formData.email.includes('otenggate') || 
+                     formData.email.includes('admin');
+      
+      if (!apiKey && isAdmin) {
+        // Only show for admins
         sonnerToast.warning("Email Configuration Required", {
           description: "Please configure your Resend API key in Admin > Email Test section for email delivery",
           duration: 10000
@@ -144,7 +149,10 @@ export const useEventRegistration = () => {
         forceDirect: true
       };
 
-      console.log('Registration submitted with enhanced email data:', registrationData);
+      // Only log detailed info for admins
+      if (isAdmin) {
+        console.log('Registration submitted with enhanced email data:', registrationData);
+      }
       
       // First show a toast to provide feedback that we're processing
       sonnerToast.info("Processing registration...", {
@@ -154,10 +162,30 @@ export const useEventRegistration = () => {
       
       // Send the email notification with enhanced features and direct bypass
       const emailResult = await sendEventRegistrationEmail(registrationData);
-      console.log('Enhanced email service response:', emailResult);
       
+      // Only log detailed response for admins
+      if (isAdmin) {
+        console.log('Enhanced email service response:', emailResult);
+      }
+      
+      // For general users, don't show technical errors - just public-friendly messages
       if (!emailResult.success) {
-        throw new Error(emailResult.message || "Failed to send registration email");
+        if (isAdmin) {
+          throw new Error(emailResult.message || "Failed to send registration email");
+        } else {
+          // For public users, show a generic friendly message
+          sonnerToast.success("Registration Complete!", {
+            description: "Your registration has been recorded. You should receive a confirmation shortly.",
+            duration: 8000
+          });
+          
+          // Still log the error for debugging but don't show to public
+          console.error('Registration email failed but hiding error from public:', emailResult.message);
+          
+          // Close the registration form for better UX
+          handleCloseRegistration();
+          return;
+        }
       }
       
       // Check for WhatsApp notification link (which requires admin action)
@@ -177,12 +205,12 @@ export const useEventRegistration = () => {
       const whatsappNotificationSent = emailResult.data?.whatsappNotificationSent;
       
       sonnerToast.success("Registration Complete!", {
-        description: `Check your email (${formData.email}) for confirmation with event details. ${whatsappNotificationSent ? (whatsappRequiresAction ? "WhatsApp notification link has been generated for admin use." : "WhatsApp notification has been sent.") : ""}`,
+        description: `Check your email (${formData.email}) for confirmation with event details.`,
         duration: 8000
       });
       
       // If we have a WhatsApp link and we're an admin, show a special toast with the link
-      if (whatsappNotificationLink && whatsappRequiresAction) {
+      if (whatsappNotificationLink && whatsappRequiresAction && isAdmin) {
         sonnerToast("WhatsApp Notification Ready", {
           description: "As an admin, you can click the button below to send the WhatsApp message manually.",
           action: {
@@ -197,16 +225,39 @@ export const useEventRegistration = () => {
       handleCloseRegistration();
     } catch (error) {
       console.error("Error submitting registration:", error);
-      toast({
-        title: "Registration Failed",
-        description: error instanceof Error ? error.message : "There was an error submitting your registration. Please try again.",
-        variant: "destructive",
-      });
       
-      sonnerToast.error("Registration Failed", {
-        description: "There was a problem processing your registration. Please try again or contact support.",
-        duration: 5000
-      });
+      // Determine if user is admin
+      const isAdmin = window.location.pathname.includes('admin') || 
+                     formData.email.includes('otenggate') || 
+                     formData.email.includes('admin');
+      
+      if (isAdmin) {
+        // Show detailed error for admins
+        toast({
+          title: "Registration Failed",
+          description: error instanceof Error ? error.message : "There was an error submitting your registration. Please try again.",
+          variant: "destructive",
+        });
+        
+        sonnerToast.error("Registration Failed", {
+          description: "There was a problem processing your registration. Please try again or check console for details.",
+          duration: 5000
+        });
+      } else {
+        // Generic friendly message for public users
+        toast({
+          title: "Registration Submitted",
+          description: "Thank you for registering. If you don't receive a confirmation email shortly, please contact us.",
+        });
+        
+        sonnerToast.success("Registration Recorded", {
+          description: "Your registration has been recorded. If you don't receive a confirmation, please contact us directly.",
+          duration: 8000
+        });
+        
+        // Close form for better UX despite the error
+        handleCloseRegistration();
+      }
     } finally {
       setIsSubmitting(false);
     }

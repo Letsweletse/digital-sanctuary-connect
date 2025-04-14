@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { getStoredResendApiKey, storeResendApiKey, clearStoredResendApiKey } from '@/lib/directResendService';
 import { toast } from 'sonner';
-import { Key, Save, ShieldAlert, X } from 'lucide-react';
+import { Key, Save, ShieldAlert, X, CheckCircle2 } from 'lucide-react';
 import { invokeEmailFunction } from './services/edgeFunctionService';
 
 const DirectResendKeyForm = () => {
@@ -14,15 +14,44 @@ const DirectResendKeyForm = () => {
   const [isStored, setIsStored] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Load stored API key on component mount
+  // Load stored API key on component mount and verify storage
   useEffect(() => {
-    const storedKey = getStoredResendApiKey();
-    if (storedKey) {
-      setApiKey(storedKey);
-      setIsStored(true);
-    }
-  }, []);
+    const loadStoredKey = () => {
+      try {
+        setIsLoading(true);
+        const storedKey = getStoredResendApiKey();
+        
+        if (storedKey) {
+          setApiKey(storedKey);
+          setIsStored(true);
+          console.log('✅ API key loaded from storage successfully');
+        } else {
+          console.log('⚠️ No API key found in storage');
+        }
+      } catch (error) {
+        console.error('Error loading API key:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadStoredKey();
+    
+    // Setup periodic check for API key persistence
+    const intervalId = setInterval(() => {
+      const currentKey = getStoredResendApiKey();
+      if (isStored && !currentKey) {
+        console.warn('⚠️ API key disappeared from storage, attempting to restore');
+        if (apiKey) {
+          storeResendApiKey(apiKey);
+        }
+      }
+    }, 10000); // Check every 10 seconds
+    
+    return () => clearInterval(intervalId);
+  }, [apiKey, isStored]);
   
   const handleSaveApiKey = () => {
     if (!apiKey || apiKey.trim().length < 10) {
@@ -32,12 +61,23 @@ const DirectResendKeyForm = () => {
       return;
     }
     
+    // Store with our improved multi-storage method
     storeResendApiKey(apiKey);
     setIsStored(true);
     
-    toast.success('API Key Saved', {
-      description: 'Your Resend API key has been saved for direct sending'
-    });
+    // Double-check storage was successful
+    setTimeout(() => {
+      const storedKey = getStoredResendApiKey();
+      if (storedKey) {
+        toast.success('API Key Saved Permanently', {
+          description: 'Your Resend API key has been saved for direct sending'
+        });
+      } else {
+        toast.error('Storage Issue Detected', {
+          description: 'Your browser may be blocking permanent storage. Try a different browser.'
+        });
+      }
+    }, 500);
   };
   
   const handleClearApiKey = () => {
@@ -61,6 +101,10 @@ const DirectResendKeyForm = () => {
     setIsTesting(true);
     
     try {
+      // First ensure the key is stored (in case they forgot to click save)
+      storeResendApiKey(apiKey);
+      setIsStored(true);
+      
       // First try to check using the edge function
       const result = await invokeEmailFunction('check-resend-status', {
         externalApiKey: apiKey,
@@ -97,13 +141,13 @@ const DirectResendKeyForm = () => {
       </div>
       
       <p className="text-sm text-red-700 mb-3">
-        If Supabase Edge Functions are causing issues, you can configure direct Resend API access as a fallback.
+        Configure direct Resend API access for reliable email delivery. Your API key will be stored securely in your browser.
       </p>
       
       <div className="space-y-2">
         <div>
           <Label htmlFor="resend-api-key" className="text-sm font-medium">
-            Resend API Key
+            Resend API Key {isStored && <CheckCircle2 className="inline-block h-4 w-4 text-green-500 ml-1" />}
           </Label>
           <div className="relative">
             <Input
@@ -122,9 +166,17 @@ const DirectResendKeyForm = () => {
               {isVisible ? "Hide" : "Show"}
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
-            This key will be stored locally in your browser for direct API access when needed.
-          </p>
+          {isStored && (
+            <p className="text-xs text-green-600 mt-1 flex items-center">
+              <CheckCircle2 className="h-3 w-3 mr-1" /> 
+              API key is stored permanently in your browser
+            </p>
+          )}
+          {!isStored && (
+            <p className="text-xs text-gray-500 mt-1">
+              This key will be stored permanently in your browser for direct API access.
+            </p>
+          )}
         </div>
         
         <div className="flex space-x-2 pt-2">
@@ -133,10 +185,10 @@ const DirectResendKeyForm = () => {
             size="sm" 
             onClick={handleSaveApiKey}
             className="flex-1 border-red-200 bg-white hover:bg-red-100"
-            disabled={!apiKey}
+            disabled={!apiKey || isLoading}
           >
             <Save className="h-4 w-4 mr-1" />
-            {isStored ? "Update Key" : "Save Key"}
+            {isStored ? "Update Key" : "Save Key Permanently"}
           </Button>
           
           {isStored && (
@@ -145,6 +197,7 @@ const DirectResendKeyForm = () => {
               size="sm" 
               onClick={handleClearApiKey}
               className="border-red-200 bg-white hover:bg-red-100"
+              disabled={isLoading}
             >
               <X className="h-4 w-4 mr-1" />
               Clear Key
@@ -156,7 +209,7 @@ const DirectResendKeyForm = () => {
             size="sm" 
             onClick={handleTestDirectKey}
             className="border-red-200 bg-white hover:bg-red-100"
-            disabled={!apiKey || isTesting}
+            disabled={!apiKey || isTesting || isLoading}
           >
             <Key className="h-4 w-4 mr-1" />
             Test Key
