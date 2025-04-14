@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,7 +13,7 @@ const Give = () => {
       name: "Pastoral Missions",
       description: "Support our pastors as they travel to unreached communities spreading the Word of God across Botswana and beyond. Your contribution helps cover transportation, accommodation, and resources needed for effective ministry.",
       target: 50000,
-      raised: 32500,
+      raised: 0,
       qrCode: "/images/qr-pastors-travel.png"
     },
     {
@@ -20,7 +21,7 @@ const Give = () => {
       name: "New Church Building",
       description: "Help us establish a permanent home for our growing congregation. The new building will include a larger sanctuary, classrooms for children's ministry, and community spaces to better serve our members and visitors.",
       target: 750000,
-      raised: 325000,
+      raised: 0,
       qrCode: "/images/qr-building.png"
     },
     {
@@ -28,23 +29,15 @@ const Give = () => {
       name: "Family Support Fund",
       description: "Provide assistance to families in our community facing financial hardship. Your giving helps with essential needs like food, housing, medical expenses, and education for children.",
       target: 100000,
-      raised: 67500,
+      raised: 0,
       qrCode: "/images/qr-family.png"
-    },
-    {
-      id: "youth-ministry",
-      name: "Youth Ministry",
-      description: "Invest in the next generation through our youth programs, camps, and leadership development. We aim to equip young people with strong faith foundations and life skills in a supportive Christian environment.",
-      target: 85000,
-      raised: 42500,
-      qrCode: "/images/qr-youth.png"
     },
     {
       id: "community-outreach",
       name: "Community Outreach",
       description: "Fund our initiatives that serve the broader Gaborone community through food distribution programs, health clinics, educational support, and other practical demonstrations of God's love.",
       target: 120000,
-      raised: 78000,
+      raised: 0,
       qrCode: "/images/qr-outreach.png"
     }
   ];
@@ -74,7 +67,7 @@ const Give = () => {
           </div>
 
           <Tabs defaultValue={ministries[0].id} className="w-full">
-            <TabsList className="grid grid-cols-2 md:grid-cols-5 mb-8">
+            <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8">
               {ministries.map(ministry => (
                 <TabsTrigger key={ministry.id} value={ministry.id} className="text-sm py-2">
                   {ministry.name}
