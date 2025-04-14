@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -130,20 +129,14 @@ const Give = () => {
 
           <div className="mt-12 p-6 bg-church-blue-light rounded-lg">
             <h2 className="text-xl font-semibold mb-2 text-church-blue-dark">Other Ways to Give</h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="font-medium mb-2">Bank Transfer Details</h3>
-                <p className="text-church-neutral-700 mb-1">Bank: First National Bank Botswana</p>
-                <p className="text-church-neutral-700 mb-1">Account Name: Gate Gaborone</p>
-                <p className="text-church-neutral-700 mb-1">Account Number: 6243 5789 0112</p>
-                <p className="text-church-neutral-700">Branch Code: 281667</p>
-              </div>
-              <div>
-                <h3 className="font-medium mb-2">Mobile Money</h3>
-                <p className="text-church-neutral-700 mb-1">Orange Money: +267 75507981</p>
-                <p className="text-church-neutral-700">MyZaka: +267 75507981</p>
-                <p className="text-church-neutral-700 mt-4">Please include your name and purpose of giving in the reference.</p>
-              </div>
+            <div>
+              <h3 className="font-medium mb-2">Bank Transfer Details</h3>
+              <p className="text-church-neutral-700 mb-1">Bank: First National Bank Botswana</p>
+              <p className="text-church-neutral-700 mb-1">Account Name: Gate Gaborone</p>
+              <p className="text-church-neutral-700 mb-1">Account Number: 62767853213</p>
+              <p className="text-church-neutral-700 mb-1">Branch Name: FNB Kgale</p>
+              <p className="text-church-neutral-700 mb-4">Branch Code: 284567</p>
+              <p className="text-church-neutral-700">Please include your name and purpose of giving in the reference.</p>
             </div>
           </div>
         </div>
