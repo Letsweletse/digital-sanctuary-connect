@@ -1,52 +1,5 @@
 
 project_id = "lojchdvtwypjqupsjynf"
 
-[api]
-enabled = true
-port = 54321
-schemas = ["public", "storage", "graphql_public"]
-
-[db]
-port = 54322
-
-[studio]
-enabled = true
-port = 54323
-api_url = "http://localhost"
-
-[inbucket]
-enabled = true
-port = 54324
-
-[auth]
-enabled = true
-site_url = "http://localhost:3000"
-
-[realtime]
-enabled = true
-
-[storage]
-enabled = true
-
-[analytics]
-enabled = false
-
-[vector]
-enabled = false
-
 [functions.send-email]
-verify_jwt = true
-import_map = "./send-email/import_map.json"
-# Increase timeout for function to avoid cutoffs
-timeout_ms = 30000
-
-[functions.check-resend-status]
-verify_jwt = true
-import_map = "./check-resend-status/import_map.json"
-# Increase timeout for function to avoid cutoffs
-timeout_ms = 15000
-
-[functions.email-fallback]
-verify_jwt = true
-# Increase timeout for function to avoid cutoffs
-timeout_ms = 15000
+verify_jwt = false

@@ -54,36 +54,3 @@ export const countryCodes = [
   { code: '+61', country: 'Australia', flag: '🇦🇺' },
   { code: '+64', country: 'New Zealand', flag: '🇳🇿' },
 ];
-
-// Email sharing options
-export interface SocialShareOption {
-  name: string;
-  icon: string;
-  url: string;
-}
-
-export interface EmailTemplateProps {
-  logoUrl: string;
-  eventData: {
-    title: string;
-    date: string;
-    time: string;
-    location: string;
-    image: string;
-  };
-  attendeeData: {
-    title: string;
-    name: string;
-    email: string;
-    phone: string;
-    role: string;
-    denomination: string;
-  };
-  checkInDetails: {
-    id: string;
-    qrCodeUrl: string;
-  };
-  locationQrCodeUrl: string;
-  calendarLink: string;
-  socialLinks: SocialShareOption[];
-}
