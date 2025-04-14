@@ -6,10 +6,12 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { Share2 } from "lucide-react";
 
 const EmailTest = () => {
   const [isSending, setIsSending] = useState(false);
   const [testEmail, setTestEmail] = useState('');
+  const [lastSentId, setLastSentId] = useState('');
   
   const handleTestEmail = async () => {
     if (!testEmail || !testEmail.includes('@')) {
@@ -51,6 +53,11 @@ const EmailTest = () => {
       console.log("Email test response:", response);
       
       if (response.success) {
+        // Store the check-in ID for WhatsApp sharing
+        if (response.data && response.data.checkInId) {
+          setLastSentId(response.data.checkInId);
+        }
+        
         toast.success("Test emails sent successfully!", {
           description: `Check ${testEmail} for the enhanced confirmation with QR codes, calendar integration, and social media sharing options.`,
           duration: 8000
@@ -67,6 +74,28 @@ const EmailTest = () => {
     } finally {
       setIsSending(false);
     }
+  };
+  
+  const handleShareToWhatsApp = () => {
+    const eventName = "Perspectives on the Apostolic";
+    const eventDate = "2025-05-10";
+    const eventTime = "9:00 AM - 1:30 PM";
+    
+    // Create WhatsApp sharing text with event details and check-in ID if available
+    const shareText = lastSentId 
+      ? `I just registered for ${eventName} at Gate Gaborone on ${eventDate} at ${eventTime}. Join me! My check-in ID is: ${lastSentId}. Register here: https://gategaborone.com/events`
+      : `Join me at ${eventName} at Gate Gaborone on ${eventDate} at ${eventTime}. Register here: https://gategaborone.com/events`;
+    
+    // Create WhatsApp sharing URL
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+    
+    // Open WhatsApp in a new tab
+    window.open(whatsappUrl, '_blank');
+    
+    toast.success("Opening WhatsApp sharing", {
+      description: "Share the event details with your contacts via WhatsApp",
+      duration: 3000
+    });
   };
   
   return (
@@ -113,6 +142,17 @@ const EmailTest = () => {
           "Send Enhanced Test Email"
         )}
       </Button>
+      
+      {lastSentId && (
+        <Button 
+          onClick={handleShareToWhatsApp}
+          className="w-full mt-4 bg-green-600 hover:bg-green-700 flex items-center justify-center gap-2"
+        >
+          <Share2 size={18} />
+          Share to WhatsApp
+        </Button>
+      )}
+      
       <div className="mt-4 text-sm text-gray-500">
         <p>Admin recipients: otenggate@gmail.com, info@gategaborone.com, iblimenterprise@zohomail.com</p>
       </div>
