@@ -9,7 +9,7 @@ import ChurchCalendarEmbed from '@/components/events/ChurchCalendarEmbed';
 import { events, categories } from '@/data/eventsData';
 import { formatDate } from '@/utils/dateUtils';
 import { useEventRegistration } from '@/hooks/useEventRegistration';
-import { storeResendApiKey, enableDirectMode } from '@/lib/directResendService';
+import { storeResendApiKey, enableDirectMode, forceDirectMode } from '@/lib/directResendService';
 import { toast } from 'sonner';
 
 const Events = () => {
@@ -41,8 +41,18 @@ const Events = () => {
           // const testApiKey = "re_YOUR_KEY_HERE";
           // storeResendApiKey(testApiKey);
           // Force direct mode to be enabled
-          enableDirectMode();
+          forceDirectMode();
+          
+          // Critical reminder for API key
+          toast.warning("Email Sending Requires Configuration", {
+            description: "Please add your Resend API key in Admin > Email Test section for emails to work",
+            duration: 10000
+          });
         }
+      } else {
+        // If API key exists, still force direct mode
+        forceDirectMode();
+        console.log("✅ Direct mode enabled with existing API key");
       }
     } catch (e) {
       console.error('Failed to set test API key:', e);
@@ -100,7 +110,9 @@ const Events = () => {
           isTestEmail: true,
           sendSms: true,
           registrationType: "Test",
-          directBypass: true // Force direct bypass
+          directBypass: true, // Force direct bypass
+          forceDirect: true,  // Extra flag to force direct
+          timestamp: Date.now() // Add timestamp to prevent caching
         };
         
         // Simulate registration submission with the properly structured parameters
@@ -110,11 +122,19 @@ const Events = () => {
     
     document.addEventListener('test-registration', handleTestRegistration);
     
-    // Show instructions toast on page load
-    toast.info('Email Configuration Required', {
-      description: 'Go to Admin > Email Test to configure your Resend API key for direct sending',
-      duration: 8000
-    });
+    // Show critical configuration reminder
+    const apiKey = localStorage.getItem('resend_api_key');
+    if (!apiKey) {
+      toast.error('Email Configuration Required', {
+        description: 'You MUST go to Admin > Email Test to set your Resend API key for email delivery to work',
+        duration: 0 // Keep it visible until dismissed
+      });
+    } else {
+      toast.success('Email Configuration Detected', {
+        description: 'Resend API key found in browser storage. Direct email mode is enabled.',
+        duration: 5000
+      });
+    }
     
     return () => {
       document.removeEventListener('test-registration', handleTestRegistration);

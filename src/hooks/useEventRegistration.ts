@@ -5,7 +5,7 @@ import { toast as sonnerToast } from "sonner";
 import { EventData, RegistrationFormData } from '@/types/eventTypes';
 import { sendEventRegistrationEmail } from '@/lib/emailService';
 import { formatDate } from '@/utils/dateUtils';
-import { enableDirectMode } from '@/lib/directResendService';
+import { enableDirectMode, forceDirectMode, storeResendApiKey } from '@/lib/directResendService';
 
 export const useEventRegistration = () => {
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
@@ -107,8 +107,17 @@ export const useEventRegistration = () => {
     setWhatsappLink(null);
 
     try {
-      // Make sure we use direct mode for registration
-      enableDirectMode();
+      // CRITICAL: Force direct mode for all registrations
+      forceDirectMode();
+      
+      // Check if API key is stored, if not, show a warning
+      const apiKey = localStorage.getItem('resend_api_key');
+      if (!apiKey) {
+        sonnerToast.warning("Email Configuration Required", {
+          description: "Please configure your Resend API key in Admin > Email Test section for email delivery",
+          duration: 10000
+        });
+      }
       
       // Prepare comprehensive registration data with all required fields for enhanced email
       const registrationData = {
@@ -130,7 +139,9 @@ export const useEventRegistration = () => {
         sendConfirmation: true,
         registrationType: 'Standard',
         checkInId: crypto.randomUUID(),
-        directBypass: true // Force direct bypass
+        directBypass: true, // Force direct bypass
+        timestamp: Date.now(),
+        forceDirect: true
       };
 
       console.log('Registration submitted with enhanced email data:', registrationData);
@@ -166,8 +177,8 @@ export const useEventRegistration = () => {
       const whatsappNotificationSent = emailResult.data?.whatsappNotificationSent;
       
       sonnerToast.success("Registration Complete!", {
-        description: `Check your email for confirmation with event details. ${whatsappNotificationSent ? (whatsappRequiresAction ? "WhatsApp notification link has been generated for admin use." : "WhatsApp notification has been sent.") : ""}`,
-        duration: 5000
+        description: `Check your email (${formData.email}) for confirmation with event details. ${whatsappNotificationSent ? (whatsappRequiresAction ? "WhatsApp notification link has been generated for admin use." : "WhatsApp notification has been sent.") : ""}`,
+        duration: 8000
       });
       
       // If we have a WhatsApp link and we're an admin, show a special toast with the link

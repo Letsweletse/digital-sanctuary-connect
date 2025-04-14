@@ -48,7 +48,9 @@ export const handleEmailSending = async (
         headers: {
           ...emailData.headers,
           "X-Entity-Ref-ID": `send-email-${Date.now()}`,
-          "X-Priority": "1"
+          "X-Priority": "1",
+          "X-MSMail-Priority": "High",
+          "Importance": "high"
         }
       };
 
