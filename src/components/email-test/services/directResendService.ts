@@ -12,7 +12,7 @@ export async function sendDirectToResend(emailData: any) {
   const apiKey = getStoredResendApiKey();
   
   if (!apiKey) {
-    console.error('No Resend API key found for direct sending. Please add your API key in Admin > Email Test.');
+    console.error('⚠️ NO DIRECT API KEY FOUND - Email delivery may fail!');
     toast.error('No Resend API key configured', {
       description: 'Please add your API key in the Admin > Email Test section.'
     });

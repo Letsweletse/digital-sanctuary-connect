@@ -38,7 +38,7 @@ enabled = false
 verify_jwt = true
 import_map = "./send-email/import_map.json"
 # Increase timeout for function to avoid cutoffs
-timeout_ms = 15000
+timeout_ms = 30000
 
 [functions.check-resend-status]
 verify_jwt = true
