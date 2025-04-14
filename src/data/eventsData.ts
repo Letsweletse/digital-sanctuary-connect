@@ -3,16 +3,6 @@ import { EventData, EventCategory } from '@/types/eventTypes';
 
 export const events: EventData[] = [
   {
-    id: '1',
-    title: 'Sunday Worship Service',
-    date: '2023-12-17',
-    time: '8:30 AM & 11:00 AM',
-    location: 'Main Sanctuary',
-    description: 'Join us for worship, prayer, and Biblical teaching as we gather together as a church family.',
-    category: 'worship',
-    image: 'https://images.unsplash.com/photo-1508963493744-76fce69379c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80'
-  },
-  {
     id: '4',
     title: 'Perspectives on the Apostolic with Thamo Naidoo',
     date: '2025-05-10',
@@ -25,14 +15,17 @@ export const events: EventData[] = [
     registrationLink: '#register-event'
   },
   {
-    id: '5',
-    title: 'Men\'s Breakfast',
-    date: '2023-12-09',
-    time: '8:00 AM',
-    location: 'Fellowship Hall',
-    description: 'Monthly gathering for men of all ages. Enjoy breakfast, fellowship, and a short devotional.',
-    category: 'fellowship',
-    image: 'https://images.unsplash.com/photo-1542641728-6ca359b085f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80'
+    id: '6',
+    title: 'The Apostolic Conference 2025',
+    date: '2025-05-24',
+    time: '9:00 AM - 3:00 PM',
+    location: 'Capital City Baptist Hall',
+    description: 'Theme: "The Times of Refreshing" (Acts 3:19). Join us for three powerful days of apostolic ministry with featured speaker Pastor Kobus Bezuidenhout. To register call: 0993181830 or 0993749297.',
+    category: 'conference',
+    image: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Malawi%20Conference_1744623783611.jpeg',
+    registration: true,
+    registrationLink: '#register-event',
+    endDate: '2025-05-26' // Adding end date for multi-day event
   }
 ];
 

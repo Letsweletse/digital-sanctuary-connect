@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { EventData } from '@/types/eventTypes';
 import { formatDate } from '@/utils/dateUtils';
-import { Share2 } from 'lucide-react';
+import { Share2, Facebook, Twitter, Linkedin, Instagram, Mail } from 'lucide-react';
 
 interface FeaturedEventProps {
   featuredEvent: EventData;
@@ -12,7 +13,29 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
   featuredEvent,
   onRegisterClick 
 }) => {
-  const shareLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(`Join us for ${featuredEvent.title}! Register here: ${featuredEvent.registrationLink}`)}&media=${encodeURIComponent(featuredEvent.image)}`;
+  const shareText = `Join us for ${featuredEvent.title}! Register here: https://gategaborone.com/events`;
+  
+  // Different sharing links
+  const shareLinks = {
+    whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://gategaborone.com/events')}&quote=${encodeURIComponent(shareText)}`,
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent('https://gategaborone.com/events')}&summary=${encodeURIComponent(shareText)}`,
+    email: `mailto:?subject=${encodeURIComponent(featuredEvent.title)}&body=${encodeURIComponent(`${shareText}\n\nDate: ${formatDate(featuredEvent.date)}\nTime: ${featuredEvent.time}\nLocation: ${featuredEvent.location}`)}`
+  };
+
+  // Handle sharing to various platforms
+  const handleShare = (platform: keyof typeof shareLinks) => {
+    window.open(shareLinks[platform], '_blank');
+  };
+
+  // Format multi-day event dates
+  const getEventDateDisplay = () => {
+    if (featuredEvent.endDate) {
+      return `${formatDate(featuredEvent.date)} - ${formatDate(featuredEvent.endDate)}`;
+    }
+    return formatDate(featuredEvent.date);
+  };
 
   return (
     <section className="py-20 bg-gray-900 text-white">
@@ -43,12 +66,13 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
             </div>
             <h3 className="text-3xl font-bold text-white mb-2">{featuredEvent.title}</h3>
             <p className="text-white/80 mb-4 text-lg">
-              {formatDate(featuredEvent.date)} at {featuredEvent.time} | {featuredEvent.location}
+              {getEventDateDisplay()} at {featuredEvent.time} | {featuredEvent.location}
             </p>
             <p className="text-lg opacity-80 leading-relaxed mb-4">
               {featuredEvent.description}
             </p>
-            <div className="flex gap-5">
+            
+            <div className="flex flex-wrap gap-5 mb-6">
               <a 
                 href={featuredEvent.registrationLink} 
                 target="_blank" 
@@ -57,16 +81,54 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
               >
                 Register Now
               </a>
-              <a 
-                href={shareLink} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md flex items-center justify-center"
-              >
-                <Share2 size={24} className="mr-2" />
-                Share
-              </a>
+              
+              {/* Social sharing section */}
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={() => handleShare('whatsapp')}
+                  className="bg-green-600 hover:bg-green-700 text-white p-3 rounded-lg shadow-md"
+                  aria-label="Share to WhatsApp"
+                >
+                  <Share2 size={20} />
+                </button>
+                <button
+                  onClick={() => handleShare('facebook')}
+                  className="bg-blue-700 hover:bg-blue-800 text-white p-3 rounded-lg shadow-md"
+                  aria-label="Share to Facebook"
+                >
+                  <Facebook size={20} />
+                </button>
+                <button
+                  onClick={() => handleShare('twitter')}
+                  className="bg-black hover:bg-gray-800 text-white p-3 rounded-lg shadow-md"
+                  aria-label="Share to Twitter/X"
+                >
+                  <Twitter size={20} />
+                </button>
+                <button
+                  onClick={() => handleShare('linkedin')}
+                  className="bg-blue-800 hover:bg-blue-900 text-white p-3 rounded-lg shadow-md"
+                  aria-label="Share to LinkedIn"
+                >
+                  <Linkedin size={20} />
+                </button>
+                <button
+                  onClick={() => handleShare('email')}
+                  className="bg-gray-600 hover:bg-gray-700 text-white p-3 rounded-lg shadow-md"
+                  aria-label="Share via Email"
+                >
+                  <Mail size={20} />
+                </button>
+              </div>
             </div>
+            
+            {/* Call to register information */}
+            {featuredEvent.id === '6' && (
+              <div className="mt-4 bg-gray-700 rounded-lg p-4">
+                <h4 className="font-bold text-white mb-2">To Register:</h4>
+                <p className="text-white/90">Call: <a href="tel:+260993181830" className="underline">0993181830</a> or <a href="tel:+260993749297" className="underline">0993749297</a></p>
+              </div>
+            )}
           </div>
         </div>
       </div>

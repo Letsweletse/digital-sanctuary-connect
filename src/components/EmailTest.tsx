@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Share2 } from "lucide-react";
+import { Share2, Facebook, Twitter, Linkedin, Mail, Instagram } from "lucide-react";
 
 const EmailTest = () => {
   const [isSending, setIsSending] = useState(false);
@@ -26,10 +26,10 @@ const EmailTest = () => {
       
       // Create comprehensive sample registration data with all enhanced email features
       const testData = {
-        event: "Perspectives on the Apostolic",
-        eventDate: "2025-05-10",
-        eventTime: "9:00 AM - 1:30 PM",
-        eventImage: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg",
+        event: "The Apostolic Conference 2025",
+        eventDate: "2025-05-24",
+        eventTime: "9:00 AM - 3:00 PM",
+        eventImage: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Malawi%20Conference_1744623783611.jpeg",
         location: "https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7", // Gate Gaborone location on Google Maps
         attendee: {
           title: "Mr",
@@ -77,14 +77,14 @@ const EmailTest = () => {
   };
   
   const handleShareToWhatsApp = () => {
-    const eventName = "Perspectives on the Apostolic";
-    const eventDate = "2025-05-10";
-    const eventTime = "9:00 AM - 1:30 PM";
+    const eventName = "The Apostolic Conference 2025";
+    const eventDate = "2025-05-24 to 2025-05-26";
+    const eventTime = "9:00 AM - 3:00 PM";
     
     // Create WhatsApp sharing text with event details and check-in ID if available
     const shareText = lastSentId 
-      ? `I just registered for ${eventName} at Gate Gaborone on ${eventDate} at ${eventTime}. Join me! My check-in ID is: ${lastSentId}. Register here: https://gategaborone.com/events`
-      : `Join me at ${eventName} at Gate Gaborone on ${eventDate} at ${eventTime}. Register here: https://gategaborone.com/events`;
+      ? `I just registered for ${eventName} at Capital City Baptist Hall on ${eventDate} at ${eventTime}. Join me! My check-in ID is: ${lastSentId}. To register call: 0993181830 or 0993749297`
+      : `Join me at ${eventName} at Capital City Baptist Hall on ${eventDate} at ${eventTime}. To register call: 0993181830 or 0993749297`;
     
     // Create WhatsApp sharing URL
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
@@ -94,6 +94,40 @@ const EmailTest = () => {
     
     toast.success("Opening WhatsApp sharing", {
       description: "Share the event details with your contacts via WhatsApp",
+      duration: 3000
+    });
+  };
+  
+  const handleShareToSocial = (platform: string) => {
+    const eventName = "The Apostolic Conference 2025";
+    const eventDate = "2025-05-24 to 2025-05-26";
+    const eventTime = "9:00 AM - 3:00 PM";
+    const shareText = `Join me at ${eventName} at Capital City Baptist Hall on ${eventDate} at ${eventTime}. Theme: "The Times of Refreshing" (Acts 3:19).`;
+    const shareUrl = "https://gategaborone.com/events";
+    
+    let shareLink = "";
+    
+    switch(platform) {
+      case 'facebook':
+        shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+        break;
+      case 'twitter':
+        shareLink = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText + " " + shareUrl)}`;
+        break;
+      case 'linkedin':
+        shareLink = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}&summary=${encodeURIComponent(shareText)}`;
+        break;
+      case 'email':
+        shareLink = `mailto:?subject=${encodeURIComponent(eventName)}&body=${encodeURIComponent(shareText + "\n\nRegister by calling: 0993181830 or 0993749297")}`;
+        break;
+      default:
+        shareLink = `https://wa.me/?text=${encodeURIComponent(shareText + " To register call: 0993181830 or 0993749297")}`;
+    }
+    
+    window.open(shareLink, '_blank');
+    
+    toast.success(`Opening ${platform} sharing`, {
+      description: `Share the event details with your contacts via ${platform}`,
       duration: 3000
     });
   };
@@ -144,13 +178,53 @@ const EmailTest = () => {
       </Button>
       
       {lastSentId && (
-        <Button 
-          onClick={handleShareToWhatsApp}
-          className="w-full mt-4 bg-green-600 hover:bg-green-700 flex items-center justify-center gap-2"
-        >
-          <Share2 size={18} />
-          Share to WhatsApp
-        </Button>
+        <div className="mt-4">
+          <h3 className="font-bold text-lg mb-2">Share Event:</h3>
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            <Button 
+              onClick={handleShareToWhatsApp}
+              className="bg-green-600 hover:bg-green-700 flex items-center justify-center gap-1"
+            >
+              <Share2 size={16} />
+              WhatsApp
+            </Button>
+            <Button 
+              onClick={() => handleShareToSocial('facebook')}
+              className="bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-1"
+            >
+              <Facebook size={16} />
+              Facebook
+            </Button>
+            <Button 
+              onClick={() => handleShareToSocial('twitter')}
+              className="bg-black hover:bg-gray-800 flex items-center justify-center gap-1"
+            >
+              <Twitter size={16} />
+              Twitter
+            </Button>
+            <Button 
+              onClick={() => handleShareToSocial('linkedin')}
+              className="bg-blue-800 hover:bg-blue-900 flex items-center justify-center gap-1"
+            >
+              <Linkedin size={16} />
+              LinkedIn
+            </Button>
+            <Button 
+              onClick={() => handleShareToSocial('instagram')}
+              className="bg-pink-600 hover:bg-pink-700 flex items-center justify-center gap-1"
+            >
+              <Instagram size={16} />
+              Instagram
+            </Button>
+            <Button 
+              onClick={() => handleShareToSocial('email')}
+              className="bg-gray-600 hover:bg-gray-700 flex items-center justify-center gap-1"
+            >
+              <Mail size={16} />
+              Email
+            </Button>
+          </div>
+        </div>
       )}
       
       <div className="mt-4 text-sm text-gray-500">
