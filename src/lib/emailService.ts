@@ -23,10 +23,14 @@ async function sendEmail(requestBody: any) {
   try {
     console.log("Preparing to send email:", JSON.stringify(requestBody).substring(0, 200) + "...");
     
+    // Generate a unique request ID to prevent duplicate processing
+    const requestId = `req-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+    
     // Add a timestamp to prevent caching issues
     const timestampedRequest = {
       ...requestBody,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      requestId: requestId
     };
     
     // Check if we have a direct API key and should use it
@@ -37,10 +41,18 @@ async function sendEmail(requestBody: any) {
       forceDirectMode(); // Use force instead of just enable
     } else {
       console.error("⚠️ NO DIRECT API KEY FOUND - Email delivery may fail!");
-      toast.error("Email Configuration Issue", {
-        description: "No Resend API key found. Go to Admin > Email Test to configure.",
-        duration: 8000
-      });
+      
+      // Only show toast for admin users
+      const isAdminEmail = requestBody.email && 
+                          (requestBody.email.includes('admin') || 
+                           requestBody.email.includes('otenggate'));
+      
+      if (isAdminEmail) {
+        toast.error("Email Configuration Issue", {
+          description: "No Resend API key found. Go to Admin > Email Test to configure.",
+          duration: 8000
+        });
+      }
     }
     
     // If direct mode is enabled and we have an API key, prioritize that first
@@ -51,35 +63,57 @@ async function sendEmail(requestBody: any) {
         if (directResult.success) {
           console.log("✅ Email sent successfully via direct Resend API:", directResult);
           
-          toast.success("Email Sent Successfully", {
-            description: `Email sent to ${Array.isArray(requestBody.to) ? requestBody.to.join(', ') : requestBody.to}`,
-            duration: 5000
-          });
+          // Only show toast for admin users
+          const isAdminEmail = requestBody.email && 
+                              (requestBody.email.includes('admin') || 
+                               requestBody.email.includes('otenggate'));
+          
+          if (isAdminEmail) {
+            toast.success("Email Sent Successfully", {
+              description: `Email sent to ${Array.isArray(requestBody.to) ? requestBody.to.join(', ') : requestBody.to}`,
+              duration: 5000
+            });
+          }
           
           return {
             success: true,
             message: 'Email sent successfully via direct Resend API',
-            data: directResult
+            data: directResult,
+            requestId: requestId
           };
         } else {
           console.error("❌ Direct Resend API send failed:", directResult.message);
           
-          // Show toast notification for debugging
-          toast.error("Direct email send failed", {
-            description: directResult.message || "Unknown error",
-            duration: 5000
-          });
+          // Only show toast for admin users
+          const isAdminEmail = requestBody.email && 
+                              (requestBody.email.includes('admin') || 
+                               requestBody.email.includes('otenggate'));
+          
+          if (isAdminEmail) {
+            toast.error("Direct email send failed", {
+              description: directResult.message || "Unknown error",
+              duration: 5000
+            });
+          }
         }
       } catch (directError) {
         console.error("❌ Error in direct Resend API send:", directError);
       }
     } else if (!directApiKey) {
-      // If no direct API key, show a message
-      console.error("❌ No direct Resend API key configured. Set it up in Admin > Email Test.");
-      toast.error("Email configuration issue", {
-        description: "No direct Resend API key configured. Set it up in Admin > Email Test.",
-        duration: 5000
-      });
+      // If no direct API key, show a message only to admin users
+      const isAdminEmail = requestBody.email && 
+                          (requestBody.email.includes('admin') || 
+                           requestBody.email.includes('otenggate'));
+      
+      if (isAdminEmail) {
+        console.error("❌ No direct Resend API key configured. Set it up in Admin > Email Test.");
+        toast.error("Email configuration issue", {
+          description: "No direct Resend API key configured. Set it up in Admin > Email Test.",
+          duration: 5000
+        });
+      } else {
+        console.log("No API key found, but hiding error from public user");
+      }
     }
     
     // Use retry logic for more reliability with Supabase Edge Functions as fallback
@@ -115,7 +149,8 @@ async function sendEmail(requestBody: any) {
                     ...emergencyDirectResult,
                     bypassMode: true,
                     edgeFunctionError: lastError?.message || 'Edge Function failed after multiple attempts'
-                  }
+                  },
+                  requestId: requestId
                 };
               }
             } catch (directFallbackError) {
@@ -151,7 +186,8 @@ async function sendEmail(requestBody: any) {
         return {
           success: true,
           message: 'Email sent successfully via Edge Function',
-          data
+          data,
+          requestId: requestId
         };
       } catch (invokeError) {
         console.error(`❌ Error in email service (attempt ${attempts + 1}):`, invokeError);
@@ -182,7 +218,8 @@ async function sendEmail(requestBody: any) {
               ...emergencyDirectResult,
               bypassMode: true,
               edgeFunctionError: lastError instanceof Error ? lastError.message : 'Edge Function failed after multiple attempts'
-            }
+            },
+            requestId: requestId
           };
         }
       } catch (directFallbackError) {
@@ -194,14 +231,16 @@ async function sendEmail(requestBody: any) {
     return { 
       success: false, 
       message: lastError instanceof Error ? lastError.message : 'Failed after exhausting all delivery methods',
-      error: lastError
+      error: lastError,
+      requestId: requestId
     };
   } catch (finalError) {
     console.error('❌ FATAL ERROR in email service:', finalError);
     return { 
       success: false, 
       message: finalError instanceof Error ? finalError.message : 'Unknown error occurred',
-      error: finalError
+      error: finalError,
+      requestId: `err-${Date.now()}`
     };
   }
 }

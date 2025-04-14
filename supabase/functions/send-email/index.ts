@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { corsHeaders } from "./utils/cors.ts";
 import { Resend } from "npm:resend@2.0.0";
@@ -10,13 +9,17 @@ import { logMessage } from "./utils/logger.ts";
 const functionStartTime = Date.now();
 let requestCount = 0;
 
+// Track request IDs to prevent duplicate processing
+const processedRequests = new Map();
+
 // Track delivery metrics
 export const deliveryMetrics = {
   successfulDeliveries: 0,
   failedDeliveries: 0,
   domainVerificationErrors: 0,
   emailsSent: [],
-  lastError: null
+  lastError: null,
+  duplicateRequests: 0
 };
 
 // Get Resend API key from environment
@@ -42,6 +45,34 @@ const handler = async (req: Request): Promise<Response> => {
   
   try {
     const requestData = await req.json();
+    
+    // Generate a unique request ID from either provided ID or request payload
+    const requestId = requestData.requestId || 
+                      `req-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+                      
+    // Check if this is a duplicate request
+    if (processedRequests.has(requestId)) {
+      deliveryMetrics.duplicateRequests++;
+      logMessage(`⚠️ DUPLICATE REQUEST DETECTED: ${requestId} (already processed)`);
+      
+      return new Response(
+        JSON.stringify({
+          success: true,
+          messageId: processedRequests.get(requestId),
+          alreadyProcessed: true,
+          duplicateRequest: true,
+          timestamp: new Date().toISOString(),
+          provider: "resend-duplicate-prevented"
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders
+          }
+        }
+      );
+    }
     
     // Handle domain verification check
     if (requestData.requestType === 'domain-check') {
@@ -87,6 +118,16 @@ const handler = async (req: Request): Promise<Response> => {
     try {
       // Handle email sending
       const { id, retryCount } = await handleEmailSending(resend, requestData, deliveryMetrics);
+      
+      // Store the request ID to prevent duplicates
+      processedRequests.set(requestId, id);
+      
+      // Cleanup old entries to prevent memory leaks
+      // Keep only the 100 most recent request IDs
+      if (processedRequests.size > 100) {
+        const keysToDelete = Array.from(processedRequests.keys()).slice(0, processedRequests.size - 100);
+        keysToDelete.forEach(key => processedRequests.delete(key));
+      }
 
       // Prepare success response
       const successResponse = {
@@ -95,7 +136,8 @@ const handler = async (req: Request): Promise<Response> => {
         resendKeyConfigured: true,
         retriesNeeded: retryCount,
         timestamp: new Date().toISOString(),
-        provider: "resend"
+        provider: "resend",
+        requestId: requestId
       };
 
       return new Response(
@@ -128,7 +170,8 @@ const handler = async (req: Request): Promise<Response> => {
             to: emailError.to,
             resendKeyConfigured: true,
             verificationRequired: true,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            requestId: requestId
           }),
           {
             status: 403,
@@ -155,7 +198,8 @@ const handler = async (req: Request): Promise<Response> => {
           statusCode: emailError.statusCode,
           resendKeyConfigured: true,
           timestamp: new Date().toISOString(),
-          provider: "resend"
+          provider: "resend",
+          requestId: requestId
         }),
         {
           status: 500,
@@ -197,6 +241,7 @@ addEventListener("beforeunload", (event) => {
   logMessage("Successful deliveries:", deliveryMetrics.successfulDeliveries);
   logMessage("Failed deliveries:", deliveryMetrics.failedDeliveries);
   logMessage("Domain verification errors:", deliveryMetrics.domainVerificationErrors);
+  logMessage("Duplicate requests prevented:", deliveryMetrics.duplicateRequests);
   
   // You could implement state saving here if needed
 });

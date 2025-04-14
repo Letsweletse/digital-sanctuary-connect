@@ -11,8 +11,12 @@ const functionStartTime = Date.now();
 export const metrics = {
   requestCount: 0,
   successfulChecks: 0,
-  failedChecks: 0
+  failedChecks: 0,
+  duplicateRequests: 0
 };
+
+// Track processed requests to prevent duplicates
+const processedRequests = new Map();
 
 // Get API key from environment or use the provided key
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "";
@@ -37,9 +41,46 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     // Parse request
     const requestData = await req.json().catch(() => ({}));
+    
+    // Generate a unique request ID
+    const requestId = requestData.requestId || 
+                     `check-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+                     
+    // Check if this is a duplicate request
+    if (processedRequests.has(requestId)) {
+      metrics.duplicateRequests++;
+      logMessage(currentRequest, `⚠️ DUPLICATE REQUEST DETECTED: ${requestId} (already processed)`);
+      
+      return new Response(
+        JSON.stringify({
+          success: true,
+          alreadyProcessed: true,
+          duplicateRequest: true,
+          message: "This request was already processed",
+          timestamp: new Date().toISOString(),
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders
+          }
+        }
+      );
+    }
+    
     const checkHistory = requestData.checkHistory === true;
     const checkType = requestData.checkType || 'status-check';
     const externalApiKey = requestData.externalApiKey;
+    
+    // Store this request ID to prevent duplicates
+    processedRequests.set(requestId, { timestamp: Date.now(), type: checkType });
+    
+    // Cleanup old entries to prevent memory leaks
+    if (processedRequests.size > 100) {
+      const keysToDelete = Array.from(processedRequests.keys()).slice(0, processedRequests.size - 100);
+      keysToDelete.forEach(key => processedRequests.delete(key));
+    }
     
     // If this is a request to test an external API key
     if (checkType === 'direct-key-test' && externalApiKey) {
@@ -52,7 +93,8 @@ const handler = async (req: Request): Promise<Response> => {
           success: testResult.valid,
           message: testResult.message,
           details: testResult.details,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          requestId: requestId
         }),
         {
           status: 200,
@@ -90,6 +132,14 @@ const handler = async (req: Request): Promise<Response> => {
     );
   }
 };
+
+// Handle function shutdown
+addEventListener("beforeunload", (event) => {
+  logMessage("SHUTDOWN", "Function shutting down after handling", metrics.requestCount, "requests");
+  logMessage("SHUTDOWN", "Shutdown reason:", event.detail?.reason || "unknown");
+  logMessage("SHUTDOWN", "Function ran for", Math.floor((Date.now() - functionStartTime) / 1000), "seconds");
+  logMessage("SHUTDOWN", "Metrics:", JSON.stringify(metrics));
+});
 
 // Log function initialization
 console.log("check-resend-status function starting at:", new Date().toISOString());
