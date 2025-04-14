@@ -78,14 +78,15 @@ const EmailTest = () => {
   };
   
   const handleShareToWhatsApp = () => {
+    const churchUrl = "https://gategaborone.com";
     const eventName = "The Apostolic Conference 2025";
     const eventDate = "2025-05-24 to 2025-05-26";
     const eventTime = "9:00 AM - 3:00 PM";
     
     // Create WhatsApp sharing text with event details and check-in ID if available
     const shareText = lastSentId 
-      ? `I just registered for ${eventName} at Capital City Baptist Hall on ${eventDate} at ${eventTime}. Join me! My check-in ID is: ${lastSentId}. To register call: 0993181830 or 0993749297`
-      : `Join me at ${eventName} at Capital City Baptist Hall on ${eventDate} at ${eventTime}. To register call: 0993181830 or 0993749297`;
+      ? `I just registered for ${eventName} at Capital City Baptist Hall on ${eventDate} at ${eventTime}. Join me! My check-in ID is: ${lastSentId}. To register visit: ${churchUrl}/events or call: 0993181830 or 0993749297`
+      : `Join me at ${eventName} at Capital City Baptist Hall on ${eventDate} at ${eventTime}. To register visit: ${churchUrl}/events or call: 0993181830 or 0993749297`;
     
     // Create WhatsApp sharing URL
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
@@ -100,11 +101,12 @@ const EmailTest = () => {
   };
   
   const handleShareToSocial = (platform: string) => {
+    const churchUrl = "https://gategaborone.com";
     const eventName = "The Apostolic Conference 2025";
     const eventDate = "2025-05-24 to 2025-05-26";
     const eventTime = "9:00 AM - 3:00 PM";
     const shareText = `Join me at ${eventName} at Capital City Baptist Hall on ${eventDate} at ${eventTime}. Theme: "The Times of Refreshing" (Acts 3:19).`;
-    const shareUrl = "https://gategaborone.com/events";
+    const shareUrl = `${churchUrl}/events`;
     
     let shareLink = "";
     
@@ -119,10 +121,10 @@ const EmailTest = () => {
         shareLink = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}&summary=${encodeURIComponent(shareText)}`;
         break;
       case 'email':
-        shareLink = `mailto:?subject=${encodeURIComponent(eventName)}&body=${encodeURIComponent(shareText + "\n\nRegister by calling: 0993181830 or 0993749297")}`;
+        shareLink = `mailto:?subject=${encodeURIComponent(eventName)}&body=${encodeURIComponent(shareText + "\n\nRegister at: " + shareUrl + " or by calling: 0993181830 or 0993749297")}`;
         break;
       default:
-        shareLink = `https://wa.me/?text=${encodeURIComponent(shareText + " To register call: 0993181830 or 0993749297")}`;
+        shareLink = `https://wa.me/?text=${encodeURIComponent(shareText + " Register at: " + shareUrl + " or by calling: 0993181830 or 0993749297")}`;
     }
     
     window.open(shareLink, '_blank');

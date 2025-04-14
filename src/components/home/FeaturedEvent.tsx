@@ -13,14 +13,15 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
   featuredEvent,
   onRegisterClick 
 }) => {
-  const shareText = `Join us for ${featuredEvent.title}! Register here: https://gategaborone.com/events`;
+  const churchUrl = "https://gategaborone.com";
+  const shareText = `Join us for ${featuredEvent.title}! Register here: ${churchUrl}/events`;
   
-  // Different sharing links
+  // Different sharing links with branding controlled by our domain
   const shareLinks = {
     whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://gategaborone.com/events')}&quote=${encodeURIComponent(shareText)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(churchUrl + '/events')}&quote=${encodeURIComponent(shareText)}`,
     twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent('https://gategaborone.com/events')}&summary=${encodeURIComponent(shareText)}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(churchUrl + '/events')}&summary=${encodeURIComponent(shareText)}`,
     email: `mailto:?subject=${encodeURIComponent(featuredEvent.title)}&body=${encodeURIComponent(`${shareText}\n\nDate: ${formatDate(featuredEvent.date)}\nTime: ${featuredEvent.time}\nLocation: ${featuredEvent.location}`)}`
   };
 
