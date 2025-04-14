@@ -30,7 +30,7 @@ const EmailTest = () => {
         eventDate: "2025-05-24",
         eventTime: "9:00 AM - 3:00 PM",
         eventImage: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Malawi%20Conference_1744623783611.jpeg",
-        location: "https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7", // Gate Gaborone location on Google Maps
+        location: "https://www.google.com/maps/place/Gate+Gaborone/@-24.6618569,25.9048205,15z/data=!4m6!3m5!1s0x1ebf843b05f7aa07:0x2de14938d5996b9e!8m2!3d-24.6618567!4d25.9048083!16s%2Fg%2F11hbgk5nv2",
         attendee: {
           title: "Mr",
           name: "Test User",
@@ -42,7 +42,8 @@ const EmailTest = () => {
         },
         message: "This is a test registration",
         submitDate: new Date().toISOString(),
-        registrationType: "Standard"
+        registrationType: "Standard",
+        churchLogo: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png"
       };
       
       console.log("Test data prepared:", testData);
@@ -134,7 +135,7 @@ const EmailTest = () => {
   
   return (
     <Card className="p-6 bg-white rounded-lg shadow-md max-w-md mx-auto mt-8">
-      <h2 className="text-2xl font-bold mb-4">Enhanced Email Testing Tool</h2>
+      <h2 className="text-2xl font-bold mb-4">Gate Gaborone Email Testing Tool</h2>
       <p className="mb-4 text-gray-600">
         Enter your email below to receive a test event registration confirmation with enhanced features:
       </p>
@@ -170,10 +171,10 @@ const EmailTest = () => {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            Sending Enhanced Test Email...
+            Sending Test Email...
           </span>
         ) : (
-          "Send Enhanced Test Email"
+          "Send Test Email"
         )}
       </Button>
       

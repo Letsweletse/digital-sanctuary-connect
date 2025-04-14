@@ -58,7 +58,8 @@ export const sendEventRegistrationEmail = async (eventName: string, registrantDa
     const checkInId = crypto.randomUUID();
     
     // Ensure we have all the required data for the enhanced confirmation email
-    const eventLocation = registrantData.location || 'https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7';
+    // Fixed Google Maps location link for Gate Gaborone
+    const eventLocation = registrantData.location || 'https://www.google.com/maps/place/Gate+Gaborone/@-24.6618569,25.9048205,15z/data=!4m6!3m5!1s0x1ebf843b05f7aa07:0x2de14938d5996b9e!8m2!3d-24.6618567!4d25.9048083!16s%2Fg%2F11hbgk5nv2';
     const eventDate = registrantData.eventDate || '2025-05-10';
     const eventTime = registrantData.eventTime || '9:00 AM - 1:30 PM';
     const eventImage = registrantData.eventImage || 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg';
@@ -82,7 +83,8 @@ export const sendEventRegistrationEmail = async (eventName: string, registrantDa
       eventTime: eventTime,
       eventImage: eventImage,
       checkInId: checkInId, // Pass the unique check-in ID
-      attendeeEmail: registrantData.attendee.email // Pass the attendee email for personalized check-in
+      attendeeEmail: registrantData.attendee.email, // Pass the attendee email for personalized check-in
+      churchLogo: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png' // Ensure Gate Gaborone logo is used
     };
     
     const result = await sendEmail(emailRequestBody);
