@@ -18,7 +18,7 @@ import Contact from "./pages/Contact";
 import Admin from "./pages/Admin";
 import Give from "./pages/Give"; 
 import NotFound from "./pages/NotFound";
-import EmailTest from "./components/EmailTest"; // Import the email test component
+import EmailTest from "./components/email-test"; // Updated import path to match new directory structure
 
 const queryClient = new QueryClient();
 
@@ -59,7 +59,7 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/give" element={<Give />} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="/email-test" element={<EmailTest />} /> {/* Add email test route */}
+            <Route path="/email-test" element={<EmailTest />} /> {/* Email test route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
