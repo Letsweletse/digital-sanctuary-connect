@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -16,7 +15,12 @@ const Footer = () => {
               An apostolic center in the heart of Botswana's economic capital, strategically positioned to align with biblical patterns.
             </p>
             <div className="flex space-x-4">
-              <a href="https://www.facebook.com" className="text-white/70 hover:text-church-gold transition-colors">
+              <a 
+                href="https://www.facebook.com/profile.php?id=61575319345710" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-white/70 hover:text-church-gold transition-colors"
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
               </a>
               <a href="https://www.twitter.com" className="text-white/70 hover:text-church-gold transition-colors">
