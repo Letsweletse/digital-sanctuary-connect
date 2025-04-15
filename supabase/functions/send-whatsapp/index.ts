@@ -39,8 +39,8 @@ serve(async (req) => {
       finalMessage += "\n\nGate Gaborone - Reach | Resource | Reform";
     }
 
-    // Direct API call with hardcoded instance ID for reliability
-    const response = await fetch("https://api.ultramsg.com/instance114633/messages/chat", {
+    // Direct API call with specific instance ID and token
+    const response = await fetch(`https://api.ultramsg.com/instance${ULTRAMSG_INSTANCE_ID}/messages/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
