@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { toast as sonnerToast } from "sonner";
@@ -64,10 +63,27 @@ export const useEventRegistration = () => {
     }));
   };
 
-  // Direct WhatsApp notification without edge function
+  // Direct WhatsApp notification with improved logging
   const sendWhatsAppNotification = async (registrationData: any) => {
     try {
-      const phone = registrationData.attendee.phone.replace(/\s+/g, ''); // Remove spaces from phone number
+      console.log("Starting WhatsApp notification process...");
+      
+      // Format phone number and log it for debugging
+      const rawPhone = registrationData.attendee.phone;
+      const formattedPhone = rawPhone.replace(/\s+/g, ''); // Remove spaces
+      
+      console.log("Phone number details:", {
+        original: rawPhone,
+        formatted: formattedPhone,
+        startsWithPlus: formattedPhone.startsWith('+')
+      });
+      
+      // Only proceed if we have a valid phone (must start with +)
+      if (!formattedPhone.startsWith('+')) {
+        console.error("Invalid phone number format - must start with country code (+)");
+        return { error: true, message: "Invalid phone number format" };
+      }
+      
       const message = `Thank you for registering for ${registrationData.event}! 
 Event Date: ${registrationData.eventDate}
 Event Time: ${registrationData.eventTime}
@@ -75,21 +91,38 @@ Location: ${registrationData.location}
 
 Your registration is confirmed. We look forward to seeing you!`;
 
+      console.log("Sending WhatsApp message to:", formattedPhone);
+      console.log("Message content:", message);
+      
+      // Log the actual API request for debugging
+      const requestBody = {
+        token: ULTRAMSG_API_KEY,
+        to: formattedPhone,
+        body: message
+      };
+      console.log("UltraMsg API request:", {
+        url: `https://api.ultramsg.com/${ULTRAMSG_INSTANCE_ID}/messages/chat`,
+        method: 'POST',
+        body: requestBody
+      });
+
       // Direct API call to UltraMsg
       const response = await fetch(`https://api.ultramsg.com/${ULTRAMSG_INSTANCE_ID}/messages/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          token: ULTRAMSG_API_KEY,
-          to: phone,
-          body: message
-        })
+        body: JSON.stringify(requestBody)
       });
 
+      // Log the entire response for debugging
       const result = await response.json();
-      console.log('WhatsApp notification sent directly:', result);
+      console.log('WhatsApp API response:', {
+        status: response.status,
+        statusText: response.statusText,
+        result
+      });
+      
       return result;
     } catch (error) {
       console.error('Failed to send WhatsApp notification:', error);
@@ -151,7 +184,7 @@ Your registration is confirmed. We look forward to seeing you!`;
           : 'https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7', // Use location URL or default to Gate Gaborone location
         attendee: {
           ...formData,
-          phone: `${formData.countryCode}${formData.phone}` // Format phone with country code, removing spaces
+          phone: `${formData.countryCode}${formData.phone.trim()}` // Ensure country code is applied and remove spaces
         },
         message: `Title: ${formData.title}, Role: ${formData.role}, Denomination: ${formData.denomination}, Number of Attendees: ${formData.numberOfAttendees}`,
         submitDate: new Date().toISOString(),
@@ -170,7 +203,22 @@ Your registration is confirmed. We look forward to seeing you!`;
       
       // Send WhatsApp notification directly after successful registration
       const whatsappResult = await sendWhatsAppNotification(registrationData);
-      console.log('WhatsApp notification result:', whatsappResult);
+      console.log('WhatsApp notification complete result:', whatsappResult);
+      
+      // Show detailed success or error message
+      if (whatsappResult && !whatsappResult.error) {
+        console.log("WhatsApp notification sent successfully");
+        sonnerToast.success("WhatsApp Notification Sent", {
+          description: "A confirmation message has been sent to your WhatsApp number.",
+          duration: 5000
+        });
+      } else {
+        console.warn("WhatsApp notification failed or returned an error");
+        sonnerToast.error("WhatsApp Notification Issue", {
+          description: "There was a problem sending the WhatsApp confirmation. Please check your phone number.",
+          duration: 5000
+        });
+      }
       
       // Show success message using both toasts for better visibility
       toast({
