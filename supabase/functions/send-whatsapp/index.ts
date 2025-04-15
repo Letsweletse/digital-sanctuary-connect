@@ -18,7 +18,7 @@ serve(async (req) => {
   try {
     const { phone, message } = await req.json();
 
-    const response = await fetch('https://api.ultramsg.com/instance/messages/chat', {
+    const response = await fetch(`https://api.ultramsg.com/${ULTRAMSG_INSTANCE_ID}/messages/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
