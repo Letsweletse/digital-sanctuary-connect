@@ -6,11 +6,13 @@ import { EventData, RegistrationFormData } from '@/types/eventTypes';
 import { sendEventRegistrationEmail } from '@/lib/emailService';
 import { formatDate } from '@/utils/dateUtils';
 import { useWhatsAppNotification } from './useWhatsAppNotification';
+import { useNavigate } from 'react-router-dom';
 
 export const useRegistrationSubmission = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const { sendWhatsAppNotification } = useWhatsAppNotification();
+  const navigate = useNavigate();
   
   const validateForm = (formData: RegistrationFormData): { isValid: boolean; errorMessage?: string } => {
     if (!formData.name.trim()) {
@@ -61,13 +63,17 @@ export const useRegistrationSubmission = () => {
 
     try {
       const registrationData = {
-        event: currentEvent.title,
-        eventDate: formatDate(currentEvent.date),
-        eventTime: currentEvent.time,
-        eventImage: currentEvent.image,
-        location: currentEvent.location.includes('http') 
-          ? currentEvent.location 
-          : 'https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7',
+        event: {
+          ...currentEvent,
+          date: currentEvent.date,
+          time: currentEvent.time,
+          location: currentEvent.location.includes('http') 
+            ? currentEvent.location 
+            : 'https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7',
+          id: currentEvent.id,
+          title: currentEvent.title,
+          image: currentEvent.image
+        },
         attendee: {
           ...formData,
           phone: `${formData.countryCode}${formData.phone.trim()}`
@@ -79,7 +85,20 @@ export const useRegistrationSubmission = () => {
 
       console.log('Registration submitted with enhanced email data:', registrationData);
       
-      const emailResult = await sendEventRegistrationEmail(currentEvent.title, registrationData);
+      // Format data for email service
+      const emailRegistrationData = {
+        event: currentEvent.title,
+        eventDate: formatDate(currentEvent.date),
+        eventTime: currentEvent.time,
+        eventImage: currentEvent.image,
+        location: registrationData.event.location,
+        attendee: registrationData.attendee,
+        message: registrationData.message,
+        submitDate: registrationData.submitDate,
+        registrationType: registrationData.registrationType
+      };
+      
+      const emailResult = await sendEventRegistrationEmail(currentEvent.title, emailRegistrationData);
       console.log('Enhanced email service response:', emailResult);
       
       if (!emailResult.success) {
@@ -100,7 +119,12 @@ export const useRegistrationSubmission = () => {
         duration: 5000
       });
       
+      // Close the registration dialog
       onSuccess();
+      
+      // Navigate to the confirmation page with registration data
+      navigate('/registration-confirmation', { state: { registrationData }});
+      
     } catch (error) {
       console.error("Error submitting registration:", error);
       toast({

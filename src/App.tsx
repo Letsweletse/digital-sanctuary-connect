@@ -19,6 +19,7 @@ import Admin from "./pages/Admin";
 import Give from "./pages/Give"; 
 import NotFound from "./pages/NotFound";
 import EmailTest from "./components/email-test"; // Updated import path to match new directory structure
+import RegistrationConfirmation from "./pages/RegistrationConfirmation"; // Add the new page import
 
 const queryClient = new QueryClient();
 
@@ -59,7 +60,8 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/give" element={<Give />} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="/email-test" element={<EmailTest />} /> {/* Email test route */}
+            <Route path="/email-test" element={<EmailTest />} />
+            <Route path="/registration-confirmation" element={<RegistrationConfirmation />} /> {/* Add new route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
