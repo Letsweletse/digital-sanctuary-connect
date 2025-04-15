@@ -12,12 +12,12 @@ interface FeaturedEventProps {
 
 const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegisterClick }) => {
   return (
-    <section className="py-12 bg-gray-50 dark:bg-gray-900">
+    <section className="py-12 bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-700 text-white">
       <div className="container px-4 mx-auto">
         <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+          <div className="flex flex-col md:flex-row items-center bg-white/5 backdrop-blur-sm rounded-xl overflow-hidden shadow-2xl border border-indigo-500/30">
             {/* Event Image - takes up less space on mobile */}
-            <div className="w-full md:w-2/5 h-[200px] md:h-auto">
+            <div className="w-full md:w-2/5 h-[240px] md:h-auto">
               <img
                 src={featuredEvent.image}
                 alt={featuredEvent.title}
@@ -25,49 +25,49 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
               />
             </div>
             
-            {/* Event Details - more compact layout */}
-            <div className="w-full md:w-3/5 p-5 md:p-8">
-              <div className="mb-2">
-                <span className="inline-block bg-church-blue-light/30 text-church-blue px-3 py-1 text-sm font-medium rounded-full">
+            {/* Event Details - more premium layout */}
+            <div className="w-full md:w-3/5 p-6 md:p-8">
+              <div className="mb-3">
+                <span className="inline-block bg-indigo-500/30 text-white px-3 py-1 text-sm font-medium rounded-full">
                   Featured Event
                 </span>
               </div>
               
-              <h2 className="text-2xl md:text-3xl font-bold mb-3">{featuredEvent.title}</h2>
+              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-white">{featuredEvent.title}</h2>
               
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center text-gray-600 dark:text-gray-300">
-                  <CalendarDays className="h-4 w-4 mr-2 text-church-blue" />
-                  <span>{formatDate(featuredEvent.date)}</span>
+              <div className="space-y-3 mb-5">
+                <div className="flex items-center text-white/90">
+                  <CalendarDays className="h-5 w-5 mr-3 text-indigo-300" />
+                  <span className="font-medium">{formatDate(featuredEvent.date)}</span>
                 </div>
                 
-                <div className="flex items-center text-gray-600 dark:text-gray-300">
-                  <Clock className="h-4 w-4 mr-2 text-church-blue" />
-                  <span>{featuredEvent.time}</span>
+                <div className="flex items-center text-white/90">
+                  <Clock className="h-5 w-5 mr-3 text-indigo-300" />
+                  <span className="font-medium">{featuredEvent.time}</span>
                 </div>
                 
-                <div className="flex items-start text-gray-600 dark:text-gray-300">
-                  <MapPin className="h-4 w-4 mr-2 mt-0.5 text-church-blue" />
-                  <span>{featuredEvent.location}</span>
+                <div className="flex items-start text-white/90">
+                  <MapPin className="h-5 w-5 mr-3 mt-0.5 text-indigo-300" />
+                  <span className="font-medium">{featuredEvent.location}</span>
                 </div>
               </div>
               
-              <p className="text-gray-600 dark:text-gray-300 mb-5 line-clamp-3">
+              <p className="text-white/80 mb-6 line-clamp-3">
                 {featuredEvent.description}
               </p>
               
               <div className="flex flex-col xs:flex-row gap-3">
                 <Button
                   onClick={onRegisterClick}
-                  className="bg-church-blue hover:bg-church-blue-dark text-white px-6"
+                  className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 font-medium py-5 md:py-3 transition duration-300 shadow-lg hover:shadow-xl"
                 >
-                  <Users className="h-4 w-4 mr-2" />
+                  <Users className="h-5 w-5 mr-2" />
                   Register Now
                 </Button>
                 
                 <Button
                   variant="outline"
-                  className="border-church-blue text-church-blue hover:bg-church-blue-light/10"
+                  className="border-indigo-300 text-white hover:bg-indigo-700/40"
                   asChild
                 >
                   <a href="/events">View All Events</a>

@@ -98,5 +98,5 @@ Please save this message for your reference and show it at entry.
 *GATE GABORONE*
 _Reach | Resource | Reform_
 
-For any questions, please contact us at +267 3191000`;
+For any questions, please contact us at +267 3500194 / +267 75507981`;
 };

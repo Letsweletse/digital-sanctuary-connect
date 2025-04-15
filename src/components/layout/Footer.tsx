@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -90,7 +91,6 @@ const Footer = () => {
           <div className="flex space-x-6">
             <Link to="/privacy" className="text-white/50 hover:text-church-gold text-sm transition-colors">Privacy Policy</Link>
             <Link to="/terms" className="text-white/50 hover:text-church-gold text-sm transition-colors">Terms of Service</Link>
-            <Link to="/admin" className="text-white/50 hover:text-church-gold text-sm transition-colors">Admin</Link>
           </div>
         </div>
       </div>
