@@ -1,10 +1,10 @@
-
 import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { toast as sonnerToast } from "sonner";
 import { EventData, RegistrationFormData } from '@/types/eventTypes';
 import { sendEventRegistrationEmail } from '@/lib/emailService';
 import { formatDate } from '@/utils/dateUtils';
+import { supabase } from '@/lib/supabase';
 
 export const useEventRegistration = () => {
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
@@ -58,6 +58,26 @@ export const useEventRegistration = () => {
       ...prev,
       [name]: name === 'numberOfAttendees' ? parseInt(value) || 1 : value
     }));
+  };
+
+  const sendWhatsAppNotification = async (registrationData: any) => {
+    try {
+      const phone = registrationData.attendee.phone;
+      const message = `Thank you for registering for ${registrationData.event}! 
+Event Date: ${registrationData.eventDate}
+Event Time: ${registrationData.eventTime}
+Location: ${registrationData.location}
+
+Your registration is confirmed. We look forward to seeing you!`;
+
+      const response = await supabase.functions.invoke('send-whatsapp', {
+        body: JSON.stringify({ phone, message })
+      });
+
+      console.log('WhatsApp notification result:', response);
+    } catch (error) {
+      console.error('Failed to send WhatsApp notification:', error);
+    }
   };
 
   const handleSubmitRegistration = async (e: React.FormEvent) => {
@@ -130,6 +150,9 @@ export const useEventRegistration = () => {
       if (!emailResult.success) {
         throw new Error(emailResult.message || "Failed to send registration email");
       }
+      
+      // Send WhatsApp notification after successful registration
+      await sendWhatsAppNotification(registrationData);
       
       // Show success message using both toasts for better visibility
       toast({
