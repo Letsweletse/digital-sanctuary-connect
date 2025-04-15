@@ -20,6 +20,7 @@ import Give from "./pages/Give";
 import NotFound from "./pages/NotFound";
 import EmailTest from "./components/email-test"; // Updated import path to match new directory structure
 import RegistrationConfirmation from "./pages/RegistrationConfirmation"; // Add the new page import
+import WhatsAppTester from "./components/examples/WhatsAppTester"; // Add WhatsApp tester
 
 const queryClient = new QueryClient();
 
@@ -61,7 +62,8 @@ const App = () => (
             <Route path="/give" element={<Give />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/email-test" element={<EmailTest />} />
-            <Route path="/registration-confirmation" element={<RegistrationConfirmation />} /> {/* Add new route */}
+            <Route path="/registration-confirmation" element={<RegistrationConfirmation />} />
+            <Route path="/whatsapp-test" element={<WhatsAppTester />} /> {/* Add the WhatsApp test route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

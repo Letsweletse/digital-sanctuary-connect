@@ -28,7 +28,7 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-xl md:max-w-2xl lg:max-w-3xl w-[95%] max-h-[90vh] overflow-y-auto p-0 gap-0 dialog-animation">
+      <DialogContent className="sm:max-w-xl md:max-w-2xl w-[95%] max-h-[90vh] overflow-y-auto p-0 gap-0 dialog-animation">
         <DialogHeader className="p-4 md:p-6 pb-2 bg-gradient-to-r from-church-blue-light/30 to-white">
           <DialogTitle className="text-lg md:text-xl font-montserrat">Register for {currentEvent?.title}</DialogTitle>
           <DialogDescription className="text-sm md:text-base">
