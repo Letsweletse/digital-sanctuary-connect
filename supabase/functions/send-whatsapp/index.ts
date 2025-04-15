@@ -1,7 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 
-// Ensure correct API key access with fallback for testing
+// Use the correct API key and instance ID
 const ULTRAMSG_API_KEY = Deno.env.get('ULTRAMSG_API_KEY') || 'zpivrjhut12tefx6';
 const ULTRAMSG_INSTANCE_ID = '114633';
 
@@ -39,7 +39,7 @@ serve(async (req) => {
       finalMessage += "\n\nGate Gaborone - Reach | Resource | Reform";
     }
 
-    // Direct API call with specific instance ID and token
+    // Direct API call with hardcoded instance ID and token for reliability
     const response = await fetch(`https://api.ultramsg.com/instance${ULTRAMSG_INSTANCE_ID}/messages/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
