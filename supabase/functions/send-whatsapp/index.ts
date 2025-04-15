@@ -2,7 +2,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 
 // Ensure correct API key access with fallback for testing
-const ULTRAMSG_API_KEY = Deno.env.get('ULTRAMSG_API_KEY') || 'ya9gv1tomthuh22u';
+const ULTRAMSG_API_KEY = Deno.env.get('ULTRAMSG_API_KEY') || 'zpivrjhut12tefx6';
 const ULTRAMSG_INSTANCE_ID = '114633';
 
 const corsHeaders = {
