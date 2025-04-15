@@ -18,6 +18,9 @@ serve(async (req) => {
   try {
     const { phone, message } = await req.json();
 
+    console.log("📱 [Edge Function] WhatsApp notification for phone:", phone);
+    console.log("💬 [Edge Function] Message:", message);
+
     const response = await fetch(`https://api.ultramsg.com/${ULTRAMSG_INSTANCE_ID}/messages/chat`, {
       method: 'POST',
       headers: {
@@ -31,6 +34,7 @@ serve(async (req) => {
     });
 
     const responseData = await response.json();
+    console.log("✅ [Edge Function] WhatsApp API response:", responseData);
 
     return new Response(JSON.stringify(responseData), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
