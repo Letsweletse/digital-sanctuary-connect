@@ -1,7 +1,10 @@
 
 import React from 'react';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { EventCategoryObject, EventData } from '@/types/eventTypes';
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Calendar, Clock, MapPin } from "lucide-react";
+import { EventData, EventCategoryObject } from '@/types/eventTypes';
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface EventCardProps {
   event: EventData;
@@ -10,111 +13,71 @@ interface EventCardProps {
   onRegister: (event: EventData) => void;
 }
 
-const EventCard: React.FC<EventCardProps> = ({ event, categories, formatDate, onRegister }) => {
+const EventCard: React.FC<EventCardProps> = ({ 
+  event, 
+  categories, 
+  formatDate, 
+  onRegister 
+}) => {
+  const category = categories.find(cat => cat.id === event.category) || { id: '', name: '' };
+  
+  const handleRegisterClick = () => {
+    onRegister(event);
+  };
+  
   return (
-    <div className="glass-panel overflow-hidden group">
+    <Card className="h-full border-0 shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col bg-white dark:bg-gray-800">
       <div className="relative">
-        <AspectRatio ratio={16 / 9} className="w-full">
+        <AspectRatio ratio={16 / 9} className="bg-gray-100 dark:bg-gray-700">
           <img 
             src={event.image} 
             alt={event.title} 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
           />
         </AspectRatio>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-        <div className="absolute bottom-0 left-0 w-full p-4">
-          <div 
-            className={`inline-block px-2 py-1 rounded text-xs font-medium mb-2 ${
-              event.category === 'worship' ? 'bg-church-blue text-church-neutral-800' :
-              event.category === 'bible-study' ? 'bg-church-gold text-church-neutral-800' :
-              event.category === 'fellowship' ? 'bg-green-100 text-green-800' :
-              event.category === 'outreach' ? 'bg-purple-100 text-purple-800' :
-              event.category === 'youth' ? 'bg-orange-100 text-orange-800' :
-              event.category === 'conference' ? 'bg-blue-100 text-blue-800' :
-              'bg-pink-100 text-pink-800'
-            }`}
-          >
-            {categories.find(c => c.id === event.category)?.name}
-          </div>
-          <h3 className="text-xl font-bold text-white">{event.title}</h3>
+        <div className="absolute top-3 right-3">
+          <span className="px-2 py-1 text-xs font-medium rounded-full bg-white dark:bg-church-blue text-church-blue dark:text-white shadow-sm">
+            {category.name}
+          </span>
         </div>
       </div>
       
-      <div className="p-6">
-        <div className="flex items-center text-church-neutral-700 mb-3">
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            className="h-5 w-5 mr-2 text-church-gold" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-          >
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-            <line x1="16" y1="2" x2="16" y2="6"></line>
-            <line x1="8" y1="2" x2="8" y2="6"></line>
-            <line x1="3" y1="10" x2="21" y2="10"></line>
-          </svg>
-          <span>{formatDate(event.date)}</span>
-        </div>
+      <CardContent className="flex flex-col flex-grow p-4 space-y-3">
+        <h3 className="text-xl font-bold line-clamp-2 min-h-[3.5rem]">{event.title}</h3>
         
-        <div className="flex items-center text-church-neutral-700 mb-3">
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            className="h-5 w-5 mr-2 text-church-gold" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-          >
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
-          <span>{event.time}</span>
-        </div>
-        
-        <div className="flex items-center text-church-neutral-700 mb-4">
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            className="h-5 w-5 mr-2 text-church-gold" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-          >
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-          </svg>
-          <span>{event.location}</span>
-        </div>
-        
-        <p className="text-church-neutral-700 mb-6">{event.description}</p>
-        
-        <div className="flex space-x-3">
-          {event.registration ? (
-            <button 
-              className="btn-primary flex-1"
-              onClick={() => onRegister(event)}
-            >
-              Register Now
-            </button>
-          ) : (
-            <button className="btn-primary flex-1">
-              Learn More
-            </button>
+        <div className="space-y-2 flex-grow">
+          <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+            <Calendar className="w-4 h-4 mr-2 text-church-blue" />
+            <span>{formatDate(event.date)}</span>
+          </div>
+          
+          <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+            <Clock className="w-4 h-4 mr-2 text-church-blue" />
+            <span>{event.time}</span>
+          </div>
+          
+          <div className="flex items-start text-sm text-gray-600 dark:text-gray-300">
+            <MapPin className="w-4 h-4 mr-2 mt-0.5 text-church-blue" />
+            <span className="line-clamp-1">{event.location}</span>
+          </div>
+          
+          {event.description && (
+            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mt-2">
+              {event.description}
+            </p>
           )}
-          <button className="btn-outline flex-1">
-            Add to Calendar
-          </button>
         </div>
-      </div>
-    </div>
+        
+        {event.registration && (
+          <Button 
+            className="w-full bg-church-blue hover:bg-church-blue-dark text-white transition-colors"
+            onClick={handleRegisterClick}
+          >
+            Register Now
+          </Button>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

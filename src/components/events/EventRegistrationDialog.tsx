@@ -29,23 +29,23 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-xl md:max-w-2xl lg:max-w-3xl w-[95%] max-h-[90vh] overflow-y-auto p-0 gap-0 dialog-animation">
-        <DialogHeader className="p-6 pb-2 bg-gradient-to-r from-church-blue-light/30 to-white">
-          <DialogTitle className="text-xl md:text-2xl font-montserrat">Register for {currentEvent?.title}</DialogTitle>
-          <DialogDescription className="text-base">
+        <DialogHeader className="p-4 md:p-6 pb-2 bg-gradient-to-r from-church-blue-light/30 to-white">
+          <DialogTitle className="text-lg md:text-xl font-montserrat">Register for {currentEvent?.title}</DialogTitle>
+          <DialogDescription className="text-sm md:text-base">
             Complete the form below to reserve your spot.
           </DialogDescription>
         </DialogHeader>
         
         <div className="flex flex-col md:flex-row">
-          {/* Left side - Event details */}
-          <div className="md:w-2/5 p-4 md:p-6">
+          {/* Left side - Event details - smaller on mobile */}
+          <div className="md:w-2/5 p-3 md:p-4">
             {currentEvent && (
               <EventDetailCard event={currentEvent} formatDate={formatDate} />
             )}
           </div>
           
-          {/* Right side - Form */}
-          <div className="md:w-3/5 p-4 md:p-6 pt-2 md:pt-6">
+          {/* Right side - Form - easier to fill on mobile */}
+          <div className="md:w-3/5 p-3 md:p-4 pt-1 md:pt-4">
             <RegistrationForm 
               formData={formData}
               onInputChange={onInputChange}

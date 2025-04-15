@@ -7,6 +7,7 @@ import { sendEventRegistrationEmail } from '@/lib/emailService';
 import { formatDate } from '@/utils/dateUtils';
 import { useWhatsAppNotification } from './useWhatsAppNotification';
 import { useNavigate } from 'react-router-dom';
+import { sendDirectWhatsAppMessage } from '@/utils/whatsAppUtils';
 
 export const useRegistrationSubmission = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -107,8 +108,35 @@ export const useRegistrationSubmission = () => {
         throw new Error(emailResult.message || "Failed to send registration email");
       }
       
-      // Send WhatsApp notification with complete registration details
-      console.log('[Registration] Attempting WhatsApp notification with complete details...');
+      // Send direct WhatsApp notification with formatted message
+      const whatsappMessage = `✅ *Registration Confirmed for Gate Gaborone!*\n
+*Event:* ${registrationData.event.title}
+*Date:* ${formatDate(registrationData.event.date)}
+*Time:* ${registrationData.event.time}
+*Location:* ${registrationData.event.location}
+      
+🙋‍♂️ *Registration Details:*
+*Name:* ${registrationData.attendee.name}
+*Email:* ${registrationData.attendee.email}
+*Phone:* ${registrationData.attendee.phone}
+*Number of Attendees:* ${registrationData.attendee.numberOfAttendees}
+
+Your registration has been confirmed. We look forward to seeing you!
+Save this message for your reference.
+
+*Reach | Resource | Reform*
+- The Gate Gaborone Team`;
+
+      console.log('[Registration] Sending direct WhatsApp message to:', registrationData.attendee.phone);
+      const directWhatsAppResult = await sendDirectWhatsAppMessage(
+        registrationData.attendee.phone, 
+        whatsappMessage
+      );
+      
+      console.log('[Registration] Direct WhatsApp result:', directWhatsAppResult);
+      
+      // Also try the existing WhatsApp notification method as fallback
+      console.log('[Registration] Also attempting WhatsApp notification via Edge Function...');
       const whatsappResult = await sendWhatsAppNotification(registrationData);
       console.log('[Registration] WhatsApp notification result:', whatsappResult);
       
