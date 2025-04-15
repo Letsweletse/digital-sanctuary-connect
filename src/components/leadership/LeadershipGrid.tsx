@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ProfileCard from './ProfileCard';
 import PastorCard from './PastorCard';
@@ -11,13 +10,10 @@ interface LeadershipGridProps {
 }
 
 const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
-  // Use the MongoDB hook to fetch leaders if not provided via props
   const { data: fetchedLeaders, isLoading } = useMongoData<LeadershipPerson>('leaders', {});
   
-  // Use provided leaders or fetched leaders
   const leadersList = leaders.length > 0 ? leaders : fetchedLeaders || [];
   
-  // Senior Pastor data
   const pastorImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Senior%20Pastor_1743598781352.jpeg";
   
   const pastorBio = `
@@ -25,14 +21,6 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
     
   `;
 
-  // Pastor's recent sermons
-  const pastorSermons = [
-    { title: "The Prophetic Office In Context Of The Apostolic Seasons", url: "https://www.youtube.com/watch?v=syZyhjJffmU" },
-    { title: "2nd March Sunday Sermon 2025", url: "https://www.youtube.com/watch?v=T96Pf2ngosg&t=6657s" },
-    { title: "23rd February Sunday Sermon 2025", url: "https://www.youtube.com/watch?v=HxDFrJCwL4Y" }
-  ];
-
-  // Elder data - Updated with the new elders information
   const elders = [
     {
       id: "elder1",
@@ -53,7 +41,31 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
       name: "Thabiso & Lesogo Thwane",
       role: "Church Elders",
       image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Thabiso%20&%20Lesogo%20Thwane_1743684836732.jpeg",
-      bio: "Thabiso and Lesogo with grace and dedication, bringing years of pastoral care experience to our congregation.."
+      bio: "Thabiso and Lesogo with grace and dedication, bringing years of pastoral care experience to our congregation."
+    },
+    {
+      id: "elder4",
+      name: "Dave & Monica Fisher",
+      role: "Church Elders",
+      image: "https://images.unsplash.com/photo-1573497491765-55a968388b83?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+      bio: "Dave and Monica Fisher serve with compassion and wisdom, bringing deep spiritual insight to our congregation."
+    }
+  ];
+
+  const pastors = [
+    {
+      id: "pastor1",
+      name: "Pastor Oteng & Carry Leepile",
+      role: "Pastors",
+      image: "https://images.unsplash.com/photo-1573497491765-55a968388b83?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+      bio: "Pastor Oteng and Carry Leepile serve our congregation with passion and dedication, bringing spiritual guidance and leadership."
+    },
+    {
+      id: "pastor2",
+      name: "Pastor Cynthia Harman",
+      role: "Pastors",
+      image: "https://images.unsplash.com/photo-1573497491765-55a968388b83?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+      bio: "Pastor Cynthia Harman brings a dynamic and inspiring approach to ministry, serving our congregation with grace and wisdom."
     }
   ];
 
@@ -71,10 +83,27 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
           role="Senior Pastor" 
           image={pastorImage}
           bio={pastorBio}
-          sermons={pastorSermons}
         />
       </div>
       
+      {/* Pastors Section */}
+      {pastors.length > 0 && (
+        <div className="mt-16">
+          <h2 className="text-3xl font-bold text-center mb-8">Pastors</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {pastors.map((pastor) => (
+              <ProfileCard 
+                key={pastor.id}
+                name={pastor.name}
+                role={pastor.role}
+                image={pastor.image}
+                bio={pastor.bio}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Elders Section */}
       <div>
         <h2 className="text-3xl font-bold text-center mb-8">Church Elders</h2>
@@ -97,7 +126,6 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
           <h2 className="text-3xl font-bold text-center mb-8">Leadership Team</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {leadersList.map((leader) => {
-              // Skip if this leader is already listed as senior pastor or elder
               if (leader.role === "Senior Pastor" || leader.role.includes("Elder")) {
                 return null;
               }
