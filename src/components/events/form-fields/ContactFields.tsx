@@ -41,7 +41,7 @@ const ContactFields: React.FC<ContactFieldsProps> = ({
     <>
       {/* Email field */}
       <div className="grid gap-2">
-        <Label htmlFor="email" className="flex items-center gap-2 text-base">
+        <Label htmlFor="email" className="flex items-center gap-2 text-base font-medium">
           <Mail className="h-4 w-4 text-church-blue" />
           Email Address
         </Label>
@@ -59,9 +59,9 @@ const ContactFields: React.FC<ContactFieldsProps> = ({
       
       {/* Phone with country code */}
       <div className="grid gap-2">
-        <Label htmlFor="phone" className="flex items-center gap-2 text-base">
+        <Label htmlFor="phone" className="flex items-center gap-2 text-base font-medium">
           <Phone className="h-4 w-4 text-church-blue" />
-          WhatsApp Number <span className="text-xs text-gray-500">(Confirmation will be sent here)</span>
+          Contact Number
         </Label>
         <div className="flex space-x-2">
           <select
@@ -80,16 +80,13 @@ const ContactFields: React.FC<ContactFieldsProps> = ({
           <Input
             id="phone"
             name="phone"
-            placeholder="7XXXXXXX (digits only)"
+            placeholder="7XXXXXXX"
             value={phone}
             onChange={handlePhoneChange}
             required
             className="border-church-blue-light focus-visible:ring-church-blue text-sm md:text-base transition-all duration-300 w-2/3"
           />
         </div>
-        <p className="text-xs text-gray-500 mt-1">
-          A confirmation message will be sent to your WhatsApp. Make sure this number is correct.
-        </p>
       </div>
     </>
   );

@@ -75,6 +75,14 @@ export const sendDirectWhatsAppMessage = async (phone: string, message: string) 
 export const generatePremiumWhatsAppConfirmation = (registrationData: any) => {
   const { event, attendee } = registrationData;
   
+  // Create QR code value for check-in
+  const qrCodeValue = JSON.stringify({
+    eventId: event.id,
+    eventName: event.title,
+    attendeeName: attendee.name,
+    attendeeEmail: attendee.email
+  });
+  
   // Create a professional, visually appealing message with emojis and formatting
   return `✅ *REGISTRATION CONFIRMED*\n
 🎫 *Event:* ${event.title}
