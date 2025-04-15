@@ -63,47 +63,52 @@ export const useEventRegistration = () => {
     }));
   };
 
-  // Enhanced WhatsApp notification function with detailed error logging
+  // Enhanced WhatsApp notification function with more detailed error logging and debugging
   const sendWhatsAppNotification = async (registrationData: any) => {
     try {
-      console.log("🔍 WhatsApp Notification Process Started");
-      console.log("📱 Full Registration Data:", JSON.stringify(registrationData, null, 2));
+      console.log("🔍 [WhatsApp] Notification Process Started");
+      console.log("📱 [WhatsApp] Registration Data:", JSON.stringify(registrationData, null, 2));
 
-      // Comprehensive phone number validation and formatting
-      const rawPhone = registrationData.attendee.phone;
-      console.log("🚨 Raw Phone Number:", rawPhone);
+      // Phone number validation and formatting with more detailed logging
+      let rawPhone = registrationData.attendee.phone;
+      console.log("🚨 [WhatsApp] Raw Phone Number:", rawPhone);
 
-      // Remove all non-digit characters except '+'
-      const cleanedPhone = rawPhone.replace(/[^\d+]/g, '');
-      console.log("🧼 Cleaned Phone Number:", cleanedPhone);
+      // Ensure phone has country code
+      if (!rawPhone.startsWith('+')) {
+        console.warn("[WhatsApp] Phone missing country code, attempting to add default +267");
+        rawPhone = `+267${rawPhone}`;
+      }
 
-      // Validate phone number format
-      const phoneRegex = /^\+\d{10,14}$/; // Adjust regex as needed for your country's format
+      // Remove any spaces, dashes, or parentheses
+      const cleanedPhone = rawPhone.replace(/[\s\-()]/g, '');
+      console.log("🧼 [WhatsApp] Cleaned Phone Number:", cleanedPhone);
+
+      // Validate phone number format (must start with + and have at least 10 digits after)
+      const phoneRegex = /^\+\d{10,15}$/;
       if (!phoneRegex.test(cleanedPhone)) {
-        console.error("❌ Invalid Phone Number Format:", cleanedPhone);
+        console.error("❌ [WhatsApp] Invalid Phone Number Format:", cleanedPhone);
         
-        // Log detailed phone number issues
-        console.warn("Phone Number Validation Details:", {
+        // Detailed phone validation logging
+        console.warn("[WhatsApp] Phone Validation Details:", {
           length: cleanedPhone.length,
           startsWithPlus: cleanedPhone.startsWith('+'),
-          containsOnlyDigitsAfterPlus: /^\+\d+$/.test(cleanedPhone)
+          containsOnlyDigitsAfterPlus: /^\+\d+$/.test(cleanedPhone),
+          originalInput: rawPhone
         });
 
         sonnerToast.error("WhatsApp Notification Failed", {
-          description: "Invalid phone number format. Please check the number.",
+          description: "Invalid phone number format. Please check your number.",
           duration: 5000
         });
 
         return { 
           error: true, 
           message: "Invalid phone number format",
-          details: {
-            rawPhone,
-            cleanedPhone
-          }
+          details: { rawPhone, cleanedPhone }
         };
       }
 
+      // Construct a message with all event details
       const message = `Thank you for registering for ${registrationData.event}! 
 Event Date: ${registrationData.eventDate}
 Event Time: ${registrationData.eventTime}
@@ -111,20 +116,24 @@ Location: ${registrationData.location}
 
 Your registration is confirmed. We look forward to seeing you!`;
 
-      console.log("📨 Prepared WhatsApp Message:", message);
+      console.log("📨 [WhatsApp] Prepared Message:", message);
 
+      // Set up specific request data for UltraMsg API call
       const requestBody = {
         token: ULTRAMSG_API_KEY,
         to: cleanedPhone,
         body: message
       };
 
-      console.log("🚀 UltraMsg API Request:", {
+      console.log("🚀 [WhatsApp] API Request Details:", {
         url: `https://api.ultramsg.com/${ULTRAMSG_INSTANCE_ID}/messages/chat`,
         method: 'POST',
-        body: requestBody
+        token: ULTRAMSG_API_KEY.substring(0, 4) + "..." + ULTRAMSG_API_KEY.substring(ULTRAMSG_API_KEY.length - 4),
+        instanceId: ULTRAMSG_INSTANCE_ID,
+        phone: cleanedPhone
       });
 
+      // Make the API call with proper error handling
       const response = await fetch(`https://api.ultramsg.com/${ULTRAMSG_INSTANCE_ID}/messages/chat`, {
         method: 'POST',
         headers: {
@@ -133,26 +142,31 @@ Your registration is confirmed. We look forward to seeing you!`;
         body: JSON.stringify(requestBody)
       });
 
-      console.log("📋 API Response Status:", {
+      console.log("📋 [WhatsApp] API Response Status:", {
         status: response.status,
         statusText: response.statusText
       });
 
+      // Get the complete API response for debugging
       const result = await response.json();
-      console.log("🔬 Complete API Response:", JSON.stringify(result, null, 2));
+      console.log("🔬 [WhatsApp] Complete API Response:", JSON.stringify(result, null, 2));
 
-      // Detailed result logging and toast notifications
-      if (response.ok) {
-        console.log("✅ WhatsApp Notification Sent Successfully");
+      // Process the result and show appropriate notifications
+      if (response.ok && !result.error) {
+        console.log("✅ [WhatsApp] Notification Sent Successfully");
+        console.log("[WhatsApp] Message ID:", result.message_id || "Not provided");
+        
         sonnerToast.success("WhatsApp Notification", {
           description: "Confirmation message sent to your WhatsApp.",
           duration: 5000
         });
         return result;
       } else {
-        console.error("❌ WhatsApp Notification Failed", result);
+        console.error("❌ [WhatsApp] API Error Response:", result);
+        console.error("[WhatsApp] Error Details:", result.error || "Unknown API error");
+        
         sonnerToast.error("WhatsApp Notification Issue", {
-          description: "Could not send WhatsApp message. Please try again.",
+          description: "Could not send WhatsApp message. Please check phone number format.",
           duration: 5000
         });
         return { 
@@ -162,10 +176,11 @@ Your registration is confirmed. We look forward to seeing you!`;
         };
       }
     } catch (error) {
-      console.error("🚨 WhatsApp Notification Exception:", error);
+      console.error("🚨 [WhatsApp] Exception Occurred:", error);
+      console.error("[WhatsApp] Stack Trace:", error instanceof Error ? error.stack : "No stack trace");
       
       sonnerToast.error("WhatsApp Notification Error", {
-        description: "An unexpected error occurred. Please contact support.",
+        description: "Technical error sending message. Please contact support.",
         duration: 5000
       });
 
@@ -249,8 +264,28 @@ Your registration is confirmed. We look forward to seeing you!`;
       }
       
       // Send WhatsApp notification directly after successful registration
+      console.log('[Registration] Attempting WhatsApp notification...');
       const whatsappResult = await sendWhatsAppNotification(registrationData);
-      console.log('WhatsApp notification complete result:', whatsappResult);
+      console.log('[Registration] WhatsApp notification result:', whatsappResult);
+      
+      // More detailed success/error handling for WhatsApp
+      if (whatsappResult && !whatsappResult.error) {
+        console.log("[Registration] WhatsApp notification sent successfully");
+        console.log("[Registration] WhatsApp message ID:", whatsappResult.message_id || "Not provided");
+        
+        sonnerToast.success("WhatsApp Notification Sent", {
+          description: "A confirmation message has been sent to your WhatsApp number.",
+          duration: 5000
+        });
+      } else {
+        console.warn("[Registration] WhatsApp notification failed:", whatsappResult?.message || "Unknown error");
+        console.warn("[Registration] WhatsApp error details:", whatsappResult?.details || {});
+        
+        sonnerToast.error("WhatsApp Notification Issue", {
+          description: "There was a problem sending the WhatsApp confirmation. Please verify your phone number format.",
+          duration: 5000
+        });
+      }
       
       // Show detailed success or error message
       if (whatsappResult && !whatsappResult.error) {
