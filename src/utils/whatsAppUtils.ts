@@ -5,7 +5,7 @@
  */
 
 /**
- * Send a WhatsApp notification directly using the Supabase Edge Function
+ * Send a WhatsApp notification directly using the UltraMsg API
  * @param phone - Phone number with country code (e.g. +26771234567)
  * @param message - Message to send via WhatsApp
  * @returns Promise with the response data
@@ -30,15 +30,20 @@ export const sendDirectWhatsAppMessage = async (phone: string, message: string) 
       finalMessage += "\n\nGate Gaborone - Reach | Resource | Reform";
     }
     
-    // Call the Edge Function directly with fetch using the specific instance
-    const response = await fetch("https://lojchdvtwypjqupsjynf.supabase.co/functions/v1/send-whatsapp", {
+    // DIRECT API CALL TO ULTRAMSG - bypassing Edge Function
+    const ULTRAMSG_API_KEY = 'zpivrjhut12tefx6';
+    const ULTRAMSG_INSTANCE_ID = '114633';
+    
+    const response = await fetch(`https://api.ultramsg.com/instance${ULTRAMSG_INSTANCE_ID}/messages/chat`, {
       method: "POST",
       headers: { 
         "Content-Type": "application/json" 
       },
       body: JSON.stringify({
-        phone: phone,
-        message: finalMessage
+        token: ULTRAMSG_API_KEY,
+        to: phone,
+        body: finalMessage,
+        priority: 10 // High priority to ensure faster delivery
       })
     });
     

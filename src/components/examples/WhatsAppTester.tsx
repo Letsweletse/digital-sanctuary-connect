@@ -43,6 +43,7 @@ Save this message for your reference.
 *GATE GABORONE*
 _Reach | Resource | Reform_`;
 
+      // Using direct UltraMsg API method now
       const result = await sendDirectWhatsAppMessage(phone, message);
       console.log("📊 [Test] Direct WhatsApp result:", result);
       setLastResult(result);

@@ -112,7 +112,7 @@ export const useRegistrationSubmission = () => {
       // Generate premium formatted WhatsApp message
       const premiumWhatsAppMessage = generatePremiumWhatsAppConfirmation(registrationData);
       
-      // Send direct WhatsApp notification with premium formatted message
+      // Send direct WhatsApp notification with premium formatted message - NOW USING DIRECT ULTRAMSG API
       console.log('[Registration] Sending premium WhatsApp message to:', registrationData.attendee.phone);
       const directWhatsAppResult = await sendDirectWhatsAppMessage(
         registrationData.attendee.phone, 
@@ -121,10 +121,12 @@ export const useRegistrationSubmission = () => {
       
       console.log('[Registration] Premium WhatsApp result:', directWhatsAppResult);
       
-      // Also try the existing WhatsApp notification method as fallback
-      console.log('[Registration] Also attempting WhatsApp notification via Edge Function...');
-      const whatsappResult = await sendWhatsAppNotification(registrationData);
-      console.log('[Registration] WhatsApp notification result:', whatsappResult);
+      // Only attempt Edge function as a fallback if direct method fails
+      if (directWhatsAppResult.error) {
+        console.log('[Registration] Direct WhatsApp failed, attempting via Edge Function...');
+        const whatsappResult = await sendWhatsAppNotification(registrationData);
+        console.log('[Registration] WhatsApp notification result:', whatsappResult);
+      }
       
       toast({
         title: "Registration Successful!",
