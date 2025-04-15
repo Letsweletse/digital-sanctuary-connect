@@ -5,7 +5,10 @@ import { toast as sonnerToast } from "sonner";
 import { EventData, RegistrationFormData } from '@/types/eventTypes';
 import { sendEventRegistrationEmail } from '@/lib/emailService';
 import { formatDate } from '@/utils/dateUtils';
-import { supabase } from '@/integrations/supabase/client';
+
+// UltraMsg API credentials
+const ULTRAMSG_API_KEY = "m9uo38p34k0e2jc1";
+const ULTRAMSG_INSTANCE_ID = "instance53888";
 
 export const useEventRegistration = () => {
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
@@ -61,9 +64,10 @@ export const useEventRegistration = () => {
     }));
   };
 
+  // Direct WhatsApp notification without edge function
   const sendWhatsAppNotification = async (registrationData: any) => {
     try {
-      const phone = registrationData.attendee.phone;
+      const phone = registrationData.attendee.phone.replace(/\s+/g, ''); // Remove spaces from phone number
       const message = `Thank you for registering for ${registrationData.event}! 
 Event Date: ${registrationData.eventDate}
 Event Time: ${registrationData.eventTime}
@@ -71,13 +75,25 @@ Location: ${registrationData.location}
 
 Your registration is confirmed. We look forward to seeing you!`;
 
-      const response = await supabase.functions.invoke('send-whatsapp', {
-        body: JSON.stringify({ phone, message })
+      // Direct API call to UltraMsg
+      const response = await fetch(`https://api.ultramsg.com/${ULTRAMSG_INSTANCE_ID}/messages/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token: ULTRAMSG_API_KEY,
+          to: phone,
+          body: message
+        })
       });
 
-      console.log('WhatsApp notification result:', response);
+      const result = await response.json();
+      console.log('WhatsApp notification sent directly:', result);
+      return result;
     } catch (error) {
       console.error('Failed to send WhatsApp notification:', error);
+      return { error: true, message: error instanceof Error ? error.message : 'Unknown error' };
     }
   };
 
@@ -135,7 +151,7 @@ Your registration is confirmed. We look forward to seeing you!`;
           : 'https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7', // Use location URL or default to Gate Gaborone location
         attendee: {
           ...formData,
-          phone: `${formData.countryCode} ${formData.phone}` // Format phone with country code
+          phone: `${formData.countryCode}${formData.phone}` // Format phone with country code, removing spaces
         },
         message: `Title: ${formData.title}, Role: ${formData.role}, Denomination: ${formData.denomination}, Number of Attendees: ${formData.numberOfAttendees}`,
         submitDate: new Date().toISOString(),
@@ -152,8 +168,9 @@ Your registration is confirmed. We look forward to seeing you!`;
         throw new Error(emailResult.message || "Failed to send registration email");
       }
       
-      // Send WhatsApp notification after successful registration
-      await sendWhatsAppNotification(registrationData);
+      // Send WhatsApp notification directly after successful registration
+      const whatsappResult = await sendWhatsAppNotification(registrationData);
+      console.log('WhatsApp notification result:', whatsappResult);
       
       // Show success message using both toasts for better visibility
       toast({
