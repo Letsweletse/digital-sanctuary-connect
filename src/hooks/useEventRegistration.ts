@@ -63,27 +63,47 @@ export const useEventRegistration = () => {
     }));
   };
 
-  // Direct WhatsApp notification with improved logging
+  // Enhanced WhatsApp notification function with detailed error logging
   const sendWhatsAppNotification = async (registrationData: any) => {
     try {
-      console.log("Starting WhatsApp notification process...");
-      
-      // Format phone number and log it for debugging
+      console.log("🔍 WhatsApp Notification Process Started");
+      console.log("📱 Full Registration Data:", JSON.stringify(registrationData, null, 2));
+
+      // Comprehensive phone number validation and formatting
       const rawPhone = registrationData.attendee.phone;
-      const formattedPhone = rawPhone.replace(/\s+/g, ''); // Remove spaces
-      
-      console.log("Phone number details:", {
-        original: rawPhone,
-        formatted: formattedPhone,
-        startsWithPlus: formattedPhone.startsWith('+')
-      });
-      
-      // Only proceed if we have a valid phone (must start with +)
-      if (!formattedPhone.startsWith('+')) {
-        console.error("Invalid phone number format - must start with country code (+)");
-        return { error: true, message: "Invalid phone number format" };
+      console.log("🚨 Raw Phone Number:", rawPhone);
+
+      // Remove all non-digit characters except '+'
+      const cleanedPhone = rawPhone.replace(/[^\d+]/g, '');
+      console.log("🧼 Cleaned Phone Number:", cleanedPhone);
+
+      // Validate phone number format
+      const phoneRegex = /^\+\d{10,14}$/; // Adjust regex as needed for your country's format
+      if (!phoneRegex.test(cleanedPhone)) {
+        console.error("❌ Invalid Phone Number Format:", cleanedPhone);
+        
+        // Log detailed phone number issues
+        console.warn("Phone Number Validation Details:", {
+          length: cleanedPhone.length,
+          startsWithPlus: cleanedPhone.startsWith('+'),
+          containsOnlyDigitsAfterPlus: /^\+\d+$/.test(cleanedPhone)
+        });
+
+        sonnerToast.error("WhatsApp Notification Failed", {
+          description: "Invalid phone number format. Please check the number.",
+          duration: 5000
+        });
+
+        return { 
+          error: true, 
+          message: "Invalid phone number format",
+          details: {
+            rawPhone,
+            cleanedPhone
+          }
+        };
       }
-      
+
       const message = `Thank you for registering for ${registrationData.event}! 
 Event Date: ${registrationData.eventDate}
 Event Time: ${registrationData.eventTime}
@@ -91,22 +111,20 @@ Location: ${registrationData.location}
 
 Your registration is confirmed. We look forward to seeing you!`;
 
-      console.log("Sending WhatsApp message to:", formattedPhone);
-      console.log("Message content:", message);
-      
-      // Log the actual API request for debugging
+      console.log("📨 Prepared WhatsApp Message:", message);
+
       const requestBody = {
         token: ULTRAMSG_API_KEY,
-        to: formattedPhone,
+        to: cleanedPhone,
         body: message
       };
-      console.log("UltraMsg API request:", {
+
+      console.log("🚀 UltraMsg API Request:", {
         url: `https://api.ultramsg.com/${ULTRAMSG_INSTANCE_ID}/messages/chat`,
         method: 'POST',
         body: requestBody
       });
 
-      // Direct API call to UltraMsg
       const response = await fetch(`https://api.ultramsg.com/${ULTRAMSG_INSTANCE_ID}/messages/chat`, {
         method: 'POST',
         headers: {
@@ -115,18 +133,47 @@ Your registration is confirmed. We look forward to seeing you!`;
         body: JSON.stringify(requestBody)
       });
 
-      // Log the entire response for debugging
-      const result = await response.json();
-      console.log('WhatsApp API response:', {
+      console.log("📋 API Response Status:", {
         status: response.status,
-        statusText: response.statusText,
-        result
+        statusText: response.statusText
       });
-      
-      return result;
+
+      const result = await response.json();
+      console.log("🔬 Complete API Response:", JSON.stringify(result, null, 2));
+
+      // Detailed result logging and toast notifications
+      if (response.ok) {
+        console.log("✅ WhatsApp Notification Sent Successfully");
+        sonnerToast.success("WhatsApp Notification", {
+          description: "Confirmation message sent to your WhatsApp.",
+          duration: 5000
+        });
+        return result;
+      } else {
+        console.error("❌ WhatsApp Notification Failed", result);
+        sonnerToast.error("WhatsApp Notification Issue", {
+          description: "Could not send WhatsApp message. Please try again.",
+          duration: 5000
+        });
+        return { 
+          error: true, 
+          message: result.error || "Unknown WhatsApp notification error",
+          details: result
+        };
+      }
     } catch (error) {
-      console.error('Failed to send WhatsApp notification:', error);
-      return { error: true, message: error instanceof Error ? error.message : 'Unknown error' };
+      console.error("🚨 WhatsApp Notification Exception:", error);
+      
+      sonnerToast.error("WhatsApp Notification Error", {
+        description: "An unexpected error occurred. Please contact support.",
+        duration: 5000
+      });
+
+      return { 
+        error: true, 
+        message: error instanceof Error ? error.message : "Unknown error",
+        details: error
+      };
     }
   };
 
