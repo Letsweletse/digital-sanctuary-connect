@@ -62,6 +62,7 @@ export const useRegistrationSubmission = () => {
     setIsSubmitting(true);
 
     try {
+      // Prepare comprehensive registration data with all needed details
       const registrationData = {
         event: {
           ...currentEvent,
@@ -83,7 +84,7 @@ export const useRegistrationSubmission = () => {
         registrationType: 'Standard'
       };
 
-      console.log('Registration submitted with enhanced email data:', registrationData);
+      console.log('Registration submitted with enhanced data:', registrationData);
       
       // Format data for email service
       const emailRegistrationData = {
@@ -98,6 +99,7 @@ export const useRegistrationSubmission = () => {
         registrationType: registrationData.registrationType
       };
       
+      // Send email
       const emailResult = await sendEventRegistrationEmail(currentEvent.title, emailRegistrationData);
       console.log('Enhanced email service response:', emailResult);
       
@@ -105,17 +107,18 @@ export const useRegistrationSubmission = () => {
         throw new Error(emailResult.message || "Failed to send registration email");
       }
       
-      console.log('[Registration] Attempting WhatsApp notification...');
+      // Send WhatsApp notification with complete registration details
+      console.log('[Registration] Attempting WhatsApp notification with complete details...');
       const whatsappResult = await sendWhatsAppNotification(registrationData);
       console.log('[Registration] WhatsApp notification result:', whatsappResult);
       
       toast({
         title: "Registration Successful!",
-        description: `Thank you for registering for ${currentEvent.title}. A confirmation email with calendar integration, QR codes, and sharing options has been sent to ${formData.email}.`,
+        description: `Thank you for registering for ${currentEvent.title}. A confirmation has been sent to your WhatsApp and email (${formData.email}).`,
       });
       
       sonnerToast.success("Registration Complete!", {
-        description: "Check your email for confirmation with QR codes and calendar link.",
+        description: "Check your WhatsApp and email for detailed confirmation.",
         duration: 5000
       });
       

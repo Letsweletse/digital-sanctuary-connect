@@ -2,6 +2,7 @@
 import { toast as sonnerToast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { usePhoneValidation } from "./usePhoneValidation";
+import { formatDate } from "@/utils/dateUtils";
 
 export const useWhatsAppNotification = () => {
   const { validatePhone } = usePhoneValidation();
@@ -32,12 +33,23 @@ export const useWhatsAppNotification = () => {
         };
       }
 
-      const messageText = `Thank you for registering for ${registrationData.event}! 
-Event Date: ${registrationData.eventDate}
-Event Time: ${registrationData.eventTime}
-Location: ${registrationData.location}
+      // Create a more detailed confirmation message
+      const messageText = `✅ *Registration Confirmed!*\n
+*Event:* ${registrationData.event.title}
+*Date:* ${formatDate(registrationData.event.date)}
+*Time:* ${registrationData.event.time}
+*Location:* ${registrationData.event.location}
+      
+🙋‍♂️ *Registration Details:*
+*Name:* ${registrationData.attendee.name}
+*Email:* ${registrationData.attendee.email}
+*Phone:* ${registrationData.attendee.phone}
+*Number of Attendees:* ${registrationData.attendee.numberOfAttendees}
 
-Your registration is confirmed. We look forward to seeing you!`;
+Your registration has been confirmed. We look forward to seeing you!
+Save this message for your reference.
+
+- The Gate Gaborone Team`;
 
       console.log("📨 [WhatsApp] Prepared Message:", messageText);
       console.log("🚀 [WhatsApp] Calling Supabase Edge Function");
@@ -69,8 +81,8 @@ Your registration is confirmed. We look forward to seeing you!`;
       if (data && !data.error) {
         console.log("✅ [WhatsApp] Notification Sent Successfully via Edge Function");
         
-        sonnerToast.success("WhatsApp Notification", {
-          description: "Confirmation message sent to your WhatsApp.",
+        sonnerToast.success("WhatsApp Confirmation Sent", {
+          description: "Detailed confirmation sent to your WhatsApp.",
           duration: 5000
         });
         
