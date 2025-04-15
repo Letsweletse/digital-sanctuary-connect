@@ -6,13 +6,14 @@ export const createShareLinks = (
   checkInId?: string
 ) => {
   const churchUrl = "https://gategaborone.com";
+  const tagline = "Reach | Resource | Reform";
   
-  // Create WhatsApp sharing text with event details and check-in ID if available
+  // Create WhatsApp sharing text with event details, check-in ID and proper branding
   const shareText = checkInId 
-    ? `I just registered for ${eventName} at Capital City Baptist Hall on ${eventDate} at ${eventTime}. Join me! My check-in ID is: ${checkInId}. To register visit: ${churchUrl}/events or call: 0993181830 or 0993749297`
-    : `Join me at ${eventName} at Capital City Baptist Hall on ${eventDate} at ${eventTime}. To register visit: ${churchUrl}/events or call: 0993181830 or 0993749297`;
+    ? `I just registered for ${eventName} at Gate Gaborone on ${eventDate} at ${eventTime}. Join me! My check-in ID is: ${checkInId}. To register visit: ${churchUrl}/events or call: 0993181830 or 0993749297. ${tagline}`
+    : `Join me at ${eventName} at Gate Gaborone on ${eventDate} at ${eventTime}. To register visit: ${churchUrl}/events or call: 0993181830 or 0993749297. ${tagline}`;
   
-  const socialShareText = `Join me at ${eventName} at Capital City Baptist Hall on ${eventDate} at ${eventTime}. Theme: "The Times of Refreshing" (Acts 3:19).`;
+  const socialShareText = `Join me at ${eventName} at Gate Gaborone on ${eventDate} at ${eventTime}. ${tagline}`;
   
   return {
     whatsapp: `https://wa.me/?text=${encodeURIComponent(shareText)}`,
@@ -20,6 +21,6 @@ export const createShareLinks = (
     twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(socialShareText + " " + churchUrl + "/events")}`,
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(churchUrl + '/events')}&summary=${encodeURIComponent(socialShareText)}`,
     instagram: `https://www.instagram.com/?url=${encodeURIComponent(churchUrl + '/events')}`,
-    email: `mailto:?subject=${encodeURIComponent(eventName)}&body=${encodeURIComponent(socialShareText + "\n\nRegister at: " + churchUrl + "/events" + " or by calling: 0993181830 or 0993749297")}`
+    email: `mailto:?subject=${encodeURIComponent("Gate Gaborone: " + eventName)}&body=${encodeURIComponent(socialShareText + "\n\nRegister at: " + churchUrl + "/events" + " or by calling: 0993181830 or 0993749297")}`
   };
 };

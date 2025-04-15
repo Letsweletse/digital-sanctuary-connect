@@ -33,8 +33,8 @@ export const useWhatsAppNotification = () => {
         };
       }
 
-      // Create a more detailed confirmation message
-      const messageText = `✅ *Registration Confirmed!*\n
+      // Create a more detailed confirmation message with Gate Gaborone branding
+      const messageText = `✅ *Registration Confirmed for Gate Gaborone!*\n
 *Event:* ${registrationData.event.title}
 *Date:* ${formatDate(registrationData.event.date)}
 *Time:* ${registrationData.event.time}
@@ -49,6 +49,7 @@ export const useWhatsAppNotification = () => {
 Your registration has been confirmed. We look forward to seeing you!
 Save this message for your reference.
 
+*Reach | Resource | Reform*
 - The Gate Gaborone Team`;
 
       console.log("📨 [WhatsApp] Prepared Message:", messageText);

@@ -37,6 +37,12 @@ serve(async (req) => {
       );
     }
 
+    // Add Gate Gaborone branding in the footer if not present
+    let finalMessage = message;
+    if (!finalMessage.includes("Gate Gaborone")) {
+      finalMessage += "\n\nGate Gaborone - Reach | Resource | Reform";
+    }
+
     const response = await fetch(`https://api.ultramsg.com/${ULTRAMSG_INSTANCE_ID}/messages/chat`, {
       method: 'POST',
       headers: {
@@ -45,7 +51,7 @@ serve(async (req) => {
       body: JSON.stringify({
         token: ULTRAMSG_API_KEY,
         to: phone,
-        body: message,
+        body: finalMessage,
         priority: 10, // High priority for registration confirmations
       })
     });
