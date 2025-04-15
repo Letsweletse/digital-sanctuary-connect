@@ -32,12 +32,12 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
         <DialogHeader className="p-4 md:p-6 pb-2 bg-gradient-to-r from-church-blue-light/30 to-white">
           <DialogTitle className="text-lg md:text-xl font-montserrat">Register for {currentEvent?.title}</DialogTitle>
           <DialogDescription className="text-sm md:text-base">
-            Complete the form below to reserve your spot.
+            Complete the form below to reserve your spot and receive a WhatsApp confirmation.
           </DialogDescription>
         </DialogHeader>
         
         <div className="flex flex-col md:flex-row">
-          {/* Left side - Event details - smaller on mobile */}
+          {/* Left side - Event details - simplified on mobile */}
           <div className="md:w-2/5 p-3 md:p-4">
             {currentEvent && (
               <EventDetailCard event={currentEvent} formatDate={formatDate} />

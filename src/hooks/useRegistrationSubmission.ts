@@ -7,7 +7,7 @@ import { sendEventRegistrationEmail } from '@/lib/emailService';
 import { formatDate } from '@/utils/dateUtils';
 import { useWhatsAppNotification } from './useWhatsAppNotification';
 import { useNavigate } from 'react-router-dom';
-import { sendDirectWhatsAppMessage } from '@/utils/whatsAppUtils';
+import { sendDirectWhatsAppMessage, generatePremiumWhatsAppConfirmation } from '@/utils/whatsAppUtils';
 
 export const useRegistrationSubmission = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,7 +67,7 @@ export const useRegistrationSubmission = () => {
       const registrationData = {
         event: {
           ...currentEvent,
-          date: currentEvent.date,
+          date: formatDate(currentEvent.date),
           time: currentEvent.time,
           location: currentEvent.location.includes('http') 
             ? currentEvent.location 
@@ -105,35 +105,21 @@ export const useRegistrationSubmission = () => {
       console.log('Enhanced email service response:', emailResult);
       
       if (!emailResult.success) {
-        throw new Error(emailResult.message || "Failed to send registration email");
+        console.error("Failed to send registration email:", emailResult.message);
+        // Continue anyway as WhatsApp might still work
       }
       
-      // Send direct WhatsApp notification with formatted message
-      const whatsappMessage = `✅ *Registration Confirmed for Gate Gaborone!*\n
-*Event:* ${registrationData.event.title}
-*Date:* ${formatDate(registrationData.event.date)}
-*Time:* ${registrationData.event.time}
-*Location:* ${registrationData.event.location}
+      // Generate premium formatted WhatsApp message
+      const premiumWhatsAppMessage = generatePremiumWhatsAppConfirmation(registrationData);
       
-🙋‍♂️ *Registration Details:*
-*Name:* ${registrationData.attendee.name}
-*Email:* ${registrationData.attendee.email}
-*Phone:* ${registrationData.attendee.phone}
-*Number of Attendees:* ${registrationData.attendee.numberOfAttendees}
-
-Your registration has been confirmed. We look forward to seeing you!
-Save this message for your reference.
-
-*Reach | Resource | Reform*
-- The Gate Gaborone Team`;
-
-      console.log('[Registration] Sending direct WhatsApp message to:', registrationData.attendee.phone);
+      // Send direct WhatsApp notification with premium formatted message
+      console.log('[Registration] Sending premium WhatsApp message to:', registrationData.attendee.phone);
       const directWhatsAppResult = await sendDirectWhatsAppMessage(
         registrationData.attendee.phone, 
-        whatsappMessage
+        premiumWhatsAppMessage
       );
       
-      console.log('[Registration] Direct WhatsApp result:', directWhatsAppResult);
+      console.log('[Registration] Premium WhatsApp result:', directWhatsAppResult);
       
       // Also try the existing WhatsApp notification method as fallback
       console.log('[Registration] Also attempting WhatsApp notification via Edge Function...');
@@ -146,7 +132,7 @@ Save this message for your reference.
       });
       
       sonnerToast.success("Registration Complete!", {
-        description: "Check your WhatsApp and email for detailed confirmation.",
+        description: "Check your WhatsApp for a confirmation message",
         duration: 5000
       });
       

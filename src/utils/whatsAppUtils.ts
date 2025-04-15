@@ -30,7 +30,7 @@ export const sendDirectWhatsAppMessage = async (phone: string, message: string) 
       finalMessage += "\n\nGate Gaborone - Reach | Resource | Reform";
     }
     
-    // Call the Supabase Edge Function directly with fetch
+    // Call the Edge Function directly with fetch using the specific instance
     const response = await fetch("https://lojchdvtwypjqupsjynf.supabase.co/functions/v1/send-whatsapp", {
       method: "POST",
       headers: { 
@@ -63,23 +63,35 @@ export const sendDirectWhatsAppMessage = async (phone: string, message: string) 
 };
 
 /**
- * Example usage:
- * 
- * // Simple message
- * await sendDirectWhatsAppMessage("+26771234567", "Hello from Gate Gaborone!");
- * 
- * // Registration confirmation with formatting
- * await sendDirectWhatsAppMessage(
- *   "+26771234567", 
- *   `✅ *Registration Confirmed for Gate Gaborone!*
- *   
- *   *Event:* Conference Name
- *   *Date:* May 10, 2025
- *   *Time:* 9:00 AM
- *   
- *   We look forward to seeing you!
- *   
- *   *Reach | Resource | Reform*
- *   - The Gate Gaborone Team`
- * );
+ * Generate a premium-looking WhatsApp confirmation message with enhanced formatting
+ * @param registrationData - The registration data object
+ * @returns Formatted WhatsApp message with professional styling
  */
+export const generatePremiumWhatsAppConfirmation = (registrationData: any) => {
+  const { event, attendee } = registrationData;
+  
+  // Create a professional, visually appealing message with emojis and formatting
+  return `✅ *REGISTRATION CONFIRMED*\n
+🎫 *Event:* ${event.title}
+📅 *Date:* ${event.date}
+⏰ *Time:* ${event.time}
+📍 *Location:* Gate Gaborone
+🔗 *Map:* https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7
+
+👤 *ATTENDEE DETAILS*
+*Name:* ${attendee.name}
+*Email:* ${attendee.email}
+*Phone:* ${attendee.phone}
+*Role:* ${attendee.role}
+*Number of Attendees:* ${attendee.numberOfAttendees || 1}
+
+Your registration has been successfully confirmed! 
+We are excited to welcome you to this event.
+
+Please save this message for your reference and show it at entry.
+
+*GATE GABORONE*
+_Reach | Resource | Reform_
+
+For any questions, please contact us at +267 3191000`;
+};

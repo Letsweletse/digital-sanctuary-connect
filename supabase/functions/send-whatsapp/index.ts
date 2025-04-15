@@ -2,7 +2,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 
 const ULTRAMSG_API_KEY = Deno.env.get('ULTRAMSG_API_KEY')!;
-const ULTRAMSG_INSTANCE_ID = Deno.env.get('ULTRAMSG_INSTANCE_ID')!;
+const ULTRAMSG_INSTANCE_ID = '114633'; // Using the provided instance ID
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -43,7 +43,8 @@ serve(async (req) => {
       finalMessage += "\n\nGate Gaborone - Reach | Resource | Reform";
     }
 
-    const response = await fetch(`https://api.ultramsg.com/${ULTRAMSG_INSTANCE_ID}/messages/chat`, {
+    // Using specific instance URL as provided
+    const response = await fetch(`https://api.ultramsg.com/instance114633/messages/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
