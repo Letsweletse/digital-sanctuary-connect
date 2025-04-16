@@ -1,54 +1,26 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Link } from 'react-router-dom';
-import { findMany, HouseChurchGroup } from '@/lib/mongodb';
-import { Loader2, MapPin, Calendar, Clock, Users } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { MapPin, Calendar, Clock, Users } from 'lucide-react';
+
+// Define the HouseChurchGroup type
+interface HouseChurchGroup {
+  id: string;
+  name: string;
+  day: string;
+  time: string;
+  location: string;
+  description: string;
+  leaders: string;
+  image: string;
+}
 
 const HouseChurch = () => {
-  const [groups, setGroups] = useState<HouseChurchGroup[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  
-  useEffect(() => {
-    const fetchGroups = async () => {
-      try {
-        setIsLoading(true);
-        const mongoGroups = await findMany('house_church_groups', {});
-        
-        if (mongoGroups && mongoGroups.length > 0) {
-          // Convert the _id to id for consistency
-          const typedGroups = mongoGroups.map((doc: any) => {
-            const { _id, ...data } = doc;
-            return {
-              id: _id.toString(),
-              ...data
-            } as HouseChurchGroup;
-          });
-          
-          setGroups(typedGroups);
-        } else {
-          console.warn('No house church groups found in database, using defaults');
-          // Set default house church groups based on provided information
-          setGroups(defaultHouseChurches);
-        }
-      } catch (err) {
-        console.error('Error fetching house church groups', err);
-        setError('Could not connect to database. Showing default groups.');
-        // Set default house church groups in case of error
-        setGroups(defaultHouseChurches);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchGroups();
-  }, []);
-  
-  // Default house church data based on the provided information
-  const defaultHouseChurches: HouseChurchGroup[] = [
+  // Set up the house church groups directly from the provided information
+  const [groups] = useState<HouseChurchGroup[]>([
     {
       id: "1",
       name: "Oteng & Carryadah Leepile House Church",
@@ -119,7 +91,7 @@ const HouseChurch = () => {
       leaders: "Maureen Kalane",
       image: "https://images.unsplash.com/photo-1523712999610-f77fbcfc3843?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" 
     }
-  ];
+  ]);
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -156,64 +128,53 @@ const HouseChurch = () => {
                 Browse our current House Church groups and find one that fits your location. 
                 New members are always welcome!
               </p>
-              {error && (
-                <div className="mt-4 p-3 bg-amber-50 text-amber-700 rounded-lg mx-auto max-w-2xl">
-                  {error}
-                </div>
-              )}
             </div>
             
-            {isLoading ? (
-              <div className="flex justify-center items-center h-60">
-                <Loader2 className="h-10 w-10 text-church-blue animate-spin" />
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {groups.map((group) => (
-                  <Card key={group.id} className="overflow-hidden flex flex-col h-full shadow-md hover:shadow-lg transition-shadow">
-                    <div className="relative pb-[60%]">
-                      <img 
-                        src={group.image} 
-                        alt={group.name}
-                        className="absolute top-0 left-0 w-full h-full object-cover"
-                      />
-                      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
-                        <h3 className="text-xl font-bold text-white mb-1">{group.name}</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {groups.map((group) => (
+                <Card key={group.id} className="overflow-hidden flex flex-col h-full shadow-md hover:shadow-lg transition-shadow">
+                  <div className="relative pb-[60%]">
+                    <img 
+                      src={group.image} 
+                      alt={group.name}
+                      className="absolute top-0 left-0 w-full h-full object-cover"
+                    />
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
+                      <h3 className="text-xl font-bold text-white mb-1">{group.name}</h3>
+                    </div>
+                  </div>
+                  
+                  <CardContent className="p-6 flex-grow flex flex-col">
+                    <div className="mb-4 space-y-2">
+                      <div className="flex items-center text-church-neutral-700">
+                        <Users className="h-4 w-4 mr-2 text-church-blue" />
+                        <span>{group.leaders}</span>
+                      </div>
+                      <div className="flex items-center text-church-neutral-700">
+                        <MapPin className="h-4 w-4 mr-2 text-church-blue" />
+                        <span>{group.location}</span>
+                      </div>
+                      <div className="flex items-center text-church-neutral-700">
+                        <Calendar className="h-4 w-4 mr-2 text-church-blue" />
+                        <span>{group.day}s</span>
+                      </div>
+                      <div className="flex items-center text-church-neutral-700">
+                        <Clock className="h-4 w-4 mr-2 text-church-blue" />
+                        <span>{group.time}</span>
                       </div>
                     </div>
                     
-                    <CardContent className="p-6 flex-grow flex flex-col">
-                      <div className="mb-4 space-y-2">
-                        <div className="flex items-center text-church-neutral-700">
-                          <Users className="h-4 w-4 mr-2 text-church-blue" />
-                          <span>{group.leaders}</span>
-                        </div>
-                        <div className="flex items-center text-church-neutral-700">
-                          <MapPin className="h-4 w-4 mr-2 text-church-blue" />
-                          <span>{group.location}</span>
-                        </div>
-                        <div className="flex items-center text-church-neutral-700">
-                          <Calendar className="h-4 w-4 mr-2 text-church-blue" />
-                          <span>{group.day}s</span>
-                        </div>
-                        <div className="flex items-center text-church-neutral-700">
-                          <Clock className="h-4 w-4 mr-2 text-church-blue" />
-                          <span>{group.time}</span>
-                        </div>
-                      </div>
-                      
-                      <p className="text-church-neutral-700 flex-grow">{group.description}</p>
-                      
-                      <div className="mt-6">
-                        <Link to="/contact" className="btn-primary w-full block text-center">
-                          Contact for Information
-                        </Link>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+                    <p className="text-church-neutral-700 flex-grow">{group.description}</p>
+                    
+                    <div className="mt-6">
+                      <Link to="/contact" className="btn-primary w-full block text-center">
+                        Contact for Information
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         </section>
       </main>
@@ -224,4 +185,3 @@ const HouseChurch = () => {
 };
 
 export default HouseChurch;
-
