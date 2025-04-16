@@ -41,12 +41,12 @@ const HouseChurch = () => {
     },
     {
       id: "3",
-      name: "Godwin & Lemolemo House Church",
+      name: "Mr and Mrs Godwin House Church", // Updated name here
       day: "Wednesday",
       time: "18:30",
       location: "Phase 4",
       description: "Join our vibrant house church community in Phase 4 for Bible study and fellowship.",
-      leaders: "Godwin & Lemolemo",
+      leaders: "Mr and Mrs Godwin", // Updated leaders name to match
       image: "https://images.unsplash.com/photo-1523712999610-f77fbcfc3843?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80"
     },
     {
