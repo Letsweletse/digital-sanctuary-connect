@@ -21,10 +21,10 @@ const Leadership = () => {
   return (
     <Layout>
       <main className="flex-grow page-transition">
-        <section className="bg-gradient-to-b from-[#24324b] via-[#1c2a40] to-[#162035] text-white py-16 md:py-24">
+        <section className="bg-[#24324b] text-white py-16 md:py-20">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl">
-              <span className="inline-block bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-white mb-4">
+              <span className="inline-block bg-white/10 px-3 py-1 rounded-full text-sm font-medium text-white mb-4">
                 Our Team
               </span>
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">

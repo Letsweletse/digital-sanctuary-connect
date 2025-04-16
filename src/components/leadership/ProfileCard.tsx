@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import { Mail, PhoneCall, ChevronDown, ChevronUp, Award } from 'lucide-react';
+import { Mail, PhoneCall, ChevronDown, ChevronUp, User } from 'lucide-react';
 
 interface ProfileCardProps {
   name: string;
@@ -28,15 +28,15 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   const [imageError, setImageError] = useState(false);
   
   return (
-    <Card className="overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-transparent border-0 rounded-xl text-[#24324b] group">
-      {/* Image with animated hover effect */}
+    <Card className="overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 bg-white border border-gray-100 rounded-lg text-gray-800 group">
+      {/* Image with subtle hover effect */}
       <div className="relative overflow-hidden pb-[75%]">
         <img
           src={image}
           alt={name}
           onLoad={() => setImageLoaded(true)}
           onError={() => setImageError(true)}
-          className={`absolute top-0 left-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${!imageLoaded ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
+          className={`absolute top-0 left-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${!imageLoaded ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
         />
         {!imageLoaded && !imageError && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
@@ -45,36 +45,36 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
         )}
         {imageError && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-            <Avatar className="w-16 h-16 bg-gray-200 text-[#e6c98f]">
-              <AvatarFallback className="bg-gradient-to-r from-gray-200 to-gray-300 text-[#24324b]">
+            <Avatar className="w-16 h-16 bg-gray-200 text-[#24324b]">
+              <AvatarFallback className="bg-gray-200 text-[#24324b]">
                 {name.split(' ').map(n => n[0]).join('')}
               </AvatarFallback>
             </Avatar>
           </div>
         )}
         
-        {/* Add role badge with shine animation */}
-        <div className="absolute top-0 left-0 bg-gradient-to-r from-[#e6c98f]/90 to-[#f0d9a5]/90 text-[#24324b] px-3 py-1.5 font-medium text-sm rounded-br-lg flex items-center before:absolute before:inset-0 before:bg-white/20 before:translate-x-[-100%] group-hover:before:translate-x-[100%] before:transition-transform before:duration-1000 overflow-hidden before:animate-pulse-soft relative">
-          <Award className="h-4 w-4 mr-1.5" /> {role}
+        {/* Role badge with simple design */}
+        <div className="absolute top-0 left-0 bg-[#24324b]/90 text-white px-3 py-1.5 font-medium text-sm rounded-br-lg flex items-center">
+          <User className="h-4 w-4 mr-1.5" /> {role}
         </div>
       </div>
       
-      {/* Content with enhanced styling */}
-      <CardContent className="p-5 bg-gradient-to-b from-white to-church-neutral-50">
-        <h3 className="text-xl font-bold text-[#24324b] mb-2 group-hover:text-[#e6c98f] transition-colors duration-300">{name}</h3>
-        <div className="h-0.5 w-12 bg-gradient-to-r from-[#e6c98f] to-[#f0d9a5] mb-3 group-hover:w-20 transition-all duration-300"></div>
+      {/* Content with clean styling */}
+      <CardContent className="p-5 bg-white">
+        <h3 className="text-xl font-bold text-[#24324b] mb-2 group-hover:text-[#24324b]/80 transition-colors duration-300">{name}</h3>
+        <div className="h-0.5 w-12 bg-[#24324b] mb-3 group-hover:w-16 transition-all duration-300"></div>
         
         <div className={`relative overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-none' : 'max-h-24'}`}>
           <div className="text-gray-600 text-sm" dangerouslySetInnerHTML={{ __html: bio }} />
           {!isExpanded && bio.length > 100 && (
-            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-church-neutral-50 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent"></div>
           )}
         </div>
         
         {bio.length > 100 && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center space-x-1 text-[#e6c98f] hover:text-[#f0d9a5] mt-2 text-sm font-medium transition-colors"
+            className="flex items-center space-x-1 text-[#24324b] hover:text-[#24324b]/80 mt-2 text-sm font-medium transition-colors"
           >
             <span>{isExpanded ? 'Read Less' : 'Read More'}</span>
             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -82,11 +82,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
         )}
         
         {(email || phone) && (
-          <div className="mt-4 space-y-2 border-t border-church-neutral-100 pt-3">
+          <div className="mt-4 space-y-2 border-t border-gray-100 pt-3">
             {email && (
               <div className="flex items-center space-x-2">
-                <Mail className="w-4 h-4 text-[#e6c98f]" />
-                <a href={`mailto:${email}`} className="text-sm text-gray-600 hover:text-[#e6c98f] transition-colors">
+                <Mail className="w-4 h-4 text-[#24324b]" />
+                <a href={`mailto:${email}`} className="text-sm text-gray-600 hover:text-[#24324b] transition-colors">
                   {email}
                 </a>
               </div>
@@ -94,8 +94,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
             
             {phone && (
               <div className="flex items-center space-x-2">
-                <PhoneCall className="w-4 h-4 text-[#e6c98f]" />
-                <a href={`tel:${phone}`} className="text-sm text-gray-600 hover:text-[#e6c98f] transition-colors">
+                <PhoneCall className="w-4 h-4 text-[#24324b]" />
+                <a href={`tel:${phone}`} className="text-sm text-gray-600 hover:text-[#24324b] transition-colors">
                   {phone}
                 </a>
               </div>

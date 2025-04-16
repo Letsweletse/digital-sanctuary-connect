@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ProfileCard from './ProfileCard';
 import PastorCard from './PastorCard';
@@ -6,7 +5,7 @@ import { LeadershipPerson } from '@/types/leadershipTypes';
 import useMongoData from '@/hooks/useMongoData';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { Award, Star } from 'lucide-react';
+import { User } from 'lucide-react';
 
 interface LeadershipGridProps {
   leaders?: LeadershipPerson[];
@@ -82,35 +81,29 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
   }
 
   return (
-    <div className="bg-gradient-to-b from-white to-church-neutral-50 text-[#24324b] min-h-screen pt-8 pb-20">
-      <div className="container mx-auto px-4 py-12">
-        {/* Premium Header */}
+    <div className="bg-white text-gray-800 min-h-screen py-12">
+      <div className="container mx-auto px-4">
+        {/* Section Header */}
         <div className="mb-16 text-center">
-          <div className="flex items-center justify-center mb-3">
-            <Star className="text-[#e6c98f] h-5 w-5 mr-1" />
-            <span className="text-sm uppercase tracking-widest text-church-neutral-600 font-medium">Our Leadership Team</span>
-            <Star className="text-[#e6c98f] h-5 w-5 ml-1" />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-[#24324b] relative inline-block">
-            <span className="relative z-10">Divine Leadership</span>
-            <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-[#e6c98f] via-[#f0d9a5] to-[#e6c98f] z-0"></span>
+          <span className="text-sm uppercase tracking-widest text-gray-500 font-medium">Our Leadership Team</span>
+          <h1 className="text-3xl md:text-4xl font-bold mb-6 text-[#24324b] relative inline-block">
+            Serving With Purpose
           </h1>
-          <p className="text-lg max-w-3xl mx-auto text-gray-600 font-light">
+          <div className="h-1 w-20 bg-[#24324b] mx-auto mb-6"></div>
+          <p className="text-lg max-w-3xl mx-auto text-gray-600">
             Meet the dedicated leaders who guide our church with wisdom, compassion and vision.
           </p>
         </div>
         
         {/* Senior Pastor Section */}
-        <div className="mb-20">
-          <div className="flex items-center justify-center mb-10">
-            <div className="h-0.5 w-24 bg-gradient-to-r from-transparent to-[#e6c98f]"></div>
-            <div className="flex items-center px-6">
-              <Award className="h-6 w-6 text-[#e6c98f] mr-2" />
-              <h2 className="text-3xl font-bold text-center text-[#24324b]">Senior Pastor</h2>
-            </div>
-            <div className="h-0.5 w-24 bg-gradient-to-r from-[#e6c98f] to-transparent"></div>
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-[#24324b] inline-block relative">
+              Senior Pastor
+              <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#24324b]"></div>
+            </h2>
           </div>
-          <div className="bg-white rounded-xl p-2 shadow-xl transform transition-all duration-300 hover:shadow-2xl border border-[#e6c98f]/20">
+          <div className="shadow-md rounded-lg overflow-hidden">
             <PastorCard 
               name="Pastor Kobus Bezuidenhout" 
               role="Senior Pastor" 
@@ -123,72 +116,56 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
         
         {/* Pastors Section */}
         {pastors.length > 0 && (
-          <div className="mt-20 mb-20">
-            <div className="flex items-center justify-center mb-10">
-              <div className="h-0.5 w-24 bg-gradient-to-r from-transparent to-[#e6c98f]"></div>
-              <div className="flex items-center px-6">
-                <Award className="h-5 w-5 text-[#e6c98f] mr-2" />
-                <h2 className="text-3xl font-bold text-center text-[#24324b]">Pastors</h2>
-              </div>
-              <div className="h-0.5 w-24 bg-gradient-to-r from-[#e6c98f] to-transparent"></div>
+          <div className="mb-16">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-[#24324b] inline-block relative">
+                Pastors
+                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#24324b]"></div>
+              </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {pastors.map((pastor) => (
-                <div key={pastor.id} className="transform transition-all duration-300 hover:-translate-y-2">
-                  <div className="bg-white rounded-xl overflow-hidden border border-[#e6c98f]/20 shadow-lg hover:shadow-xl">
-                    <ProfileCard 
-                      key={pastor.id}
-                      name={pastor.name}
-                      role={pastor.role}
-                      image={pastor.image}
-                      bio={pastor.bio}
-                      featured={true}
-                    />
-                  </div>
-                </div>
+                <ProfileCard 
+                  key={pastor.id}
+                  name={pastor.name}
+                  role={pastor.role}
+                  image={pastor.image}
+                  bio={pastor.bio}
+                />
               ))}
             </div>
           </div>
         )}
 
         {/* Elders Section */}
-        <div className="mt-20">
-          <div className="flex items-center justify-center mb-10">
-            <div className="h-0.5 w-24 bg-gradient-to-r from-transparent to-[#e6c98f]"></div>
-            <div className="flex items-center px-6">
-              <Award className="h-5 w-5 text-[#e6c98f] mr-2" />
-              <h2 className="text-3xl font-bold text-center text-[#24324b]">Church Elders</h2>
-            </div>
-            <div className="h-0.5 w-24 bg-gradient-to-r from-[#e6c98f] to-transparent"></div>
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-[#24324b] inline-block relative">
+              Church Elders
+              <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#24324b]"></div>
+            </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {elders.map(elder => (
-              <div key={elder.id} className="transform transition-all duration-300 hover:-translate-y-2">
-                <div className="bg-white rounded-xl overflow-hidden border border-[#e6c98f]/20 shadow-lg hover:shadow-xl">
-                  <ProfileCard 
-                    key={elder.id}
-                    name={elder.name}
-                    role={elder.role}
-                    image={elder.image}
-                    bio={elder.bio}
-                    featured={true}
-                  />
-                </div>
-              </div>
+              <ProfileCard 
+                key={elder.id}
+                name={elder.name}
+                role={elder.role}
+                image={elder.image}
+                bio={elder.bio}
+              />
             ))}
           </div>
         </div>
         
         {/* Other Leadership Team Members */}
         {leadersList.length > 0 && (
-          <div className="mt-20">
-            <div className="flex items-center justify-center mb-10">
-              <div className="h-0.5 w-24 bg-gradient-to-r from-transparent to-[#e6c98f]"></div>
-              <div className="flex items-center px-6">
-                <Award className="h-5 w-5 text-[#e6c98f] mr-2" />
-                <h2 className="text-3xl font-bold text-center text-[#24324b]">Leadership Team</h2>
-              </div>
-              <div className="h-0.5 w-24 bg-gradient-to-r from-[#e6c98f] to-transparent"></div>
+          <div className="mt-16">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-[#24324b] inline-block relative">
+                Leadership Team
+                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#24324b]"></div>
+              </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {leadersList.map((leader) => {
@@ -196,20 +173,15 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
                   return null;
                 }
                 return (
-                  <div key={leader.id} className="transform transition-all duration-300 hover:-translate-y-2">
-                    <div className="bg-white rounded-xl overflow-hidden border border-[#e6c98f]/20 shadow-lg hover:shadow-xl">
-                      <ProfileCard 
-                        key={leader.id}
-                        name={leader.name}
-                        role={leader.role}
-                        image={leader.image}
-                        bio={leader.bio}
-                        email={leader.email}
-                        phone={leader.phone}
-                        featured={true}
-                      />
-                    </div>
-                  </div>
+                  <ProfileCard 
+                    key={leader.id}
+                    name={leader.name}
+                    role={leader.role}
+                    image={leader.image}
+                    bio={leader.bio}
+                    email={leader.email}
+                    phone={leader.phone}
+                  />
                 );
               })}
             </div>
