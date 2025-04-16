@@ -104,9 +104,21 @@ export const useRegistrationSubmission = () => {
       const emailResult = await sendEventRegistrationEmail(currentEvent.title, emailRegistrationData);
       console.log('Enhanced email service response:', emailResult);
       
-      if (!emailResult.success) {
-        console.error("Failed to send registration email:", emailResult.message);
-        // Continue anyway as WhatsApp might still work
+      // Save the check-in URL and ID from the email response
+      let checkInUrl = '';
+      let checkInId = '';
+      
+      if (emailResult.success && emailResult.data) {
+        checkInId = emailResult.data.checkInId || '';
+        checkInUrl = emailResult.data.checkInUrl || `https://gategaborone.com/check-in/${checkInId}`;
+        
+        // Store this information in the registration data for confirmation page
+        registrationData.checkInId = checkInId;
+        registrationData.checkInUrl = checkInUrl;
+        
+        console.log('Check-in information received:', { checkInId, checkInUrl });
+      } else {
+        console.error("Failed to get check-in information from email service:", emailResult.message);
       }
       
       // Generate premium formatted WhatsApp message
@@ -141,8 +153,14 @@ export const useRegistrationSubmission = () => {
       // Close the registration dialog
       onSuccess();
       
-      // Navigate to the confirmation page with registration data
-      navigate('/registration-confirmation', { state: { registrationData }});
+      // Navigate to the confirmation page with registration data, including check-in information
+      navigate('/registration-confirmation', { 
+        state: { 
+          registrationData,
+          checkInUrl,
+          checkInId 
+        }
+      });
       
     } catch (error) {
       console.error("Error submitting registration:", error);

@@ -18,4 +18,5 @@ export interface EmailRequest {
   eventImage?: string;
   checkInId?: string;
   attendeeEmail?: string;
+  churchLogo?: string;
 }

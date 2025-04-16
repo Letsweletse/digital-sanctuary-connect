@@ -42,16 +42,21 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       attendeeEmail = email
     } = body;
 
+    // Base URL for the Gate Gaborone website
+    const baseUrl = "https://gategaborone.com";
+    
+    // Create safer check-in URL structure (no query parameters to ensure QR code readability)
+    const checkInUrl = `${baseUrl}/check-in/${checkInId}`;
+    
     // Generate higher resolution QR codes (300x300 pixels) with clearer borders for better visibility
     const locationQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(location)}&size=300x300&margin=10&qzone=2`;
-    const checkInUrl = `https://gategaborone.com/check-in/${checkInId}?email=${encodeURIComponent(attendeeEmail)}`;
     const checkInQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(checkInUrl)}&size=300x300&margin=10&qzone=2`;
 
     // Format dates for calendar
     const { startDateFormatted, endDateFormatted, nowFormatted } = formatDateForCalendar(eventDate, eventTime);
     
     // Create WhatsApp share URL with richer details
-    const whatsappShareText = `Hey! I just registered for ${eventName} at Gate Gaborone. You should come too! 🙌 Date: ${eventDate}, Time: ${eventTime}. Here's the link: https://gategaborone.com/events?register=${encodeURIComponent(eventName)}`;
+    const whatsappShareText = `Hey! I just registered for ${eventName} at Gate Gaborone. You should come too! 🙌 Date: ${eventDate}, Time: ${eventTime}. Here's the link: ${baseUrl}/events?register=${encodeURIComponent(eventName)}`;
     const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(whatsappShareText)}`;
 
     // Generate iCal content
@@ -132,6 +137,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
         adminEmailSent: true,
         confirmationEmailSent: confirmationSuccess,
         checkInId: checkInId,
+        checkInUrl: checkInUrl
       }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );

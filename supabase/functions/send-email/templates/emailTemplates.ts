@@ -29,7 +29,7 @@ interface ConfirmationEmailProps {
   checkInQrCodeUrl: string;
   encodedIcsContent: string;
   whatsappShareUrl: string;
-  churchLogo: string;
+  churchLogo?: string;
 }
 
 export function generateAdminEmailContent({
@@ -58,6 +58,7 @@ export function generateAdminEmailContent({
         <tr><td><strong>Denomination:</strong></td><td>${denomination}</td></tr>
         <tr><td><strong>Message:</strong></td><td>${message}</td></tr>
         <tr><td><strong>Check-in ID:</strong></td><td>${checkInId}</td></tr>
+        <tr><td><strong>Check-in Link:</strong></td><td><a href="https://gategaborone.com/check-in/${checkInId}">View Check-in</a></td></tr>
       </table>
     </div>
   `;
@@ -84,6 +85,7 @@ export function generateConfirmationEmailContent({
 }: ConfirmationEmailProps): string {
   const churchUrl = "https://gategaborone.com";
   const shareTextBase = `Join me at ${eventName} at Gate Gaborone on ${eventDate} at ${eventTime}.`;
+  const checkInUrl = `https://gategaborone.com/check-in/${checkInId}`;
 
   return `
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #f8fafc;">
@@ -111,6 +113,7 @@ export function generateConfirmationEmailContent({
         <li style="margin-bottom: 8px;"><strong>Phone:</strong> ${phone}</li>
         <li style="margin-bottom: 8px;"><strong>Location:</strong> <a href="https://www.google.com/maps/place/Gate+Gaborone/@-24.6618569,25.9048205,15z/data=!4m6!3m5!1s0x1ebf843b05f7aa07:0x2de14938d5996b9e!8m2!3d-24.6618567!4d25.9048083!16s%2Fg%2F11hbgk5nv2" style="color: #3b82f6;">View on Map</a></li>
         <li style="margin-bottom: 8px;"><strong>Check-in ID:</strong> ${checkInId}</li>
+        <li style="margin-bottom: 8px;"><strong>Check-in Link:</strong> <a href="${checkInUrl}" style="color: #3b82f6;">Quick Check-in Portal</a></li>
       </ul>
     </div>
 
@@ -126,6 +129,7 @@ export function generateConfirmationEmailContent({
         <img src="${checkInQrCodeUrl}" alt="Check-In QR Code" style="max-width: 180px; height: auto; margin-bottom: 10px; border: 1px solid #e5e7eb; padding: 5px; background-color: #fff;" />
         <p style="font-size: 14px; color: #6b7280; margin-bottom: 0;">Show this code at the door for faster check-in</p>
         <p style="font-size: 12px; color: #6b7280; margin-top: 5px; font-style: italic;">Your Check-in ID: ${checkInId}</p>
+        <p style="font-size: 14px; margin-top: 10px;"><a href="${checkInUrl}" style="color: #3b82f6; text-decoration: underline;">Access Your Check-in Portal</a></p>
       </div>
     </div>
 

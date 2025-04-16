@@ -93,12 +93,19 @@ export const sendEventRegistrationEmail = async (eventName: string, registrantDa
       throw new Error(result.message || "Failed to send registration email");
     }
     
+    // Make sure to return the check-in information
+    const checkInUrl = `https://gategaborone.com/check-in/${checkInId}`;
+    
     return {
       success: true,
       message: 'Email notification and confirmation sent successfully',
       recipients: ADMIN_EMAILS,
       timestamp: new Date().toISOString(),
-      data: result.data
+      data: {
+        ...result.data,
+        checkInId,
+        checkInUrl
+      }
     };
   } catch (error) {
     console.error('Error preparing event registration email:', error);
