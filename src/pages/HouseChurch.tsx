@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -6,7 +5,6 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Calendar, Clock, Users } from 'lucide-react';
 
-// Define the HouseChurchGroup type
 interface HouseChurchGroup {
   id: string;
   name: string;
@@ -19,7 +17,6 @@ interface HouseChurchGroup {
 }
 
 const HouseChurch = () => {
-  // Set up the house church groups directly from the provided information
   const [groups] = useState<HouseChurchGroup[]>([
     {
       id: "1",
@@ -29,7 +26,7 @@ const HouseChurch = () => {
       location: "Block 5",
       description: "Join us for fellowship, prayer, and Bible study in our welcoming home in Block 5.",
       leaders: "Oteng & Carryadah Leepile",
-      image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1932&q=80"
+      image: "https://images.unsplash.com/photo-1593113630400-1fc7fb5208ed?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80"
     },
     {
       id: "2",
@@ -39,7 +36,7 @@ const HouseChurch = () => {
       location: "Gabane",
       description: "Experience community and spiritual growth in our house church in Gabane.",
       leaders: "Peter & Naomi Taylor",
-      image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80"
+      image: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80"
     },
     {
       id: "3",
@@ -49,7 +46,7 @@ const HouseChurch = () => {
       location: "Phase 4",
       description: "Join our vibrant house church community in Phase 4 for Bible study and fellowship.",
       leaders: "Godwin & Lemolemo",
-      image: "https://images.unsplash.com/photo-1601823984263-b87b59798b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1769&q=80"
+      image: "https://images.unsplash.com/photo-1599058917765-a780eda07a3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1769&q=80"
     },
     {
       id: "4",
@@ -59,7 +56,7 @@ const HouseChurch = () => {
       location: "Phakalane",
       description: "Experience rich fellowship and Bible teaching in our house church in Phakalane.",
       leaders: "Dave & Monica Fischer",
-      image: "https://images.unsplash.com/photo-1571107796651-01f583df89c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80"
+      image: "https://images.unsplash.com/photo-1519671282429-b8412a63c525?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80"
     },
     {
       id: "5",
@@ -69,7 +66,7 @@ const HouseChurch = () => {
       location: "Gaborone Phase 4",
       description: "Join us for midweek fellowship and Bible study in Phase 4.",
       leaders: "Tebogo Filipo",
-      image: "https://images.unsplash.com/photo-1529070538774-1843cb3265df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80"
+      image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80"
     },
     {
       id: "6",
@@ -79,7 +76,7 @@ const HouseChurch = () => {
       location: "Tlokweng",
       description: "Experience community and spiritual growth with our house church in Tlokweng.",
       leaders: "Laone & Bettina Tau",
-      image: "https://images.unsplash.com/photo-1539635278303-d4002c07eae3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80"
+      image: "https://images.unsplash.com/photo-1548661625-1a7ad517353c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80"
     },
     {
       id: "7",
@@ -89,7 +86,7 @@ const HouseChurch = () => {
       location: "UB",
       description: "Join our vibrant house church near UB for fellowship and Bible study.",
       leaders: "Maureen Kalane",
-      image: "https://images.unsplash.com/photo-1531547255897-f400dc1b7de2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" 
+      image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80"
     }
   ]);
   
