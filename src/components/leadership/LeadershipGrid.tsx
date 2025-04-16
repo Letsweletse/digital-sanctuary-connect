@@ -114,15 +114,9 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
           </div>
         </div>
         
-        {/* Pastors Section */}
+        {/* Pastors Section - No Text Header */}
         {pastors.length > 0 && (
           <div className="mb-16">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-[#24324b] inline-block relative">
-                Pastors
-                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#24324b]"></div>
-              </h2>
-            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {pastors.map((pastor) => (
                 <ProfileCard 
@@ -137,14 +131,8 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
           </div>
         )}
 
-        {/* Elders Section */}
+        {/* Elders Section - No Text Header */}
         <div className="mb-16">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-[#24324b] inline-block relative">
-              Church Elders
-              <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#24324b]"></div>
-            </h2>
-          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {elders.map(elder => (
               <ProfileCard 
