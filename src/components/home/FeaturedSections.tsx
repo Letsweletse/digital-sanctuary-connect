@@ -1,33 +1,9 @@
 
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Book, Home, Users } from 'lucide-react';
 
 const FeaturedSections: React.FC = () => {
-  // Refs for animation
-  const sermonsRef = useRef<HTMLDivElement>(null);
-  const houseChurchRef = useRef<HTMLDivElement>(null);
-  const leadershipRef = useRef<HTMLDivElement>(null);
-  
-  useEffect(() => {
-    // Simple animation for the cards when they appear in viewport
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('animate-slide-up');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.2 });
-    
-    // Observe all section cards
-    if (sermonsRef.current) observer.observe(sermonsRef.current);
-    if (houseChurchRef.current) observer.observe(houseChurchRef.current);
-    if (leadershipRef.current) observer.observe(leadershipRef.current);
-    
-    return () => observer.disconnect();
-  }, []);
-  
   return (
     <section className="py-16 md:py-24 bg-gradient-to-b from-[#24324b]/10 to-church-blue-light/30">
       <div className="container mx-auto px-4">
@@ -45,16 +21,16 @@ const FeaturedSections: React.FC = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Sermons Card - Solid Blue Background */}
-          <div ref={sermonsRef} className="opacity-0 overflow-hidden group rounded-xl shadow-xl bg-white">
+          <div className="overflow-hidden group rounded-xl shadow-xl bg-white transition-all duration-300 hover:shadow-2xl">
             <div className="relative h-48 bg-[#0EA5E9]">
-              {/* Icon Container */}
+              {/* Icon Container - Simplified animation for stability */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-white rounded-full p-4 shadow-lg transform group-hover:scale-110 transition-all duration-500 animate-[float_3s_ease-in-out_infinite]">
+                <div className="bg-white rounded-full p-4 shadow-lg transform transition-all duration-300 group-hover:scale-110">
                   <Book className="h-8 w-8 text-[#0EA5E9]" />
                 </div>
               </div>
               
-              <h3 className="absolute bottom-4 left-4 text-xl font-bold text-white">Sermons</h3>
+              <h3 className="absolute bottom-4 left-4 text-xl font-bold text-white z-10">Sermons</h3>
             </div>
             <div className="p-6 bg-white">
               <p className="text-church-neutral-700 mb-4">
@@ -67,16 +43,16 @@ const FeaturedSections: React.FC = () => {
           </div>
           
           {/* House Church Card - Solid Gold Background */}
-          <div ref={houseChurchRef} className="opacity-0 overflow-hidden group rounded-xl shadow-xl bg-white">
+          <div className="overflow-hidden group rounded-xl shadow-xl bg-white transition-all duration-300 hover:shadow-2xl">
             <div className="relative h-48 bg-[#e6c98f]">
-              {/* Icon Container */}
+              {/* Icon Container - Simplified animation for stability */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-white rounded-full p-4 shadow-lg transform group-hover:scale-110 transition-all duration-500 animate-[float_3s_ease-in-out_infinite]" style={{animationDelay: "0.2s"}}>
+                <div className="bg-white rounded-full p-4 shadow-lg transform transition-all duration-300 group-hover:scale-110">
                   <Home className="h-8 w-8 text-[#e6c98f]" />
                 </div>
               </div>
               
-              <h3 className="absolute bottom-4 left-4 text-xl font-bold text-white">House Church</h3>
+              <h3 className="absolute bottom-4 left-4 text-xl font-bold text-white z-10">House Church</h3>
             </div>
             <div className="p-6 bg-white">
               <p className="text-church-neutral-700 mb-4">
@@ -89,16 +65,16 @@ const FeaturedSections: React.FC = () => {
           </div>
           
           {/* Leadership Card - Solid Gray Background */}
-          <div ref={leadershipRef} className="opacity-0 overflow-hidden group rounded-xl shadow-xl bg-white">
+          <div className="overflow-hidden group rounded-xl shadow-xl bg-white transition-all duration-300 hover:shadow-2xl">
             <div className="relative h-48 bg-[#8E9196]">
-              {/* Icon Container */}
+              {/* Icon Container - Simplified animation for stability */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-white rounded-full p-4 shadow-lg transform group-hover:scale-110 transition-all duration-500 animate-[float_3s_ease-in-out_infinite]" style={{animationDelay: "0.4s"}}>
+                <div className="bg-white rounded-full p-4 shadow-lg transform transition-all duration-300 group-hover:scale-110">
                   <Users className="h-8 w-8 text-[#8E9196]" />
                 </div>
               </div>
               
-              <h3 className="absolute bottom-4 left-4 text-xl font-bold text-white">Leadership</h3>
+              <h3 className="absolute bottom-4 left-4 text-xl font-bold text-white z-10">Leadership</h3>
             </div>
             <div className="p-6 bg-white">
               <p className="text-church-neutral-700 mb-4">
