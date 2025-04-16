@@ -39,16 +39,16 @@ const ChurchInfoFields: React.FC<ChurchInfoFieldsProps> = ({
         </select>
       </div>
       
-      {/* Denomination field */}
+      {/* Denomination/Church field */}
       <div className="grid gap-2">
         <Label htmlFor="denomination" className="flex items-center gap-2 text-base">
           <Building className="h-4 w-4 text-church-blue" />
-          Denomination / Church
+          Church / Affiliation
         </Label>
         <Input
           id="denomination"
           name="denomination"
-          placeholder="Enter your denomination or church"
+          placeholder="Enter your church or affiliation"
           value={denomination}
           onChange={onInputChange}
           required
