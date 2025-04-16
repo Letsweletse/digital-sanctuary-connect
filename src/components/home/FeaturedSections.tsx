@@ -28,9 +28,6 @@ const FeaturedSections: React.FC = () => {
     return () => observer.disconnect();
   }, []);
   
-  // Animation for icon floating
-  const iconAnimation = "animate-[float_3s_ease-in-out_infinite]";
-  
   return (
     <section className="py-16 md:py-24 bg-gradient-to-b from-[#24324b]/10 to-church-blue-light/30">
       <div className="container mx-auto px-4">
@@ -48,11 +45,11 @@ const FeaturedSections: React.FC = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Sermons Card - Solid Blue Background */}
-          <div ref={sermonsRef} className="opacity-0 overflow-hidden group rounded-xl shadow-xl">
+          <div ref={sermonsRef} className="opacity-0 overflow-hidden group rounded-xl shadow-xl bg-white">
             <div className="relative h-48 bg-[#0EA5E9]">
-              {/* 3D Animated Icon */}
+              {/* Icon Container */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className={`bg-white rounded-full p-4 shadow-lg transform group-hover:scale-110 transition-all duration-500 ${iconAnimation}`}>
+                <div className="bg-white rounded-full p-4 shadow-lg transform group-hover:scale-110 transition-all duration-500 animate-[float_3s_ease-in-out_infinite]">
                   <Book className="h-8 w-8 text-[#0EA5E9]" />
                 </div>
               </div>
@@ -70,11 +67,11 @@ const FeaturedSections: React.FC = () => {
           </div>
           
           {/* House Church Card - Solid Gold Background */}
-          <div ref={houseChurchRef} className="opacity-0 overflow-hidden group rounded-xl shadow-xl">
+          <div ref={houseChurchRef} className="opacity-0 overflow-hidden group rounded-xl shadow-xl bg-white">
             <div className="relative h-48 bg-[#e6c98f]">
-              {/* 3D Animated Icon */}
+              {/* Icon Container */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className={`bg-white rounded-full p-4 shadow-lg transform group-hover:scale-110 transition-all duration-500 ${iconAnimation}`} style={{animationDelay: "0.2s"}}>
+                <div className="bg-white rounded-full p-4 shadow-lg transform group-hover:scale-110 transition-all duration-500 animate-[float_3s_ease-in-out_infinite]" style={{animationDelay: "0.2s"}}>
                   <Home className="h-8 w-8 text-[#e6c98f]" />
                 </div>
               </div>
@@ -92,11 +89,11 @@ const FeaturedSections: React.FC = () => {
           </div>
           
           {/* Leadership Card - Solid Gray Background */}
-          <div ref={leadershipRef} className="opacity-0 overflow-hidden group rounded-xl shadow-xl">
+          <div ref={leadershipRef} className="opacity-0 overflow-hidden group rounded-xl shadow-xl bg-white">
             <div className="relative h-48 bg-[#8E9196]">
-              {/* 3D Animated Icon */}
+              {/* Icon Container */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className={`bg-white rounded-full p-4 shadow-lg transform group-hover:scale-110 transition-all duration-500 ${iconAnimation}`} style={{animationDelay: "0.4s"}}>
+                <div className="bg-white rounded-full p-4 shadow-lg transform group-hover:scale-110 transition-all duration-500 animate-[float_3s_ease-in-out_infinite]" style={{animationDelay: "0.4s"}}>
                   <Users className="h-8 w-8 text-[#8E9196]" />
                 </div>
               </div>
