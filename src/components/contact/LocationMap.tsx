@@ -3,14 +3,14 @@ import React from 'react';
 import { ExternalLink, MapPin } from 'lucide-react';
 
 const LocationMap = () => {
-  // Use the full Google Maps URL instead of the shortlink
-  const googleMapsUrl = "https://www.google.com/maps/place/Gate+Gaborone/@-24.6618569,25.9048205,15z/data=!4m6!3m5!1s0x1ebf843b05f7aa07:0x2de14938d5996b9e!8m2!3d-24.6618567!4d25.9048083!16s%2Fg%2F11hbgk5nv2";
+  // Updated Google Maps URL for Gate Gaborone
+  const googleMapsUrl = "https://www.google.com/maps/place/GATE+Gaborone+Botswana,+Gaborone/data=!4m2!3m1!1s0x1ebb5b26225a6213:0xaed9e468c1e4ef31?utm_source=mstt_1&entry=gps&coh=192189&g_ep=CAESBzI1LjE1LjEYACDXggMqbCw5NDIyMzI5OSw5NDIxNjQxMyw5NDIxMjQ5Niw5NDI1MDk1NCw5NDIwNzM5NCw5NDIwNzUwNiw5NDIwODUwNiw5NDIxNzUyMyw5NDIxODY1Myw5NDIyOTgzOSw0NzA4NDM5Myw5NDIxMzIwMEICQlc%3D&skid=fbb28bdc-bfa6-45a5-bb7f-4a723ed65673&g_st=aw";
   
   return (
     <div className="mt-8">
       <div className="rounded-xl overflow-hidden shadow-md border border-church-blue-light/20 hover:shadow-lg transition-shadow">
         <iframe 
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3680.364152127474!2d25.9048083!3d-24.6618567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1ebf843b05f7aa07%3A0x2de14938d5996b9e!2sGate%20Gaborone!5e0!3m2!1sen!2sbw!4v1692340450862!5m2!1sen!2sbw" 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3680.364152127474!2d25.9048083!3d-24.6618567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1ebb5b26225a6213%3A0xaed9e468c1e4ef31!2sGATE%20Gaborone%20Botswana!5e0!3m2!1sen!2sbw!4v1692340450862!5m2!1sen!2sbw" 
           className="w-full h-72 md:h-80" 
           allowFullScreen 
           loading="lazy"

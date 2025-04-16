@@ -17,6 +17,9 @@ const EventQRCode: React.FC<EventQRCodeProps> = ({
   title = 'Your QR Ticket',
   className = '' 
 }) => {
+  // Ensure QR code value is properly formatted for scanning
+  const formattedValue = value.startsWith('http') ? value : value;
+  
   return (
     <Card className={`overflow-hidden shadow-lg border border-[#24324b]/10 ${className}`}>
       <CardContent className="p-6 flex flex-col items-center">
@@ -26,7 +29,7 @@ const EventQRCode: React.FC<EventQRCodeProps> = ({
         </div>
         
         <QRCodeSVG 
-          value={value} 
+          value={formattedValue} 
           size={size} 
           level="H" 
           includeMargin={true}

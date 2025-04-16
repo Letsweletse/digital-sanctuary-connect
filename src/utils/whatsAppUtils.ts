@@ -83,13 +83,16 @@ export const generatePremiumWhatsAppConfirmation = (registrationData: any) => {
     attendeeEmail: attendee.email
   });
   
+  // Updated Google Maps URL
+  const mapsUrl = "https://www.google.com/maps/place/GATE+Gaborone+Botswana,+Gaborone/data=!4m2!3m1!1s0x1ebb5b26225a6213:0xaed9e468c1e4ef31?utm_source=mstt_1&entry=gps";
+  
   // Create a professional, visually appealing message with emojis and formatting
   return `✅ *REGISTRATION CONFIRMED*\n
 🎫 *Event:* ${event.title}
 📅 *Date:* ${event.date}
 ⏰ *Time:* ${event.time}
 📍 *Location:* Gate Gaborone
-🔗 *Map:* https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7
+🔗 *Map:* ${mapsUrl}
 
 👤 *ATTENDEE DETAILS*
 *Name:* ${attendee.name}

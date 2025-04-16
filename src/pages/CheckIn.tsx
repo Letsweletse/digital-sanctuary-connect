@@ -12,6 +12,9 @@ const CheckIn = () => {
   const { id } = useParams<{ id: string }>();
   const [checkedIn, setCheckedIn] = useState(false);
   
+  // Updated Google Maps URL
+  const googleMapsUrl = "https://www.google.com/maps/place/GATE+Gaborone+Botswana,+Gaborone/data=!4m2!3m1!1s0x1ebb5b26225a6213:0xaed9e468c1e4ef31?utm_source=mstt_1&entry=gps&coh=192189&g_ep=CAESBzI1LjE1LjEYACDXggMqbCw5NDIyMzI5OSw5NDIxNjQxMyw5NDIxMjQ5Niw5NDI1MDk1NCw5NDIwNzM5NCw5NDIwNzUwNiw5NDIwODUwNiw5NDIxNzUyMyw5NDIxODY1Myw5NDIyOTgzOSw0NzA4NDM5Myw5NDIxMzIwMEICQlc%3D&skid=fbb28bdc-bfa6-45a5-bb7f-4a723ed65673&g_st=aw";
+  
   useEffect(() => {
     // Log page visit for analytics
     console.log(`Check-in page accessed with ID: ${id}`);
@@ -76,10 +79,15 @@ const CheckIn = () => {
                   </div>
                   <div className="flex items-start gap-3">
                     <MapPin className="h-5 w-5 text-church-blue mt-1 flex-shrink-0" />
-                    <span>
+                    <a 
+                      href={googleMapsUrl}
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="hover:text-church-blue hover:underline"
+                    >
                       Gate Gaborone, Plot 26773, Block 9<br />
                       Gaborone, Botswana
-                    </span>
+                    </a>
                   </div>
                 </div>
                 
@@ -97,7 +105,8 @@ const CheckIn = () => {
                 <QRCodeSVG 
                   value={JSON.stringify({
                     checkInId: id,
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toISOString(),
+                    mapsUrl: googleMapsUrl // Include the map URL in the QR code data
                   })}
                   size={200}
                   level="H"
@@ -111,7 +120,8 @@ const CheckIn = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-gray-100">
-              <Button className="bg-church-blue hover:bg-church-blue-dark" onClick={handleShare}>
+              <Button 
+                className="bg-church-blue hover:bg-church-blue-dark" onClick={handleShare}>
                 <Share className="mr-2 h-4 w-4" />
                 Share Check-in
               </Button>
