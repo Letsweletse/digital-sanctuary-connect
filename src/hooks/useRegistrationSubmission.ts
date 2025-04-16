@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { toast as sonnerToast } from "sonner";
-import { EventData, RegistrationFormData } from '@/types/eventTypes';
+import { EventData, RegistrationFormData, RegistrationData } from '@/types/eventTypes';
 import { sendEventRegistrationEmail } from '@/lib/emailService';
 import { formatDate } from '@/utils/dateUtils';
 import { useWhatsAppNotification } from './useWhatsAppNotification';
@@ -64,7 +64,7 @@ export const useRegistrationSubmission = () => {
 
     try {
       // Prepare comprehensive registration data with all needed details
-      const registrationData = {
+      const registrationData: RegistrationData = {
         event: {
           ...currentEvent,
           date: formatDate(currentEvent.date),

@@ -34,6 +34,39 @@ export interface RegistrationFormData {
   message?: string;
 }
 
+// Define the registration data interface with check-in properties
+export interface RegistrationData {
+  event: {
+    date: string;
+    time: string;
+    location: string;
+    id: string;
+    title: string;
+    image: string;
+    description: string;
+    category: EventCategoryType;
+    registration?: boolean;
+    registrationLink?: string;
+    endDate?: string;
+  };
+  attendee: {
+    title: string;
+    name: string;
+    email: string;
+    phone: string;
+    countryCode: string;
+    role: string;
+    denomination: string;
+    numberOfAttendees: number;
+    message?: string;
+  };
+  message: string;
+  submitDate: string;
+  registrationType: string;
+  checkInId?: string;
+  checkInUrl?: string;
+}
+
 // Add the missing type definitions
 export const attendeeTitles = ['Mr', 'Mrs', 'Ms', 'Dr', 'Rev', 'Pastor', 'Bishop', 'Elder', 'Other'];
 
