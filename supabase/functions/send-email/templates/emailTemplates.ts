@@ -58,7 +58,7 @@ export function generateAdminEmailContent({
         <tr><td><strong>Denomination:</strong></td><td>${denomination}</td></tr>
         <tr><td><strong>Message:</strong></td><td>${message}</td></tr>
         <tr><td><strong>Check-in ID:</strong></td><td>${checkInId}</td></tr>
-        <tr><td><strong>Check-in Link:</strong></td><td><a href="https://gategaborone.com/check-in/${checkInId}">View Check-in</a></td></tr>
+        <tr><td><strong>Check-in Link:</strong></td><td><a href="https://www.gategaborone.com/check-in/${checkInId}">View Check-in</a></td></tr>
       </table>
     </div>
   `;
@@ -83,9 +83,9 @@ export function generateConfirmationEmailContent({
   whatsappShareUrl,
   churchLogo = 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png'
 }: ConfirmationEmailProps): string {
-  const churchUrl = "https://gategaborone.com";
+  const churchUrl = "https://www.gategaborone.com"; // Ensure using www subdomain
   const shareTextBase = `Join me at ${eventName} at Gate Gaborone on ${eventDate} at ${eventTime}.`;
-  const checkInUrl = `https://gategaborone.com/check-in/${checkInId}`;
+  const checkInUrl = `${churchUrl}/check-in/${checkInId}`;
 
   return `
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #f8fafc;">
@@ -111,7 +111,7 @@ export function generateConfirmationEmailContent({
         <li style="margin-bottom: 8px;"><strong>Role:</strong> ${role}</li>
         <li style="margin-bottom: 8px;"><strong>Denomination:</strong> ${denomination}</li>
         <li style="margin-bottom: 8px;"><strong>Phone:</strong> ${phone}</li>
-        <li style="margin-bottom: 8px;"><strong>Location:</strong> <a href="https://www.google.com/maps/place/Gate+Gaborone/@-24.6618569,25.9048205,15z/data=!4m6!3m5!1s0x1ebf843b05f7aa07:0x2de14938d5996b9e!8m2!3d-24.6618567!4d25.9048083!16s%2Fg%2F11hbgk5nv2" style="color: #3b82f6;">View on Map</a></li>
+        <li style="margin-bottom: 8px;"><strong>Location:</strong> <a href="${location}" style="color: #3b82f6;">View on Map</a></li>
         <li style="margin-bottom: 8px;"><strong>Check-in ID:</strong> ${checkInId}</li>
         <li style="margin-bottom: 8px;"><strong>Check-in Link:</strong> <a href="${checkInUrl}" style="color: #3b82f6;">Quick Check-in Portal</a></li>
       </ul>

@@ -11,6 +11,9 @@ interface EventDetailCardProps {
 }
 
 const EventDetailCard: React.FC<EventDetailCardProps> = ({ event, formatDate }) => {
+  // Use the full Google Maps URL
+  const googleMapsUrl = "https://www.google.com/maps/place/Gate+Gaborone/@-24.6618569,25.9048205,15z/data=!4m6!3m5!1s0x1ebf843b05f7aa07:0x2de14938d5996b9e!8m2!3d-24.6618567!4d25.9048083!16s%2Fg%2F11hbgk5nv2";
+  
   return (
     <Card className="border-none shadow-md bg-white rounded-lg overflow-hidden">
       <AspectRatio ratio={16/9} className="overflow-hidden bg-gray-100">
@@ -33,7 +36,7 @@ const EventDetailCard: React.FC<EventDetailCardProps> = ({ event, formatDate }) 
         <div className="flex items-start gap-2 text-xs md:text-sm">
           <MapPin className="h-4 w-4 text-church-blue mt-0.5 flex-shrink-0" />
           <a 
-            href="https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7" 
+            href={googleMapsUrl}
             target="_blank" 
             rel="noopener noreferrer" 
             className="hover:text-church-blue hover:underline flex items-center gap-1 group"

@@ -3,6 +3,9 @@ import React from 'react';
 import { ExternalLink, MapPin } from 'lucide-react';
 
 const LocationMap = () => {
+  // Use the full Google Maps URL instead of the shortlink
+  const googleMapsUrl = "https://www.google.com/maps/place/Gate+Gaborone/@-24.6618569,25.9048205,15z/data=!4m6!3m5!1s0x1ebf843b05f7aa07:0x2de14938d5996b9e!8m2!3d-24.6618567!4d25.9048083!16s%2Fg%2F11hbgk5nv2";
+  
   return (
     <div className="mt-8">
       <div className="rounded-xl overflow-hidden shadow-md border border-church-blue-light/20 hover:shadow-lg transition-shadow">
@@ -17,7 +20,7 @@ const LocationMap = () => {
       </div>
       <div className="mt-3 flex justify-center items-center">
         <a 
-          href="https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7" 
+          href={googleMapsUrl}
           target="_blank" 
           rel="noopener noreferrer"
           className="flex items-center gap-1.5 text-church-blue hover:text-church-blue-dark transition-colors group"

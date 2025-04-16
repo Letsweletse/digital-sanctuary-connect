@@ -42,14 +42,17 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       attendeeEmail = email
     } = body;
 
-    // Base URL for the Gate Gaborone website
-    const baseUrl = "https://gategaborone.com";
+    // Base URL for the Gate Gaborone website - ensure using www.gategaborone.com
+    const baseUrl = "https://www.gategaborone.com";
     
     // Create safer check-in URL structure (no query parameters to ensure QR code readability)
     const checkInUrl = `${baseUrl}/check-in/${checkInId}`;
     
+    // Use a direct Google Maps URL that works reliably - not the dynamic maps.app.goo.gl shortlink
+    const googleMapsUrl = "https://www.google.com/maps/place/Gate+Gaborone/@-24.6618569,25.9048205,15z/data=!4m6!3m5!1s0x1ebf843b05f7aa07:0x2de14938d5996b9e!8m2!3d-24.6618567!4d25.9048083!16s%2Fg%2F11hbgk5nv2";
+    
     // Generate higher resolution QR codes (300x300 pixels) with clearer borders for better visibility
-    const locationQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(location)}&size=300x300&margin=10&qzone=2`;
+    const locationQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(googleMapsUrl)}&size=300x300&margin=10&qzone=2`;
     const checkInQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(checkInUrl)}&size=300x300&margin=10&qzone=2`;
 
     // Format dates for calendar
@@ -65,7 +68,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       startDateFormatted,
       endDateFormatted,
       nowFormatted,
-      location,
+      location: googleMapsUrl, // Use the full Google Maps URL here
       message: message || "",
       checkInId
     });
@@ -111,7 +114,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
         role,
         denomination,
         phone,
-        location,
+        location: googleMapsUrl, // Use the full Google Maps URL here
         checkInId,
         locationQrCodeUrl,
         checkInQrCodeUrl,
