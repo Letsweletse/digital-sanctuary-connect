@@ -17,6 +17,7 @@ export interface EmailRequest {
   eventTime?: string;
   eventImage?: string;
   checkInId?: string;
+  checkInUrl?: string;
   attendeeEmail?: string;
   churchLogo?: string;
 }
