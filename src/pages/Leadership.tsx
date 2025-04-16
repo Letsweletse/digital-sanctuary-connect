@@ -11,8 +11,7 @@ const Leadership = () => {
   
   return (
     <Layout>
-      <main className="flex-grow pt-24 page-transition">
-        {/* No need for the header section as we've enhanced the LeadershipGrid component */}
+      <main className="flex-grow pt-24 bg-white page-transition">
         <LeadershipGrid leaders={leaders || []} />
       </main>
     </Layout>

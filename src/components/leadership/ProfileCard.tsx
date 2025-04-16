@@ -28,7 +28,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   const [imageError, setImageError] = useState(false);
   
   return (
-    <Card className="overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 bg-transparent border-0 text-white">
+    <Card className="overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 bg-transparent border-0 text-[#24324b]">
       {/* Image */}
       <div className="relative pb-[75%]">
         <img
@@ -39,14 +39,14 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
           className={`absolute top-0 left-0 w-full h-full object-cover ${!imageLoaded ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
         />
         {!imageLoaded && !imageError && (
-          <div className="absolute inset-0 flex items-center justify-center bg-[#1e2a3e]">
-            <div className="animate-pulse w-12 h-12 rounded-full bg-[#3a4b67]"></div>
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+            <div className="animate-pulse w-12 h-12 rounded-full bg-gray-200"></div>
           </div>
         )}
         {imageError && (
-          <div className="absolute inset-0 flex items-center justify-center bg-[#1e2a3e]">
-            <Avatar className="w-16 h-16 bg-[#2a3b57] text-[#e6c98f]">
-              <AvatarFallback className="bg-gradient-to-r from-[#2a3b57] to-[#3a4b67] text-[#e6c98f]">
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+            <Avatar className="w-16 h-16 bg-gray-200 text-[#e6c98f]">
+              <AvatarFallback className="bg-gradient-to-r from-gray-200 to-gray-300 text-[#24324b]">
                 {name.split(' ').map(n => n[0]).join('')}
               </AvatarFallback>
             </Avatar>
@@ -59,12 +59,12 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
         <span className="inline-block bg-gradient-to-r from-[#e6c98f] to-[#f0d9a5] text-[#24324b] px-3 py-1 rounded-full text-xs font-medium mb-2">
           {role}
         </span>
-        <h3 className="text-xl font-bold text-white mb-2">{name}</h3>
+        <h3 className="text-xl font-bold text-[#24324b] mb-2">{name}</h3>
         
         <div className={`relative overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-none' : 'max-h-24'}`}>
-          <div className="text-gray-300 text-sm" dangerouslySetInnerHTML={{ __html: bio }} />
+          <div className="text-gray-600 text-sm" dangerouslySetInnerHTML={{ __html: bio }} />
           {!isExpanded && bio.length > 100 && (
-            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-[#2a3b57] to-transparent"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent"></div>
           )}
         </div>
         
@@ -83,7 +83,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
             {email && (
               <div className="flex items-center space-x-2">
                 <Mail className="w-4 h-4 text-[#e6c98f]" />
-                <a href={`mailto:${email}`} className="text-sm text-gray-300 hover:text-[#e6c98f] transition-colors">
+                <a href={`mailto:${email}`} className="text-sm text-gray-600 hover:text-[#e6c98f] transition-colors">
                   {email}
                 </a>
               </div>
@@ -92,7 +92,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
             {phone && (
               <div className="flex items-center space-x-2">
                 <PhoneCall className="w-4 h-4 text-[#e6c98f]" />
-                <a href={`tel:${phone}`} className="text-sm text-gray-300 hover:text-[#e6c98f] transition-colors">
+                <a href={`tel:${phone}`} className="text-sm text-gray-600 hover:text-[#e6c98f] transition-colors">
                   {phone}
                 </a>
               </div>

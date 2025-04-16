@@ -10,41 +10,74 @@ import {
 } from '@/utils/sermonUtils';
 
 export const useSermons = () => {
-  const [sermons, setSermons] = useState<Sermon[]>(sermonsData);
-  const [loading, setLoading] = useState(false);
+  const [sermons, setSermons] = useState<Sermon[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchSermons = async () => {
+  // Load sermons from localStorage or fall back to sample data
+  useEffect(() => {
     try {
       setLoading(true);
-      // Simulating API call
-      // const response = await fetch('/api/sermons');
-      // const data = await response.json();
-      // setSermons(data);
-      setLoading(false);
+      
+      // Try to load from localStorage first
+      const savedSermons = localStorage.getItem('church_sermons');
+      if (savedSermons) {
+        const parsedSermons = JSON.parse(savedSermons);
+        console.log('Loaded sermons from localStorage:', parsedSermons.length);
+        setSermons(parsedSermons);
+      } else {
+        // Fall back to sample data if nothing in localStorage
+        console.log('No sermons in localStorage, using sample data');
+        setSermons(sermonsData);
+        // Save sample data to localStorage
+        localStorage.setItem('church_sermons', JSON.stringify(sermonsData));
+      }
     } catch (err) {
+      console.error('Error loading sermons:', err);
       setError('Failed to load sermons.');
+      // Fall back to sample data
+      setSermons(sermonsData);
+    } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    // Uncomment this when you have a real API
-    // fetchSermons();
   }, []);
+
+  // Save sermons to localStorage whenever they change
+  useEffect(() => {
+    if (sermons.length > 0 && !loading) {
+      try {
+        localStorage.setItem('church_sermons', JSON.stringify(sermons));
+        console.log('Saved sermons to localStorage:', sermons.length);
+      } catch (err) {
+        console.error('Error saving sermons to localStorage:', err);
+      }
+    }
+  }, [sermons, loading]);
 
   const addSermon = (sermon: Omit<Sermon, 'id'>) => {
     const newSermon = createSermon(sermon);
-    setSermons(prev => [newSermon, ...prev]);
+    console.log('Adding new sermon:', newSermon);
+    setSermons(prev => {
+      const updated = [newSermon, ...prev];
+      return updated;
+    });
     return newSermon;
   };
 
   const updateSermon = (id: string, updatedSermon: Partial<Sermon>) => {
-    setSermons(prev => updateSermonInList(prev, id, updatedSermon));
+    console.log('Updating sermon:', id, updatedSermon);
+    setSermons(prev => {
+      const updated = updateSermonInList(prev, id, updatedSermon);
+      return updated;
+    });
   };
 
   const deleteSermon = (id: string) => {
-    setSermons(prev => removeSermonFromList(prev, id));
+    console.log('Deleting sermon:', id);
+    setSermons(prev => {
+      const updated = removeSermonFromList(prev, id);
+      return updated;
+    });
   };
 
   const getFeaturedSermon = (): Sermon | undefined => {

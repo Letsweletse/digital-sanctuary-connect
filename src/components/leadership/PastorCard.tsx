@@ -28,7 +28,7 @@ const PastorCard: React.FC<PastorCardProps> = ({
   const [imageError, setImageError] = useState(false);
   
   return (
-    <Card className="overflow-hidden shadow-lg bg-transparent border-0 text-white">
+    <Card className="overflow-hidden shadow-lg bg-transparent border-0 text-[#24324b]">
       <div className="md:flex">
         {/* Pastor Image */}
         <div className="md:w-1/3 relative">
@@ -41,14 +41,14 @@ const PastorCard: React.FC<PastorCardProps> = ({
               className={`w-full h-full object-cover ${!imageLoaded ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
             />
             {!imageLoaded && !imageError && (
-              <div className="absolute inset-0 flex items-center justify-center bg-[#1e2a3e]">
-                <div className="animate-pulse w-16 h-16 rounded-full bg-[#3a4b67]"></div>
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                <div className="animate-pulse w-16 h-16 rounded-full bg-gray-200"></div>
               </div>
             )}
             {imageError && (
-              <div className="absolute inset-0 flex items-center justify-center bg-[#1e2a3e]">
-                <Avatar className="w-20 h-20 bg-[#2a3b57]">
-                  <AvatarFallback className="text-2xl font-bold bg-gradient-to-r from-[#2a3b57] to-[#3a4b67] text-[#e6c98f]">
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                <Avatar className="w-20 h-20 bg-gray-200">
+                  <AvatarFallback className="text-2xl font-bold bg-gradient-to-r from-gray-200 to-gray-300 text-[#24324b]">
                     {name.split(' ').map(n => n[0]).join('')}
                   </AvatarFallback>
                 </Avatar>
@@ -64,13 +64,13 @@ const PastorCard: React.FC<PastorCardProps> = ({
               <span className="inline-block bg-gradient-to-r from-[#e6c98f] to-[#f0d9a5] text-[#24324b] px-3 py-1 rounded-full text-sm font-medium mb-3">
                 {role}
               </span>
-              <h1 className="text-3xl font-bold text-white">{name}</h1>
+              <h1 className="text-3xl font-bold text-[#24324b]">{name}</h1>
             </div>
             
-            <div className={`prose max-w-none text-gray-300 ${isExpanded ? 'max-h-none' : 'max-h-48 overflow-hidden relative'}`}>
+            <div className={`prose max-w-none text-gray-600 ${isExpanded ? 'max-h-none' : 'max-h-48 overflow-hidden relative'}`}>
               <div dangerouslySetInnerHTML={{ __html: bio }} />
               {!isExpanded && (
-                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#2a3b57] to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent"></div>
               )}
             </div>
             
@@ -86,7 +86,7 @@ const PastorCard: React.FC<PastorCardProps> = ({
               {email && (
                 <div className="flex items-center space-x-2">
                   <Mail className="w-5 h-5 text-[#e6c98f]" />
-                  <a href={`mailto:${email}`} className="text-gray-300 hover:text-[#e6c98f] transition-colors">
+                  <a href={`mailto:${email}`} className="text-gray-600 hover:text-[#e6c98f] transition-colors">
                     {email}
                   </a>
                 </div>
@@ -95,7 +95,7 @@ const PastorCard: React.FC<PastorCardProps> = ({
               {phone && (
                 <div className="flex items-center space-x-2">
                   <PhoneCall className="w-5 h-5 text-[#e6c98f]" />
-                  <a href={`tel:${phone}`} className="text-gray-300 hover:text-[#e6c98f] transition-colors">
+                  <a href={`tel:${phone}`} className="text-gray-600 hover:text-[#e6c98f] transition-colors">
                     {phone}
                   </a>
                 </div>
@@ -104,13 +104,13 @@ const PastorCard: React.FC<PastorCardProps> = ({
             
             {sermons && sermons.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-lg font-semibold text-white mb-3">Recent Sermons</h3>
+                <h3 className="text-lg font-semibold text-[#24324b] mb-3">Recent Sermons</h3>
                 <ul className="space-y-2">
                   {sermons.map((sermon, index) => (
                     <li key={index}>
                       <a 
                         href={sermon.url} 
-                        className="text-gray-300 hover:text-[#e6c98f] flex items-center transition-colors"
+                        className="text-gray-600 hover:text-[#e6c98f] flex items-center transition-colors"
                       >
                         <svg 
                           className="w-4 h-4 mr-2 text-[#e6c98f]" 

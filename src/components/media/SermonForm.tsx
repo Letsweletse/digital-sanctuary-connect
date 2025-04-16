@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { ImageCategory } from '@/types/imageTypes';
 import { Sermon } from '@/types/sermonTypes';
@@ -29,8 +29,16 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [speakerImage, setSpeakerImage] = useState(sermon?.speakerImage || '');
   const [speakerImageFile, setSpeakerImageFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const handleSubmit = (e: React.FormEvent) => {
+  // Log for debugging
+  useEffect(() => {
+    if (sermon) {
+      console.log('Editing sermon:', sermon);
+    }
+  }, [sermon]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Simple validation
@@ -43,20 +51,49 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
       return;
     }
     
-    const formattedTags = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+    setIsSubmitting(true);
     
-    const formData = {
-      title,
-      speaker,
-      speakerImage: speakerImage || '/placeholder.svg',
-      date,
-      audioUrl: audioFile ? URL.createObjectURL(audioFile) : sermon?.audioUrl || '',
-      youtubeId,
-      description,
-      tags: formattedTags,
-    };
-    
-    onSubmit(formData);
+    try {
+      const formattedTags = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+      
+      // In a real application, we would upload the files to a storage service
+      // and get back URLs to use in the sermon data
+      
+      // For demo purposes, create object URLs
+      let audioUrl = sermon?.audioUrl || '';
+      if (audioFile) {
+        audioUrl = URL.createObjectURL(audioFile);
+        console.log('Created audio URL:', audioUrl);
+      }
+      
+      const formData = {
+        title,
+        speaker,
+        speakerImage: speakerImage || '/placeholder.svg',
+        date,
+        audioUrl,
+        youtubeId,
+        description,
+        tags: formattedTags,
+      };
+      
+      console.log('Submitting sermon data:', formData);
+      onSubmit(formData);
+      
+      // Cleanup object URLs
+      if (audioFile) {
+        URL.revokeObjectURL(audioUrl);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast({
+        title: "Error",
+        description: "An error occurred while saving the sermon. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   // Handle speaker image upload
@@ -65,6 +102,8 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
       // In a real app, upload the file to a server and get the URL
       setSpeakerImage(URL.createObjectURL(file));
       setSpeakerImageFile(file);
+      
+      console.log('Speaker image uploaded:', file.name);
       
       toast({
         title: "Image uploaded",
@@ -80,6 +119,8 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
   const handleAudioUpload = async (file: File, category: ImageCategory) => {
     if (file) {
       setAudioFile(file);
+      
+      console.log('Audio file uploaded:', file.name);
       
       toast({
         title: "Audio uploaded",
@@ -131,7 +172,7 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
           />
         </div>
         
-        <FormActions onCancel={onCancel} isEditing={isEditing} />
+        <FormActions onCancel={onCancel} isEditing={isEditing} isSubmitting={isSubmitting} />
       </form>
     </div>
   );

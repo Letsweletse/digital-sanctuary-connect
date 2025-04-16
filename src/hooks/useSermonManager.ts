@@ -39,26 +39,41 @@ export function useSermonManager() {
   
   // Handle form submission
   const handleSubmitSermon = (sermonData: Omit<Sermon, 'id'>) => {
-    if (isEditing && selectedSermon) {
-      // Update existing sermon
-      updateSermon(selectedSermon.id, sermonData);
+    try {
+      if (isEditing && selectedSermon) {
+        // Update existing sermon
+        updateSermon(selectedSermon.id, sermonData);
+        
+        toast({
+          title: "Sermon updated",
+          description: "The sermon has been successfully updated.",
+          variant: "default",
+        });
+      } else {
+        // Add new sermon
+        const newSermon = addSermon(sermonData);
+        
+        toast({
+          title: "Sermon added",
+          description: "The sermon has been successfully added.",
+          variant: "default",
+        });
+        
+        console.log('New sermon added:', newSermon);
+      }
       
+      // Reset state
+      resetState();
+      return true;
+    } catch (error) {
+      console.error('Error submitting sermon:', error);
       toast({
-        title: "Sermon updated",
-        description: "The sermon has been successfully updated.",
+        title: "Error",
+        description: "There was a problem saving the sermon. Please try again.",
+        variant: "destructive",
       });
-    } else {
-      // Add new sermon
-      const newSermon = addSermon(sermonData);
-      
-      toast({
-        title: "Sermon added",
-        description: "The sermon has been successfully added.",
-      });
+      return false;
     }
-    
-    // Reset state
-    resetState();
   };
 
   // Handle starting the add process
