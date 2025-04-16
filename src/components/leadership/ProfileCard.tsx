@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import { Mail, PhoneCall, ChevronDown, ChevronUp } from 'lucide-react';
+import { Mail, PhoneCall, ChevronDown, ChevronUp, Award } from 'lucide-react';
 
 interface ProfileCardProps {
   name: string;
@@ -52,14 +52,17 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
             </Avatar>
           </div>
         )}
+        
+        {/* Add role badge */}
+        <div className="absolute top-0 left-0 bg-[#e6c98f]/80 text-[#24324b] px-3 py-1.5 font-medium text-sm rounded-br-lg flex items-center">
+          <Award className="h-4 w-4 mr-1.5" /> {role}
+        </div>
       </div>
       
       {/* Content */}
       <CardContent className="p-5">
-        <span className="inline-block bg-gradient-to-r from-[#e6c98f] to-[#f0d9a5] text-[#24324b] px-3 py-1 rounded-full text-xs font-medium mb-2">
-          {role}
-        </span>
-        <h3 className="text-xl font-bold text-[#24324b] mb-2">{name}</h3>
+        <h3 className="text-xl font-bold text-[#24324b] mb-3">{name}</h3>
+        <div className="h-0.5 w-12 bg-gradient-to-r from-[#e6c98f] to-[#f0d9a5] mb-3"></div>
         
         <div className={`relative overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-none' : 'max-h-24'}`}>
           <div className="text-gray-600 text-sm" dangerouslySetInnerHTML={{ __html: bio }} />
@@ -79,7 +82,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
         )}
         
         {(email || phone) && (
-          <div className="mt-4 space-y-2">
+          <div className="mt-4 space-y-2 border-t border-church-neutral-100 pt-3">
             {email && (
               <div className="flex items-center space-x-2">
                 <Mail className="w-4 h-4 text-[#e6c98f]" />

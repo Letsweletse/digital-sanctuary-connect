@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { PhoneCall, Mail, ChevronDown, ChevronUp } from 'lucide-react';
+import { PhoneCall, Mail, ChevronDown, ChevronUp, Award, Play } from 'lucide-react';
 
 interface PastorCardProps {
   name: string;
@@ -54,6 +54,9 @@ const PastorCard: React.FC<PastorCardProps> = ({
                 </Avatar>
               </div>
             )}
+            <div className="absolute top-0 left-0 bg-[#e6c98f]/80 text-[#24324b] px-3 py-1.5 font-medium text-sm rounded-br-lg flex items-center">
+              <Award className="h-4 w-4 mr-1.5" /> {role}
+            </div>
           </div>
         </div>
         
@@ -61,10 +64,8 @@ const PastorCard: React.FC<PastorCardProps> = ({
         <div className="md:w-2/3 p-6">
           <div className="space-y-4">
             <div>
-              <span className="inline-block bg-gradient-to-r from-[#e6c98f] to-[#f0d9a5] text-[#24324b] px-3 py-1 rounded-full text-sm font-medium mb-3">
-                {role}
-              </span>
-              <h1 className="text-3xl font-bold text-[#24324b]">{name}</h1>
+              <h1 className="text-3xl font-bold text-[#24324b] mb-1">{name}</h1>
+              <div className="h-1 w-16 bg-gradient-to-r from-[#e6c98f] to-[#f0d9a5]"></div>
             </div>
             
             <div className={`prose max-w-none text-gray-600 ${isExpanded ? 'max-h-none' : 'max-h-48 overflow-hidden relative'}`}>
@@ -104,26 +105,23 @@ const PastorCard: React.FC<PastorCardProps> = ({
             
             {sermons && sermons.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-lg font-semibold text-[#24324b] mb-3">Recent Sermons</h3>
-                <ul className="space-y-2">
+                <h3 className="text-lg font-semibold text-[#24324b] mb-3 flex items-center">
+                  <Play className="h-4 w-4 mr-2 text-[#e6c98f]" />
+                  Recent Sermons
+                </h3>
+                <ul className="space-y-3 bg-church-neutral-50 p-3 rounded-lg border border-[#e6c98f]/10">
                   {sermons.map((sermon, index) => (
-                    <li key={index}>
+                    <li key={index} className="bg-white p-2 rounded-md shadow-sm hover:shadow transition-shadow">
                       <a 
                         href={sermon.url} 
-                        className="text-gray-600 hover:text-[#e6c98f] flex items-center transition-colors"
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-gray-600 hover:text-[#e6c98f] flex items-center transition-colors group"
                       >
-                        <svg 
-                          className="w-4 h-4 mr-2 text-[#e6c98f]" 
-                          viewBox="0 0 24 24" 
-                          fill="none" 
-                          stroke="currentColor" 
-                          strokeWidth="2" 
-                          strokeLinecap="round" 
-                          strokeLinejoin="round"
-                        >
-                          <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                        </svg>
-                        {sermon.title}
+                        <div className="mr-3 bg-[#e6c98f]/10 text-[#e6c98f] rounded-full p-1.5 group-hover:bg-[#e6c98f]/20 transition-colors">
+                          <Play className="h-4 w-4" />
+                        </div>
+                        <span className="line-clamp-2 text-sm font-medium">{sermon.title}</span>
                       </a>
                     </li>
                   ))}

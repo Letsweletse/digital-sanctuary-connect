@@ -24,6 +24,12 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   // Actual videos from Gate Gaborone Ministries YouTube channel
   const videos: VideoItem[] = [
     {
+      id: 'dMf8NevhDv8',
+      title: 'The Prophetic Office in Context of the Apostolic Season - Session 2',
+      thumbnail: 'https://images.unsplash.com/photo-1543269865-cbf427effbad',
+      publishedAt: '2025-04-13'
+    },
+    {
       id: '0Nkx8oww13E',
       title: 'SUNDAY SERVICE || THIS MORNING || 10/12/2023',
       thumbnail: 'https://images.unsplash.com/photo-1543269865-cbf427effbad',
@@ -52,12 +58,6 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
       title: 'Sunday Worship Service | Mothersday Service',
       thumbnail: 'https://images.unsplash.com/photo-1508963493744-76fce69379c0',
       publishedAt: '2023-05-14'
-    },
-    {
-      id: 'BNDMHJCc6w4',
-      title: 'Sunday Worship Service | Pastor Kobus',
-      thumbnail: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88',
-      publishedAt: '2023-05-07'
     }
   ];
   
