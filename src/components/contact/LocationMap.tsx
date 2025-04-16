@@ -3,8 +3,8 @@ import React from 'react';
 import { ExternalLink, MapPin } from 'lucide-react';
 
 const LocationMap = () => {
-  // Updated Google Maps URL for Gate Gaborone
-  const googleMapsUrl = "https://www.google.com/maps/place/GATE+Gaborone+Botswana,+Gaborone/data=!4m2!3m1!1s0x1ebb5b26225a6213:0xaed9e468c1e4ef31?utm_source=mstt_1&entry=gps&coh=192189&g_ep=CAESBzI1LjE1LjEYACDXggMqbCw5NDIyMzI5OSw5NDIxNjQxMyw5NDIxMjQ5Niw5NDI1MDk1NCw5NDIwNzM5NCw5NDIwNzUwNiw5NDIwODUwNiw5NDIxNzUyMyw5NDIxODY1Myw5NDIyOTgzOSw0NzA4NDM5Myw5NDIxMzIwMEICQlc%3D&skid=fbb28bdc-bfa6-45a5-bb7f-4a723ed65673&g_st=aw";
+  // Direct Google Maps URL for Gate Gaborone - no shortened URL
+  const googleMapsUrl = "https://www.google.com/maps/place/Gate+Gaborone/@-24.6618567,25.9048083,15z/data=!4m6!3m5!1s0x1ebb5b26225a6213:0xaed9e468c1e4ef31!8m2!3d-24.6618567!4d25.9048083!16s%2Fg%2F11q89m2yrq";
   
   return (
     <div className="mt-8">

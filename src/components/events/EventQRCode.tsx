@@ -18,7 +18,14 @@ const EventQRCode: React.FC<EventQRCodeProps> = ({
   className = '' 
 }) => {
   // Ensure QR code value is properly formatted for scanning
-  const formattedValue = value.startsWith('http') ? value : value;
+  // If it's a location URL, ensure we use a direct Google Maps URL, not a shortened one
+  let formattedValue = value;
+  
+  // If the value contains "maps.app.goo.gl" or other shortened URLs, replace with direct URL
+  if (value.includes('maps.app.goo.gl') || value.includes('goo.gl')) {
+    // Replace with direct Google Maps URL
+    formattedValue = "https://www.google.com/maps/place/Gate+Gaborone/@-24.6618567,25.9048083,15z/data=!4m6!3m5!1s0x1ebb5b26225a6213:0xaed9e468c1e4ef31!8m2!3d-24.6618567!4d25.9048083!16s%2Fg%2F11q89m2yrq";
+  }
   
   return (
     <Card className={`overflow-hidden shadow-lg border border-[#24324b]/10 ${className}`}>
