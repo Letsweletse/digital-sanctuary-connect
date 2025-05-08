@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { format } from 'date-fns';
-import { Calendar, User, BookOpen, Download, Play } from 'lucide-react';
+import { Calendar, User, Download, Play } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Sermon } from '@/types/sermonTypes';
@@ -20,6 +20,9 @@ const SermonGridView = ({ sermons }: SermonGridViewProps) => {
     );
   }
 
+  // Default sermon image
+  const defaultSermonImage = "https://lovable.dev/projects/b4242310-0169-49ed-bc97-e6669ce1cf89";
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {sermons.map((sermon) => (
@@ -31,7 +34,7 @@ const SermonGridView = ({ sermons }: SermonGridViewProps) => {
         >
           <div className="relative h-48 bg-church-neutral-100">
             <img 
-              src={sermon.thumbnailUrl || `https://source.unsplash.com/random/400x300/?bible,church,${sermon.id}`} 
+              src={defaultSermonImage}
               alt={sermon.title}
               className="w-full h-full object-cover"
               itemProp="thumbnailUrl"
@@ -67,15 +70,6 @@ const SermonGridView = ({ sermons }: SermonGridViewProps) => {
                   {sermon.speaker}
                 </span>
               </div>
-              
-              {sermon.scripture && (
-                <div className="flex items-center gap-2">
-                  <BookOpen className="h-4 w-4 text-church-neutral-500" />
-                  <span className="text-sm text-church-neutral-700" itemProp="about">
-                    {sermon.scripture}
-                  </span>
-                </div>
-              )}
             </div>
             
             {sermon.description && (

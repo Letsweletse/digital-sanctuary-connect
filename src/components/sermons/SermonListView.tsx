@@ -26,7 +26,6 @@ const SermonListView = ({ sermons }: SermonListViewProps) => {
         <thead>
           <tr className="bg-church-neutral-100">
             <th className="py-3 px-4 text-left font-medium text-church-neutral-700">Title</th>
-            <th className="py-3 px-4 text-left font-medium text-church-neutral-700 hidden md:table-cell">Scripture</th>
             <th className="py-3 px-4 text-left font-medium text-church-neutral-700 hidden md:table-cell">Speaker</th>
             <th className="py-3 px-4 text-left font-medium text-church-neutral-700 hidden sm:table-cell">Date</th>
             <th className="py-3 px-4 text-center font-medium text-church-neutral-700">Listen</th>
@@ -50,9 +49,6 @@ const SermonListView = ({ sermons }: SermonListViewProps) => {
                     {sermon.speaker} • {format(new Date(sermon.date), 'MMM d, yyyy')}
                   </p>
                 </div>
-              </td>
-              <td className="py-3 px-4 border-t border-church-neutral-200 text-church-neutral-600 hidden md:table-cell">
-                {sermon.scripture || "—"}
               </td>
               <td className="py-3 px-4 border-t border-church-neutral-200 text-church-neutral-600 hidden md:table-cell">
                 {sermon.speaker}

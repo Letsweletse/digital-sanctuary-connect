@@ -35,8 +35,7 @@ export const useSermonFilters = (sermons: Sermon[]) => {
       result = result.filter(sermon => 
         sermon.title.toLowerCase().includes(term) ||
         sermon.speaker.toLowerCase().includes(term) ||
-        (sermon.description && sermon.description.toLowerCase().includes(term)) ||
-        (sermon.scripture && sermon.scripture.toLowerCase().includes(term))
+        (sermon.description && sermon.description.toLowerCase().includes(term))
       );
     }
     
