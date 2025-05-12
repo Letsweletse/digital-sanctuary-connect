@@ -1,13 +1,29 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MediaUploader from '../media/MediaUploader';
 import YouTubeEmbed from '../media/YouTubeEmbed';
 import AudioSermonPlayer from '../media/AudioSermonPlayer';
 import { ImageCategory } from '@/types/imageTypes';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useSermons } from '@/hooks/useSermons';
 
 const MediaSection = () => {
   const [selectedTab, setSelectedTab] = useState("youtube");
+  const isMobile = useIsMobile();
+  const { sermons } = useSermons();
+  
+  // Handle tab change
+  const handleTabChange = (value: string) => {
+    setSelectedTab(value);
+    // Force refresh sermon data when changing tabs, especially important on mobile
+    if (value === "audio" && isMobile) {
+      // Add a small delay to ensure DOM is ready
+      setTimeout(() => {
+        console.log('Refreshing sermon data on mobile tab change');
+        window.dispatchEvent(new Event('sermon-refresh'));
+      }, 100);
+    }
+  };
   
   const handleFileUpload = (file: File) => {
     console.log('File uploaded:', file);
@@ -21,6 +37,27 @@ const MediaSection = () => {
     // In a real application, handle the file upload with category
     return true; // Return success
   };
+  
+  // Ensure sermon data is properly loaded when the component mounts
+  useEffect(() => {
+    console.log('MediaSection mounted, available sermons:', sermons?.length || 0);
+    
+    // Dispatch an event to notify AudioSermonPlayer that it should refresh data
+    window.dispatchEvent(new Event('sermon-refresh'));
+    
+    // Force refresh when switching back to this tab on mobile
+    const handleVisibilityChange = () => {
+      if (!document.hidden && isMobile && selectedTab === "audio") {
+        console.log('Page became visible on mobile, refreshing sermon data');
+        window.dispatchEvent(new Event('sermon-refresh'));
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [selectedTab, sermons?.length, isMobile]);
   
   return (
     <section className="py-16 md:py-24 bg-church-neutral-50">
@@ -37,7 +74,7 @@ const MediaSection = () => {
           </p>
         </div>
         
-        <Tabs defaultValue="youtube" className="w-full max-w-5xl mx-auto" value={selectedTab} onValueChange={setSelectedTab}>
+        <Tabs defaultValue="youtube" className="w-full max-w-5xl mx-auto" value={selectedTab} onValueChange={handleTabChange}>
           <TabsList className="grid grid-cols-3 mb-8">
             <TabsTrigger value="youtube">YouTube</TabsTrigger>
             <TabsTrigger value="audio">Audio Sermons</TabsTrigger>
@@ -74,7 +111,7 @@ const MediaSection = () => {
                 Listen to our latest sermon recordings directly on our website. You can also download them for offline listening.
               </p>
               
-              <AudioSermonPlayer />
+              <AudioSermonPlayer customSermons={sermons} />
             </div>
             
             <div className="glass-panel p-6 bg-white">

@@ -1,9 +1,10 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Sermon } from '@/types/sermonTypes';
 import SermonInfo from './SermonInfo';
 import AudioControls from './AudioControls';
 import SermonPlaylist from './SermonPlaylist';
+import { useSermons } from '@/hooks/useSermons';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface AudioSermonPlayerProps {
   customSermons?: Sermon[];
@@ -16,8 +17,11 @@ const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [volume, setVolume] = useState(0.7);
   const [isMuted, setIsMuted] = useState(false);
+  const [localSermons, setLocalSermons] = useState<Sermon[]>([]);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { sermons: fetchedSermons } = useSermons();
+  const isMobile = useIsMobile();
   
   // Default sermon data if no custom sermons provided
   const defaultSermons: Sermon[] = [
@@ -50,11 +54,65 @@ const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
     },
   ];
   
-  const sermons = customSermons || defaultSermons;
-  const currentSermon = sermons[currentSermonIndex];
-  
+  // Initialize sermons from props or default
   useEffect(() => {
+    console.log('AudioSermonPlayer: Initializing sermons');
+    console.log('Custom sermons provided:', customSermons?.length || 0);
+    console.log('Fetched sermons:', fetchedSermons?.length || 0);
+    
+    // Determine which sermons to use
+    const sermonsToUse = customSermons || fetchedSermons || defaultSermons;
+    console.log('Using sermons:', sermonsToUse.length);
+    
+    // Reset player state when sermons change
+    setLocalSermons(sermonsToUse);
+    setCurrentSermonIndex(0);
+    setIsPlaying(false);
+    
     if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+  }, [customSermons, fetchedSermons]);
+  
+  // Handle sermon refresh event (especially for mobile)
+  useEffect(() => {
+    const handleSermonRefresh = () => {
+      console.log('Sermon refresh event received');
+      
+      // Force refresh sermons data
+      const sermonsToUse = customSermons || fetchedSermons || defaultSermons;
+      console.log('Refreshing with sermons:', sermonsToUse.length);
+      
+      setLocalSermons(sermonsToUse);
+      // Keep current index if possible
+      if (currentSermonIndex >= sermonsToUse.length) {
+        setCurrentSermonIndex(0);
+      }
+    };
+    
+    window.addEventListener('sermon-refresh', handleSermonRefresh);
+    return () => {
+      window.removeEventListener('sermon-refresh', handleSermonRefresh);
+    };
+  }, [customSermons, fetchedSermons, defaultSermons, currentSermonIndex]);
+  
+  // Track when component mounts/unmounts on mobile
+  useEffect(() => {
+    if (isMobile) {
+      console.log('AudioSermonPlayer mounted on mobile');
+    }
+    
+    return () => {
+      if (isMobile) {
+        console.log('AudioSermonPlayer unmounted on mobile');
+      }
+    };
+  }, [isMobile]);
+  
+  // Update audio element when current sermon changes
+  useEffect(() => {
+    if (audioRef.current && localSermons.length > 0) {
       const audio = audioRef.current;
       
       // Event listeners
@@ -75,7 +133,10 @@ const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
         audio.removeEventListener('timeupdate', setAudioTime);
       };
     }
-  }, [currentSermonIndex]);
+  }, [currentSermonIndex, localSermons]);
+  
+  // The current sermon based on index
+  const currentSermon = localSermons[currentSermonIndex] || defaultSermons[0];
   
   // Play/Pause audio
   const togglePlayPause = () => {
@@ -92,7 +153,7 @@ const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
   // Previous sermon
   const handlePrevious = () => {
     setCurrentSermonIndex(prevIndex => 
-      prevIndex === 0 ? sermons.length - 1 : prevIndex - 1
+      prevIndex === 0 ? localSermons.length - 1 : prevIndex - 1
     );
     setIsPlaying(false);
   };
@@ -100,7 +161,7 @@ const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
   // Next sermon
   const handleNext = () => {
     setCurrentSermonIndex(prevIndex => 
-      prevIndex === sermons.length - 1 ? 0 : prevIndex + 1
+      prevIndex === localSermons.length - 1 ? 0 : prevIndex + 1
     );
     setIsPlaying(false);
   };
@@ -147,7 +208,7 @@ const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
     <div className="w-full">
       <audio 
         ref={audioRef}
-        src={currentSermon.audioUrl}
+        src={currentSermon?.audioUrl}
         preload="metadata"
         onEnded={handleNext}
       />
@@ -172,7 +233,7 @@ const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
       
       {/* Sermon playlist */}
       <SermonPlaylist
-        sermons={sermons}
+        sermons={localSermons}
         currentIndex={currentSermonIndex}
         onSermonSelect={handleSermonSelect}
       />
