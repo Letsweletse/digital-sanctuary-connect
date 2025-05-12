@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
-import { Upload, X, Check, AlertCircle } from 'lucide-react';
+import { Upload, Check, AlertCircle } from 'lucide-react';
+import FileDisplay from './upload/FileDisplay';
+import { ImageCategory } from '@/types/imageTypes';
 
 type UploadProps = {
   title: string;
@@ -93,6 +95,44 @@ const MediaUploader = ({
       }, 3000);
     }, 2000);
   };
+
+  const renderUploadUI = () => (
+    <div className="flex flex-col items-center space-y-4">
+      <div className="p-3 bg-church-blue-light rounded-full">
+        <Upload size={24} className="text-church-blue" />
+      </div>
+      <div className="text-center">
+        <h3 className="text-lg font-semibold text-church-neutral-900">{title}</h3>
+        <p className="text-church-neutral-600 text-sm mt-1">{description}</p>
+        <p className="text-church-neutral-500 text-xs mt-2">
+          Max file size: {maxFileSizeMB}MB
+        </p>
+      </div>
+      <input
+        type="file"
+        id="file-upload"
+        className="hidden"
+        accept={acceptedFileTypes}
+        onChange={handleFileChange}
+      />
+      <label
+        htmlFor="file-upload"
+        className="btn-primary cursor-pointer text-center"
+      >
+        Select File
+      </label>
+    </div>
+  );
+
+  const renderUploadedUI = () => (
+    <div className="flex flex-col items-center space-y-3">
+      <div className="p-3 bg-green-100 rounded-full">
+        <Check size={24} className="text-green-600" />
+      </div>
+      <p className="text-green-700 font-medium">Upload Complete!</p>
+      <p className="text-church-neutral-500 text-sm">{file?.name}</p>
+    </div>
+  );
   
   return (
     <div className="w-full">
@@ -112,60 +152,15 @@ const MediaUploader = ({
       >
         <div className="flex flex-col items-center justify-center space-y-4">
           {!file ? (
-            <>
-              <div className="p-3 bg-church-blue-light rounded-full">
-                <Upload size={24} className="text-church-blue" />
-              </div>
-              <div className="text-center">
-                <h3 className="text-lg font-semibold text-church-neutral-900">{title}</h3>
-                <p className="text-church-neutral-600 text-sm mt-1">{description}</p>
-                <p className="text-church-neutral-500 text-xs mt-2">
-                  Max file size: {maxFileSizeMB}MB
-                </p>
-              </div>
-              <input
-                type="file"
-                id="file-upload"
-                className="hidden"
-                accept={acceptedFileTypes}
-                onChange={handleFileChange}
-              />
-              <label
-                htmlFor="file-upload"
-                className="btn-primary cursor-pointer text-center"
-              >
-                Select File
-              </label>
-            </>
+            renderUploadUI()
           ) : isUploaded ? (
-            <div className="flex flex-col items-center space-y-3">
-              <div className="p-3 bg-green-100 rounded-full">
-                <Check size={24} className="text-green-600" />
-              </div>
-              <p className="text-green-700 font-medium">Upload Complete!</p>
-              <p className="text-church-neutral-500 text-sm">{file.name}</p>
-            </div>
+            renderUploadedUI()
           ) : (
             <div className="w-full space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-church-blue-light rounded">
-                    <Upload size={18} className="text-church-blue" />
-                  </div>
-                  <div className="truncate">
-                    <p className="text-church-neutral-900 font-medium truncate max-w-[200px]">{file.name}</p>
-                    <p className="text-church-neutral-500 text-xs">
-                      {(file.size / (1024 * 1024)).toFixed(2)} MB
-                    </p>
-                  </div>
-                </div>
-                <button
-                  className="p-1 text-church-neutral-500 hover:text-church-neutral-700"
-                  onClick={() => setFile(null)}
-                >
-                  <X size={18} />
-                </button>
-              </div>
+              <FileDisplay 
+                file={file}
+                onRemoveFile={() => setFile(null)}
+              />
               
               {!isUploading ? (
                 <button 
