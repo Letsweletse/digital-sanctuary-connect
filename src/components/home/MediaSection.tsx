@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MediaUploader from '../media/MediaUploader';
 import YouTubeEmbed from '../media/YouTubeEmbed';
 import AudioSermonPlayer from '../media/AudioSermonPlayer';
+import { ImageCategory } from '@/types/imageTypes';
 
 const MediaSection = () => {
   const [selectedTab, setSelectedTab] = useState("youtube");
@@ -12,6 +13,13 @@ const MediaSection = () => {
     console.log('File uploaded:', file);
     // In a real application, you would handle the file upload here
     // For example, uploading to a storage service like Firebase, AWS S3, etc.
+  };
+  
+  // Handler for DragDropUploader compatibility
+  const handleCategorizedUpload = async (file: File, category: ImageCategory): Promise<boolean> => {
+    console.log('File uploaded:', file, 'Category:', category);
+    // In a real application, handle the file upload with category
+    return true; // Return success
   };
   
   return (
@@ -79,7 +87,7 @@ const MediaSection = () => {
                 title="Upload Sermon Audio"
                 description="Drag and drop or click to select an audio file"
                 acceptedFileTypes="audio/*"
-                maxFileSizeMB={50}
+                maxFileSizeMB={60}
                 onUpload={handleFileUpload}
               />
               
