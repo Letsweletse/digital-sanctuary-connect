@@ -28,8 +28,11 @@ const Sermons = () => {
 
   // Debug logs to track data flow
   useEffect(() => {
-    console.log('Sermons page - Loaded sermons:', sermons);
-    console.log('Sermons page - Filtered sermons:', filteredSermons);
+    console.log('Sermons page - Loaded sermons:', sermons?.length || 0);
+    console.log('Sermons page - Filtered sermons:', filteredSermons?.length || 0);
+    if (sermons?.length > 0) {
+      console.log('Sermons page - Sample sermon:', sermons[0]);
+    }
     console.log('Sermons page - Loading state:', loading);
     if (error) console.error('Sermons page - Error:', error);
   }, [sermons, filteredSermons, loading, error]);
@@ -46,6 +49,10 @@ const Sermons = () => {
             <div className="text-center py-10 bg-red-50 rounded-lg">
               <p className="text-red-600">Error: {error}</p>
               <p className="text-church-neutral-500 text-sm mt-2">Please try refreshing the page.</p>
+            </div>
+          ) : sermons?.length === 0 ? (
+            <div className="text-center py-10 bg-church-neutral-50 rounded-lg">
+              <p className="text-church-neutral-600">No sermons found. Please add some sermons to your library.</p>
             </div>
           ) : (
             <>

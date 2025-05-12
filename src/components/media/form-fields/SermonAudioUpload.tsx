@@ -42,7 +42,7 @@ const SermonAudioUpload = ({
         onFileAccepted={handleAudioUpload}
         category="sermons"
         acceptedFileTypes={['audio/*']} 
-        maxSize={50 * 1024 * 1024} // 50MB limit
+        maxSize={60 * 1024 * 1024} // 60MB limit (increased from 50MB)
       />
     </div>
   );
