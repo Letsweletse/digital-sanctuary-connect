@@ -11,6 +11,11 @@ interface FeaturedEventProps {
 }
 
 const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegisterClick }) => {
+  // Function to handle date display - shows formatted date or TBA
+  const displayDate = (date: string) => {
+    return date === 'TBA' ? 'Dates to be announced' : formatDate(date);
+  };
+
   return (
     <section className="py-12 bg-gradient-to-br from-[#24324b] via-[#1c2a40] to-[#162035] text-white">
       <div className="container px-4 mx-auto">
@@ -29,7 +34,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
             <div className="w-full md:w-3/5 p-6 md:p-8">
               <div className="mb-3">
                 <span className="inline-block bg-gradient-to-r from-[#b8a156] to-[#d4c278] text-white px-3 py-1 text-sm font-medium rounded-full">
-                  Featured Event
+                  Coming Soon
                 </span>
               </div>
               
@@ -38,7 +43,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
               <div className="space-y-3 mb-5">
                 <div className="flex items-center text-white/90">
                   <CalendarDays className="h-5 w-5 mr-3 text-[#b8a156]" />
-                  <span className="font-medium">{formatDate(featuredEvent.date)}</span>
+                  <span className="font-medium">{displayDate(featuredEvent.date)}</span>
                 </div>
                 
                 <div className="flex items-center text-white/90">
@@ -62,7 +67,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
                   className="bg-gradient-to-r from-[#b8a156] to-[#d4c278] hover:from-[#d4c278] hover:to-[#b8a156] text-white px-6 font-medium py-5 md:py-3 transition duration-300 shadow-lg hover:shadow-xl border-0"
                 >
                   <Users className="h-5 w-5 mr-2" />
-                  Register Now
+                  Stay Updated
                 </Button>
                 
                 <Button

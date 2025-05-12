@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import Hero from '@/components/home/Hero';
@@ -14,10 +15,10 @@ const Index = () => {
   const featuredEvent: EventData = {
     id: '4',
     title: 'Perspectives on the Apostolic with Thamo Naidoo',
-    date: '2025-05-10',
-    time: '9:00 AM - 13:30 PM',
+    date: 'TBA',
+    time: 'To be announced',
     location: 'Gate Gaborone Auditorium',
-    description: 'A special conference exploring apostolic ministry in the modern church with guest speaker Thamo Naidoo. Join us for powerful teachings, workshops, and fellowship.',
+    description: 'Join us for our next Perspectives on the Apostolic conference with guest speaker Thamo Naidoo. Future dates will be announced soon. Stay tuned for powerful teachings, workshops, and fellowship.',
     category: 'conference',
     image: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/May%2010%20Conference%20Gate%20Gaborone_1746167943667.jpeg',
     registration: true,

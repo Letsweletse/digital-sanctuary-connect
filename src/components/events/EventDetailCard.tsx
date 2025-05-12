@@ -14,6 +14,11 @@ const EventDetailCard: React.FC<EventDetailCardProps> = ({ event, formatDate }) 
   // Direct Google Maps URL for Gate Gaborone - no shortened URL
   const googleMapsUrl = "https://www.google.com/maps/place/Gate+Gaborone/@-24.6618567,25.9048083,15z/data=!4m6!3m5!1s0x1ebb5b26225a6213:0xaed9e468c1e4ef31!8m2!3d-24.6618567!4d25.9048083!16s%2Fg%2F11q89m2yrq";
   
+  // Function to handle date display - shows formatted date or TBA
+  const displayDate = (dateString: string) => {
+    return dateString === 'TBA' ? 'Dates to be announced' : formatDate(dateString);
+  };
+  
   return (
     <Card className="border-none shadow-md bg-white rounded-lg overflow-hidden">
       <AspectRatio ratio={16/9} className="overflow-hidden bg-gray-100">
@@ -27,7 +32,7 @@ const EventDetailCard: React.FC<EventDetailCardProps> = ({ event, formatDate }) 
         <h3 className="font-bold text-base md:text-lg text-church-blue-dark line-clamp-2">{event.title}</h3>
         <div className="flex items-center gap-2 text-xs md:text-sm">
           <CalendarCheck className="h-4 w-4 text-church-blue flex-shrink-0" />
-          <span className="font-medium">{formatDate(event.date || '')}</span>
+          <span className="font-medium">{displayDate(event.date || '')}</span>
         </div>
         <div className="flex items-center gap-2 text-xs md:text-sm">
           <Clock className="h-4 w-4 text-church-blue flex-shrink-0" />

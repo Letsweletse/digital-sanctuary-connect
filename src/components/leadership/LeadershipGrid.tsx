@@ -52,10 +52,10 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
     },
     {
       id: "elder4",
-      name: "Dave & Monica Fisher",
+      name: "Dave & Monica Fischer",
       role: "Church Elders",
       image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Dave%20and%20Monica_1744794085154.jpeg",
-      bio: "Dave and Monica Fisher serve with compassion and wisdom, bringing deep spiritual insight to our congregation."
+      bio: "Dave and Monica Fischer serve with compassion and wisdom, bringing deep spiritual insight to our congregation."
     }
   ];
 
