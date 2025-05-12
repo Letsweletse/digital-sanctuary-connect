@@ -19,7 +19,7 @@ const SermonAudioUpload = ({
 }: SermonAudioUploadProps) => {
   return (
     <div>
-      <Label className="block mb-2">Sermon Audio File (MP3)</Label>
+      <Label className="block mb-2">Sermon Audio File (All Audio Formats)</Label>
       {audioFile && (
         <div className="mb-4 p-3 bg-church-neutral-50 rounded-md flex items-center justify-between">
           <div className="flex items-center">
@@ -41,7 +41,7 @@ const SermonAudioUpload = ({
       <DragDropUploader 
         onFileAccepted={handleAudioUpload}
         category="sermons"
-        acceptedFileTypes={['audio/mpeg', 'audio/mp3']}
+        acceptedFileTypes={['audio/*']} 
         maxSize={50 * 1024 * 1024} // 50MB limit
       />
     </div>

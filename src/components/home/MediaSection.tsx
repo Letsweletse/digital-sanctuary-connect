@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MediaUploader from '../media/MediaUploader';
@@ -71,24 +72,26 @@ const MediaSection = () => {
             <div className="glass-panel p-6 bg-white">
               <h3 className="text-xl font-bold text-church-neutral-900 mb-4">Upload Sermon Audio</h3>
               <p className="text-church-neutral-700 mb-6">
-                Upload MP3 files of sermons to share with the community. Once uploaded, they will be processed and made available in our audio library.
+                Upload audio files of sermons to share with the community. Once uploaded, they will be processed and made available in our audio library.
               </p>
               
               <MediaUploader
-                title="Upload Sermon MP3"
-                description="Drag and drop or click to select an MP3 file"
-                acceptedFileTypes="audio/mpeg,audio/mp3"
+                title="Upload Sermon Audio"
+                description="Drag and drop or click to select an audio file"
+                acceptedFileTypes="audio/*"
                 maxFileSizeMB={50}
                 onUpload={handleFileUpload}
               />
               
               <div className="bg-church-blue-light/30 border border-church-blue-light rounded-lg p-4 mt-8">
-                <h4 className="font-medium text-church-neutral-800 mb-2">Recommended Audio Settings</h4>
+                <h4 className="font-medium text-church-neutral-800 mb-2">Supported Audio Formats</h4>
                 <ul className="list-disc list-inside space-y-1 text-church-neutral-700">
-                  <li>Format: MP3</li>
-                  <li>Bitrate: 128kbps minimum</li>
-                  <li>Sample Rate: 44.1kHz</li>
-                  <li>Include metadata such as sermon title, speaker, and date</li>
+                  <li>MP3 (recommended)</li>
+                  <li>WAV</li>
+                  <li>AAC</li>
+                  <li>OGG</li>
+                  <li>FLAC</li>
+                  <li>And other common audio formats</li>
                 </ul>
               </div>
             </div>

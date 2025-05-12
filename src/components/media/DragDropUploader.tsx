@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
@@ -127,12 +126,25 @@ const DragDropUploader = ({
     }
   };
   
-  const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
-    onDrop,
-    accept: acceptedFileTypes.reduce((obj: any, type) => {
+  // Handle the accept prop for useDropzone - updated to handle 'audio/*'
+  const getAcceptProp = () => {
+    // Check if we're accepting all audio files
+    if (acceptedFileTypes.includes('audio/*')) {
+      return {
+        'audio/*': []
+      };
+    }
+    
+    // Otherwise process as normal
+    return acceptedFileTypes.reduce((obj: any, type) => {
       obj[type] = [];
       return obj;
-    }, {}),
+    }, {});
+  };
+  
+  const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
+    onDrop,
+    accept: getAcceptProp(),
     maxSize: fileSizeLimit,
     multiple: false
   });

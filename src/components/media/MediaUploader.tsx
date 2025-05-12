@@ -53,8 +53,12 @@ const MediaUploader = ({
     
     // Check file type
     const fileType = file.type;
-    if (!fileType.match(acceptedFileTypes)) {
-      setError(`Invalid file type. Please upload ${acceptedFileTypes.replace('audio/', 'audio').replace('image/', 'image')} files.`);
+    const isAccepted = acceptedFileTypes === 'audio/*' 
+      ? fileType.startsWith('audio/') 
+      : acceptedFileTypes.includes(fileType);
+    
+    if (!isAccepted) {
+      setError(`Invalid file type. Please upload a supported file format.`);
       return;
     }
     
