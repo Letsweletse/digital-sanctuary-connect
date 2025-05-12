@@ -26,6 +26,7 @@ const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
     volume,
     currentSermonIndex,
     localSermons,
+    setLocalSermons, // This was missing from the destructuring
     togglePlayPause,
     handlePrevious,
     handleNext,
@@ -41,7 +42,7 @@ const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
     fetchedSermons,
     defaultSermons,
     currentSermonIndex,
-    (sermons) => localSermons.length !== sermons.length && localSermons !== sermons ? setLocalSermons(sermons) : null,
+    setLocalSermons,
     setCurrentSermonIndex
   );
   
