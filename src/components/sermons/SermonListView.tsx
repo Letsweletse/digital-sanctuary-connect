@@ -20,6 +20,9 @@ const SermonListView = ({ sermons }: SermonListViewProps) => {
     );
   }
 
+  // Debug to see what sermons are being provided to the component
+  console.log('SermonListView received sermons:', sermons);
+
   return (
     <div className="border rounded-md overflow-hidden">
       <table className="w-full text-sm">

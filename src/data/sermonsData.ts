@@ -12,7 +12,6 @@ export const sermonsData: Sermon[] = [
     youtubeId: 'PpSxcNgBOqM',
     description: 'A powerful sermon about the Holy Spirit living in us and empowering us for ministry and life.',
     tags: ['Holy Spirit', 'Power', 'Christian Living'],
-    scripture: 'Acts 1:8',
     thumbnailUrl: 'https://lovable.dev/projects/b4242310-0169-49ed-bc97-e6669ce1cf89',
     featured: true,
     duration: '42:15',
@@ -30,7 +29,6 @@ export const sermonsData: Sermon[] = [
     youtubeId: 'Rt87TZ3cP2g',
     description: 'A transformative message on how our attitude shapes our Christian walk and impacts those around us.',
     tags: ['Christian Living', 'Growth', 'Mindset'],
-    scripture: 'Philippians 2:5',
     thumbnailUrl: 'https://lovable.dev/projects/b4242310-0169-49ed-bc97-e6669ce1cf89',
     duration: '38:42',
     downloads: 0,
@@ -47,11 +45,10 @@ export const sermonsData: Sermon[] = [
     youtubeId: 'syZyhjJffmU',
     description: 'A powerful sermon the Prophetic Office In Context Of The Apostolic Seasons',
     tags: ['Prophetic', 'Restoration', 'Apostolic Season'],
-    scripture:'Ephesians 4:7',
     thumbnailUrl: 'https://lovable.dev/projects/b4242310-0169-49ed-bc97-e6669ce1cf89',
     featured: true,
     duration: '50:05',
-    downloads:0,
+    downloads: 0,
     views: 42,
     series: 'The Prophetic'
   },
@@ -65,12 +62,11 @@ export const sermonsData: Sermon[] = [
     youtubeId: 'dMf8NevhDv8',
     description: 'A continuation of the powerful teaching on the Prophetic Office in the context of Apostolic Seasons.',
     tags: ['Prophetic', 'Restoration', 'Apostolic Season'],
-    scripture:'Ephesians 4:10-16',
     thumbnailUrl: 'https://lovable.dev/projects/b4242310-0169-49ed-bc97-e6669ce1cf89',
     featured: true,
     duration: '01:32:00',
-    downloads:0,
+    downloads: 0,
     views: 15,
     series: 'The Prophetic'
   }  
- ];
+];

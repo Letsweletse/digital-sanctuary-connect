@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Sermon } from '@/types/sermonTypes';
 import { sermonsData } from '@/data/sermonsData';
@@ -22,9 +21,22 @@ export const useSermons = () => {
       // Try to load from localStorage first
       const savedSermons = localStorage.getItem('church_sermons');
       if (savedSermons) {
-        const parsedSermons = JSON.parse(savedSermons);
-        console.log('Loaded sermons from localStorage:', parsedSermons.length);
-        setSermons(parsedSermons);
+        try {
+          const parsedSermons = JSON.parse(savedSermons);
+          // Ensure dates are properly parsed from JSON
+          const processedSermons = parsedSermons.map((sermon: any) => ({
+            ...sermon,
+            date: new Date(sermon.date)
+          }));
+          console.log('Loaded sermons from localStorage:', processedSermons.length);
+          setSermons(processedSermons);
+        } catch (parseError) {
+          console.error('Error parsing sermons from localStorage:', parseError);
+          // Fall back to sample data if parsing fails
+          setSermons(sermonsData);
+          // Save correct format to localStorage
+          localStorage.setItem('church_sermons', JSON.stringify(sermonsData));
+        }
       } else {
         // Fall back to sample data if nothing in localStorage
         console.log('No sermons in localStorage, using sample data');

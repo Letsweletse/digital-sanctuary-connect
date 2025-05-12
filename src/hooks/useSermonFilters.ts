@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Sermon } from '@/types/sermonTypes';
 
 export const useSermonFilters = (sermons: Sermon[]) => {
-  const [filteredSermons, setFilteredSermons] = useState(sermons);
+  const [filteredSermons, setFilteredSermons] = useState<Sermon[]>(sermons);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('all');
   const [selectedSpeaker, setSelectedSpeaker] = useState('all');
@@ -22,12 +22,17 @@ export const useSermonFilters = (sermons: Sermon[]) => {
 
   // Get all unique years
   const allYears = Array.from(
-    new Set(sermons.map(sermon => new Date(sermon.date).getFullYear().toString()))
+    new Set(sermons.map(sermon => {
+      const date = new Date(sermon.date);
+      return date.getFullYear().toString();
+    }))
   ).sort((a, b) => b.localeCompare(a)); // Sort descending
 
   // Filter sermons based on search term and selected filters
   useEffect(() => {
-    let result = sermons;
+    console.log('useSermonFilters - Input sermons:', sermons);
+    
+    let result = [...sermons];
     
     // Filter by search term
     if (searchTerm) {
@@ -55,13 +60,20 @@ export const useSermonFilters = (sermons: Sermon[]) => {
     
     // Filter by year
     if (selectedYear !== 'all') {
-      result = result.filter(sermon => 
-        new Date(sermon.date).getFullYear().toString() === selectedYear
-      );
+      result = result.filter(sermon => {
+        const date = new Date(sermon.date);
+        return date.getFullYear().toString() === selectedYear;
+      });
     }
     
+    console.log('useSermonFilters - Filtered result:', result);
     setFilteredSermons(result);
   }, [searchTerm, selectedTopic, selectedSpeaker, selectedYear, sermons]);
+
+  // Reset filters when sermons change
+  useEffect(() => {
+    setFilteredSermons(sermons);
+  }, [sermons]);
 
   return {
     filteredSermons,
