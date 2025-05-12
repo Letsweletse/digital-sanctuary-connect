@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Sermon } from '@/types/sermonTypes';
 import { sermonsData } from '@/data/sermonsData';
@@ -26,7 +27,7 @@ export const useSermons = () => {
           // Ensure dates are properly parsed from JSON
           const processedSermons = parsedSermons.map((sermon: any) => ({
             ...sermon,
-            date: new Date(sermon.date)
+            date: sermon.date ? new Date(sermon.date) : new Date()
           }));
           console.log('Loaded sermons from localStorage:', processedSermons.length);
           setSermons(processedSermons);
@@ -58,8 +59,18 @@ export const useSermons = () => {
   useEffect(() => {
     if (sermons.length > 0 && !loading) {
       try {
-        localStorage.setItem('church_sermons', JSON.stringify(sermons));
+        // Ensure sermons are properly serialized before saving
+        const sermonsCopy = sermons.map(sermon => ({
+          ...sermon,
+          // Convert Date objects to ISO strings for proper serialization
+          date: sermon.date instanceof Date ? sermon.date.toISOString() : sermon.date,
+        }));
+        
+        localStorage.setItem('church_sermons', JSON.stringify(sermonsCopy));
         console.log('Saved sermons to localStorage:', sermons.length);
+        
+        // Trigger sermon refresh event to ensure components are updated
+        window.dispatchEvent(new Event('sermon-refresh'));
       } catch (err) {
         console.error('Error saving sermons to localStorage:', err);
       }

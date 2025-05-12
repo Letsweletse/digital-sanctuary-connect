@@ -27,9 +27,11 @@ const Sermons = () => {
     allYears
   } = useSermonFilters(sermons);
 
-  // Find Perspectives on the Apostolic sermons
+  // Find Perspectives on the Apostolic sermons - Fix: Added proper series check
   const perspectivesSermons = sermons?.filter(sermon => 
-    sermon.series === 'Perspectives on the Apostolic'
+    sermon.series === 'Perspectives on the Apostolic' || 
+    (sermon.title && sermon.title.toLowerCase().includes('perspectives on the apostolic')) ||
+    (sermon.tags && sermon.tags.some(tag => tag.toLowerCase().includes('apostolic')))
   ) || [];
 
   // Debug logs to track data flow
