@@ -6,6 +6,7 @@ import { useSermonFilters } from '@/hooks/useSermonFilters';
 import SermonHeader from '@/components/sermons/SermonHeader';
 import FilterBar from '@/components/sermons/FilterBar';
 import ViewSelector from '@/components/sermons/ViewSelector';
+import CollapsibleSermonSection from '@/components/sermons/CollapsibleSermonSection';
 
 const Sermons = () => {
   const { sermons, loading, error } = useSermons();
@@ -26,16 +27,22 @@ const Sermons = () => {
     allYears
   } = useSermonFilters(sermons);
 
+  // Find Perspectives on the Apostolic sermons
+  const perspectivesSermons = sermons?.filter(sermon => 
+    sermon.series === 'Perspectives on the Apostolic'
+  ) || [];
+
   // Debug logs to track data flow
   useEffect(() => {
     console.log('Sermons page - Loaded sermons:', sermons?.length || 0);
     console.log('Sermons page - Filtered sermons:', filteredSermons?.length || 0);
+    console.log('Perspectives sermons found:', perspectivesSermons.length);
     if (sermons?.length > 0) {
       console.log('Sermons page - Sample sermon:', sermons[0]);
     }
     console.log('Sermons page - Loading state:', loading);
     if (error) console.error('Sermons page - Error:', error);
-  }, [sermons, filteredSermons, loading, error]);
+  }, [sermons, filteredSermons, perspectivesSermons, loading, error]);
 
   return (
     <Layout>
@@ -58,6 +65,18 @@ const Sermons = () => {
             <>
               {/* Page Header */}
               <SermonHeader totalSermons={filteredSermons.length} />
+              
+              {/* Featured Sermon Series Section */}
+              {perspectivesSermons.length > 0 && (
+                <div className="mb-8">
+                  <h2 className="text-xl font-bold text-church-neutral-900 mb-4">Featured Series</h2>
+                  <CollapsibleSermonSection 
+                    title="Perspectives on the Apostolic with Thamo Naidoo" 
+                    sermons={perspectivesSermons}
+                    image="https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg"
+                  />
+                </div>
+              )}
               
               {/* Search & Filters */}
               <FilterBar

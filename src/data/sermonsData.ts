@@ -68,5 +68,51 @@ export const sermonsData: Sermon[] = [
     downloads: 0,
     views: 15,
     series: 'The Prophetic'
-  }  
+  },
+  // New Perspectives on the Apostolic sermons
+  {
+    id: '20',
+    title: 'Perspectives on the Apostolic - Session 1',
+    speaker: 'Thamo Naidoo',
+    speakerImage: '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png',
+    date: new Date('2025-04-20'),
+    audioUrl: 'https://cdn.devdojo.com/episode/June2023/the-making-of-wave.mp3',
+    description: 'An introduction to Apostolic perspectives and foundations for the church today.',
+    tags: ['Apostolic', 'Church', 'Kingdom'],
+    thumbnailUrl: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg',
+    duration: '45:30',
+    downloads: 0,
+    views: 0,
+    series: 'Perspectives on the Apostolic'
+  },
+  {
+    id: '21',
+    title: 'Perspectives on the Apostolic - Session 2',
+    speaker: 'Thamo Naidoo',
+    speakerImage: '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png',
+    date: new Date('2025-04-21'),
+    audioUrl: 'https://cdn.devdojo.com/episode/June2023/how-to-build-a-successful-team.mp3',
+    description: 'Exploring the role of apostolic ministry in building authentic New Testament churches.',
+    tags: ['Apostolic', 'Church', 'Kingdom'],
+    thumbnailUrl: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg',
+    duration: '52:15',
+    downloads: 0,
+    views: 0,
+    series: 'Perspectives on the Apostolic'
+  },
+  {
+    id: '22',
+    title: 'Perspectives on the Apostolic - Session 3',
+    speaker: 'Thamo Naidoo',
+    speakerImage: '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png',
+    date: new Date('2025-04-22'),
+    audioUrl: 'https://cdn.devdojo.com/episode/May2023/wave-update-saas-starter-kit.mp3',
+    description: 'Understanding the apostolic mandate for contemporary church expressions.',
+    tags: ['Apostolic', 'Church', 'Kingdom'],
+    thumbnailUrl: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg',
+    duration: '48:40',
+    downloads: 0,
+    views: 0,
+    series: 'Perspectives on the Apostolic'
+  }
 ];
