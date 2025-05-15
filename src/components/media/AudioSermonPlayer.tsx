@@ -11,6 +11,7 @@ import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import { useSermonRefresh } from '@/hooks/useSermonRefresh';
 import { defaultSermons } from './constants/defaultSermons';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { isValidAudioUrl } from './utils/audioUrlUtils';
 
 interface AudioSermonPlayerProps {
   customSermons?: Sermon[];
@@ -77,6 +78,9 @@ const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
     }
   }, [currentSermon?.audioUrl]);
   
+  // Check if the current sermon has a valid audio URL
+  const hasValidAudio = currentSermon?.audioUrl && isValidAudioUrl(currentSermon.audioUrl);
+  
   // Trigger manual refresh
   const handleManualRefresh = () => {
     refreshSermons();
@@ -124,11 +128,11 @@ const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
       ) : null}
       
       {/* Error alert for invalid audio URLs */}
-      {currentSermon && !currentSermon.audioUrl && (
+      {currentSermon && !hasValidAudio && (
         <Alert variant="destructive" className="mb-4">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            This sermon doesn't have an audio file. Please select another sermon or add audio to this one.
+            This sermon doesn't have a valid audio file. Please select another sermon or add proper audio to this one.
           </AlertDescription>
         </Alert>
       )}

@@ -6,11 +6,22 @@ export const useAudioValidation = () => {
   
   // Check if URL is a valid audio URL
   const isValidAudioUrl = (url: string): boolean => {
-    // Check if it's a Supabase URL or a blob URL
+    if (!url) return false;
+    
+    // Check if it's a Supabase URL or a blob URL or other common audio hosting URLs
     return (
-      (url.startsWith('https://') && url.includes('storage.googleapis.com')) || 
+      (url.startsWith('https://') && 
+        (url.includes('storage.googleapis.com') || 
+         url.includes('lojchdvtwypjqupsjynf.supabase.co/storage/') || 
+         url.includes('cdn.devdojo.com') ||
+         url.includes('sermonaudio.com') ||
+         url.includes('buzzsprout.com') ||
+         url.includes('soundcloud.com'))) || 
       url.startsWith('blob:') || 
-      url.startsWith('https://lojchdvtwypjqupsjynf.supabase.co/storage/')
+      url.endsWith('.mp3') ||
+      url.endsWith('.wav') ||
+      url.endsWith('.ogg') ||
+      url.endsWith('.m4a')
     );
   };
   

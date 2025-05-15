@@ -5,6 +5,7 @@ import { Calendar, User, Download, Play } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Sermon } from '@/types/sermonTypes';
+import { getDefaultSermonImage } from '../media/utils/audioUrlUtils';
 
 interface SermonGridViewProps {
   sermons: Sermon[];
@@ -20,9 +21,6 @@ const SermonGridView = ({ sermons }: SermonGridViewProps) => {
     );
   }
 
-  // Default sermon image
-  const defaultSermonImage = "https://lovable.dev/projects/b4242310-0169-49ed-bc97-e6669ce1cf89";
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {sermons.map((sermon) => (
@@ -34,7 +32,7 @@ const SermonGridView = ({ sermons }: SermonGridViewProps) => {
         >
           <div className="relative h-48 bg-church-neutral-100">
             <img 
-              src={defaultSermonImage}
+              src={sermon.thumbnailUrl || getDefaultSermonImage(sermon)}
               alt={sermon.title}
               className="w-full h-full object-cover"
               itemProp="thumbnailUrl"

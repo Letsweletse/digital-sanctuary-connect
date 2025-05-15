@@ -33,7 +33,7 @@ export const useAudioPlayback = (audioRef: RefObject<HTMLAudioElement>) => {
                 console.error("Play error:", error);
                 toast({
                   title: "Playback Error",
-                  description: "Unable to play sermon. Please try refreshing.",
+                  description: "Unable to play sermon. Please try refreshing or check audio format.",
                   variant: "destructive",
                 });
                 setIsPlaying(false);
