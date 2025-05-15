@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -199,7 +198,7 @@ const SermonAudioManager = () => {
       setIsUploading(true);
       setUploadProgress(0);
       
-      // Simulate progress updates
+      // Initialize progress interval
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
           const next = prev + 5;
@@ -273,7 +272,10 @@ const SermonAudioManager = () => {
         }, 1000);
       }
     } catch (error: any) {
-      clearInterval(progressInterval);
+      // Make sure to clear the interval if an error occurs
+      if (typeof progressInterval !== 'undefined') {
+        clearInterval(progressInterval);
+      }
       console.error("Upload error:", error);
       toast({
         title: "Upload failed",
