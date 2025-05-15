@@ -39,7 +39,8 @@ const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
     handleTimeChange,
     handleVolumeChange,
     toggleMute,
-    setCurrentSermonIndex
+    setCurrentSermonIndex,
+    handleAudioEnded
   } = useAudioPlayer(customSermons || fetchedSermons, defaultSermons);
   
   // Handle sermon refresh events and mobile state
