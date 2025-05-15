@@ -24,6 +24,7 @@ export const isValidAudioUrl = (url: string | null | undefined): boolean => {
 
 /**
  * Get default sermon image based on sermon or speaker name
+ * This function is kept for backward compatibility
  */
 export const getDefaultSermonImage = (sermon?: { title?: string, speaker?: string, series?: string }): string => {
   // Default church logo

@@ -5,6 +5,7 @@ import { Edit2, Trash2, User, CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Sermon } from '@/types/sermonTypes';
+import { useLogo } from '@/components/layout/LogoContext';
 
 interface SermonItemProps {
   sermon: Sermon;
@@ -13,11 +14,16 @@ interface SermonItemProps {
 }
 
 const SermonItem = ({ sermon, onEdit, onDelete }: SermonItemProps) => {
+  const { logoUrl } = useLogo();
+
   return (
     <div className="glass-panel bg-white p-4 rounded-lg shadow-sm border border-church-neutral-100 hover:border-church-neutral-200 transition-all">
       <div className="flex flex-col sm:flex-row items-start gap-4">
         <Avatar className="h-16 w-16 rounded-md shadow-sm flex-shrink-0">
-          <AvatarImage src={sermon.speakerImage} alt={sermon.speaker} />
+          <AvatarImage 
+            src={sermon.speakerImage || logoUrl || '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png'} 
+            alt={sermon.speaker} 
+          />
           <AvatarFallback className="rounded-md">{sermon.speaker?.charAt(0) || 'S'}</AvatarFallback>
         </Avatar>
         

@@ -7,13 +7,15 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { Sermon } from '@/types/sermonTypes';
 import { isValidAudioUrl } from '@/components/media/utils/audioUrlUtils';
-import { getDefaultSermonImage } from '@/components/media/utils/audioUrlUtils';
+import { useLogo } from '@/components/layout/LogoContext';
 
 interface SermonListViewProps {
   sermons: Sermon[];
 }
 
 const SermonListView = ({ sermons }: SermonListViewProps) => {
+  const { logoUrl } = useLogo();
+
   if (sermons.length === 0) {
     return (
       <div className="text-center py-10 bg-church-neutral-50 rounded-lg">
@@ -31,13 +33,15 @@ const SermonListView = ({ sermons }: SermonListViewProps) => {
           className="border border-church-neutral-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-all duration-300"
         >
           <div className="p-4 flex flex-col sm:flex-row items-start gap-4">
-            {/* Speaker Image */}
+            {/* Speaker Image - Using Church Logo as Fallback */}
             <Avatar className="h-16 w-16 rounded-md shadow-sm flex-shrink-0">
               <AvatarImage 
-                src={sermon.speakerImage || getDefaultSermonImage(sermon)} 
+                src={sermon.speakerImage || logoUrl || '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png'} 
                 alt={sermon.speaker} 
               />
-              <AvatarFallback className="rounded-md">{sermon.speaker?.charAt(0) || 'S'}</AvatarFallback>
+              <AvatarFallback className="rounded-md">
+                {sermon.speaker?.charAt(0) || 'S'}
+              </AvatarFallback>
             </Avatar>
             
             <div className="flex-1">
