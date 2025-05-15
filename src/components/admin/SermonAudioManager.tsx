@@ -194,12 +194,14 @@ const SermonAudioManager = () => {
       return;
     }
     
+    let progressInterval: ReturnType<typeof setInterval> | undefined;
+    
     try {
       setIsUploading(true);
       setUploadProgress(0);
       
       // Initialize progress interval
-      const progressInterval = setInterval(() => {
+      progressInterval = setInterval(() => {
         setUploadProgress(prev => {
           const next = prev + 5;
           return next > 95 ? 95 : next;
@@ -232,7 +234,9 @@ const SermonAudioManager = () => {
             if (deleteError) throw deleteError;
           }
           
-          clearInterval(progressInterval);
+          if (progressInterval) {
+            clearInterval(progressInterval);
+          }
           setUploadProgress(100);
           
           toast({
@@ -257,7 +261,9 @@ const SermonAudioManager = () => {
           
         if (error) throw error;
         
-        clearInterval(progressInterval);
+        if (progressInterval) {
+          clearInterval(progressInterval);
+        }
         setUploadProgress(100);
         
         toast({
@@ -273,7 +279,7 @@ const SermonAudioManager = () => {
       }
     } catch (error: any) {
       // Make sure to clear the interval if an error occurs
-      if (typeof progressInterval !== 'undefined') {
+      if (progressInterval) {
         clearInterval(progressInterval);
       }
       console.error("Upload error:", error);
