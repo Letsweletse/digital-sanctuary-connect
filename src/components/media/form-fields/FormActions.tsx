@@ -7,9 +7,10 @@ interface FormActionsProps {
   onCancel: () => void;
   isEditing?: boolean;
   isSubmitting?: boolean;
+  disableSubmit?: boolean;
 }
 
-const FormActions = ({ onCancel, isEditing = false, isSubmitting = false }: FormActionsProps) => {
+const FormActions = ({ onCancel, isEditing = false, isSubmitting = false, disableSubmit = false }: FormActionsProps) => {
   return (
     <div className="flex items-center justify-end space-x-4 mt-8">
       <Button 
@@ -24,7 +25,7 @@ const FormActions = ({ onCancel, isEditing = false, isSubmitting = false }: Form
       
       <Button 
         type="submit"
-        disabled={isSubmitting}
+        disabled={isSubmitting || disableSubmit}
         className="bg-[#e6c98f] hover:bg-[#d4b87e] text-[#24324b]"
       >
         <CheckCircle className="mr-1 h-4 w-4" />

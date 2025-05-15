@@ -5,9 +5,11 @@ import { Sermon } from '@/types/sermonTypes';
 import { ImageCategory } from '@/types/imageTypes';
 import { useSpeakerImageUpload } from './useSpeakerImageUpload';
 import { useSermonAudioUpload } from './useSermonAudioUpload';
+import { useLogo } from '@/components/layout/LogoContext';
 
 export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 'id'>) => void) => {
   const { toast } = useToast();
+  const { logoUrl } = useLogo();
   
   // Use the specialized hooks
   const {
@@ -86,8 +88,20 @@ export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 
       }
       
       // Use the current logo as fallback for speaker image
-      const { logoUrl } = window.__CHURCH_LOGO || { logoUrl: '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png' };
-      const finalSpeakerImage = speakerImageUrl || logoUrl || '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
+      const defaultLogoUrl = logoUrl || '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
+      const finalSpeakerImage = speakerImageUrl || defaultLogoUrl;
+      
+      // Get audio duration if available
+      let audioDuration = '00:00';
+      if (audioFile && 'duration' in audioFile) {
+        // Cast to any to access custom property
+        const durationSeconds = (audioFile as any).duration;
+        if (durationSeconds) {
+          const minutes = Math.floor(durationSeconds / 60);
+          const seconds = Math.floor(durationSeconds % 60);
+          audioDuration = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+      }
       
       const formData = {
         title,
@@ -100,7 +114,7 @@ export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 
         tags: formattedTags,
         series,
         thumbnailUrl: finalSpeakerImage,
-        duration: audioFile?.duration || '00:00', 
+        duration: audioDuration, 
       };
       
       console.log('Submitting sermon data:', formData);
