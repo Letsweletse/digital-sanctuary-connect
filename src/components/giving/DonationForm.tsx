@@ -4,17 +4,25 @@ import { CreditCard, Info } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import EventQRCode from '@/components/events/EventQRCode';
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-export type DonationFormValues = {
-  givingType: string;
-  amount: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-}
+// Create a schema for form validation
+const donationFormSchema = z.object({
+  givingType: z.string().min(1, { message: "Please select a giving option" }),
+  amount: z.string().min(1, { message: "Amount is required" })
+    .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
+      message: "Please enter a valid amount greater than 0",
+    }),
+  firstName: z.string().min(1, { message: "First name is required" }),
+  lastName: z.string().min(1, { message: "Last name is required" }),
+  email: z.string().min(1, { message: "Email is required" }).email({ message: "Please enter a valid email address" }),
+});
+
+export type DonationFormValues = z.infer<typeof donationFormSchema>;
 
 type DonationFormProps = {
   onSubmit: (data: DonationFormValues) => void;
@@ -22,6 +30,7 @@ type DonationFormProps = {
 
 const DonationForm: React.FC<DonationFormProps> = ({ onSubmit }) => {
   const form = useForm<DonationFormValues>({
+    resolver: zodResolver(donationFormSchema),
     defaultValues: {
       givingType: "tithes",
       amount: "",
@@ -59,6 +68,7 @@ const DonationForm: React.FC<DonationFormProps> = ({ onSubmit }) => {
                     <SelectItem value="general-donation">General Donation</SelectItem>
                   </SelectContent>
                 </Select>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -80,11 +90,12 @@ const DonationForm: React.FC<DonationFormProps> = ({ onSubmit }) => {
                       placeholder="0.00"
                       type="number"
                       min="1"
+                      step="0.01"
                       className="pl-8"
-                      required
                     />
                   </div>
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -99,8 +110,9 @@ const DonationForm: React.FC<DonationFormProps> = ({ onSubmit }) => {
                 <FormItem className="mb-4">
                   <FormLabel>First name *</FormLabel>
                   <FormControl>
-                    <Input {...field} required placeholder="First name" />
+                    <Input {...field} placeholder="First name" />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -112,8 +124,9 @@ const DonationForm: React.FC<DonationFormProps> = ({ onSubmit }) => {
                 <FormItem className="mb-4">
                   <FormLabel>Last name *</FormLabel>
                   <FormControl>
-                    <Input {...field} required placeholder="Last name" />
+                    <Input {...field} placeholder="Last name" />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -125,8 +138,9 @@ const DonationForm: React.FC<DonationFormProps> = ({ onSubmit }) => {
                 <FormItem>
                   <FormLabel>Email *</FormLabel>
                   <FormControl>
-                    <Input {...field} type="email" required placeholder="email@example.com" />
+                    <Input {...field} type="email" placeholder="email@example.com" />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
