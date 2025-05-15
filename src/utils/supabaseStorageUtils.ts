@@ -60,12 +60,17 @@ export const ensureBucketExists = async (
  */
 export const setupPublicAccessPolicy = async (bucketName: string): Promise<void> => {
   try {
-    // Allow anyone to read files (download)
-    const { error: readError } = await supabase.storage.from(bucketName).setPublic();
+    // Update the bucket to make it public
+    const { error: updateError } = await supabase.storage.updateBucket(bucketName, {
+      public: true
+    });
     
-    if (readError) {
-      console.error(`Error setting public read policy:`, readError);
+    if (updateError) {
+      console.error(`Error setting bucket to public:`, updateError);
+      throw updateError;
     }
+    
+    console.log(`Public access policy set for ${bucketName}`);
   } catch (err) {
     console.error(`Error setting up bucket policies:`, err);
     throw err;
