@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Music, Trash2, Loader2, AlertCircle, CheckCircle, Download } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Music, Trash2, Loader2, AlertCircle, CheckCircle, Download, Play, Pause } from 'lucide-react';
 import DragDropUploader from '../DragDropUploader';
 import { ImageCategory } from '@/types/imageTypes';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -15,6 +16,7 @@ interface SermonAudioUploadProps {
   audioUrl: string | null;
   setAudioUrl: (url: string | null) => void;
   isUploading?: boolean;
+  uploadProgress?: number;
 }
 
 const SermonAudioUpload = ({
@@ -23,11 +25,40 @@ const SermonAudioUpload = ({
   handleAudioUpload,
   audioUrl,
   setAudioUrl,
-  isUploading = false
+  isUploading = false,
+  uploadProgress = 0
 }: SermonAudioUploadProps) => {
   const { toast } = useToast();
   const [isAudioTestable, setIsAudioTestable] = useState<boolean>(false);
   const [isTestingAudio, setIsTestingAudio] = useState<boolean>(false);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [audioError, setAudioError] = useState<string | null>(null);
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
+
+  // Check if audio exists after component mount
+  useEffect(() => {
+    if (audioUrl) {
+      validateAudioUrl(audioUrl);
+    }
+  }, [audioUrl]);
+
+  // Validate audio URL
+  const validateAudioUrl = async (url: string) => {
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      if (response.ok) {
+        setIsAudioTestable(true);
+        setAudioError(null);
+      } else {
+        setIsAudioTestable(false);
+        setAudioError(`Audio file not accessible (Status: ${response.status})`);
+      }
+    } catch (err) {
+      console.error('Error validating audio URL:', err);
+      setIsAudioTestable(false);
+      setAudioError('Unable to validate audio file');
+    }
+  };
 
   // Function to test if audio can be played
   const testAudioPlayback = async (url: string) => {
@@ -39,11 +70,16 @@ const SermonAudioUpload = ({
       await new Promise<void>((resolve, reject) => {
         audio.oncanplaythrough = () => {
           setIsAudioTestable(true);
+          setAudioError(null);
           resolve();
         };
-        audio.onerror = () => reject(new Error('Audio cannot be played'));
+        audio.onerror = (e) => {
+          console.error('Audio test error:', e);
+          setAudioError('Audio cannot be played');
+          reject(new Error('Audio cannot be played'));
+        };
         // Set timeout in case it hangs
-        setTimeout(() => reject(new Error('Audio load timeout')), 5000);
+        setTimeout(() => reject(new Error('Audio load timeout')), 10000);
       });
       
       toast({
@@ -62,6 +98,37 @@ const SermonAudioUpload = ({
     } finally {
       setIsTestingAudio(false);
     }
+  };
+
+  // Play/pause control
+  const togglePlayPause = () => {
+    if (!audioRef.current || !audioUrl) return;
+    
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      const playPromise = audioRef.current.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          setIsPlaying(true);
+        }).catch(err => {
+          console.error('Error playing audio:', err);
+          setAudioError('Unable to play audio file');
+          toast({
+            title: "Playback Error",
+            description: "There was a problem playing the audio file.",
+            variant: "destructive",
+          });
+        });
+      }
+    }
+  };
+
+  // Audio ended handler
+  const handleAudioEnded = () => {
+    setIsPlaying(false);
   };
 
   // Handle downloading the audio file
@@ -97,27 +164,64 @@ const SermonAudioUpload = ({
   return (
     <div>
       <Label className="block mb-2">Sermon Audio File (All Audio Formats)</Label>
-      {(audioFile || audioUrl) && (
-        <div className="mb-4 p-3 bg-church-neutral-50 rounded-md">
-          <div className="flex items-center justify-between mb-2">
+      
+      {/* Hidden audio element for playback */}
+      <audio 
+        ref={audioRef} 
+        src={audioUrl || undefined} 
+        onEnded={handleAudioEnded} 
+        onError={() => setAudioError('Audio playback error')} 
+      />
+      
+      {isUploading && (
+        <div className="mb-6 p-4 bg-church-neutral-50 rounded-md border border-church-neutral-200">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-medium text-sm">Uploading {audioFile?.name}</h4>
+            <span className="text-sm text-church-blue">{uploadProgress}%</span>
+          </div>
+          <Progress value={uploadProgress} className="h-2" />
+          <p className="text-xs text-church-neutral-500 mt-2">
+            Please wait while your audio file is being uploaded to the server...
+          </p>
+        </div>
+      )}
+      
+      {(audioFile || audioUrl) && !isUploading && (
+        <div className="mb-4 p-4 bg-church-neutral-50 rounded-md border border-church-neutral-200">
+          <div className="flex items-center justify-between mb-3">
             <div className="flex items-center">
-              <Music className="h-5 w-5 text-church-blue mr-2" />
+              <Music className="h-5 w-5 text-church-blue mr-2 flex-shrink-0" />
               <span className="text-sm font-medium truncate max-w-[200px]">
                 {getFileDisplayName()}
               </span>
             </div>
             <div className="flex gap-2">
-              {audioUrl && (
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  size="sm"
-                  onClick={handleDownload}
-                  className="flex items-center gap-1"
-                >
-                  <Download className="h-4 w-4" />
-                  <span className="hidden sm:inline">Download</span>
-                </Button>
+              {audioUrl && !audioError && (
+                <>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm"
+                    onClick={togglePlayPause}
+                    className="flex items-center gap-1"
+                  >
+                    {isPlaying ? (
+                      <><Pause className="h-4 w-4" /> Pause</>
+                    ) : (
+                      <><Play className="h-4 w-4" /> Play</>
+                    )}
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm"
+                    onClick={handleDownload}
+                    className="flex items-center gap-1"
+                  >
+                    <Download className="h-4 w-4" />
+                    <span className="hidden sm:inline">Download</span>
+                  </Button>
+                </>
               )}
               <Button 
                 type="button" 
@@ -127,15 +231,25 @@ const SermonAudioUpload = ({
                 onClick={() => {
                   setAudioFile(null);
                   setAudioUrl(null);
+                  setAudioError(null);
                 }}
+                className="text-church-neutral-700 hover:text-red-500"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>
           </div>
           
+          {/* Audio error message */}
+          {audioError && (
+            <Alert variant="destructive" className="mb-3 py-2">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="text-xs">{audioError}</AlertDescription>
+            </Alert>
+          )}
+          
           {/* Audio preview */}
-          {audioUrl && (
+          {audioUrl && !audioError && (
             <div className="bg-white p-2 rounded-md border border-church-neutral-200">
               <audio 
                 className="w-full" 
@@ -143,6 +257,7 @@ const SermonAudioUpload = ({
                 controls
                 onError={(e) => {
                   console.error('Audio playback error:', e);
+                  setAudioError('Audio preview failed to load');
                 }} 
               />
             </div>
@@ -150,24 +265,16 @@ const SermonAudioUpload = ({
         </div>
       )}
       
-      {isUploading ? (
-        <div className="flex items-center justify-center p-6 bg-church-neutral-50 rounded-md border border-dashed border-church-neutral-300">
-          <div className="flex flex-col items-center">
-            <Loader2 className="h-6 w-6 text-church-blue mb-2 animate-spin" />
-            <span className="text-sm font-medium">Uploading audio file...</span>
-            <p className="text-xs text-church-neutral-500 mt-1">This may take a minute for larger files</p>
-          </div>
-        </div>
-      ) : (
+      {!isUploading && !audioUrl && !audioFile && (
         <DragDropUploader 
           onFileAccepted={handleAudioUpload}
           category="sermons"
           acceptedFileTypes={['audio/*']} 
-          maxSize={100 * 1024 * 1024} // 100MB limit
+          maxSize={500 * 1024 * 1024} // 500MB limit
         />
       )}
       
-      {audioUrl && (
+      {audioUrl && !isUploading && !audioError && (
         <div className="mt-4 p-4 rounded-md bg-green-50 border border-green-100">
           <div className="flex items-center gap-2 mb-2 text-green-700">
             <CheckCircle className="h-5 w-5" />

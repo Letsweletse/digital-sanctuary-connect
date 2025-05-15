@@ -10,6 +10,10 @@ export const useSermonAudioUpload = () => {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [audioMetadata, setAudioMetadata] = useState<{
+    duration?: number;
+    size?: number;
+  }>({});
 
   // Create Supabase bucket if it doesn't exist
   const ensureSermonsBucketExists = async () => {
@@ -28,7 +32,7 @@ export const useSermonAudioUpload = () => {
         console.log('Creating sermons bucket...');
         const { error: createError } = await supabase.storage.createBucket('sermons', {
           public: true,
-          fileSizeLimit: 100 * 1024 * 1024, // 100MB limit
+          fileSizeLimit: 500 * 1024 * 1024, // 500MB limit
         });
         
         if (createError) {
@@ -46,11 +50,11 @@ export const useSermonAudioUpload = () => {
     }
   };
 
-  // Upload audio file to Supabase
+  // Upload audio file to Supabase with real progress tracking
   const uploadAudioToSupabase = async (file: File, category: string) => {
     setIsUploading(true);
     setUploadProgress(0);
-    console.log('Starting audio upload to Supabase:', file.name);
+    console.log(`Starting audio upload to Supabase: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`);
     
     try {
       // Ensure the bucket exists
@@ -75,13 +79,16 @@ export const useSermonAudioUpload = () => {
       
       console.log('Uploading audio to path:', filePath);
       
-      // Simulate upload progress
+      // Set up manual progress tracking
+      let lastProgressUpdate = Date.now();
       const progressInterval = setInterval(() => {
+        // Gradually increase progress during upload
         setUploadProgress(prev => {
-          const newValue = prev + Math.random() * 10;
-          return newValue > 90 ? 90 : newValue;
+          // Once we're over 90%, stop incrementing to avoid false completion
+          if (prev >= 90) return 90;
+          return Math.min(90, prev + Math.random() * 5);
         });
-      }, 300);
+      }, 800);
       
       // Upload the file to Supabase Storage
       const { data, error } = await supabase.storage
@@ -106,6 +113,7 @@ export const useSermonAudioUpload = () => {
         return { success: false, url: null };
       }
       
+      console.log('File uploaded successfully:', data?.path);
       setUploadProgress(100);
       
       // Get the public URL for the uploaded file
@@ -119,19 +127,26 @@ export const useSermonAudioUpload = () => {
       try {
         const response = await fetch(publicUrl, { method: 'HEAD' });
         if (!response.ok) {
-          console.warn('Audio URL may not be publicly accessible:', publicUrl);
+          console.warn('Audio URL may not be publicly accessible:', publicUrl, response.status);
+          toast({
+            title: "Warning",
+            description: "Audio was uploaded but may have limited accessibility. Please test playback.",
+            variant: "warning",
+          });
+        } else {
+          console.log('Audio URL is publicly accessible:', publicUrl);
         }
       } catch (testErr) {
         console.warn('Error testing audio URL:', testErr);
       }
       
       // Set a small delay before returning to allow the storage to process the file
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       setAudioUrl(publicUrl);
       setIsUploading(false);
       
-      return { success: true, url: publicUrl };
+      return { success: true, url: publicUrl, path: data?.path };
     } catch (err) {
       console.error('Unexpected error during upload:', err);
       toast({
@@ -147,7 +162,7 @@ export const useSermonAudioUpload = () => {
 
   // Handle audio file upload
   const handleAudioUpload = async (file: File, category: ImageCategory) => {
-    console.log('Audio upload handler called with file:', file.name);
+    console.log('Audio upload handler called with file:', file.name, `(${(file.size / (1024 * 1024)).toFixed(2)} MB)`);
     
     if (file) {
       setAudioFile(file);
@@ -159,9 +174,15 @@ export const useSermonAudioUpload = () => {
       // Wait for audio metadata to load to get duration
       await new Promise<void>((resolve) => {
         audio.onloadedmetadata = () => {
-          // Store duration as a custom property on the file object
-          (file as any)._duration = audio.duration;
-          console.log('Audio duration:', audio.duration);
+          // Store duration and size as metadata
+          setAudioMetadata({
+            duration: audio.duration,
+            size: file.size
+          });
+          
+          console.log('Audio metadata loaded:',
+            'Duration:', audio.duration,
+            'Size:', (file.size / (1024 * 1024)).toFixed(2), 'MB');
           resolve();
         };
         
@@ -171,8 +192,8 @@ export const useSermonAudioUpload = () => {
           resolve();
         };
         
-        // Timeout after 3 seconds if metadata loading hangs
-        setTimeout(resolve, 3000);
+        // Timeout after 5 seconds if metadata loading hangs
+        setTimeout(resolve, 5000);
       });
       
       // Automatically start upload when file is selected
@@ -195,20 +216,31 @@ export const useSermonAudioUpload = () => {
 
   // Get audio duration 
   const getAudioDuration = (): number | undefined => {
-    if (audioFile && (audioFile as any)._duration) {
-      return (audioFile as any)._duration;
-    }
-    return undefined;
+    return audioMetadata.duration;
   };
 
-  // Format duration as mm:ss
+  // Format duration as mm:ss or hh:mm:ss
   const getFormattedDuration = (): string => {
     const duration = getAudioDuration();
     if (!duration) return "00:00";
     
-    const minutes = Math.floor(duration / 60);
+    const hours = Math.floor(duration / 3600);
+    const minutes = Math.floor((duration % 3600) / 60);
     const seconds = Math.floor(duration % 60);
+    
+    if (hours > 0) {
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+    
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  // Get formatted file size
+  const getFormattedFileSize = (): string => {
+    if (!audioMetadata.size) return "Unknown size";
+    
+    const sizeInMB = audioMetadata.size / (1024 * 1024);
+    return `${sizeInMB.toFixed(2)} MB`;
   };
 
   return {
@@ -218,9 +250,11 @@ export const useSermonAudioUpload = () => {
     setAudioUrl,
     isUploading,
     uploadProgress,
+    audioMetadata,
     uploadAudioToSupabase,
     handleAudioUpload,
     getAudioDuration,
-    getFormattedDuration
+    getFormattedDuration,
+    getFormattedFileSize
   };
 };

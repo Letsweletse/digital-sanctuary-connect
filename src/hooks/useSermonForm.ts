@@ -27,9 +27,12 @@ export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 
     audioUrl,
     setAudioUrl,
     isUploading,
+    uploadProgress,
+    audioMetadata,
     uploadAudioToSupabase,
     handleAudioUpload,
-    getFormattedDuration
+    getFormattedDuration,
+    getFormattedFileSize
   } = useSermonAudioUpload();
   
   // Form state
@@ -88,6 +91,23 @@ export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 
         }
       }
       
+      // Verify audio URL is accessible
+      if (finalAudioUrl) {
+        try {
+          const response = await fetch(finalAudioUrl, { method: 'HEAD' });
+          if (!response.ok) {
+            console.warn('Warning: Audio URL may not be publicly accessible:', response.status);
+            toast({
+              title: "Audio Warning",
+              description: "Audio URL might have limited accessibility. Audio playback might be affected.",
+              variant: "warning",
+            });
+          }
+        } catch (err) {
+          console.warn('Error checking audio URL:', err);
+        }
+      }
+      
       // Use the current logo as fallback for speaker image
       const defaultLogoUrl = logoUrl || '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
       const finalSpeakerImage = speakerImageUrl || defaultLogoUrl;
@@ -107,6 +127,7 @@ export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 
         series,
         thumbnailUrl: finalSpeakerImage,
         duration: audioDuration, 
+        fileSize: audioFile ? getFormattedFileSize() : undefined,
       };
       
       console.log('Submitting sermon data:', formData);
@@ -146,6 +167,7 @@ export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 
     setSpeakerImage,
     isSubmitting,
     isUploading,
+    uploadProgress,
     series,
     setSeries,
     handleSubmit,

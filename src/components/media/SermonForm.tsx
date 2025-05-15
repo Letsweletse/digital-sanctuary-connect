@@ -36,6 +36,7 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
     setAudioUrl,
     isSubmitting,
     isUploading,
+    uploadProgress,
     series,
     setSeries,
     speakerImage,
@@ -87,6 +88,7 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
             audioUrl={audioUrl}
             setAudioUrl={setAudioUrl}
             isUploading={isUploading}
+            uploadProgress={uploadProgress}
           />
         </div>
         

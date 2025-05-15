@@ -66,6 +66,20 @@ const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
       // Reset audio element when source changes
       audioRef.current.load();
       
+      // Test if the audio URL is accessible
+      const checkAudioUrl = async () => {
+        try {
+          const response = await fetch(currentSermon.audioUrl, { method: 'HEAD' });
+          if (!response.ok) {
+            console.error('Audio URL is not accessible:', currentSermon.audioUrl, response.status);
+          }
+        } catch (err) {
+          console.error('Error checking audio URL:', err);
+        }
+      };
+      
+      checkAudioUrl();
+      
       // Handle errors
       const handleError = (e: any) => {
         console.error('Audio playback error:', e);
