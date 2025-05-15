@@ -7,12 +7,13 @@ interface SermonHeaderProps {
 
 const SermonHeader = ({ totalSermons }: SermonHeaderProps) => {
   return (
-    <div className="mb-8 text-center">
-      <h2 className="text-2xl font-bold text-blue-800 mb-2">
-        🎧 Past Sermons
-      </h2>
-      <p className="text-church-neutral-600">
-        Explore our collection of {totalSermons} sermons to grow in your faith journey
+    <div className="max-w-4xl mx-auto mb-10">
+      <h1 className="text-3xl md:text-4xl font-bold text-church-neutral-900 mb-4 font-serif text-center">
+        Sermon Library
+      </h1>
+      <p className="text-lg text-church-neutral-700 text-center mb-8 max-w-2xl mx-auto">
+        Browse our collection of sermons that bring biblical truth to life. 
+        Search by speaker, topic, or scripture reference.
       </p>
     </div>
   );

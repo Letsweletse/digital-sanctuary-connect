@@ -29,7 +29,7 @@ const SermonGridView = ({ sermons }: SermonGridViewProps) => {
       {sermons.map((sermon) => (
         <div 
           key={sermon.id} 
-          className="border border-gray-200 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 bg-white"
+          className="border border-church-neutral-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 bg-white"
           itemScope 
           itemType="https://schema.org/AudioObject"
         >
@@ -45,7 +45,7 @@ const SermonGridView = ({ sermons }: SermonGridViewProps) => {
             
             {sermon.tags && sermon.tags.length > 0 && (
               <div className="absolute top-3 right-3">
-                <Badge className="bg-blue-600 text-white">
+                <Badge className="bg-church-gold text-church-neutral-900">
                   {sermon.tags[0]}
                 </Badge>
               </div>
@@ -80,12 +80,14 @@ const SermonGridView = ({ sermons }: SermonGridViewProps) => {
               </p>
             )}
             
-            <div className="flex justify-between items-center pt-2 border-t border-gray-200">
+            <div className="flex justify-between items-center pt-2 border-t border-church-neutral-200">
               <Button 
-                className="text-white bg-blue-600 hover:bg-blue-700 flex items-center gap-1 text-xs md:text-sm py-1"
+                variant="outline" 
+                size="sm" 
+                className="text-church-blue flex items-center gap-1 text-xs md:text-sm py-1"
               >
                 <Play className="h-3 w-3 md:h-3.5 md:w-3.5" />
-                🎧 Listen
+                Listen
               </Button>
               
               {sermon.youtubeId && (

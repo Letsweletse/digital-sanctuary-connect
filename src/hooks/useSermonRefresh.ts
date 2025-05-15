@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { Sermon } from '@/types/sermonTypes';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -58,28 +57,16 @@ export const useSermonRefresh = (
     
     window.addEventListener('sermon-refresh', handleSermonRefresh);
     
-    // Initial refresh on mount with increased delay for mobile devices
-    const delay = isMobile ? 1000 : 500; // Longer delay for mobile
+    // Initial refresh on mount
     setTimeout(() => {
       // Add small delay to ensure component is fully mounted
       refreshSermons();
-    }, delay);
-    
-    // Additional refresh on visibility change (tab switch, app resume)
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        console.log('Page became visible, refreshing sermons');
-        refreshSermons();
-      }
-    };
-    
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    }, 500);
     
     return () => {
       window.removeEventListener('sermon-refresh', handleSermonRefresh);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [customSermons, fetchedSermons, defaultSermons, currentSermonIndex, setLocalSermons, setCurrentSermonIndex, toast, isMobile]);
+  }, [customSermons, fetchedSermons, defaultSermons, currentSermonIndex, setLocalSermons, setCurrentSermonIndex, toast]);
   
   // Track when component mounts/unmounts on mobile
   useEffect(() => {
@@ -94,11 +81,5 @@ export const useSermonRefresh = (
     };
   }, [isMobile]);
   
-  // Manual refresh function that can be called from buttons
-  const manualRefresh = () => {
-    console.log('Manual sermon refresh triggered');
-    refreshSermons();
-  };
-  
-  return { isMobile, refreshSermons, manualRefresh };
+  return { isMobile, refreshSermons };
 };
