@@ -94,6 +94,7 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
           onCancel={onCancel} 
           isEditing={isEditing} 
           isSubmitting={isSubmitting || isUploading}
+          disableSubmit={isUploading}
         />
       </form>
     </div>

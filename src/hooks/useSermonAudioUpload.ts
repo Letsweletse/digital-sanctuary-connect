@@ -39,7 +39,7 @@ export const useSermonAudioUpload = () => {
         .from('sermons')
         .upload(filePath, file, {
           cacheControl: '3600',
-          upsert: false,
+          upsert: true, // Changed to true to allow overwriting existing files
         });
         
       if (error) {
@@ -59,6 +59,17 @@ export const useSermonAudioUpload = () => {
         .getPublicUrl(filePath);
       
       console.log('File uploaded successfully, public URL:', publicUrl);
+      
+      // Test the URL to make sure it's accessible
+      try {
+        const response = await fetch(publicUrl, { method: 'HEAD' });
+        if (!response.ok) {
+          console.warn('Audio URL may not be publicly accessible:', publicUrl);
+        }
+      } catch (testErr) {
+        console.warn('Error testing audio URL:', testErr);
+      }
+      
       setAudioUrl(publicUrl);
       setIsUploading(false);
       
@@ -81,6 +92,29 @@ export const useSermonAudioUpload = () => {
     
     if (file) {
       setAudioFile(file);
+      
+      // Create an audio element to get duration
+      const audio = new Audio();
+      audio.src = URL.createObjectURL(file);
+      
+      // Wait for audio metadata to load to get duration
+      await new Promise<void>((resolve) => {
+        audio.onloadedmetadata = () => {
+          // Store duration in the file object for later use
+          (file as any).duration = audio.duration;
+          console.log('Audio duration:', audio.duration);
+          resolve();
+        };
+        
+        // Fallback if metadata can't be loaded
+        audio.onerror = () => {
+          console.warn('Could not load audio metadata');
+          resolve();
+        };
+        
+        // Timeout after 3 seconds if metadata loading hangs
+        setTimeout(resolve, 3000);
+      });
       
       // Automatically start upload when file is selected
       const result = await uploadAudioToSupabase(file, 'sermons');

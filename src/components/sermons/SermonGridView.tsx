@@ -5,8 +5,8 @@ import { Calendar, User, Download, Play } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Sermon } from '@/types/sermonTypes';
-import { getDefaultSermonImage } from '../media/utils/audioUrlUtils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useLogo } from '@/components/layout/LogoContext';
 
 interface SermonGridViewProps {
   sermons: Sermon[];
@@ -14,6 +14,8 @@ interface SermonGridViewProps {
 
 const SermonGridView = ({ sermons }: SermonGridViewProps) => {
   const isMobile = useIsMobile();
+  const { logoUrl } = useLogo();
+  const defaultLogo = '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
   
   if (sermons.length === 0) {
     return (
@@ -35,7 +37,7 @@ const SermonGridView = ({ sermons }: SermonGridViewProps) => {
         >
           <div className="relative h-40 sm:h-48 bg-church-neutral-100">
             <img 
-              src={sermon.thumbnailUrl || getDefaultSermonImage(sermon)}
+              src={logoUrl || defaultLogo}
               alt={sermon.title}
               className="w-full h-full object-cover"
               itemProp="thumbnailUrl"

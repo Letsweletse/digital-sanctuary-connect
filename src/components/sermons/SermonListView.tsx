@@ -15,6 +15,7 @@ interface SermonListViewProps {
 
 const SermonListView = ({ sermons }: SermonListViewProps) => {
   const { logoUrl } = useLogo();
+  const defaultLogo = '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
 
   if (sermons.length === 0) {
     return (
@@ -33,10 +34,10 @@ const SermonListView = ({ sermons }: SermonListViewProps) => {
           className="border border-church-neutral-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-all duration-300"
         >
           <div className="p-4 flex flex-col sm:flex-row items-start gap-4">
-            {/* Speaker Image - Using Church Logo as Fallback */}
+            {/* Speaker Image - Using Church Logo */}
             <Avatar className="h-16 w-16 rounded-md shadow-sm flex-shrink-0">
               <AvatarImage 
-                src={sermon.speakerImage || logoUrl || '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png'} 
+                src={logoUrl || defaultLogo} 
                 alt={sermon.speaker} 
               />
               <AvatarFallback className="rounded-md">
@@ -66,6 +67,13 @@ const SermonListView = ({ sermons }: SermonListViewProps) => {
                     variant="outline" 
                     size="sm" 
                     className="flex items-center gap-1 text-church-blue"
+                    onClick={() => {
+                      // Dispatch custom event to play this sermon in the audio player
+                      const event = new CustomEvent('sermon-play', { 
+                        detail: { sermonId: sermon.id } 
+                      });
+                      window.dispatchEvent(event);
+                    }}
                   >
                     <Play className="h-3 w-3" />
                     Listen

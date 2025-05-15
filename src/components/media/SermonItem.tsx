@@ -15,13 +15,14 @@ interface SermonItemProps {
 
 const SermonItem = ({ sermon, onEdit, onDelete }: SermonItemProps) => {
   const { logoUrl } = useLogo();
+  const defaultLogo = '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
 
   return (
     <div className="glass-panel bg-white p-4 rounded-lg shadow-sm border border-church-neutral-100 hover:border-church-neutral-200 transition-all">
       <div className="flex flex-col sm:flex-row items-start gap-4">
         <Avatar className="h-16 w-16 rounded-md shadow-sm flex-shrink-0">
           <AvatarImage 
-            src={sermon.speakerImage || logoUrl || '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png'} 
+            src={logoUrl || defaultLogo} 
             alt={sermon.speaker} 
           />
           <AvatarFallback className="rounded-md">{sermon.speaker?.charAt(0) || 'S'}</AvatarFallback>
@@ -73,6 +74,15 @@ const SermonItem = ({ sermon, onEdit, onDelete }: SermonItemProps) => {
                 </svg>
                 YouTube
               </a>
+            )}
+            {sermon.audioUrl && (
+              <span className="flex items-center gap-1 text-church-green">
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M14 5.7c0-1.39-1.12-2.5-2.5-2.5S9 4.31 9 5.7V9h5V5.7z" />
+                  <path d="M18 10.5a.5.5 0 0 1 0 1h-1V19a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-7.5H4a.5.5 0 0 1 0-1h14zm-4 0h-6v8.5c0 .83.67 1.5 1.5 1.5h3c.83 0 1.5-.67 1.5-1.5v-8.5z" />
+                </svg>
+                Audio Available
+              </span>
             )}
           </div>
           

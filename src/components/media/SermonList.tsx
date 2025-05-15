@@ -13,6 +13,7 @@ interface SermonListProps {
 
 const SermonList = ({ sermons, onEditSermon, onDeleteSermon }: SermonListProps) => {
   const { logoUrl } = useLogo();
+  const defaultLogo = '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
   
   if (sermons.length === 0) {
     return (
@@ -31,8 +32,8 @@ const SermonList = ({ sermons, onEditSermon, onDeleteSermon }: SermonListProps) 
           key={sermon.id} 
           sermon={{
             ...sermon,
-            speakerImage: sermon.speakerImage && !sermon.speakerImage.includes('placeholder') ? 
-              sermon.speakerImage : logoUrl || '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png'
+            speakerImage: logoUrl || defaultLogo,
+            thumbnailUrl: logoUrl || defaultLogo
           }} 
           onEdit={onEditSermon} 
           onDelete={onDeleteSermon} 
