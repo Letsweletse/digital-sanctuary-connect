@@ -24,6 +24,7 @@ export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 
     setAudioFile,
     audioUrl,
     setAudioUrl,
+    isUploading,
     uploadAudioToSupabase,
     handleAudioUpload
   } = useSermonAudioUpload();
@@ -76,25 +77,30 @@ export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 
 
       // Upload audio file if there's a new one
       let finalAudioUrl = audioUrl;
-      if (audioFile) {
+      if (audioFile && !audioUrl) {
+        console.log('Uploading audio file during submission:', audioFile.name);
         const result = await uploadAudioToSupabase(audioFile, 'sermons');
         if (result.success && result.url) {
           finalAudioUrl = result.url;
         }
       }
       
+      // Use the current logo as fallback for speaker image
+      const { logoUrl } = window.__CHURCH_LOGO || { logoUrl: '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png' };
+      const finalSpeakerImage = speakerImageUrl || logoUrl || '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
+      
       const formData = {
         title,
         speaker,
-        speakerImage: speakerImageUrl || '/placeholder.svg',
+        speakerImage: finalSpeakerImage,
         date,
         audioUrl: finalAudioUrl || '',
         youtubeId,
         description,
         tags: formattedTags,
         series,
-        thumbnailUrl: 'https://lovable.dev/projects/b4242310-0169-49ed-bc97-e6669ce1cf89',
-        duration: '00:00', 
+        thumbnailUrl: finalSpeakerImage,
+        duration: audioFile?.duration || '00:00', 
       };
       
       console.log('Submitting sermon data:', formData);
@@ -133,6 +139,7 @@ export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 
     speakerImage,
     setSpeakerImage,
     isSubmitting,
+    isUploading,
     series,
     setSeries,
     handleSubmit,

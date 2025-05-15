@@ -34,9 +34,8 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
     setAudioFile,
     audioUrl,
     setAudioUrl,
-    speakerImage,
-    setSpeakerImage,
     isSubmitting,
+    isUploading,
     series,
     setSeries,
     handleSubmit,
@@ -74,7 +73,7 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <SpeakerImageUpload
             speaker={speaker}
-            speakerImage={speakerImage}
+            speakerImage={sermon?.speakerImage || ''}
             setSpeakerImage={setSpeakerImage}
             handleSpeakerImageUpload={handleSpeakerImageUpload}
           />
@@ -85,10 +84,16 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
             handleAudioUpload={handleAudioUpload}
             audioUrl={audioUrl}
             setAudioUrl={setAudioUrl}
+            isUploading={isUploading}
           />
         </div>
         
-        <FormActions onCancel={onCancel} isEditing={isEditing} isSubmitting={isSubmitting} />
+        <FormActions 
+          onCancel={onCancel} 
+          isEditing={isEditing} 
+          isSubmitting={isSubmitting || isUploading} 
+          disableSubmit={isUploading}
+        />
       </form>
     </div>
   );

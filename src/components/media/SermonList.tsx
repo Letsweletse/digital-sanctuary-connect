@@ -3,6 +3,7 @@ import React from 'react';
 import { FileText } from 'lucide-react';
 import SermonItem from './SermonItem';
 import { Sermon } from '@/types/sermonTypes';
+import { useLogo } from '@/components/layout/LogoContext';
 
 interface SermonListProps {
   sermons: Sermon[];
@@ -11,6 +12,8 @@ interface SermonListProps {
 }
 
 const SermonList = ({ sermons, onEditSermon, onDeleteSermon }: SermonListProps) => {
+  const { logoUrl } = useLogo();
+  
   if (sermons.length === 0) {
     return (
       <div className="text-center py-12 bg-church-neutral-50 rounded-lg">
@@ -26,7 +29,11 @@ const SermonList = ({ sermons, onEditSermon, onDeleteSermon }: SermonListProps) 
       {sermons.map(sermon => (
         <SermonItem 
           key={sermon.id} 
-          sermon={sermon} 
+          sermon={{
+            ...sermon,
+            speakerImage: sermon.speakerImage && !sermon.speakerImage.includes('placeholder') ? 
+              sermon.speakerImage : logoUrl || '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png'
+          }} 
           onEdit={onEditSermon} 
           onDelete={onDeleteSermon} 
         />
