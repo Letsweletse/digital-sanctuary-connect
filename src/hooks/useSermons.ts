@@ -30,7 +30,16 @@ export const useSermons = () => {
             date: sermon.date ? new Date(sermon.date) : new Date()
           }));
           console.log('Loaded sermons from localStorage:', processedSermons.length);
-          setSermons(processedSermons);
+          
+          // If no sermons found in localStorage or it's an empty array, use sample data
+          if (processedSermons.length === 0) {
+            console.log('No sermons found in localStorage, using sample data');
+            setSermons(sermonsData);
+            // Save sample data to localStorage
+            localStorage.setItem('church_sermons', JSON.stringify(sermonsData));
+          } else {
+            setSermons(processedSermons);
+          }
         } catch (parseError) {
           console.error('Error parsing sermons from localStorage:', parseError);
           // Fall back to sample data if parsing fails

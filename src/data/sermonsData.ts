@@ -69,7 +69,6 @@ export const sermonsData: Sermon[] = [
     views: 15,
     series: 'The Prophetic'
   },
-  // New Perspectives on the Apostolic sermons
   {
     id: '20',
     title: 'Perspectives on the Apostolic - Session 1',
@@ -111,6 +110,22 @@ export const sermonsData: Sermon[] = [
     tags: ['Apostolic', 'Church', 'Kingdom'],
     thumbnailUrl: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg',
     duration: '48:40',
+    downloads: 0,
+    views: 0,
+    series: 'Perspectives on the Apostolic'
+  },
+  {
+    id: '23',
+    title: 'Perspective on the Apostolic',
+    speaker: 'Thamo Naidoo',
+    speakerImage: '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png',
+    date: new Date('2025-05-10'),
+    audioUrl: '',
+    youtubeId: '5qTWWzqg0q8',
+    description: 'A powerful message on the apostolic perspective for the church today.',
+    tags: ['Apostolic', 'Church', 'Kingdom', 'Perspective'],
+    thumbnailUrl: 'https://lovable.dev/projects/b4242310-0169-49ed-bc97-e6669ce1cf89',
+    duration: '1:02:30',
     downloads: 0,
     views: 0,
     series: 'Perspectives on the Apostolic'

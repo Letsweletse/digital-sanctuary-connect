@@ -59,7 +59,7 @@ const SermonListView = ({ sermons }: SermonListViewProps) => {
               </div>
               
               {/* Action Buttons */}
-              <div className="flex mt-3 gap-2">
+              <div className="flex mt-3 gap-2 flex-wrap">
                 {/* Listen Audio Button */}
                 {isValidAudioUrl(sermon.audioUrl) ? (
                   <Button 
@@ -70,17 +70,7 @@ const SermonListView = ({ sermons }: SermonListViewProps) => {
                     <Play className="h-3 w-3" />
                     Listen
                   </Button>
-                ) : (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    disabled
-                    className="flex items-center gap-1"
-                  >
-                    <Play className="h-3 w-3" />
-                    No Audio
-                  </Button>
-                )}
+                ) : null}
                 
                 {/* YouTube Button */}
                 {sermon.youtubeId && (
