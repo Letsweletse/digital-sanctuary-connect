@@ -95,10 +95,8 @@ const Sermons = () => {
                 allYears={allYears}
               />
               
-              {/* View options */}
+              {/* View options - now simplified to just use SermonListView */}
               <ViewSelector
-                activeView={activeView}
-                setActiveView={setActiveView}
                 filteredSermons={filteredSermons}
               />
             </>
