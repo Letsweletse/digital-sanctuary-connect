@@ -2,11 +2,31 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Sermon } from '@/types/sermonTypes';
-import { supabase } from '@/integrations/supabase/client';
 import { ImageCategory } from '@/types/imageTypes';
+import { useSpeakerImageUpload } from './useSpeakerImageUpload';
+import { useSermonAudioUpload } from './useSermonAudioUpload';
 
 export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 'id'>) => void) => {
   const { toast } = useToast();
+  
+  // Use the specialized hooks
+  const {
+    speakerImage,
+    setSpeakerImage,
+    speakerImageFile,
+    setSpeakerImageFile,
+    uploadSpeakerImageToSupabase,
+    handleSpeakerImageUpload
+  } = useSpeakerImageUpload();
+  
+  const {
+    audioFile,
+    setAudioFile,
+    audioUrl,
+    setAudioUrl,
+    uploadAudioToSupabase,
+    handleAudioUpload
+  } = useSermonAudioUpload();
   
   // Form state
   const [title, setTitle] = useState(sermon?.title || '');
@@ -15,86 +35,17 @@ export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 
   const [description, setDescription] = useState(sermon?.description || '');
   const [youtubeId, setYoutubeId] = useState(sermon?.youtubeId || '');
   const [tags, setTags] = useState(sermon?.tags?.join(', ') || '');
-  const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [audioUrl, setAudioUrl] = useState<string | null>(sermon?.audioUrl || null);
-  const [speakerImage, setSpeakerImage] = useState(sermon?.speakerImage || '');
-  const [speakerImageFile, setSpeakerImageFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [series, setSeries] = useState(sermon?.series || '');
   
-  // Log for debugging
+  // Initialize values from the sermon prop if available
   useEffect(() => {
     if (sermon) {
       console.log('Editing sermon:', sermon);
+      setSpeakerImage(sermon.speakerImage || '');
+      setAudioUrl(sermon.audioUrl || null);
     }
   }, [sermon]);
-
-  // Helper function to upload speaker image to Supabase
-  const uploadSpeakerImageToSupabase = async (file: File) => {
-    try {
-      const timestamp = new Date().getTime();
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${timestamp}-${file.name.substring(0, 20).replace(/[^a-zA-Z0-9]/g, '_')}.${fileExt}`;
-      const filePath = `speakers/${fileName}`;
-      
-      const { data, error } = await supabase.storage
-        .from('sermons')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false,
-        });
-        
-      if (error) {
-        console.error('Error uploading speaker image:', error);
-        return null;
-      }
-      
-      const { data: { publicUrl } } = supabase.storage
-        .from('sermons')
-        .getPublicUrl(filePath);
-      
-      return publicUrl;
-    } catch (err) {
-      console.error('Unexpected error during speaker image upload:', err);
-      return null;
-    }
-  };
-
-  // Handle speaker image upload
-  const handleSpeakerImageUpload = async (file: File, category: ImageCategory) => {
-    if (file) {
-      // In a real app, upload the file to a server and get the URL
-      setSpeakerImage(URL.createObjectURL(file));
-      setSpeakerImageFile(file);
-      
-      console.log('Speaker image uploaded:', file.name);
-      
-      toast({
-        title: "Image uploaded",
-        description: "Speaker image has been uploaded.",
-      });
-      
-      return true;
-    }
-    return false;
-  };
-  
-  // Handle audio file upload
-  const handleAudioUpload = async (file: File, category: ImageCategory) => {
-    if (file) {
-      setAudioFile(file);
-      
-      console.log('Audio file uploaded:', file.name);
-      
-      toast({
-        title: "Audio uploaded",
-        description: `File "${file.name}" has been uploaded.`,
-      });
-      
-      return true;
-    }
-    return false;
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,13 +73,22 @@ export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 
           speakerImageUrl = imageUrl;
         }
       }
+
+      // Upload audio file if there's a new one
+      let finalAudioUrl = audioUrl;
+      if (audioFile) {
+        const result = await uploadAudioToSupabase(audioFile, 'sermons');
+        if (result.success && result.url) {
+          finalAudioUrl = result.url;
+        }
+      }
       
       const formData = {
         title,
         speaker,
         speakerImage: speakerImageUrl || '/placeholder.svg',
         date,
-        audioUrl: audioUrl || '',
+        audioUrl: finalAudioUrl || '',
         youtubeId,
         description,
         tags: formattedTags,

@@ -5,8 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Music, Trash2 } from 'lucide-react';
 import DragDropUploader from '../DragDropUploader';
 import { ImageCategory } from '@/types/imageTypes';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 
 interface SermonAudioUploadProps {
   audioFile: File | null;
@@ -23,66 +21,6 @@ const SermonAudioUpload = ({
   audioUrl,
   setAudioUrl
 }: SermonAudioUploadProps) => {
-  const { toast } = useToast();
-  
-  // Handle file upload to Supabase storage
-  const uploadToSupabase = async (file: File, category: string) => {
-    try {
-      // Generate a unique filename with timestamp
-      const timestamp = new Date().getTime();
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${timestamp}-${file.name.substring(0, 20).replace(/[^a-zA-Z0-9]/g, '_')}.${fileExt}`;
-      const filePath = `${category}/${fileName}`;
-      
-      // Upload the file to Supabase Storage
-      const { data, error } = await supabase.storage
-        .from('sermons')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false,
-        });
-        
-      if (error) {
-        console.error('Error uploading file to Supabase:', error);
-        toast({
-          title: 'Upload Error',
-          description: error.message || 'Failed to upload audio file',
-          variant: 'destructive',
-        });
-        return { success: false, url: null };
-      }
-      
-      // Get the public URL for the uploaded file
-      const { data: { publicUrl } } = supabase.storage
-        .from('sermons')
-        .getPublicUrl(filePath);
-      
-      console.log('File uploaded successfully, public URL:', publicUrl);
-      
-      return { success: true, url: publicUrl };
-    } catch (err) {
-      console.error('Unexpected error during upload:', err);
-      toast({
-        title: 'Upload Error',
-        description: 'An unexpected error occurred during upload',
-        variant: 'destructive',
-      });
-      return { success: false, url: null };
-    }
-  };
-  
-  // Custom audio upload handler that updates the URL state
-  const handleAudioUploadWithUrl = async (file: File, category: ImageCategory) => {
-    const result = await uploadToSupabase(file, category.toString());
-    
-    if (result.success && result.url) {
-      setAudioUrl(result.url);
-      return true;
-    }
-    
-    return false;
-  };
-
   return (
     <div>
       <Label className="block mb-2">Sermon Audio File (All Audio Formats)</Label>
@@ -126,7 +64,7 @@ const SermonAudioUpload = ({
         </div>
       )}
       <DragDropUploader 
-        onFileAccepted={handleAudioUploadWithUrl}
+        onFileAccepted={handleAudioUpload}
         category="sermons"
         acceptedFileTypes={['audio/*']} 
         maxSize={60 * 1024 * 1024} // 60MB limit
