@@ -1,9 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Music, Trash2, Download, Play, Pause, AlertCircle } from 'lucide-react';
-import { getFileDisplayName, handleDownload } from './AudioValidationHelper';
+import { Play, Pause, X, Volume2, AlertCircle } from 'lucide-react';
 
 interface AudioFileDisplayProps {
   audioFile: File | null;
@@ -12,82 +10,79 @@ interface AudioFileDisplayProps {
   audioError: string | null;
   togglePlayPause: () => void;
   onRemove: () => void;
+  displayName?: string;
 }
 
-const AudioFileDisplay: React.FC<AudioFileDisplayProps> = ({
+const AudioFileDisplay = ({
   audioFile,
   audioUrl,
   isPlaying,
   audioError,
   togglePlayPause,
   onRemove,
-}) => {
+  displayName
+}: AudioFileDisplayProps) => {
+  const fileName = displayName || audioFile?.name || 'sermon-audio.mp3';
+  const canPlay = !!audioUrl && !audioError;
+  
   return (
-    <div className="mb-4 p-4 bg-church-neutral-50 rounded-md border border-church-neutral-200">
-      <div className="flex items-center justify-between mb-3">
+    <div className="bg-church-neutral-50 border border-church-neutral-200 rounded-lg p-4 mb-4">
+      <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <Music className="h-5 w-5 text-church-blue mr-2 flex-shrink-0" />
-          <span className="text-sm font-medium truncate max-w-[200px]">
-            {getFileDisplayName(audioFile, audioUrl)}
-          </span>
+          <div className="bg-church-blue-light/30 rounded-full p-2 mr-3">
+            <Volume2 className="w-5 h-5 text-church-blue-dark" />
+          </div>
+          <div className="overflow-hidden">
+            <p className="font-medium text-church-neutral-800 truncate" title={fileName}>
+              {fileName}
+            </p>
+            {audioFile && (
+              <p className="text-xs text-church-neutral-500">
+                {(audioFile.size / (1024 * 1024)).toFixed(2)} MB
+              </p>
+            )}
+          </div>
         </div>
-        <div className="flex gap-2">
-          {audioUrl && !audioError && (
-            <>
-              <Button 
-                type="button" 
-                variant="outline" 
-                size="sm"
-                onClick={togglePlayPause}
-                className="flex items-center gap-1"
-              >
-                {isPlaying ? (
-                  <><Pause className="h-4 w-4" /> Pause</>
-                ) : (
-                  <><Play className="h-4 w-4" /> Play</>
-                )}
-              </Button>
-              <Button 
-                type="button" 
-                variant="outline" 
-                size="sm"
-                onClick={() => handleDownload(audioUrl, audioFile)}
-                className="flex items-center gap-1"
-              >
-                <Download className="h-4 w-4" />
-                <span className="hidden sm:inline">Download</span>
-              </Button>
-            </>
+        <div className="flex items-center space-x-2">
+          {canPlay && (
+            <Button 
+              type="button"
+              size="sm"
+              variant="outline"
+              className="h-8 w-8 p-0 rounded-full"
+              onClick={togglePlayPause}
+              title={isPlaying ? 'Pause' : 'Play'}
+            >
+              {isPlaying ? (
+                <Pause className="h-4 w-4" />
+              ) : (
+                <Play className="h-4 w-4" />
+              )}
+            </Button>
           )}
           <Button 
-            type="button" 
-            variant="ghost" 
+            type="button"
             size="sm"
+            variant="outline"
+            className="h-8 w-8 p-0 rounded-full text-red-500 hover:text-red-700 hover:bg-red-50"
             onClick={onRemove}
-            className="text-church-neutral-700 hover:text-red-500"
+            title="Remove"
           >
-            <Trash2 className="h-4 w-4" />
+            <X className="h-4 w-4" />
           </Button>
         </div>
       </div>
       
-      {/* Audio error message */}
       {audioError && (
-        <Alert variant="destructive" className="mb-3 py-2">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription className="text-xs">{audioError}</AlertDescription>
-        </Alert>
+        <div className="mt-2 text-xs text-red-500 flex items-center">
+          <AlertCircle className="w-3 h-3 mr-1" />
+          <span>Error: {audioError}</span>
+        </div>
       )}
       
-      {/* Audio preview */}
       {audioUrl && !audioError && (
-        <div className="bg-white p-2 rounded-md border border-church-neutral-200">
-          <audio 
-            className="w-full" 
-            src={audioUrl} 
-            controls
-            onError={() => console.error('Audio preview failed to load')} 
-          />
+        <div className="mt-2 text-xs text-church-blue">
+          Audio file ready for submission
         </div>
       )}
     </div>

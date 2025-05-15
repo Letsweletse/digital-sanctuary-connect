@@ -16,6 +16,8 @@ interface SermonAudioUploadProps {
   setAudioUrl: (url: string | null) => void;
   isUploading?: boolean;
   uploadProgress?: number;
+  sermonTitle?: string;
+  speakerName?: string;
 }
 
 const SermonAudioUpload = ({
@@ -25,7 +27,9 @@ const SermonAudioUpload = ({
   audioUrl,
   setAudioUrl,
   isUploading = false,
-  uploadProgress = 0
+  uploadProgress = 0,
+  sermonTitle = '',
+  speakerName = ''
 }: SermonAudioUploadProps) => {
   const {
     isAudioTestable,
@@ -45,8 +49,29 @@ const SermonAudioUpload = ({
     setAudioError(null);
   };
 
+  // Generate a display name for the audio file based on sermon details
+  const getSermonFileName = () => {
+    if (audioFile?.name) return audioFile.name;
+    if (sermonTitle && speakerName) {
+      return `${sermonTitle} - ${speakerName}.mp3`;
+    }
+    return "sermon-audio.mp3";
+  };
+
   return (
     <div>
+      {(!audioFile && !audioUrl) && (sermonTitle || speakerName) && (
+        <div className="mb-4 bg-church-blue-light/10 rounded-md p-3">
+          <p className="text-sm text-church-neutral-700">
+            Audio will be uploaded as: 
+            <span className="font-medium block mt-1">
+              {sermonTitle ? `"${sermonTitle}"` : "(No title set)"} 
+              {speakerName ? ` by ${speakerName}` : ""}
+            </span>
+          </p>
+        </div>
+      )}
+      
       <Label className="block mb-2">Sermon Audio File (All Audio Formats)</Label>
       
       {/* Hidden audio element for playback */}
@@ -71,6 +96,7 @@ const SermonAudioUpload = ({
           audioError={audioError}
           togglePlayPause={togglePlayPause}
           onRemove={handleRemoveAudio}
+          displayName={getSermonFileName()}
         />
       )}
       
@@ -85,7 +111,7 @@ const SermonAudioUpload = ({
       
       <AudioSuccessMessage
         audioUrl={audioUrl}
-        filename={audioFile?.name || "sermon-audio.mp3"}
+        filename={getSermonFileName()}
       />
     </div>
   );
