@@ -6,6 +6,7 @@ import MediaSection from '@/components/home/MediaSection';
 import ImageUploader from '@/components/media/ImageUploader';
 import LogoUploader from '@/components/media/LogoUploader';
 import SermonManager from '@/components/media/SermonManager';
+import SermonAudioManager from '@/components/admin/SermonAudioManager';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -87,15 +88,19 @@ const Admin = () => {
           ) : (
             <section className="py-16 bg-white">
               <div className="container mx-auto px-4">
-                <Tabs defaultValue="logo" className="w-full">
+                <Tabs defaultValue="sermon-audio" className="w-full">
                   <TabsList className="mb-8">
+                    <TabsTrigger value="sermon-audio">Sermon Audio</TabsTrigger>
+                    <TabsTrigger value="sermons">Sermon Details</TabsTrigger>
                     <TabsTrigger value="logo">Church Logo</TabsTrigger>
                     <TabsTrigger value="leadership">Leadership Photos</TabsTrigger>
-                    <TabsTrigger value="sermons">Sermon Management</TabsTrigger>
                     <TabsTrigger value="images">General Images</TabsTrigger>
-                    <TabsTrigger value="audio">Audio Sermons</TabsTrigger>
                     <TabsTrigger value="youtube">YouTube Videos</TabsTrigger>
                   </TabsList>
+                  
+                  <TabsContent value="sermon-audio">
+                    <SermonAudioManager />
+                  </TabsContent>
                   
                   <TabsContent value="logo" className="space-y-8">
                     <div className="glass-panel">

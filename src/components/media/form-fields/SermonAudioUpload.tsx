@@ -32,7 +32,7 @@ const SermonAudioUpload = ({
   sermonTitle = '',
   speakerName = ''
 }: SermonAudioUploadProps) => {
-  // Use the audio player hook
+  // Use the audio player hook with empty array instead of string
   const {
     isPlaying,
     audioError,
@@ -40,7 +40,7 @@ const SermonAudioUpload = ({
     audioRef,
     togglePlayPause,
     handleAudioEnded
-  } = useAudioPlayer(audioUrl);
+  } = useAudioPlayer([], []);
 
   const handleRemoveAudio = () => {
     setAudioFile(null);

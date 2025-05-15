@@ -64,6 +64,11 @@ export const formatAudioDuration = (duration?: number): string => {
 export const formatFileSize = (sizeInBytes?: number): string => {
   if (!sizeInBytes) return "Unknown size";
   
-  const sizeInMB = sizeInBytes / (1024 * 1024);
-  return `${sizeInMB.toFixed(2)} MB`;
+  if (sizeInBytes < 1024) {
+    return `${sizeInBytes} B`;
+  } else if (sizeInBytes < 1024 * 1024) {
+    return `${(sizeInBytes / 1024).toFixed(1)} KB`;
+  } else {
+    return `${(sizeInBytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
 };
