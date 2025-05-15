@@ -55,5 +55,23 @@ export const processSermons = (sermons: Sermon[]): Sermon[] => {
 
 // Trigger sermon refresh (for use across components)
 export const refreshSermons = () => {
+  console.log('Manually refreshing sermons...');
   window.dispatchEvent(new Event('sermon-refresh'));
+};
+
+// Check if audio URL is valid and reachable
+export const checkAudioUrl = async (url: string): Promise<boolean> => {
+  try {
+    const response = await fetch(url, { method: 'HEAD' });
+    return response.ok;
+  } catch (error) {
+    console.error('Error checking audio URL:', error);
+    return false;
+  }
+};
+
+// Helper function to get formatted duration
+export const getFormattedDuration = (timeInSeconds: number): string => {
+  if (!timeInSeconds || isNaN(timeInSeconds)) return '00:00';
+  return formatTime(timeInSeconds);
 };
