@@ -29,6 +29,7 @@ export const ensureBucketExists = async (
       const { error: createError } = await supabase.storage.createBucket(bucketName, {
         public: isPublic,
         fileSizeLimit: fileSizeLimit,
+        allowedMimeTypes: ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg']
       });
       
       if (createError) {
@@ -37,12 +38,37 @@ export const ensureBucketExists = async (
       }
       
       console.log(`${bucketName} bucket created successfully`);
+
+      // Add public access policy to the bucket
+      try {
+        await setupPublicAccessPolicy(bucketName);
+      } catch (policyError) {
+        console.error(`Error setting up policies for ${bucketName}:`, policyError);
+      }
     }
     
     return true;
   } catch (err) {
     console.error(`Error ensuring ${bucketName} bucket exists:`, err);
     return false;
+  }
+};
+
+/**
+ * Sets up a public access policy for the bucket
+ * @param bucketName Name of the bucket to set policy for
+ */
+export const setupPublicAccessPolicy = async (bucketName: string): Promise<void> => {
+  try {
+    // Allow anyone to read files (download)
+    const { error: readError } = await supabase.storage.from(bucketName).setPublic();
+    
+    if (readError) {
+      console.error(`Error setting public read policy:`, readError);
+    }
+  } catch (err) {
+    console.error(`Error setting up bucket policies:`, err);
+    throw err;
   }
 };
 
