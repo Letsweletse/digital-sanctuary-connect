@@ -5,7 +5,7 @@ import DragDropUploader from '../DragDropUploader';
 import { ImageCategory } from '@/types/imageTypes';
 import AudioFileDisplay from '../audio/AudioFileDisplay';
 import AudioUploadProgress from '../audio/AudioUploadProgress';
-import AudioSuccessMessage from '../audio/AudioSuccessMessage';
+import { AudioSuccessMessage } from '../audio/AudioSuccessMessage';
 import { useAudioPlayer } from '../audio/AudioPlayerHook';
 
 interface SermonAudioUploadProps {
@@ -85,10 +85,7 @@ const SermonAudioUpload = ({
       
       <AudioSuccessMessage
         audioUrl={audioUrl}
-        audioFile={audioFile}
-        audioError={audioError}
-        isTestingAudio={isTestingAudio}
-        setIsTestingAudio={setIsTestingAudio}
+        filename={audioFile?.name || "sermon-audio.mp3"}
       />
     </div>
   );
