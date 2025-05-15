@@ -1,10 +1,11 @@
 
 import React from 'react';
 import { format } from 'date-fns';
-import { Play, Download } from 'lucide-react';
+import { Play, Download, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Sermon } from '@/types/sermonTypes';
+import { isValidAudioUrl } from '@/components/media/utils/audioUrlUtils';
 
 interface SermonListViewProps {
   sermons: Sermon[];
@@ -61,9 +62,16 @@ const SermonListView = ({ sermons }: SermonListViewProps) => {
               </td>
               <td className="py-3 px-4 border-t border-church-neutral-200 text-center">
                 <div className="flex justify-center gap-2">
-                  <Button variant="ghost" size="icon" title="Listen">
-                    <Play className="h-4 w-4 text-church-blue" />
-                  </Button>
+                  {isValidAudioUrl(sermon.audioUrl) ? (
+                    <Button variant="ghost" size="icon" title="Listen">
+                      <Play className="h-4 w-4 text-church-blue" />
+                    </Button>
+                  ) : (
+                    <Button variant="ghost" size="icon" title="No audio available" disabled>
+                      <AlertCircle className="h-4 w-4 text-church-neutral-400" />
+                    </Button>
+                  )}
+                  
                   {sermon.youtubeId && (
                     <Button 
                       variant="ghost" 
@@ -79,13 +87,19 @@ const SermonListView = ({ sermons }: SermonListViewProps) => {
                       </a>
                     </Button>
                   )}
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    title="Download"
-                  >
-                    <Download className="h-4 w-4 text-church-neutral-600" />
-                  </Button>
+                  
+                  {isValidAudioUrl(sermon.audioUrl) && (
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      title="Download"
+                      asChild
+                    >
+                      <a href={sermon.audioUrl} download target="_blank" rel="noopener noreferrer">
+                        <Download className="h-4 w-4 text-church-neutral-600" />
+                      </a>
+                    </Button>
+                  )}
                 </div>
               </td>
             </tr>

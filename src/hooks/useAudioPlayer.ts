@@ -1,7 +1,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Sermon } from '@/types/sermonTypes';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 export const useAudioPlayer = (customSermons?: Sermon[], defaultSermons?: Sermon[]) => {
   const [currentSermonIndex, setCurrentSermonIndex] = useState(0);
@@ -12,6 +12,7 @@ export const useAudioPlayer = (customSermons?: Sermon[], defaultSermons?: Sermon
   const [isMuted, setIsMuted] = useState(false);
   const [localSermons, setLocalSermons] = useState<Sermon[]>([]);
   const [isAudioReady, setIsAudioReady] = useState(false);
+  const [isAudioLoading, setIsAudioLoading] = useState(false);
   const { toast } = useToast();
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -37,16 +38,48 @@ export const useAudioPlayer = (customSermons?: Sermon[], defaultSermons?: Sermon
     }
   }, [customSermons, defaultSermons]);
   
+  // Check if URL is a valid audio URL
+  const isValidAudioUrl = (url: string): boolean => {
+    // Check if it's a Supabase URL or a blob URL
+    return (
+      (url.startsWith('https://') && url.includes('storage.googleapis.com')) || 
+      url.startsWith('blob:') || 
+      url.startsWith('https://lojchdvtwypjqupsjynf.supabase.co/storage/')
+    );
+  };
+  
   // Update audio element when current sermon changes
   useEffect(() => {
-    if (audioRef.current && localSermons.length > 0) {
+    if (audioRef.current && localSermons.length > 0 && currentSermonIndex < localSermons.length) {
       const audio = audioRef.current;
+      const currentSermon = localSermons[currentSermonIndex];
+      
+      // Don't attempt to load invalid URLs
+      if (!currentSermon || !currentSermon.audioUrl) {
+        setIsAudioReady(false);
+        return;
+      }
+      
+      // Validate URL before attempting to load
+      if (!isValidAudioUrl(currentSermon.audioUrl)) {
+        console.error('Invalid audio URL:', currentSermon.audioUrl);
+        toast({
+          title: "Invalid Audio URL",
+          description: "The audio file for this sermon cannot be played. Please check the URL.",
+          variant: "destructive",
+        });
+        setIsAudioReady(false);
+        return;
+      }
+      
+      setIsAudioLoading(true);
       
       // Event listeners
       const setAudioData = () => {
         setDuration(audio.duration);
         setCurrentTime(audio.currentTime);
         setIsAudioReady(true);
+        setIsAudioLoading(false);
         console.log('Audio loaded and ready to play:', audio.src);
       };
       
@@ -54,6 +87,8 @@ export const useAudioPlayer = (customSermons?: Sermon[], defaultSermons?: Sermon
       
       const handleAudioError = (e: any) => {
         console.error('Audio error:', e);
+        setIsAudioLoading(false);
+        setIsAudioReady(false);
         toast({
           title: "Audio Error",
           description: "There was a problem playing this sermon. Please try another or refresh.",
@@ -179,6 +214,7 @@ export const useAudioPlayer = (customSermons?: Sermon[], defaultSermons?: Sermon
     currentSermonIndex,
     localSermons,
     isAudioReady,
+    isAudioLoading,
     setLocalSermons,
     togglePlayPause,
     handlePrevious,

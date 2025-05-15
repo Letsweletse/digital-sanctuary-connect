@@ -8,6 +8,7 @@ import SermonDescription from './form-fields/SermonDescription';
 import SpeakerImageUpload from './form-fields/SpeakerImageUpload';
 import SermonAudioUpload from './form-fields/SermonAudioUpload';
 import FormActions from './form-fields/FormActions';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SermonFormProps {
   sermon?: Sermon;
@@ -27,10 +28,11 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
   const [youtubeId, setYoutubeId] = useState(sermon?.youtubeId || '');
   const [tags, setTags] = useState(sermon?.tags?.join(', ') || '');
   const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [audioUrl, setAudioUrl] = useState<string | null>(sermon?.audioUrl || null);
   const [speakerImage, setSpeakerImage] = useState(sermon?.speakerImage || '');
   const [speakerImageFile, setSpeakerImageFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [series, setSeries] = useState(sermon?.series || '');  // Added series field
+  const [series, setSeries] = useState(sermon?.series || '');
   
   // Log for debugging
   useEffect(() => {
@@ -38,6 +40,37 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
       console.log('Editing sermon:', sermon);
     }
   }, [sermon]);
+
+  // Helper function to upload speaker image to Supabase
+  const uploadSpeakerImageToSupabase = async (file: File) => {
+    try {
+      const timestamp = new Date().getTime();
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${timestamp}-${file.name.substring(0, 20).replace(/[^a-zA-Z0-9]/g, '_')}.${fileExt}`;
+      const filePath = `speakers/${fileName}`;
+      
+      const { data, error } = await supabase.storage
+        .from('sermons')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+        
+      if (error) {
+        console.error('Error uploading speaker image:', error);
+        return null;
+      }
+      
+      const { data: { publicUrl } } = supabase.storage
+        .from('sermons')
+        .getPublicUrl(filePath);
+      
+      return publicUrl;
+    } catch (err) {
+      console.error('Unexpected error during speaker image upload:', err);
+      return null;
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,38 +90,31 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
     try {
       const formattedTags = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
       
-      // In a real application, we would upload the files to a storage service
-      // and get back URLs to use in the sermon data
-      
-      // For demo purposes, create object URLs
-      let audioUrl = sermon?.audioUrl || '';
-      if (audioFile) {
-        audioUrl = URL.createObjectURL(audioFile);
-        console.log('Created audio URL:', audioUrl);
+      // Upload speaker image if there's a new one
+      let speakerImageUrl = speakerImage;
+      if (speakerImageFile) {
+        const imageUrl = await uploadSpeakerImageToSupabase(speakerImageFile);
+        if (imageUrl) {
+          speakerImageUrl = imageUrl;
+        }
       }
       
       const formData = {
         title,
         speaker,
-        speakerImage: speakerImage || '/placeholder.svg',
+        speakerImage: speakerImageUrl || '/placeholder.svg',
         date,
-        audioUrl,
+        audioUrl: audioUrl || '',
         youtubeId,
         description,
         tags: formattedTags,
-        series, // Add series to form data
-        // Add default values for other fields
+        series,
         thumbnailUrl: 'https://lovable.dev/projects/b4242310-0169-49ed-bc97-e6669ce1cf89',
         duration: '00:00', 
       };
       
       console.log('Submitting sermon data:', formData);
       onSubmit(formData);
-      
-      // Cleanup object URLs
-      if (audioFile) {
-        URL.revokeObjectURL(audioUrl);
-      }
     } catch (error) {
       console.error('Error submitting form:', error);
       toast({
@@ -191,6 +217,8 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
             audioFile={audioFile}
             setAudioFile={setAudioFile}
             handleAudioUpload={handleAudioUpload}
+            audioUrl={audioUrl}
+            setAudioUrl={setAudioUrl}
           />
         </div>
         
