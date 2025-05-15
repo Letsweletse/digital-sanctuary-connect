@@ -7,9 +7,10 @@ import { Sermon } from '@/types/sermonTypes';
 interface AudioTabContentProps {
   sermons?: Sermon[];
   handleFileUpload: (file: File) => void;
+  isMobile?: boolean;
 }
 
-const AudioTabContent = ({ sermons, handleFileUpload }: AudioTabContentProps) => {
+const AudioTabContent = ({ sermons, handleFileUpload, isMobile }: AudioTabContentProps) => {
   return (
     <div className="space-y-6">
       <div className="glass-panel p-6 bg-white">

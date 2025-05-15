@@ -5,9 +5,10 @@ import { ImageCategory } from '@/types/imageTypes';
 
 interface ImagesTabContentProps {
   handleFileUpload: (file: File) => void;
+  isMobile?: boolean;
 }
 
-const ImagesTabContent = ({ handleFileUpload }: ImagesTabContentProps) => {
+const ImagesTabContent = ({ handleFileUpload, isMobile }: ImagesTabContentProps) => {
   return (
     <div className="space-y-6">
       <div className="glass-panel p-6 bg-white">
