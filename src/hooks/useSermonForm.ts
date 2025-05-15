@@ -28,7 +28,8 @@ export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 
     setAudioUrl,
     isUploading,
     uploadAudioToSupabase,
-    handleAudioUpload
+    handleAudioUpload,
+    getFormattedDuration
   } = useSermonAudioUpload();
   
   // Form state
@@ -71,9 +72,9 @@ export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 
       // Upload speaker image if there's a new one
       let speakerImageUrl = speakerImage;
       if (speakerImageFile) {
-        const imageUrl = await uploadSpeakerImageToSupabase(speakerImageFile);
-        if (imageUrl) {
-          speakerImageUrl = imageUrl;
+        const imageResult = await uploadSpeakerImageToSupabase(speakerImageFile);
+        if (imageResult) {
+          speakerImageUrl = imageResult;
         }
       }
 
@@ -91,17 +92,8 @@ export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 
       const defaultLogoUrl = logoUrl || '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
       const finalSpeakerImage = speakerImageUrl || defaultLogoUrl;
       
-      // Get audio duration if available
-      let audioDuration = '00:00';
-      if (audioFile && 'duration' in audioFile) {
-        // Cast to any to access custom property
-        const durationSeconds = (audioFile as any).duration;
-        if (durationSeconds) {
-          const minutes = Math.floor(durationSeconds / 60);
-          const seconds = Math.floor(durationSeconds % 60);
-          audioDuration = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-      }
+      // Get audio duration
+      const audioDuration = getFormattedDuration();
       
       const formData = {
         title,
