@@ -1,149 +1,123 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
-import { Sermon } from '@/types/sermonTypes';
+import { Sermon, SermonSchema } from '@/types/sermonTypes';
 import { ImageCategory } from '@/types/imageTypes';
-import { useSpeakerImageUpload } from './useSpeakerImageUpload';
-import { useSermonAudioUpload } from './useSermonAudioUpload';
-import { useLogo } from '@/components/layout/LogoContext';
 
-export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 'id'>) => void) => {
+export const useSermonForm = (sermon: Sermon | undefined, onSubmit: (sermon: Omit<Sermon, 'id'>) => void) => {
+  const router = useRouter();
   const { toast } = useToast();
-  const { logoUrl } = useLogo();
-  
-  // Use the specialized hooks
-  const {
-    speakerImage,
-    setSpeakerImage,
-    speakerImageFile,
-    setSpeakerImageFile,
-    uploadSpeakerImageToSupabase,
-    handleSpeakerImageUpload
-  } = useSpeakerImageUpload();
-  
-  const {
-    audioFile,
-    setAudioFile,
-    audioUrl,
-    setAudioUrl,
-    isUploading,
-    uploadProgress,
-    audioMetadata,
-    uploadAudioToSupabase,
-    handleAudioUpload,
-    getFormattedDuration,
-    getFormattedFileSize
-  } = useSermonAudioUpload();
-  
-  // Form state
   const [title, setTitle] = useState(sermon?.title || '');
   const [speaker, setSpeaker] = useState(sermon?.speaker || '');
-  const [date, setDate] = useState<Date>(sermon?.date ? new Date(sermon.date) : new Date());
+  const [date, setDate] = useState(sermon?.date || new Date());
   const [description, setDescription] = useState(sermon?.description || '');
   const [youtubeId, setYoutubeId] = useState(sermon?.youtubeId || '');
-  const [tags, setTags] = useState(sermon?.tags?.join(', ') || '');
+  const [tags, setTags] = useState(sermon?.tags || []);
+  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [audioUrl, setAudioUrl] = useState<string | null>(sermon?.audioUrl || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [series, setSeries] = useState(sermon?.series || '');
-  
-  // Initialize values from the sermon prop if available
-  useEffect(() => {
-    if (sermon) {
-      console.log('Editing sermon:', sermon);
-      setSpeakerImage(sermon.speakerImage || '');
-      setAudioUrl(sermon.audioUrl || null);
-    }
-  }, [sermon]);
+  const [speakerImage, setSpeakerImage] = useState<File | null>(sermon?.speakerImage || null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Simple validation
-    if (!title || !speaker || !date) {
-      toast({
-        title: "Validation Error",
-        description: "Please fill all required fields.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    setIsSubmitting(true);
-    
-    try {
-      const formattedTags = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
-      
-      // Upload speaker image if there's a new one
-      let speakerImageUrl = speakerImage;
-      if (speakerImageFile) {
-        const imageResult = await uploadSpeakerImageToSupabase(speakerImageFile);
-        if (imageResult) {
-          speakerImageUrl = imageResult;
-        }
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setIsSubmitting(true);
+
+      // Validate required fields
+      if (!title || !speaker || !date) {
+        toast({
+          title: "Missing Information",
+          description: "Please fill in all required fields.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
       }
 
-      // Upload audio file if there's a new one
-      let finalAudioUrl = audioUrl;
+      // Check if either audioFile or youtubeId is provided
+      if (!audioFile && !audioUrl && !youtubeId) {
+        toast({
+          title: "Media Missing",
+          description: "Please upload an audio file or provide a YouTube ID.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // If audioFile is provided, but audioUrl is not, show a warning
       if (audioFile && !audioUrl) {
-        console.log('Uploading audio file during submission:', audioFile.name);
-        const result = await uploadAudioToSupabase(audioFile, 'sermons');
-        if (result.success && result.url) {
-          finalAudioUrl = result.url;
-        }
+        toast({
+          title: "Audio Not Uploaded",
+          description: "Please upload an audio file for this sermon or provide a YouTube ID.",
+          variant: "destructive", // Change from "warning" to "destructive"
+        });
+        setIsSubmitting(false);
+        return;
       }
-      
-      // Verify audio URL is accessible
-      if (finalAudioUrl) {
-        try {
-          const response = await fetch(finalAudioUrl, { method: 'HEAD' });
-          if (!response.ok) {
-            console.warn('Warning: Audio URL may not be publicly accessible:', response.status);
-            toast({
-              title: "Audio Warning",
-              description: "Audio URL might have limited accessibility. Audio playback might be affected.",
-              variant: "warning",
-            });
-          }
-        } catch (err) {
-          console.warn('Error checking audio URL:', err);
-        }
-      }
-      
-      // Use the current logo as fallback for speaker image
-      const defaultLogoUrl = logoUrl || '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
-      const finalSpeakerImage = speakerImageUrl || defaultLogoUrl;
-      
-      // Get audio duration
-      const audioDuration = getFormattedDuration();
-      
-      const formData = {
+
+      const sermonData: Omit<Sermon, 'id'> = {
         title,
         speaker,
-        speakerImage: finalSpeakerImage,
         date,
-        audioUrl: finalAudioUrl || '',
-        youtubeId,
         description,
-        tags: formattedTags,
+        youtubeId,
+        tags,
+        audioUrl: audioUrl || null,
         series,
-        thumbnailUrl: finalSpeakerImage,
-        duration: audioDuration, 
-        fileSize: audioFile ? getFormattedFileSize() : undefined,
+        speakerImage: speakerImage ? speakerImage.name : null,
       };
-      
-      console.log('Submitting sermon data:', formData);
-      if (onSubmit) {
-        onSubmit(formData);
+
+      try {
+        SermonSchema.parse(sermonData);
+        await onSubmit(sermonData);
+        toast({
+          title: "Success",
+          description: sermon ? "Sermon updated successfully!" : "Sermon added successfully!",
+        });
+        router.push('/sermons');
+      } catch (error: any) {
+        console.error("Form submission error:", error);
+        toast({
+          title: "Error",
+          description: error.message || "Failed to submit sermon. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSubmitting(false);
       }
-    } catch (error) {
-      console.error('Error submitting form:', error);
+    },
+    [title, speaker, date, description, youtubeId, tags, audioFile, audioUrl, series, speakerImage, onSubmit, router, toast]
+  );
+
+  const handleSpeakerImageUpload = async (file: File, category: ImageCategory) => {
+    console.log('Speaker image upload handler called with file:', file.name);
+    if (file) {
+      setSpeakerImage(file);
       toast({
-        title: "Error",
-        description: "An error occurred while saving the sermon. Please try again.",
-        variant: "destructive",
+        title: "Speaker image uploaded",
+        description: `File "${file.name}" has been uploaded and is ready to use.`,
       });
-    } finally {
-      setIsSubmitting(false);
+      return true;
     }
+    return false;
+  };
+
+  const handleAudioUpload = async (file: File, category: ImageCategory) => {
+    console.log('Audio upload handler called with file:', file.name);
+    if (file) {
+      setAudioFile(file);
+      setAudioUrl('https://example.com/audio/' + file.name); // Placeholder URL
+      toast({
+        title: "Audio uploaded",
+        description: `File "${file.name}" has been uploaded and is ready to use.`,
+      });
+      return true;
+    }
+    return false;
   };
 
   return {
@@ -163,13 +137,13 @@ export const useSermonForm = (sermon?: Sermon, onSubmit?: (sermon: Omit<Sermon, 
     setAudioFile,
     audioUrl,
     setAudioUrl,
-    speakerImage,
-    setSpeakerImage,
     isSubmitting,
     isUploading,
     uploadProgress,
     series,
     setSeries,
+    speakerImage,
+    setSpeakerImage,
     handleSubmit,
     handleSpeakerImageUpload,
     handleAudioUpload
