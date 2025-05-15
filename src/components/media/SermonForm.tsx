@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Sermon } from '@/types/sermonTypes';
 import SermonBasicInfo from './form-fields/SermonBasicInfo';
@@ -9,6 +8,7 @@ import FormActions from './form-fields/FormActions';
 import SermonSeries from './form-fields/SermonSeries';
 import { useSermonForm } from '@/hooks/useSermonForm';
 import { Separator } from '@/components/ui/separator';
+import { format } from 'date-fns';
 
 interface SermonFormProps {
   sermon?: Sermon;
