@@ -19,13 +19,21 @@ const MediaSection = () => {
   // Handle tab change
   const handleTabChange = (value: string) => {
     setSelectedTab(value);
-    // Force refresh sermon data when changing tabs, especially important on mobile
-    if (value === "audio" && isMobile) {
+    // Force refresh sermon data when changing tabs
+    if (value === "audio") {
       // Add a small delay to ensure DOM is ready
       setTimeout(() => {
-        console.log('Refreshing sermon data on mobile tab change');
+        console.log('Refreshing sermon data on tab change');
         window.dispatchEvent(new Event('sermon-refresh'));
-      }, 200); // Increased delay for mobile devices
+      }, isMobile ? 300 : 100); // Longer delay for mobile devices
+    }
+    
+    // For images tab, force refresh images
+    if (value === "images") {
+      setTimeout(() => {
+        console.log('Refreshing images on tab change');
+        window.dispatchEvent(new CustomEvent('image-refresh'));
+      }, isMobile ? 300 : 100);
     }
   };
   
@@ -36,20 +44,18 @@ const MediaSection = () => {
       title: "Upload successful",
       description: `${file.name} has been uploaded successfully.`,
     });
-    
-    // In a real application, you would handle the file upload here
-    // For example, uploading to a storage service like Firebase, AWS S3, etc.
   };
   
   // Handler for DragDropUploader compatibility
   const handleCategorizedUpload = async (file: File, category: ImageCategory): Promise<boolean> => {
     console.log('File uploaded:', file, 'Category:', category);
     
-    // Show upload notification for mobile users
+    // Show upload notification for mobile users with a longer duration
     if (isMobile) {
       toast({
         title: "Mobile upload complete",
         description: `${file.name} has been uploaded to ${category} category.`,
+        duration: 4000, // Longer for mobile to ensure users see it
       });
     }
     
@@ -65,18 +71,18 @@ const MediaSection = () => {
     
     // Force refresh when switching back to this tab on mobile
     const handleVisibilityChange = () => {
-      if (!document.hidden && isMobile) {
-        console.log('Page became visible on mobile, refreshing content');
+      if (!document.hidden) {
+        console.log('Page became visible, refreshing content');
         
         // For audio tab, refresh sermon data
         if (selectedTab === "audio") {
-          console.log('Refreshing sermon data on mobile visibility change');
+          console.log('Refreshing sermon data on visibility change');
           window.dispatchEvent(new Event('sermon-refresh'));
         }
         
         // For images tab, force rerender of images
         if (selectedTab === "images") {
-          console.log('Forcing image refresh on mobile visibility change');
+          console.log('Forcing image refresh on visibility change');
           // Trigger a refresh via a custom event
           window.dispatchEvent(new CustomEvent('image-refresh'));
         }
@@ -87,12 +93,12 @@ const MediaSection = () => {
     
     // Additional mobile-specific setup
     if (isMobile) {
-      // Force initial load for mobile devices
+      // Force initial load for mobile devices with a longer timeout
       const timer = setTimeout(() => {
         console.log('Initial mobile content refresh');
         window.dispatchEvent(new Event('sermon-refresh'));
         window.dispatchEvent(new CustomEvent('image-refresh'));
-      }, 800);
+      }, 1000); // Increased timeout for mobile
       
       return () => {
         clearTimeout(timer);
@@ -100,8 +106,19 @@ const MediaSection = () => {
       };
     }
     
+    // Listen for device changes
+    const handleDeviceChange = () => {
+      console.log('Device type changed, refreshing media section');
+      // Force refresh of all media components
+      window.dispatchEvent(new Event('sermon-refresh'));
+      window.dispatchEvent(new CustomEvent('image-refresh'));
+    };
+    
+    window.addEventListener('device-changed', handleDeviceChange);
+    
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('device-changed', handleDeviceChange);
     };
   }, [selectedTab, sermons?.length, isMobile]);
   

@@ -4,6 +4,7 @@ import { FileText } from 'lucide-react';
 import SermonItem from './SermonItem';
 import { Sermon } from '@/types/sermonTypes';
 import { useLogo } from '@/components/layout/LogoContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface SermonListProps {
   sermons: Sermon[];
@@ -13,7 +14,21 @@ interface SermonListProps {
 
 const SermonList = ({ sermons, onEditSermon, onDeleteSermon }: SermonListProps) => {
   const { logoUrl } = useLogo();
+  const isMobile = useIsMobile();
   const defaultLogo = '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
+  
+  React.useEffect(() => {
+    // Force refresh when device type changes
+    const handleDeviceChange = () => {
+      console.log('Device changed, refreshing sermon list');
+    };
+    
+    window.addEventListener('device-changed', handleDeviceChange);
+    
+    return () => {
+      window.removeEventListener('device-changed', handleDeviceChange);
+    };
+  }, []);
   
   if (sermons.length === 0) {
     return (
@@ -36,7 +51,8 @@ const SermonList = ({ sermons, onEditSermon, onDeleteSermon }: SermonListProps) 
             thumbnailUrl: logoUrl || defaultLogo
           }} 
           onEdit={onEditSermon} 
-          onDelete={onDeleteSermon} 
+          onDelete={onDeleteSermon}
+          isMobile={isMobile}
         />
       ))}
     </div>

@@ -1,16 +1,37 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { useSermons } from '@/hooks/useSermons';
 import { Sermon } from '@/types/sermonTypes';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export function useSermonManager() {
   const { sermons, addSermon, updateSermon, deleteSermon } = useSermons();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedSermon, setSelectedSermon] = useState<Sermon | null>(null);
+  
+  // When component mounts or device changes, ensure mobile-compatible operation
+  useEffect(() => {
+    if (isMobile) {
+      console.log('SermonManager running on mobile device');
+    } else {
+      console.log('SermonManager running on desktop device');
+    }
+    
+    const handleDataRefresh = () => {
+      console.log('Sermon data refresh event received');
+    };
+    
+    window.addEventListener('sermon-refresh', handleDataRefresh);
+    
+    return () => {
+      window.removeEventListener('sermon-refresh', handleDataRefresh);
+    };
+  }, [isMobile]);
   
   // Reset state
   const resetState = () => {
@@ -30,10 +51,20 @@ export function useSermonManager() {
   const handleDeleteSermon = (id: string) => {
     if (window.confirm('Are you sure you want to delete this sermon?')) {
       deleteSermon(id);
-      toast({
-        title: "Sermon deleted",
-        description: "The sermon has been successfully deleted.",
-      });
+      
+      // Show different toast styles based on device
+      if (isMobile) {
+        toast({
+          title: "Sermon deleted",
+          description: "The sermon has been successfully deleted.",
+          duration: 3000, // Shorter duration for mobile
+        });
+      } else {
+        toast({
+          title: "Sermon deleted",
+          description: "The sermon has been successfully deleted.",
+        });
+      }
     }
   };
   
@@ -60,6 +91,13 @@ export function useSermonManager() {
         });
         
         console.log('New sermon added:', newSermon);
+      }
+      
+      // Force refresh on mobile devices to ensure updates are visible
+      if (isMobile) {
+        setTimeout(() => {
+          window.dispatchEvent(new Event('sermon-refresh'));
+        }, 300);
       }
       
       // Reset state

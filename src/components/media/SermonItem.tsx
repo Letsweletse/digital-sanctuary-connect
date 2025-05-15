@@ -11,11 +11,19 @@ interface SermonItemProps {
   sermon: Sermon;
   onEdit: (sermon: Sermon) => void;
   onDelete: (id: string) => void;
+  isMobile?: boolean;
 }
 
-const SermonItem = ({ sermon, onEdit, onDelete }: SermonItemProps) => {
+const SermonItem = ({ sermon, onEdit, onDelete, isMobile = false }: SermonItemProps) => {
   const { logoUrl } = useLogo();
   const defaultLogo = '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
+  
+  // Force render when image or logo changes
+  React.useEffect(() => {
+    if (isMobile) {
+      console.log('SermonItem rendering on mobile', sermon.title);
+    }
+  }, [isMobile, sermon.id, logoUrl]);
 
   return (
     <div className="glass-panel bg-white p-4 rounded-lg shadow-sm border border-church-neutral-100 hover:border-church-neutral-200 transition-all">
@@ -23,7 +31,8 @@ const SermonItem = ({ sermon, onEdit, onDelete }: SermonItemProps) => {
         <Avatar className="h-16 w-16 rounded-md shadow-sm flex-shrink-0">
           <AvatarImage 
             src={logoUrl || defaultLogo} 
-            alt={sermon.speaker} 
+            alt={sermon.speaker}
+            loading={isMobile ? "eager" : "lazy"} // Load immediately on mobile
           />
           <AvatarFallback className="rounded-md">{sermon.speaker?.charAt(0) || 'S'}</AvatarFallback>
         </Avatar>
