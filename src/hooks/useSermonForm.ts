@@ -1,25 +1,24 @@
+
 import { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Sermon, SermonSchema } from '@/types/sermonTypes';
 import { ImageCategory } from '@/types/imageTypes';
 
 export const useSermonForm = (sermon: Sermon | undefined, onSubmit: (sermon: Omit<Sermon, 'id'>) => void) => {
-  const router = useRouter();
   const { toast } = useToast();
   const [title, setTitle] = useState(sermon?.title || '');
   const [speaker, setSpeaker] = useState(sermon?.speaker || '');
   const [date, setDate] = useState(sermon?.date || new Date());
   const [description, setDescription] = useState(sermon?.description || '');
   const [youtubeId, setYoutubeId] = useState(sermon?.youtubeId || '');
-  const [tags, setTags] = useState(sermon?.tags || []);
+  const [tags, setTags] = useState<string[]>(sermon?.tags || []);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(sermon?.audioUrl || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [series, setSeries] = useState(sermon?.series || '');
-  const [speakerImage, setSpeakerImage] = useState<File | null>(sermon?.speakerImage || null);
+  const [speakerImage, setSpeakerImage] = useState<string | null>(sermon?.speakerImage || null);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -53,7 +52,7 @@ export const useSermonForm = (sermon: Sermon | undefined, onSubmit: (sermon: Omi
         toast({
           title: "Audio Not Uploaded",
           description: "Please upload an audio file for this sermon or provide a YouTube ID.",
-          variant: "destructive", // Change from "warning" to "destructive"
+          variant: "destructive",
         });
         setIsSubmitting(false);
         return;
@@ -65,10 +64,10 @@ export const useSermonForm = (sermon: Sermon | undefined, onSubmit: (sermon: Omi
         date,
         description,
         youtubeId,
-        tags,
-        audioUrl: audioUrl || null,
+        tags: tags || [],
+        audioUrl: audioUrl || '',
         series,
-        speakerImage: speakerImage ? speakerImage.name : null,
+        speakerImage: speakerImage || '',
       };
 
       try {
@@ -78,7 +77,8 @@ export const useSermonForm = (sermon: Sermon | undefined, onSubmit: (sermon: Omi
           title: "Success",
           description: sermon ? "Sermon updated successfully!" : "Sermon added successfully!",
         });
-        router.push('/sermons');
+        
+        // We previously used router.push but now will rely on parent component handling navigation
       } catch (error: any) {
         console.error("Form submission error:", error);
         toast({
@@ -90,13 +90,15 @@ export const useSermonForm = (sermon: Sermon | undefined, onSubmit: (sermon: Omi
         setIsSubmitting(false);
       }
     },
-    [title, speaker, date, description, youtubeId, tags, audioFile, audioUrl, series, speakerImage, onSubmit, router, toast]
+    [title, speaker, date, description, youtubeId, tags, audioFile, audioUrl, series, speakerImage, onSubmit, sermon, toast]
   );
 
-  const handleSpeakerImageUpload = async (file: File, category: ImageCategory) => {
+  const handleSpeakerImageUpload = async (file: File, category: ImageCategory): Promise<boolean> => {
     console.log('Speaker image upload handler called with file:', file.name);
     if (file) {
-      setSpeakerImage(file);
+      // In a real app, we would upload the file and get a URL back
+      // For now, just store the filename as a placeholder
+      setSpeakerImage(file.name);
       toast({
         title: "Speaker image uploaded",
         description: `File "${file.name}" has been uploaded and is ready to use.`,
@@ -106,7 +108,7 @@ export const useSermonForm = (sermon: Sermon | undefined, onSubmit: (sermon: Omi
     return false;
   };
 
-  const handleAudioUpload = async (file: File, category: ImageCategory) => {
+  const handleAudioUpload = async (file: File, category: ImageCategory): Promise<boolean> => {
     console.log('Audio upload handler called with file:', file.name);
     if (file) {
       setAudioFile(file);

@@ -70,14 +70,14 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
           description={description}
           setDescription={setDescription}
           tags={tags}
-          setTags={setTags}
+          setTags={(newTags: string[]) => setTags(newTags)}
         />
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <SpeakerImageUpload
             speaker={speaker}
             speakerImage={speakerImage}
-            setSpeakerImage={setSpeakerImage}
+            setSpeakerImage={(url: string) => setSpeakerImage(url)}
             handleSpeakerImageUpload={handleSpeakerImageUpload}
           />
           
