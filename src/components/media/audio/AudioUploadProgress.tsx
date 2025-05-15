@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
+import { Upload } from 'lucide-react';
 
 interface AudioUploadProgressProps {
   isUploading: boolean;
@@ -18,14 +19,26 @@ const AudioUploadProgress: React.FC<AudioUploadProgressProps> = ({
   }
   
   return (
-    <div className="mb-6 p-4 bg-church-neutral-50 rounded-md border border-church-neutral-200">
-      <div className="flex items-center justify-between mb-3">
-        <h4 className="font-medium text-sm">Uploading {fileName}</h4>
-        <span className="text-sm text-church-blue">{uploadProgress}%</span>
+    <div className="mb-6 p-4 bg-church-blue-light/5 rounded-md border border-church-blue-light/20">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="bg-church-blue-light/20 p-1.5 rounded-full">
+          <Upload className="h-4 w-4 text-church-blue animate-pulse" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h4 className="font-medium text-sm text-church-neutral-800 truncate">
+            Uploading {fileName}
+          </h4>
+          <span className="text-xs text-church-blue">{uploadProgress}% complete</span>
+        </div>
       </div>
-      <Progress value={uploadProgress} className="h-2" />
+      
+      <Progress 
+        value={uploadProgress} 
+        className="h-2 bg-church-neutral-100" 
+      />
+      
       <p className="text-xs text-church-neutral-500 mt-2">
-        Please wait while your audio file is being uploaded to the server...
+        Please wait while your audio file is being processed...
       </p>
     </div>
   );

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, X, Volume2, AlertCircle } from 'lucide-react';
+import { Play, Pause, X, FileAudio, AlertCircle } from 'lucide-react';
 
 interface AudioFileDisplayProps {
   audioFile: File | null;
@@ -25,20 +25,28 @@ const AudioFileDisplay = ({
   const fileName = displayName || audioFile?.name || 'sermon-audio.mp3';
   const canPlay = !!audioUrl && !audioError;
   
+  // Format file size
+  const formatFileSize = (size: number) => {
+    if (size < 1024 * 1024) {
+      return `${(size / 1024).toFixed(2)} KB`;
+    }
+    return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+  };
+  
   return (
-    <div className="bg-church-neutral-50 border border-church-neutral-200 rounded-lg p-4 mb-4">
+    <div className="bg-white border border-church-neutral-200 rounded-lg p-4 mb-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <div className="bg-church-blue-light/30 rounded-full p-2 mr-3">
-            <Volume2 className="w-5 h-5 text-church-blue-dark" />
+            <FileAudio className="w-5 h-5 text-church-blue-dark" />
           </div>
           <div className="overflow-hidden">
-            <p className="font-medium text-church-neutral-800 truncate" title={fileName}>
+            <p className="font-medium text-church-neutral-800 truncate max-w-xs" title={fileName}>
               {fileName}
             </p>
             {audioFile && (
               <p className="text-xs text-church-neutral-500">
-                {(audioFile.size / (1024 * 1024)).toFixed(2)} MB
+                {formatFileSize(audioFile.size)}
               </p>
             )}
           </div>
@@ -74,14 +82,14 @@ const AudioFileDisplay = ({
       </div>
       
       {audioError && (
-        <div className="mt-2 text-xs text-red-500 flex items-center">
-          <AlertCircle className="w-3 h-3 mr-1" />
+        <div className="mt-3 text-xs text-red-500 bg-red-50 p-2 rounded-md flex items-center">
+          <AlertCircle className="w-3.5 h-3.5 mr-1.5" />
           <span>Error: {audioError}</span>
         </div>
       )}
       
       {audioUrl && !audioError && (
-        <div className="mt-2 text-xs text-church-blue">
+        <div className="mt-3 text-xs text-church-blue bg-church-blue-light/10 p-2 rounded-md">
           Audio file ready for submission
         </div>
       )}

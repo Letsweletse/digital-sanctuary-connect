@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Sermon } from '@/types/sermonTypes';
 import SermonBasicInfo from './form-fields/SermonBasicInfo';
@@ -48,52 +49,78 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
   } = useSermonForm(sermon, onSubmit);
 
   return (
-    <div className="glass-panel bg-white p-6 rounded-xl shadow-md">
+    <div className="glass-panel bg-white p-6 rounded-xl shadow-md max-w-5xl mx-auto">
       <h3 className="text-xl font-bold text-church-neutral-900 mb-6">
         {isEditing ? 'Edit Sermon' : 'Add New Sermon'}
       </h3>
       
       <form onSubmit={handleSubmit} className="space-y-8">
         <section>
-          <h4 className="text-lg font-medium text-church-neutral-800 mb-4">Step 1: Enter Sermon Information</h4>
-          <SermonBasicInfo
-            title={title}
-            setTitle={setTitle}
-            speaker={speaker}
-            setSpeaker={setSpeaker}
-            date={date}
-            setDate={setDate}
-            youtubeId={youtubeId}
-            setYoutubeId={setYoutubeId}
-          />
+          <h4 className="text-lg font-medium text-church-blue flex items-center gap-2 mb-4">
+            <span className="flex items-center justify-center bg-church-blue-light/20 w-8 h-8 rounded-full text-church-blue font-bold">
+              1
+            </span> 
+            Enter Sermon Information
+          </h4>
+          <div className="bg-white rounded-md shadow-sm border border-church-neutral-200 p-5">
+            <SermonBasicInfo
+              title={title}
+              setTitle={setTitle}
+              speaker={speaker}
+              setSpeaker={setSpeaker}
+              date={date}
+              setDate={setDate}
+              youtubeId={youtubeId}
+              setYoutubeId={setYoutubeId}
+            />
+          </div>
         </section>
         
         <Separator />
         
         <section>
-          <h4 className="text-lg font-medium text-church-neutral-800 mb-4">Step 2: Choose Sermon Series (Optional)</h4>
-          <SermonSeries series={series} setSeries={setSeries} />
+          <h4 className="text-lg font-medium text-church-blue flex items-center gap-2 mb-4">
+            <span className="flex items-center justify-center bg-church-blue-light/20 w-8 h-8 rounded-full text-church-blue font-bold">
+              2
+            </span> 
+            Choose Sermon Series (Optional)
+          </h4>
+          <div className="bg-white rounded-md shadow-sm border border-church-neutral-200 p-5">
+            <SermonSeries series={series} setSeries={setSeries} />
+          </div>
         </section>
         
         <Separator />
         
         <section>
-          <h4 className="text-lg font-medium text-church-neutral-800 mb-4">Step 3: Add Description & Tags</h4>
-          <SermonDescription
-            description={description}
-            setDescription={setDescription}
-            tags={tags}
-            setTags={(newTags: string[]) => setTags(newTags)}
-          />
+          <h4 className="text-lg font-medium text-church-blue flex items-center gap-2 mb-4">
+            <span className="flex items-center justify-center bg-church-blue-light/20 w-8 h-8 rounded-full text-church-blue font-bold">
+              3
+            </span> 
+            Add Description & Tags
+          </h4>
+          <div className="bg-white rounded-md shadow-sm border border-church-neutral-200 p-5">
+            <SermonDescription
+              description={description}
+              setDescription={setDescription}
+              tags={tags}
+              setTags={(newTags: string[]) => setTags(newTags)}
+            />
+          </div>
         </section>
         
         <Separator />
         
         <section>
-          <h4 className="text-lg font-medium text-church-neutral-800 mb-4">Step 4: Upload Media</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="border border-church-neutral-200 rounded-lg p-4">
-              <h5 className="font-medium text-church-neutral-700 mb-3">Speaker Image</h5>
+          <h4 className="text-lg font-medium text-church-blue flex items-center gap-2 mb-4">
+            <span className="flex items-center justify-center bg-church-blue-light/20 w-8 h-8 rounded-full text-church-blue font-bold">
+              4
+            </span> 
+            Upload Media
+          </h4>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white rounded-md shadow-sm border border-church-neutral-200 p-5">
+              <h5 className="font-medium text-church-neutral-700 mb-4">Speaker Image</h5>
               <SpeakerImageUpload
                 speaker={speaker}
                 speakerImage={speakerImage}
@@ -102,14 +129,8 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
               />
             </div>
             
-            <div className="border border-church-neutral-200 rounded-lg p-4">
-              <h5 className="font-medium text-church-neutral-700 mb-3">Sermon Audio File</h5>
-              <p className="text-sm text-church-neutral-600 mb-4">
-                The audio file will be associated with the sermon details from Step 1:
-                <span className="block mt-2 font-medium">Title: {title || '(Not set)'}</span>
-                <span className="block font-medium">Speaker: {speaker || '(Not set)'}</span>
-                <span className="block font-medium">Date: {date ? format(date, "PPP") : '(Not set)'}</span>
-              </p>
+            <div className="bg-white rounded-md shadow-sm border border-church-neutral-200 p-5">
+              <h5 className="font-medium text-church-neutral-700 mb-4">Sermon Audio File</h5>
               <SermonAudioUpload
                 audioFile={audioFile}
                 setAudioFile={setAudioFile}

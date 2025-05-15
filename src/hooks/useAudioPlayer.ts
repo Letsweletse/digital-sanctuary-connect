@@ -1,144 +1,98 @@
 
 import { useState, useRef, useEffect } from 'react';
-import { Sermon } from '@/types/sermonTypes';
 import { useToast } from '@/hooks/use-toast';
-import { useAudioValidation } from './useAudioValidation';
-import { useAudioPlayback } from './useAudioPlayback';
-import { useSermonPlaylist } from './useSermonPlaylist';
 
-export const useAudioPlayer = (customSermons?: Sermon[], defaultSermons?: Sermon[]) => {
+export const useAudioPlayer = (audioUrl: string | null) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
-  
-  // Use our specialized hooks
-  const { isValidAudioUrl, validateAudioUrl } = useAudioValidation();
-  
-  const {
-    currentSermonIndex,
-    setCurrentSermonIndex,
-    localSermons,
-    setLocalSermons,
-    currentSermon,
-    handlePrevious,
-    handleNext
-  } = useSermonPlaylist(customSermons || [], defaultSermons);
-  
-  const {
-    isPlaying,
-    setIsPlaying,
-    duration,
-    setDuration,
-    currentTime,
-    setCurrentTime,
-    volume,
-    isMuted,
-    isAudioReady,
-    setIsAudioReady,
-    isAudioLoading,
-    setIsAudioLoading,
-    togglePlayPause,
-    handleTimeChange,
-    handleVolumeChange,
-    toggleMute
-  } = useAudioPlayback(audioRef);
-  
-  // Initialize sermons from props or default
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioError, setAudioError] = useState<string | null>(null);
+  const [isAudioTestable, setIsAudioTestable] = useState(false);
+  const [isTestingAudio, setIsTestingAudio] = useState(false);
+
+  // Reset state when audio URL changes
   useEffect(() => {
-    console.log('useAudioPlayer: Initializing sermons');
-    console.log('Custom sermons provided:', customSermons?.length || 0);
-    
-    // Determine which sermons to use
-    const sermonsToUse = customSermons || defaultSermons || [];
-    console.log('Using sermons:', sermonsToUse.length);
-    
-    // Reset player state when sermons change
-    setLocalSermons(sermonsToUse);
-    setCurrentSermonIndex(0);
     setIsPlaying(false);
-    setIsAudioReady(false);
+    setAudioError(null);
     
-    if (audioRef.current) {
+    // Check if audio is available and testable
+    if (audioUrl) {
+      setIsAudioTestable(true);
+    } else {
+      setIsAudioTestable(false);
+    }
+  }, [audioUrl]);
+
+  // Handle changes in the audio element
+  useEffect(() => {
+    if (!audioRef.current) return;
+
+    const audio = audioRef.current;
+    
+    // Add event listeners to handle audio state
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+    const handleError = (e: ErrorEvent) => {
+      console.error('Audio error:', e);
+      setAudioError('Could not play audio file. Format may be unsupported.');
+      setIsPlaying(false);
+      
+      toast({
+        title: "Audio Playback Error",
+        description: "Could not play this audio file. The format may be unsupported.",
+        variant: "destructive",
+      });
+    };
+
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
+    audio.addEventListener('error', handleError as EventListener);
+
+    // Cleanup listeners on unmount
+    return () => {
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('error', handleError as EventListener);
+    };
+  }, [toast]);
+
+  // Toggle play/pause
+  const togglePlayPause = () => {
+    if (!audioRef.current || !audioUrl) return;
+    
+    if (isPlaying) {
       audioRef.current.pause();
+    } else {
+      const playPromise = audioRef.current.play();
+      
+      if (playPromise) {
+        playPromise.catch(error => {
+          console.error('Error playing audio:', error);
+          setAudioError('Playback failed. Try again.');
+        });
+      }
+    }
+  };
+
+  // Handle audio ended event
+  const handleAudioEnded = () => {
+    setIsPlaying(false);
+    
+    // Reset to beginning
+    if (audioRef.current) {
       audioRef.current.currentTime = 0;
     }
-  }, [customSermons, defaultSermons]);
-  
-  // Update audio element when current sermon changes
-  useEffect(() => {
-    if (audioRef.current && localSermons.length > 0 && currentSermonIndex < localSermons.length) {
-      const audio = audioRef.current;
-      const currentSermon = localSermons[currentSermonIndex];
-      
-      // Don't attempt to load invalid URLs
-      if (!currentSermon || !currentSermon.audioUrl) {
-        setIsAudioReady(false);
-        return;
-      }
-      
-      // Validate URL before attempting to load
-      if (!validateAudioUrl(currentSermon.audioUrl)) {
-        setIsAudioReady(false);
-        return;
-      }
-      
-      setIsAudioLoading(true);
-      
-      // Event listeners
-      const setAudioData = () => {
-        setDuration(audio.duration);
-        setCurrentTime(audio.currentTime);
-        setIsAudioReady(true);
-        setIsAudioLoading(false);
-        console.log('Audio loaded and ready to play:', audio.src);
-      };
-      
-      const setAudioTime = () => setCurrentTime(audio.currentTime);
-      
-      const handleAudioError = (e: any) => {
-        console.error('Audio error:', e);
-        setIsAudioLoading(false);
-        setIsAudioReady(false);
-        toast({
-          title: "Audio Error",
-          description: "There was a problem playing this sermon. Please try another or refresh.",
-          variant: "destructive",
-        });
-        setIsPlaying(false);
-      };
-      
-      // Add event listeners
-      audio.addEventListener('loadeddata', setAudioData);
-      audio.addEventListener('timeupdate', setAudioTime);
-      audio.addEventListener('error', handleAudioError);
-      
-      // Cleanup
-      return () => {
-        audio.removeEventListener('loadeddata', setAudioData);
-        audio.removeEventListener('timeupdate', setAudioTime);
-        audio.removeEventListener('error', handleAudioError);
-      };
-    }
-  }, [currentSermonIndex, localSermons, toast]);
-  
+  };
+
   return {
-    audioRef,
-    currentSermon,
+    isAudioTestable,
+    isTestingAudio,
+    setIsTestingAudio,
     isPlaying,
-    isMuted,
-    currentTime,
-    duration,
-    volume,
-    currentSermonIndex,
-    localSermons,
-    isAudioReady,
-    isAudioLoading,
-    setLocalSermons,
+    audioError,
+    setAudioError,
+    audioRef,
     togglePlayPause,
-    handlePrevious,
-    handleNext,
-    handleTimeChange,
-    handleVolumeChange,
-    toggleMute,
-    setCurrentSermonIndex,
+    handleAudioEnded
   };
 };
