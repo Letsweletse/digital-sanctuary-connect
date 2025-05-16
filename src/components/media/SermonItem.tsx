@@ -17,6 +17,15 @@ interface SermonItemProps {
 const SermonItem = ({ sermon, onEdit, onDelete, isMobile = false }: SermonItemProps) => {
   const { logoUrl } = useLogo();
   const defaultLogo = '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
+  const pastorKobusImage = '/lovable-uploads/20736aa1-df4f-4d5b-b226-d41cb293bbe0.png';
+  
+  // Get the appropriate speaker image
+  const getSpeakerImage = () => {
+    if (sermon.speaker === 'Pastor Kobus Bezuidenhout') {
+      return pastorKobusImage;
+    }
+    return sermon.speakerImage || logoUrl || defaultLogo;
+  };
   
   // Force render when image or logo changes
   React.useEffect(() => {
@@ -30,7 +39,7 @@ const SermonItem = ({ sermon, onEdit, onDelete, isMobile = false }: SermonItemPr
       <div className="flex flex-col sm:flex-row items-start gap-4">
         <Avatar className="h-16 w-16 rounded-md shadow-sm flex-shrink-0">
           <AvatarImage 
-            src={logoUrl || defaultLogo} 
+            src={getSpeakerImage()} 
             alt={sermon.speaker}
             loading={isMobile ? "eager" : "lazy"} // Load immediately on mobile
           />

@@ -17,6 +17,15 @@ const SermonGridView = ({ sermons }: SermonGridViewProps) => {
   const isMobile = useIsMobile();
   const { logoUrl } = useLogo();
   const defaultLogo = '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
+  const pastorKobusImage = '/lovable-uploads/20736aa1-df4f-4d5b-b226-d41cb293bbe0.png';
+  
+  // Get the appropriate speaker image
+  const getSpeakerImage = (speaker: string) => {
+    if (speaker === 'Pastor Kobus Bezuidenhout') {
+      return pastorKobusImage;
+    }
+    return logoUrl || defaultLogo;
+  };
   
   if (sermons.length === 0) {
     return (
@@ -38,7 +47,7 @@ const SermonGridView = ({ sermons }: SermonGridViewProps) => {
         >
           <div className="relative h-40 sm:h-44 bg-church-neutral-100">
             <img 
-              src={logoUrl || defaultLogo}
+              src={getSpeakerImage(sermon.speaker)}
               alt={sermon.title}
               className="w-full h-full object-cover"
               itemProp="thumbnailUrl"

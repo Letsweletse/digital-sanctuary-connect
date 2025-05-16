@@ -17,6 +17,15 @@ interface SermonListViewProps {
 const SermonListView = ({ sermons }: SermonListViewProps) => {
   const { logoUrl } = useLogo();
   const defaultLogo = '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
+  const pastorKobusImage = '/lovable-uploads/20736aa1-df4f-4d5b-b226-d41cb293bbe0.png';
+
+  // Get the appropriate speaker image
+  const getSpeakerImage = (speaker: string) => {
+    if (speaker === 'Pastor Kobus Bezuidenhout') {
+      return pastorKobusImage;
+    }
+    return logoUrl || defaultLogo;
+  };
 
   if (sermons.length === 0) {
     return (
@@ -39,7 +48,7 @@ const SermonListView = ({ sermons }: SermonListViewProps) => {
             <div className="flex flex-col items-center space-y-2 sm:w-28">
               <Avatar className="h-16 w-16 rounded-md shadow-sm flex-shrink-0">
                 <AvatarImage 
-                  src={logoUrl || defaultLogo} 
+                  src={getSpeakerImage(sermon.speaker)} 
                   alt={sermon.speaker} 
                 />
                 <AvatarFallback className="rounded-md">
