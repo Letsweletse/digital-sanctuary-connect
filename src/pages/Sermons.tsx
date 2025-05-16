@@ -6,6 +6,7 @@ import { useSermonFilters } from '@/hooks/useSermonFilters';
 import SermonHeader from '@/components/sermons/SermonHeader';
 import FilterBar from '@/components/sermons/FilterBar';
 import ViewSelector from '@/components/sermons/ViewSelector';
+import SermonSeriesList from '@/components/sermons/SermonSeriesList'; // Import the new component
 import { Card, CardContent } from '@/components/ui/card';
 
 const Sermons = () => {
@@ -143,14 +144,9 @@ const Sermons = () => {
                   </div>
                   
                   <div className="bg-white rounded-lg shadow-sm border border-church-neutral-200 p-4">
-                    <h3 className="font-semibold text-church-neutral-800 mb-3 border-b pb-2">Featured Series</h3>
-                    <div className="space-y-2">
-                      {Array.from(new Set(sermons.filter(s => s.series).map(s => s.series))).slice(0, 5).map((series) => (
-                        <div key={series} className="text-sm text-church-blue hover:text-church-blue-dark cursor-pointer">
-                          {series}
-                        </div>
-                      ))}
-                    </div>
+                    <h3 className="font-semibold text-church-neutral-800 mb-3 border-b pb-2">Sermon Series</h3>
+                    {/* Replace the previous static content with the SermonSeriesList component */}
+                    <SermonSeriesList sermons={sermons} />
                   </div>
                 </div>
               </div>

@@ -10,6 +10,7 @@ import { LogoProvider } from "./components/layout/LogoContext";
 // Pages
 import Index from "./pages/Index";
 import Sermons from "./pages/Sermons";
+import SermonSeries from "./pages/SermonSeries"; // Add the new page import
 import Leadership from "./pages/Leadership";
 import HouseChurch from "./pages/HouseChurch";
 import About from "./pages/About";
@@ -55,6 +56,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/sermons" element={<Sermons />} />
+            <Route path="/sermon-series/:seriesName" element={<SermonSeries />} /> {/* Add the new route */}
             <Route path="/leadership" element={<Leadership />} />
             <Route path="/house-church" element={<HouseChurch />} />
             <Route path="/about" element={<About />} />
