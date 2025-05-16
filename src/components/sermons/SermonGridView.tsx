@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { format } from 'date-fns';
 import { Calendar, User, Download, Play, Bookmark, Clock, BookmarkCheck } from 'lucide-react';
@@ -19,6 +18,7 @@ const SermonGridView = ({ sermons }: SermonGridViewProps) => {
   const defaultLogo = '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
   const pastorKobusImage = '/lovable-uploads/20736aa1-df4f-4d5b-b226-d41cb293bbe0.png';
   const pastorOtengImage = '/lovable-uploads/bb2cad8b-0655-4b9e-acde-059a018eba68.png';
+  const pastorCynthiaImage = '/lovable-uploads/cfcf20f7-6921-4a44-b7ca-47809450d18c.png';
   
   // Get the appropriate speaker image
   const getSpeakerImage = (speaker: string) => {
@@ -27,6 +27,9 @@ const SermonGridView = ({ sermons }: SermonGridViewProps) => {
     }
     if (speaker === 'Pastor Oteng Leepile') {
       return pastorOtengImage;
+    }
+    if (speaker === 'Pastor Cynthia Harman') {
+      return pastorCynthiaImage;
     }
     return logoUrl || defaultLogo;
   };

@@ -1,3 +1,4 @@
+
 import { Sermon } from '@/types/sermonTypes';
 
 export const sermonsData: Sermon[] = [
@@ -128,5 +129,22 @@ export const sermonsData: Sermon[] = [
     downloads: 0,
     views: 0,
     series: 'Perspectives on the Apostolic'
+  },
+  {
+    id: '24',
+    title: 'Walking In Faith',
+    speaker: 'Pastor Cynthia Harman',
+    speakerImage: '/lovable-uploads/cfcf20f7-6921-4a44-b7ca-47809450d18c.png',
+    date: new Date('2025-05-16'),
+    audioUrl: 'https://cdn.devdojo.com/episode/June2023/the-making-of-wave.mp3',
+    youtubeId: 'abc123xyz',
+    description: 'A powerful sermon about walking in faith during challenging times.',
+    tags: ['Faith', 'Trust', 'Christian Living'],
+    thumbnailUrl: '/lovable-uploads/cfcf20f7-6921-4a44-b7ca-47809450d18c.png',
+    featured: true,
+    duration: '45:30',
+    downloads: 0,
+    views: 10,
+    series: 'Faith Series'
   }
 ];
