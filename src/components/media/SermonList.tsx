@@ -17,10 +17,17 @@ const SermonList = ({ sermons, onEditSermon, onDeleteSermon }: SermonListProps) 
   const { logoUrl } = useLogo();
   const isMobile = useIsMobile();
   
+  // Using a unique timestamp to force re-render of sermon items
+  const [refreshKey, setRefreshKey] = React.useState(Date.now());
+  
   React.useEffect(() => {
+    // Force refresh when component mounts to ensure images load correctly
+    setRefreshKey(Date.now());
+    
     // Force refresh when device type changes
     const handleDeviceChange = () => {
       console.log('Device changed, refreshing sermon list');
+      setRefreshKey(Date.now());
     };
     
     window.addEventListener('device-changed', handleDeviceChange);
@@ -41,10 +48,10 @@ const SermonList = ({ sermons, onEditSermon, onDeleteSermon }: SermonListProps) 
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" key={`sermon-list-${refreshKey}`}>
       {sermons.map(sermon => (
         <SermonItem 
-          key={sermon.id} 
+          key={`${sermon.id}-${refreshKey}`} 
           sermon={{
             ...sermon,
             speakerImage: getSpeakerImage(sermon.speaker, logoUrl),

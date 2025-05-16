@@ -9,7 +9,7 @@ export const SPEAKER_IMAGES = {
   'Pastor Oteng Leepile': '/lovable-uploads/bb2cad8b-0655-4b9e-acde-059a018eba68.png',
   'Pastor Cynthia Harman': '/lovable-uploads/cfcf20f7-6921-4a44-b7ca-47809450d18c.png',
   'Peter Taylor': '/lovable-uploads/a90674e8-ab9d-4607-97c5-e9553e6d0075.png',
-  'Thamo Naidoo': '/lovable-uploads/078c32d1-54e6-49cf-bad2-0f88da273433.png',
+  'Thamo Naidoo': '/lovable-uploads/6d156b1c-5055-4b49-a51e-032cea373e92.png',
   'Thabiso Thwane': '/lovable-uploads/e6febe02-1bbb-4eaf-97e1-9ee6e3fa12d4.png',
 };
 
