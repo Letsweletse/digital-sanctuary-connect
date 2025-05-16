@@ -1,4 +1,3 @@
-
 import { Sermon } from '@/types/sermonTypes';
 
 export const sermonsData: Sermon[] = [
@@ -23,13 +22,13 @@ export const sermonsData: Sermon[] = [
     id: '11',
     title: 'Attitude',
     speaker: 'Pastor Oteng Leepile',
-    speakerImage: '/placeholder.svg',
+    speakerImage: '/lovable-uploads/bb2cad8b-0655-4b9e-acde-059a018eba68.png',
     date: new Date('2025-03-23'),
     audioUrl: 'https://cdn.devdojo.com/episode/June2023/the-making-of-wave.mp3',
     youtubeId: 'Rt87TZ3cP2g',
     description: 'A transformative message on how our attitude shapes our Christian walk and impacts those around us.',
     tags: ['Christian Living', 'Growth', 'Mindset'],
-    thumbnailUrl: 'https://lovable.dev/projects/b4242310-0169-49ed-bc97-e6669ce1cf89',
+    thumbnailUrl: '/lovable-uploads/bb2cad8b-0655-4b9e-acde-059a018eba68.png',
     duration: '38:42',
     downloads: 0,
     views: 12,

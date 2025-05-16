@@ -17,6 +17,7 @@ const SermonList = ({ sermons, onEditSermon, onDeleteSermon }: SermonListProps) 
   const isMobile = useIsMobile();
   const defaultLogo = '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
   const pastorKobusImage = '/lovable-uploads/20736aa1-df4f-4d5b-b226-d41cb293bbe0.png';
+  const pastorOtengImage = '/lovable-uploads/bb2cad8b-0655-4b9e-acde-059a018eba68.png';
   
   React.useEffect(() => {
     // Force refresh when device type changes
@@ -35,6 +36,9 @@ const SermonList = ({ sermons, onEditSermon, onDeleteSermon }: SermonListProps) 
   const getSpeakerImage = (sermon: Sermon) => {
     if (sermon.speaker === 'Pastor Kobus Bezuidenhout') {
       return pastorKobusImage;
+    }
+    if (sermon.speaker === 'Pastor Oteng Leepile') {
+      return pastorOtengImage;
     }
     return sermon.speakerImage || logoUrl || defaultLogo;
   };
