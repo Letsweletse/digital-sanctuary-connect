@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { format } from 'date-fns';
 import { Play, Download, ExternalLink, Calendar, Clock, User, Bookmark, BookmarkCheck } from 'lucide-react';
@@ -9,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { Sermon } from '@/types/sermonTypes';
 import { isValidAudioUrl } from '@/components/media/utils/audioUrlUtils';
 import { useLogo } from '@/components/layout/LogoContext';
+import { getSpeakerImage } from '@/components/media/utils/speakerImageUtils';
 
 interface SermonListViewProps {
   sermons: Sermon[];
@@ -16,32 +16,6 @@ interface SermonListViewProps {
 
 const SermonListView = ({ sermons }: SermonListViewProps) => {
   const { logoUrl } = useLogo();
-  const defaultLogo = '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
-  const pastorKobusImage = '/lovable-uploads/20736aa1-df4f-4d5b-b226-d41cb293bbe0.png';
-  const pastorOtengImage = '/lovable-uploads/bb2cad8b-0655-4b9e-acde-059a018eba68.png';
-  const pastorCynthiaImage = '/lovable-uploads/cfcf20f7-6921-4a44-b7ca-47809450d18c.png';
-  const peterTaylorImage = '/lovable-uploads/a90674e8-ab9d-4607-97c5-e9553e6d0075.png';
-  const thamoNaidooImage = '/lovable-uploads/8c68ccba-388a-445d-83c6-8adbd58c12de.png';
-
-  // Get the appropriate speaker image
-  const getSpeakerImage = (speaker: string) => {
-    if (speaker === 'Pastor Kobus Bezuidenhout') {
-      return pastorKobusImage;
-    }
-    if (speaker === 'Pastor Oteng Leepile') {
-      return pastorOtengImage;
-    }
-    if (speaker === 'Pastor Cynthia Harman') {
-      return pastorCynthiaImage;
-    }
-    if (speaker === 'Peter Taylor') {
-      return peterTaylorImage;
-    }
-    if (speaker === 'Thamo Naidoo') {
-      return thamoNaidooImage;
-    }
-    return logoUrl || defaultLogo;
-  };
 
   if (sermons.length === 0) {
     return (
@@ -64,7 +38,7 @@ const SermonListView = ({ sermons }: SermonListViewProps) => {
             <div className="flex flex-col items-center space-y-2 sm:w-28">
               <Avatar className="h-16 w-16 rounded-md shadow-sm flex-shrink-0">
                 <AvatarImage 
-                  src={getSpeakerImage(sermon.speaker)} 
+                  src={getSpeakerImage(sermon.speaker, logoUrl)} 
                   alt={sermon.speaker} 
                 />
                 <AvatarFallback className="rounded-md">

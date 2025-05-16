@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { format } from 'date-fns';
 import { Edit2, Trash2, User, CalendarIcon } from 'lucide-react';
@@ -6,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Sermon } from '@/types/sermonTypes';
 import { useLogo } from '@/components/layout/LogoContext';
+import { getSpeakerImage } from './utils/speakerImageUtils';
 
 interface SermonItemProps {
   sermon: Sermon;
@@ -16,32 +16,6 @@ interface SermonItemProps {
 
 const SermonItem = ({ sermon, onEdit, onDelete, isMobile = false }: SermonItemProps) => {
   const { logoUrl } = useLogo();
-  const defaultLogo = '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
-  const pastorKobusImage = '/lovable-uploads/20736aa1-df4f-4d5b-b226-d41cb293bbe0.png';
-  const pastorOtengImage = '/lovable-uploads/bb2cad8b-0655-4b9e-acde-059a018eba68.png';
-  const pastorCynthiaImage = '/lovable-uploads/cfcf20f7-6921-4a44-b7ca-47809450d18c.png';
-  const peterTaylorImage = '/lovable-uploads/a90674e8-ab9d-4607-97c5-e9553e6d0075.png';
-  const thamoNaidooImage = '/lovable-uploads/8c68ccba-388a-445d-83c6-8adbd58c12de.png';
-  
-  // Get the appropriate speaker image
-  const getSpeakerImage = () => {
-    if (sermon.speaker === 'Pastor Kobus Bezuidenhout') {
-      return pastorKobusImage;
-    }
-    if (sermon.speaker === 'Pastor Oteng Leepile') {
-      return pastorOtengImage;
-    }
-    if (sermon.speaker === 'Pastor Cynthia Harman') {
-      return pastorCynthiaImage;
-    }
-    if (sermon.speaker === 'Peter Taylor') {
-      return peterTaylorImage;
-    }
-    if (sermon.speaker === 'Thamo Naidoo') {
-      return thamoNaidooImage;
-    }
-    return sermon.speakerImage || logoUrl || defaultLogo;
-  };
   
   // Force render when image or logo changes
   React.useEffect(() => {
@@ -55,7 +29,7 @@ const SermonItem = ({ sermon, onEdit, onDelete, isMobile = false }: SermonItemPr
       <div className="flex flex-col sm:flex-row items-start gap-4">
         <Avatar className="h-16 w-16 rounded-md shadow-sm flex-shrink-0">
           <AvatarImage 
-            src={getSpeakerImage()} 
+            src={getSpeakerImage(sermon.speaker, logoUrl)} 
             alt={sermon.speaker}
             loading={isMobile ? "eager" : "lazy"} // Load immediately on mobile
           />
