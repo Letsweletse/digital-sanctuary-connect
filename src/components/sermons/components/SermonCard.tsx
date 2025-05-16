@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { format } from 'date-fns';
 import { Calendar, User, Download, Play, Bookmark, Clock } from 'lucide-react';
@@ -17,6 +16,9 @@ interface SermonCardProps {
 const SermonCard: React.FC<SermonCardProps> = ({ sermon, isMobile }) => {
   const { logoUrl } = useLogo();
   
+  // Create a unique key for image to force refresh
+  const imageKey = `sermon-img-${sermon.id}-${sermon.speaker}`;
+  
   return (
     <div 
       className="border border-church-neutral-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 bg-white flex flex-col h-full"
@@ -25,6 +27,7 @@ const SermonCard: React.FC<SermonCardProps> = ({ sermon, isMobile }) => {
     >
       <div className="relative h-40 sm:h-44 bg-church-neutral-100">
         <img 
+          key={imageKey}
           src={getSpeakerImage(sermon.speaker, logoUrl)}
           alt={sermon.title}
           className="w-full h-full object-cover"

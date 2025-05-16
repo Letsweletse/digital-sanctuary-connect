@@ -13,10 +13,13 @@ interface SermonInfoProps {
 const SermonInfo: React.FC<SermonInfoProps> = ({ sermon }) => {
   const { logoUrl } = useLogo();
   
+  // Create a unique key for avatar to force refresh
+  const avatarKey = `sermon-info-${sermon.id}-${sermon.speaker}`;
+  
   return (
     <div className="mb-6">
       <div className="flex items-center gap-3 mb-3">
-        <Avatar className="h-12 w-12 rounded-md shadow-sm">
+        <Avatar className="h-12 w-12 rounded-md shadow-sm" key={avatarKey}>
           <AvatarImage 
             src={getSpeakerImage(sermon.speaker, logoUrl)} 
             alt={sermon.speaker} 

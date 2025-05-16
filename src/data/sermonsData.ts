@@ -146,5 +146,23 @@ export const sermonsData: Sermon[] = [
     downloads: 0,
     views: 10,
     series: 'Faith Series'
+  },
+  // Adding the new sermon by Thabiso Thwane
+  {
+    id: '25',
+    title: 'Reformation Of The Mind',
+    speaker: 'Thabiso Thwane',
+    speakerImage: '/lovable-uploads/e6febe02-1bbb-4eaf-97e1-9ee6e3fa12d4.png',
+    date: new Date('2025-04-27'),
+    audioUrl: '',
+    youtubeId: 'DJ1TGF2d3Fs',
+    description: 'A transformative message on how to reform your mindset according to biblical principles.',
+    tags: ['Mind', 'Transformation', 'Christian Living', 'Reformation'],
+    thumbnailUrl: '/lovable-uploads/e6febe02-1bbb-4eaf-97e1-9ee6e3fa12d4.png',
+    featured: true,
+    duration: '55:20',
+    downloads: 0,
+    views: 0,
+    series: 'Reformation Series'
   }
 ];

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { format } from 'date-fns';
 import { Edit2, Trash2, User, CalendarIcon } from 'lucide-react';
@@ -24,10 +25,13 @@ const SermonItem = ({ sermon, onEdit, onDelete, isMobile = false }: SermonItemPr
     }
   }, [isMobile, sermon.id, logoUrl]);
 
+  // Use key prop to force re-render when sermon or speaker changes
+  const avatarKey = `avatar-${sermon.id}-${sermon.speaker}`;
+
   return (
     <div className="glass-panel bg-white p-4 rounded-lg shadow-sm border border-church-neutral-100 hover:border-church-neutral-200 transition-all">
       <div className="flex flex-col sm:flex-row items-start gap-4">
-        <Avatar className="h-16 w-16 rounded-md shadow-sm flex-shrink-0">
+        <Avatar className="h-16 w-16 rounded-md shadow-sm flex-shrink-0" key={avatarKey}>
           <AvatarImage 
             src={getSpeakerImage(sermon.speaker, logoUrl)} 
             alt={sermon.speaker}
