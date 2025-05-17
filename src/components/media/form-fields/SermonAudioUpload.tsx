@@ -6,8 +6,9 @@ import { ImageCategory } from '@/types/imageTypes';
 import AudioFileDisplay from '../audio/AudioFileDisplay';
 import AudioUploadProgress from '../audio/AudioUploadProgress';
 import { AudioSuccessMessage } from '../audio/AudioSuccessMessage';
-import { FileAudio, Info } from 'lucide-react';
+import { FileAudio, Info, AlertCircle } from 'lucide-react';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface SermonAudioUploadProps {
   audioFile: File | null;
@@ -17,6 +18,7 @@ interface SermonAudioUploadProps {
   setAudioUrl: (url: string | null) => void;
   isUploading?: boolean;
   uploadProgress?: number;
+  uploadError?: string | null;
   sermonTitle?: string;
   speakerName?: string;
 }
@@ -29,6 +31,7 @@ const SermonAudioUpload = ({
   setAudioUrl,
   isUploading = false,
   uploadProgress = 0,
+  uploadError = null,
   sermonTitle = '',
   speakerName = ''
 }: SermonAudioUploadProps) => {
@@ -99,6 +102,16 @@ const SermonAudioUpload = ({
           <p>Upload your sermon audio file. Supported formats include MP3, WAV, M4A, and OGG.</p>
         </div>
       
+        {/* Show upload error if any */}
+        {uploadError && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4 mr-2" />
+            <AlertDescription>
+              {uploadError}
+            </AlertDescription>
+          </Alert>
+        )}
+      
         {/* Hidden audio element for playback */}
         <audio 
           ref={audioRef} 
@@ -132,7 +145,7 @@ const SermonAudioUpload = ({
           <DragDropUploader 
             onFileAccepted={handleAudioUpload}
             category="sermons"
-            acceptedFileTypes={['audio/*']} 
+            acceptedFileTypes={['audio/*', '.mp3', '.wav', '.ogg', '.m4a']} 
             maxSize={500 * 1024 * 1024} // 500MB limit
           />
         )}

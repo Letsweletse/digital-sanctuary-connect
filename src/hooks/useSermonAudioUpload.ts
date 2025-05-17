@@ -11,6 +11,7 @@ export const useSermonAudioUpload = () => {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [audioMetadata, setAudioMetadata] = useState<{
     duration?: number;
     size?: number;
@@ -24,31 +25,47 @@ export const useSermonAudioUpload = () => {
       setAudioFile(file);
       setIsUploading(true);
       setUploadProgress(0);
+      setUploadError(null);
       
       // Extract audio metadata
       const metadata = await extractAudioMetadata(file);
       setAudioMetadata(metadata);
       
-      // Upload the file to Supabase
-      const result = await uploadAudioToSupabase(file, 'sermons', (progress) => {
-        setUploadProgress(progress);
-      });
-
-      setIsUploading(false);
-      
-      if (result.success && result.url) {
-        setAudioUrl(result.url);
-        
-        toast({
-          title: "Audio uploaded",
-          description: `File "${file.name}" has been uploaded and is ready to use.`,
+      // Upload the file to Supabase with improved error handling
+      try {
+        const result = await uploadAudioToSupabase(file, 'sermons', (progress) => {
+          setUploadProgress(progress);
         });
+
+        setIsUploading(false);
         
-        return true;
-      } else {
+        if (result.success && result.url) {
+          setAudioUrl(result.url);
+          
+          toast({
+            title: "Audio uploaded",
+            description: `File "${file.name}" has been uploaded and is ready to use.`,
+          });
+          
+          return true;
+        } else {
+          setUploadError(result.error || 'Unknown upload error');
+          toast({
+            title: 'Upload Error',
+            description: result.error || 'Failed to upload audio file',
+            variant: 'destructive',
+          });
+          
+          return false;
+        }
+      } catch (error) {
+        setIsUploading(false);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error during upload';
+        setUploadError(errorMessage);
+        
         toast({
           title: 'Upload Error',
-          description: 'Failed to upload audio file',
+          description: errorMessage,
           variant: 'destructive',
         });
         
@@ -56,6 +73,16 @@ export const useSermonAudioUpload = () => {
       }
     }
     return false;
+  };
+
+  // Reset upload state
+  const resetUpload = () => {
+    setAudioFile(null);
+    setAudioUrl(null);
+    setIsUploading(false);
+    setUploadProgress(0);
+    setUploadError(null);
+    setAudioMetadata({});
   };
 
   // Get audio duration 
@@ -80,9 +107,10 @@ export const useSermonAudioUpload = () => {
     setAudioUrl,
     isUploading,
     uploadProgress,
+    uploadError,
     audioMetadata,
-    uploadAudioToSupabase,
     handleAudioUpload,
+    resetUpload,
     getAudioDuration,
     getFormattedDuration,
     getFormattedFileSize
