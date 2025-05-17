@@ -1,18 +1,23 @@
 
 /**
- * Check if URL is a valid audio URL
+ * Utility for verifying audio URLs
  */
-export const isValidAudioUrl = (url: string | null | undefined): boolean => {
+
+/**
+ * Check if a URL is a valid audio file URL
+ * 
+ * @param url URL to check
+ * @returns boolean indicating if URL is a valid audio URL
+ */
+export const isValidAudioUrl = (url: string): boolean => {
   if (!url) return false;
   
-  // Check if it's a Supabase URL or a blob URL or other common audio hosting URLs
+  // Check if it's a Supabase URL, blob URL or other common audio hosting URLs
   return (
     (url.startsWith('https://') && 
-      (url.includes('storage.googleapis.com') || 
-       url.includes('lojchdvtwypjqupsjynf.supabase.co/storage/') || 
+      (url.includes('.supabase.co/storage/') || 
        url.includes('cdn.devdojo.com') ||
        url.includes('sermonaudio.com') ||
-       url.includes('buzzsprout.com') ||
        url.includes('soundcloud.com'))) || 
     url.startsWith('blob:') || 
     url.endsWith('.mp3') ||
@@ -23,20 +28,22 @@ export const isValidAudioUrl = (url: string | null | undefined): boolean => {
 };
 
 /**
- * Get default sermon image based on sermon or speaker name
- * This function is kept for backward compatibility
+ * Test if an audio URL is accessible
+ * 
+ * @param url Audio URL to test
+ * @returns Promise resolving to boolean indicating if URL is accessible
  */
-export const getDefaultSermonImage = (sermon?: { title?: string, speaker?: string, series?: string }): string => {
-  // Default church logo
-  const churchLogoUrl = "/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png";
+export const testAudioUrl = async (url: string): Promise<boolean> => {
+  if (!isValidAudioUrl(url)) return false;
   
-  if (!sermon) return churchLogoUrl;
-  
-  // Check if it's a special series
-  if (sermon.series === 'Perspectives on the Apostolic') {
-    return "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg";
+  try {
+    const response = await fetch(url, { 
+      method: 'HEAD',
+      mode: 'no-cors' // Use no-cors to avoid CORS issues with external resources
+    });
+    return true; // If we get here, the URL is at least accessible
+  } catch (err) {
+    console.error('Error testing audio URL:', err);
+    return false;
   }
-  
-  // Return church logo as default fallback
-  return churchLogoUrl;
 };

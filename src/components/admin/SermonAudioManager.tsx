@@ -194,20 +194,10 @@ const SermonAudioManager = () => {
       return;
     }
     
-    let progressInterval: ReturnType<typeof setInterval> | undefined;
-    
     try {
       setIsUploading(true);
       setUploadProgress(0);
       
-      // Initialize progress interval
-      progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          const next = prev + 5;
-          return next > 95 ? 95 : next;
-        });
-      }, 300);
-
       if (isEditing && editingId) {
         // Update sermon metadata (Supabase doesn't support metadata updates, so we need to rename)
         const sermon = sermons.find(s => s.id === editingId);
@@ -234,9 +224,6 @@ const SermonAudioManager = () => {
             if (deleteError) throw deleteError;
           }
           
-          if (progressInterval) {
-            clearInterval(progressInterval);
-          }
           setUploadProgress(100);
           
           toast({
@@ -254,16 +241,15 @@ const SermonAudioManager = () => {
         // Upload new file
         const filename = createSafeFilename();
         
-        const { error } = await supabase
-          .storage
-          .from('sermon_audio')
-          .upload(filename, file);
-          
-        if (error) throw error;
+        // Use our improved upload service
+        const result = await uploadAudioToSupabase(file, 'sermons', (progress) => {
+          setUploadProgress(progress);
+        });
         
-        if (progressInterval) {
-          clearInterval(progressInterval);
+        if (!result.success) {
+          throw new Error('Failed to upload the file to storage');
         }
+        
         setUploadProgress(100);
         
         toast({
@@ -278,10 +264,6 @@ const SermonAudioManager = () => {
         }, 1000);
       }
     } catch (error: any) {
-      // Make sure to clear the interval if an error occurs
-      if (progressInterval) {
-        clearInterval(progressInterval);
-      }
       console.error("Upload error:", error);
       toast({
         title: "Upload failed",

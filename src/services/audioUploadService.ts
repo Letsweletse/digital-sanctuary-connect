@@ -19,11 +19,23 @@ export const uploadAudioToSupabase = async (
   console.log(`Starting audio upload to Supabase: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`);
   
   try {
-    // Ensure the bucket exists
-    const bucketReady = await ensureBucketExists('sermons', true);
-    if (!bucketReady) {
-      console.error('Could not prepare storage for uploads');
-      return { success: false, url: null };
+    // Check if storage bucket exists, create if it doesn't
+    const { data: buckets } = await supabase.storage.listBuckets();
+    const bucketExists = buckets?.some(bucket => bucket.name === 'sermons');
+    
+    if (!bucketExists) {
+      console.log('Creating sermons bucket...');
+      const { error: createError } = await supabase.storage
+        .createBucket('sermons', {
+          public: true,
+          fileSizeLimit: 500 * 1024 * 1024, // 500MB limit
+          allowedMimeTypes: ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg']
+        });
+      
+      if (createError) {
+        console.error('Error creating bucket:', createError);
+        return { success: false, url: null };
+      }
     }
     
     // Generate unique filename and path
@@ -33,16 +45,14 @@ export const uploadAudioToSupabase = async (
     console.log('Uploading audio to path:', filePath);
     
     // Set up progress tracking
+    let progressInterval: ReturnType<typeof setInterval> | undefined;
     if (onProgress) {
-      // Use manual progress simulation since Supabase doesn't provide real progress events
-      const progressInterval = setInterval(() => {
-        onProgress(Math.min(90, Math.random() * 5 + (onProgress as any).lastProgress || 0));
+      // Real progress isn't available from Supabase, so simulate it
+      progressInterval = setInterval(() => {
+        onProgress(Math.min(90, Math.random() * 5 + ((onProgress as any).lastProgress || 0)));
         (onProgress as any).lastProgress = (onProgress as any).lastProgress ? 
           Math.min(90, (onProgress as any).lastProgress + Math.random() * 5) : 10;
       }, 800);
-      
-      // Clean up interval when done
-      setTimeout(() => clearInterval(progressInterval), 30000); // Safety timeout
     }
     
     // Upload the file to Supabase Storage
@@ -54,9 +64,9 @@ export const uploadAudioToSupabase = async (
         contentType: file.type, // Set correct content type
       });
       
-    // Clear any intervals if using progress
-    if (onProgress && (onProgress as any).interval) {
-      clearInterval((onProgress as any).interval);
+    // Clear progress interval  
+    if (progressInterval) {
+      clearInterval(progressInterval);
     }
     
     if (error) {
@@ -73,26 +83,11 @@ export const uploadAudioToSupabase = async (
     // Get the public URL for the uploaded file
     const { data: { publicUrl } } = supabase.storage
       .from('sermons')
-      .getPublicUrl(filePath);
+      .getPublicUrl(data.path);
     
-    console.log('File uploaded successfully, public URL:', publicUrl);
+    console.log('File public URL:', publicUrl);
     
-    // Verify the URL using a HEAD request
-    try {
-      const response = await fetch(publicUrl, { method: 'HEAD' });
-      if (!response.ok) {
-        console.warn('Audio URL may not be publicly accessible:', publicUrl, response.status);
-      } else {
-        console.log('Audio URL is publicly accessible:', publicUrl);
-      }
-    } catch (testErr) {
-      console.warn('Error testing audio URL:', testErr);
-    }
-    
-    // Set a small delay before returning to allow the storage to process the file
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    return { success: true, url: publicUrl, path: data?.path };
+    return { success: true, url: publicUrl, path: data.path };
   } catch (err) {
     console.error('Unexpected error during upload:', err);
     return { success: false, url: null };
