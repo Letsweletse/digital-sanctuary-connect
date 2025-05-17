@@ -41,11 +41,17 @@ const AudioUploadProgress: React.FC<AudioUploadProgressProps> = ({
         </div>
       </div>
       
-      <Progress 
-        value={uploadProgress} 
-        className="h-2 bg-church-neutral-100" 
-        indicatorClassName={getProgressColor()}
-      />
+      <div className="relative w-full">
+        <Progress 
+          value={uploadProgress} 
+          className={`h-2 bg-church-neutral-100`} 
+        />
+        {/* Apply the colored indicator as an absolute element */}
+        <div 
+          className={`absolute top-0 left-0 h-2 rounded-full transition-all ${getProgressColor()}`}
+          style={{ width: `${uploadProgress}%` }}
+        ></div>
+      </div>
       
       <p className="text-xs text-church-neutral-500 mt-2">
         {uploadProgress < 100 
