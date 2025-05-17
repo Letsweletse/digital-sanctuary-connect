@@ -29,7 +29,7 @@ export const ensureBucketExists = async (
       const { error: createError } = await supabase.storage.createBucket(bucketName, {
         public: isPublic,
         fileSizeLimit: fileSizeLimit,
-        allowedMimeTypes: ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg']
+        allowedMimeTypes: ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/*']
       });
       
       if (createError) {
@@ -45,8 +45,13 @@ export const ensureBucketExists = async (
           await setupPublicAccessPolicy(bucketName);
         } catch (policyError) {
           console.error(`Error setting up policies for ${bucketName}:`, policyError);
+          // Even if policy setup fails, the bucket exists
+          return true;
         }
       }
+      
+      // Give Supabase a moment to fully set up the bucket
+      await new Promise(resolve => setTimeout(resolve, 1000));
     } else {
       console.log(`${bucketName} bucket already exists`);
     }
