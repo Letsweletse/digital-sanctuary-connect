@@ -1,15 +1,20 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { ImageCategory, ImageFile, isValidImageCategory } from '@/types/imageTypes';
 import { fetchImagesFromSupabase, getMockImages, validateImageUrl } from '@/utils/imageUtils';
 import { sendImageUploadEmail } from '@/lib/emailService';
+import { uploadFileToStorage, generateUniqueFileName } from '@/utils/supabaseStorageUtils';
 
 export async function fetchImages(category: ImageCategory): Promise<ImageFile[]> {
   try {
+    console.log('Fetching images from Supabase for category:', category);
+    
     // First attempt to get images from Supabase
     const supabaseImages = await fetchImagesFromSupabase(category);
     
     // If we have images from Supabase, return them
     if (supabaseImages && supabaseImages.length > 0) {
+      console.log(`Found ${supabaseImages.length} images in Supabase`);
       return supabaseImages;
     }
     
@@ -24,37 +29,25 @@ export async function fetchImages(category: ImageCategory): Promise<ImageFile[]>
 
 export async function uploadImage(file: File, uploadCategory: ImageCategory): Promise<{ success: boolean, image?: ImageFile }> {
   try {
-    // Keep original filename and add timestamp to avoid duplication
-    const timestamp = Date.now();
-    const fileName = file.name;
-    const fileExt = fileName.split('.').pop() || '';
-    const fileNameWithoutExt = fileName.split('.')[0];
-    const uniqueName = `${fileNameWithoutExt}_${timestamp}.${fileExt}`;
+    console.log(`Starting image upload: ${file.name} (${(file.size / 1024).toFixed(1)}KB) to category: ${uploadCategory}`);
+    
+    // Generate unique filename based on original name
+    const uniqueName = generateUniqueFileName(file.name);
     
     // Create a path based on category for better organization
     const filePath = `${uploadCategory}/${uniqueName}`;
     
-    // Store image in Supabase storage
-    const { data: storageData, error: storageError } = await supabase.storage
-      .from('images')
-      .upload(filePath, file);
+    // Upload the file using our common upload function
+    const result = await uploadFileToStorage(file, 'images', filePath, (progress) => {
+      console.log(`Upload progress: ${progress}%`);
+    });
     
-    if (storageError) {
-      console.error('Storage upload error:', storageError);
+    if (!result.success || !result.url) {
+      console.error('Image upload failed:', result.error);
       return { success: false };
     }
     
-    // Get the public URL
-    const { data: publicUrlData } = supabase.storage
-      .from('images')
-      .getPublicUrl(storageData.path);
-    
-    if (!publicUrlData || !publicUrlData.publicUrl) {
-      console.error('Failed to get public URL');
-      return { success: false };
-    }
-    
-    const publicUrl = publicUrlData.publicUrl;
+    const publicUrl = result.url;
     
     // Validate the category
     const safeCategory: ImageCategory = isValidImageCategory(uploadCategory) ? uploadCategory : 'general';
@@ -64,7 +57,7 @@ export async function uploadImage(file: File, uploadCategory: ImageCategory): Pr
       .from('images')
       .insert([
         { 
-          name: fileName,
+          name: file.name,
           url: publicUrl,
           category: safeCategory,
           uploaded_at: new Date().toISOString()
@@ -77,18 +70,19 @@ export async function uploadImage(file: File, uploadCategory: ImageCategory): Pr
     }
     
     const addedImage: ImageFile = {
-      name: fileName,
+      name: file.name,
       url: publicUrl,
       category: safeCategory,
       uploadedAt: new Date()
     };
     
     try {
-      sendImageUploadEmail(fileName, safeCategory);
+      sendImageUploadEmail(file.name, safeCategory);
     } catch (emailError) {
       console.log('Email notification failed, but upload succeeded:', emailError);
     }
     
+    console.log('Image uploaded successfully:', addedImage.url);
     return { success: true, image: addedImage };
   } catch (err) {
     console.error('Error uploading image', err);
