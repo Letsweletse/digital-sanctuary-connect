@@ -51,9 +51,24 @@ export const ensureBucketExists = async (
       }
       
       // Give Supabase a moment to fully set up the bucket
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 2000));
     } else {
       console.log(`${bucketName} bucket already exists`);
+      
+      // Update bucket to ensure it's public
+      if (isPublic) {
+        const { error: updateError } = await supabase.storage.updateBucket(bucketName, {
+          public: true,
+          fileSizeLimit: fileSizeLimit,
+          allowedMimeTypes: ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/*', 'audio/mp4', 'audio/m4a']
+        });
+        
+        if (updateError) {
+          console.error(`Error updating ${bucketName} bucket:`, updateError);
+          // If update fails, the bucket still exists
+          return true;
+        }
+      }
     }
     
     return true;
@@ -124,5 +139,35 @@ export const testBucketAccess = async (bucketName: string): Promise<boolean> => 
   } catch (err) {
     console.error(`Error testing access to ${bucketName} bucket:`, err);
     return false;
+  }
+};
+
+/**
+ * Get direct URL for a file with temporary access
+ * This is useful for files in private buckets
+ * @param bucketName Name of the bucket
+ * @param filePath Path to the file
+ * @param expiresIn Expiration time in seconds (default 60 minutes)
+ * @returns URL with temporary access
+ */
+export const getTemporaryFileUrl = async (
+  bucketName: string, 
+  filePath: string, 
+  expiresIn: number = 3600
+): Promise<string | null> => {
+  try {
+    const { data, error } = await supabase.storage
+      .from(bucketName)
+      .createSignedUrl(filePath, expiresIn);
+      
+    if (error) {
+      console.error(`Error creating signed URL:`, error);
+      return null;
+    }
+    
+    return data.signedUrl;
+  } catch (err) {
+    console.error(`Error getting temporary URL:`, err);
+    return null;
   }
 };

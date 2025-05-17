@@ -53,13 +53,28 @@ export const uploadAudioToSupabase = async (
       // Real progress isn't available from Supabase, so simulate it
       let lastProgress = 0;
       progressInterval = setInterval(() => {
-        // Only increment progress up to 85% to avoid the 90% issue
-        lastProgress = Math.min(85, lastProgress + Math.random() * 3);
+        // Only increment progress up to 80% to avoid the 90% issue
+        lastProgress = Math.min(80, lastProgress + Math.random() * 3);
         onProgress(lastProgress);
       }, 1000);
     }
     
     try {
+      // Upload using FormData for more reliable uploads
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const uploadOptions = {
+        cacheControl: '3600',
+        upsert: true,
+      };
+      
+      // Convert options to query params
+      const searchParams = new URLSearchParams();
+      Object.entries(uploadOptions).forEach(([key, value]) => {
+        searchParams.append(key, value.toString());
+      });
+      
       // Upload the file to Supabase Storage with improved options
       const { data, error } = await supabase.storage
         .from(bucketName)
@@ -68,7 +83,7 @@ export const uploadAudioToSupabase = async (
           upsert: true, // Allow overwriting existing files
           contentType: file.type || 'audio/mpeg', // Set correct content type
         });
-        
+      
       // Clear progress interval  
       if (progressInterval) {
         clearInterval(progressInterval);
@@ -88,7 +103,7 @@ export const uploadAudioToSupabase = async (
       }
       
       // Give the system a moment to process the upload
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 800));
       
       // Get the public URL for the uploaded file
       const { data: { publicUrl } } = supabase.storage
