@@ -39,12 +39,16 @@ export const ensureBucketExists = async (
       
       console.log(`${bucketName} bucket created successfully`);
 
-      // Add public access policy to the bucket
-      try {
-        await setupPublicAccessPolicy(bucketName);
-      } catch (policyError) {
-        console.error(`Error setting up policies for ${bucketName}:`, policyError);
+      // Add public access policy to the bucket if needed
+      if (isPublic) {
+        try {
+          await setupPublicAccessPolicy(bucketName);
+        } catch (policyError) {
+          console.error(`Error setting up policies for ${bucketName}:`, policyError);
+        }
       }
+    } else {
+      console.log(`${bucketName} bucket already exists`);
     }
     
     return true;
@@ -86,6 +90,10 @@ export const generateUniqueFileName = (originalName: string): string => {
   const timestamp = new Date().getTime();
   const fileExt = originalName.split('.').pop();
   // Create a clean filename by removing special characters
-  const cleanFileName = originalName.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 20);
-  return `${timestamp}-${cleanFileName}.${fileExt}`;
+  const cleanFileName = originalName
+    .replace(/\.[^/.]+$/, "") // Remove extension
+    .replace(/[^a-zA-Z0-9]/g, '_') // Replace non-alphanumeric with underscore
+    .substring(0, 20); // Limit length
+    
+  return `${cleanFileName}_${timestamp}.${fileExt}`;
 };

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -243,12 +244,12 @@ const SermonAudioManager = () => {
         const filename = createSafeFilename();
         
         // Use our improved upload service
-        const result = await uploadAudioToSupabase(file, 'sermons', (progress) => {
+        const result = await uploadAudioToSupabase(file, 'sermon_audio', (progress) => {
           setUploadProgress(progress);
         });
         
         if (!result.success) {
-          throw new Error('Failed to upload the file to storage');
+          throw new Error(result.url || 'Failed to upload the file to storage');
         }
         
         setUploadProgress(100);
@@ -268,7 +269,7 @@ const SermonAudioManager = () => {
       console.error("Upload error:", error);
       toast({
         title: "Upload failed",
-        description: error.message || "There was a problem uploading your file",
+        description: error.message || "There was a problem uploading your file. Please try again.",
         variant: "destructive"
       });
     } finally {
