@@ -29,7 +29,7 @@ export const ensureBucketExists = async (
       const { error: createError } = await supabase.storage.createBucket(bucketName, {
         public: isPublic,
         fileSizeLimit: fileSizeLimit,
-        allowedMimeTypes: ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/*']
+        allowedMimeTypes: ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/*', 'audio/mp4', 'audio/m4a']
       });
       
       if (createError) {
@@ -51,7 +51,7 @@ export const ensureBucketExists = async (
       }
       
       // Give Supabase a moment to fully set up the bucket
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
     } else {
       console.log(`${bucketName} bucket already exists`);
     }
@@ -101,4 +101,28 @@ export const generateUniqueFileName = (originalName: string): string => {
     .substring(0, 20); // Limit length
     
   return `${cleanFileName}_${timestamp}.${fileExt}`;
+};
+
+/**
+ * Tests access to a storage bucket
+ * @param bucketName Name of the bucket to test
+ * @returns Promise<boolean> indicating if bucket is accessible
+ */
+export const testBucketAccess = async (bucketName: string): Promise<boolean> => {
+  try {
+    // Try to list files in the bucket
+    const { data, error } = await supabase.storage
+      .from(bucketName)
+      .list();
+    
+    if (error) {
+      console.error(`Error accessing ${bucketName} bucket:`, error);
+      return false;
+    }
+    
+    return true;
+  } catch (err) {
+    console.error(`Error testing access to ${bucketName} bucket:`, err);
+    return false;
+  }
 };

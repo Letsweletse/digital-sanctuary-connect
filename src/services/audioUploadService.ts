@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { ensureBucketExists, generateUniqueFileName } from '@/utils/supabaseStorageUtils';
+import { ensureBucketExists, generateUniqueFileName, testBucketAccess } from '@/utils/supabaseStorageUtils';
 
 type UploadProgressCallback = (progress: number) => void;
 
@@ -19,18 +19,31 @@ export const uploadAudioToSupabase = async (
   console.log(`Starting audio upload to Supabase: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`);
   
   try {
+    // Bucket name
+    const bucketName = 'sermon_audio';
+    
     // First ensure the sermon_audio bucket exists
-    const bucketExists = await ensureBucketExists('sermon_audio', true, 100 * 1024 * 1024);
+    const bucketExists = await ensureBucketExists(bucketName, true, 500 * 1024 * 1024);
     
     if (!bucketExists) {
       const errorMsg = "Failed to create or access the storage bucket";
       console.error(errorMsg);
+      if (onProgress) onProgress(0);
+      return { success: false, url: null, error: errorMsg };
+    }
+    
+    // Test bucket access
+    const canAccess = await testBucketAccess(bucketName);
+    if (!canAccess) {
+      const errorMsg = "Storage bucket exists but cannot be accessed";
+      console.error(errorMsg);
+      if (onProgress) onProgress(0);
       return { success: false, url: null, error: errorMsg };
     }
     
     // Generate unique filename based on original name
     const fileName = generateUniqueFileName(file.name);
-    const filePath = fileName;
+    const filePath = category ? `${category}/${fileName}` : fileName;
     
     console.log('Uploading audio to path:', filePath);
     
@@ -41,7 +54,6 @@ export const uploadAudioToSupabase = async (
       let lastProgress = 0;
       progressInterval = setInterval(() => {
         // Only increment progress up to 85% to avoid the 90% issue
-        // The remaining progress will be set after successful upload
         lastProgress = Math.min(85, lastProgress + Math.random() * 3);
         onProgress(lastProgress);
       }, 1000);
@@ -50,12 +62,11 @@ export const uploadAudioToSupabase = async (
     try {
       // Upload the file to Supabase Storage with improved options
       const { data, error } = await supabase.storage
-        .from('sermon_audio')
+        .from(bucketName)
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: true, // Allow overwriting existing files
           contentType: file.type || 'audio/mpeg', // Set correct content type
-          duplex: 'half', // More reliable for large files
         });
         
       // Clear progress interval  
@@ -81,7 +92,7 @@ export const uploadAudioToSupabase = async (
       
       // Get the public URL for the uploaded file
       const { data: { publicUrl } } = supabase.storage
-        .from('sermon_audio')
+        .from(bucketName)
         .getPublicUrl(data.path);
       
       console.log('File public URL:', publicUrl);

@@ -44,7 +44,7 @@ const AudioUploadProgress: React.FC<AudioUploadProgressProps> = ({
       <div className="relative w-full">
         <Progress 
           value={uploadProgress} 
-          className={`h-2 bg-church-neutral-100`} 
+          className="h-2 bg-church-neutral-100" 
         />
         {/* Apply the colored indicator as an absolute element */}
         <div 
