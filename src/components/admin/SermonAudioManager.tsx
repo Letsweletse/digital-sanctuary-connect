@@ -13,6 +13,7 @@ import { Trash2, Edit, Play, Pause, Calendar as CalendarIcon, AlertTriangle, Fil
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { formatFileSize } from '@/utils/audioMetadataUtils';
+import { uploadAudioToSupabase } from '@/services/audioUploadService';
 
 interface SermonFile {
   id: string;
