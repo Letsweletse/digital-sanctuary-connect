@@ -21,9 +21,19 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
       try {
         setIsLoading(true);
         console.log('Loading images for category:', category);
-        const images = await fetchImages(category);
-        console.log('Images loaded:', images.length);
-        setUploadedImages(images);
+        const imagesData = await fetchImages(category);
+        console.log('Images loaded:', imagesData?.length);
+        
+        // Convert the data to match ImageFile type
+        const convertedImages: ImageFile[] = imagesData.map(img => ({
+          id: img.id,
+          name: img.name,
+          url: img.url,
+          category: img.category as ImageCategory,
+          uploadedAt: new Date(img.uploaded_at)
+        }));
+        
+        setUploadedImages(convertedImages);
       } catch (err) {
         console.error('Error loading images', err);
         toast({
@@ -46,8 +56,18 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
       
       if (result.success && result.image) {
         console.log('Upload successful:', result.image);
+        
+        // Convert the returned image to match ImageFile type
+        const newImage: ImageFile = {
+          id: result.image.id,
+          name: result.image.name,
+          url: result.image.url,
+          category: result.image.category,
+          uploadedAt: new Date(result.image.uploaded_at)
+        };
+        
         // Add the new image to the state
-        setUploadedImages(prev => [result.image!, ...prev]);
+        setUploadedImages(prev => [newImage, ...prev]);
         
         toast({
           title: "Image Uploaded",
@@ -61,16 +81,16 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
         console.error('Upload failed, no image returned');
         toast({
           title: "Upload Failed",
-          description: "There was an error uploading your image.",
+          description: result.error || "There was an error uploading your image.",
           variant: "destructive",
         });
         return false;
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error uploading image', err);
       toast({
         title: "Upload Failed",
-        description: "There was an error uploading your image.",
+        description: err.message || "There was an error uploading your image.",
         variant: "destructive",
       });
       return false;
@@ -90,13 +110,13 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
   const handleDelete = async (image: ImageFile) => {
     try {
       console.log('Deleting image:', image.name);
-      const success = await deleteImage(image);
+      const result = await deleteImage(image.url, image.id);
       
-      if (success) {
+      if (result.success) {
         // Remove from local state
-        setUploadedImages(prev => prev.filter(img => img.url !== image.url));
+        setUploadedImages(prev => prev.filter(img => img.id !== image.id));
         
-        if (selectedImage && selectedImage.url === image.url) {
+        if (selectedImage && selectedImage.id === image.id) {
           setSelectedImage(null);
         }
         
@@ -109,13 +129,13 @@ export function useImageLibrary(initialCategory: ImageCategory = 'leadership') {
         setRefreshTrigger(prev => prev + 1);
         return true;
       } else {
-        throw new Error("Failed to delete image");
+        throw new Error(result.error || "Failed to delete image");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error deleting image', err);
       toast({
         title: "Delete Failed",
-        description: "There was an error deleting your image.",
+        description: err.message || "There was an error deleting your image.",
         variant: "destructive",
       });
       return false;

@@ -72,6 +72,56 @@ export const uploadImageToSupabase = async (
   }
 };
 
+/**
+ * Upload image and save to database
+ * @param file Image file to upload
+ * @param category Image category
+ * @param onProgress Optional progress callback
+ * @returns Result with success status and image data if successful
+ */
+export const uploadImage = async (
+  file: File, 
+  category: ImageCategory,
+  onProgress?: (progress: number) => void
+): Promise<{ success: boolean; image?: any; error?: string }> => {
+  try {
+    // First upload the file to storage
+    const uploadResult = await uploadImageToSupabase(file, category, onProgress);
+    
+    if (!uploadResult.success || !uploadResult.url) {
+      return { 
+        success: false, 
+        error: uploadResult.error || 'Upload failed' 
+      };
+    }
+    
+    // Then save the image record to the database
+    const imageData = {
+      name: file.name,
+      url: uploadResult.url,
+      category: category
+    };
+    
+    await saveImageToDatabase(imageData);
+    
+    // Return success with the image data
+    return {
+      success: true,
+      image: {
+        ...imageData,
+        id: Date.now().toString(), // Temporary ID until we get the real one back
+        uploaded_at: new Date().toISOString()
+      }
+    };
+  } catch (error: any) {
+    console.error('Error in uploadImage:', error);
+    return {
+      success: false,
+      error: error.message || 'Failed to upload and save image'
+    };
+  }
+};
+
 // Add image record to database
 export const saveImageToDatabase = async (imageData: {
   name: string;
