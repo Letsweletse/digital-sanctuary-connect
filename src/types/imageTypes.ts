@@ -2,6 +2,7 @@
 export type ImageCategory = 'hero' | 'sermons' | 'events' | 'leadership' | 'general' | 'logo';
 
 export interface ImageFile {
+  id: string;
   name: string;
   url: string;
   category: ImageCategory;
