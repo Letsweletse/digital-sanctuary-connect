@@ -1,131 +1,156 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { ImageCategory, ImageFile, isValidImageCategory } from '@/types/imageTypes';
-import { fetchImagesFromSupabase, getMockImages, validateImageUrl } from '@/utils/imageUtils';
-import { sendImageUploadEmail } from '@/lib/emailService';
-import { uploadFileToStorage, generateUniqueFileName } from '@/utils/supabaseStorageUtils';
+import { createBucketIfNotExists, generateUniqueFileName, uploadFileToBucket } from '@/utils/supabaseStorageUtils';
+import { ImageCategory } from '@/types/imageTypes';
 
-export async function fetchImages(category: ImageCategory): Promise<ImageFile[]> {
+/**
+ * Upload image to Supabase storage
+ * @param file Image file
+ * @param category Image category (folder path)
+ * @param onProgress Optional progress callback
+ * @returns Object with success status, URL and error if any
+ */
+export const uploadImageToSupabase = async (
+  file: File,
+  category?: ImageCategory,
+  onProgress?: (progress: number) => void
+): Promise<{ success: boolean; url: string | null; error?: string }> => {
   try {
-    console.log('Fetching images from Supabase for category:', category);
+    const bucketName = 'images';
     
-    // First attempt to get images from Supabase
-    const supabaseImages = await fetchImagesFromSupabase(category);
+    // First, ensure the bucket exists
+    const bucketExists = await createBucketIfNotExists(bucketName, true, 50 * 1024 * 1024, [
+      'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'image/*'
+    ]);
     
-    // If we have images from Supabase, return them
-    if (supabaseImages && supabaseImages.length > 0) {
-      console.log(`Found ${supabaseImages.length} images in Supabase`);
-      return supabaseImages;
+    if (!bucketExists) {
+      if (onProgress) onProgress(0);
+      return { 
+        success: false, 
+        url: null, 
+        error: 'Failed to create or access images bucket' 
+      };
     }
-    
-    // Fallback to mock images only if Supabase returned empty results
-    console.log('No images found in Supabase for category:', category, 'using mock data');
-    return getMockImages(category);
-  } catch (err) {
-    console.error('Error fetching images, using mock data', err);
-    return getMockImages(category);
-  }
-}
 
-export async function uploadImage(file: File, uploadCategory: ImageCategory): Promise<{ success: boolean, image?: ImageFile }> {
-  try {
-    console.log(`Starting image upload: ${file.name} (${(file.size / 1024).toFixed(1)}KB) to category: ${uploadCategory}`);
+    // Generate a unique filename to avoid conflicts
+    const fileName = generateUniqueFileName(file.name);
     
-    // Generate unique filename based on original name
-    const uniqueName = generateUniqueFileName(file.name);
+    // Create path with category if provided
+    const filePath = category ? `${category}/${fileName}` : fileName;
     
-    // Create a path based on category for better organization
-    const filePath = `${uploadCategory}/${uniqueName}`;
-    
-    // Upload the file using our common upload function
-    const result = await uploadFileToStorage(file, 'images', filePath, (progress) => {
-      console.log(`Upload progress: ${progress}%`);
-    });
-    
-    if (!result.success || !result.url) {
-      console.error('Image upload failed:', result.error);
-      return { success: false };
-    }
-    
-    const publicUrl = result.url;
-    
-    // Validate the category
-    const safeCategory: ImageCategory = isValidImageCategory(uploadCategory) ? uploadCategory : 'general';
-    
-    // Store the reference in the images table
-    const { data, error } = await supabase
-      .from('images')
-      .insert([
-        { 
-          name: file.name,
-          url: publicUrl,
-          category: safeCategory,
-          uploaded_at: new Date().toISOString()
-        }
-      ]);
+    try {
+      const result = await uploadFileToBucket(
+        bucketName, 
+        filePath, 
+        file, 
+        true, // upsert
+        onProgress
+      );
       
-    if (error) {
-      console.error('Database reference error:', error);
-      // Continue even if database insert fails, we still have the URL
+      // Success
+      return {
+        success: true,
+        url: result.publicUrl
+      };
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      if (onProgress) onProgress(0);
+      return { 
+        success: false, 
+        url: null, 
+        error: error.message 
+      };
     }
-    
-    const addedImage: ImageFile = {
-      name: file.name,
-      url: publicUrl,
-      category: safeCategory,
-      uploadedAt: new Date()
+  } catch (err: any) {
+    console.error('Unexpected error:', err);
+    if (onProgress) onProgress(0);
+    return { 
+      success: false, 
+      url: null, 
+      error: err.message || 'Unexpected error' 
     };
-    
-    try {
-      sendImageUploadEmail(file.name, safeCategory);
-    } catch (emailError) {
-      console.log('Email notification failed, but upload succeeded:', emailError);
-    }
-    
-    console.log('Image uploaded successfully:', addedImage.url);
-    return { success: true, image: addedImage };
-  } catch (err) {
-    console.error('Error uploading image', err);
-    return { success: false };
   }
-}
+};
 
-export async function deleteImage(image: ImageFile): Promise<boolean> {
+// Add image record to database
+export const saveImageToDatabase = async (imageData: {
+  name: string;
+  url: string;
+  category: ImageCategory;
+}) => {
+  const { error } = await supabase.from('images').insert([
+    {
+      name: imageData.name,
+      url: imageData.url,
+      category: imageData.category
+    }
+  ]);
+
+  if (error) {
+    console.error('Error saving image to database:', error);
+    throw new Error(`Error saving image to database: ${error.message}`);
+  }
+};
+
+// Fetch images from database
+export const fetchImages = async (category?: ImageCategory) => {
+  let query = supabase.from('images').select('*');
+  
+  if (category) {
+    query = query.eq('category', category);
+  }
+  
+  const { data, error } = await query.order('uploaded_at', { ascending: false });
+  
+  if (error) {
+    console.error('Error fetching images:', error);
+    throw new Error(`Error fetching images: ${error.message}`);
+  }
+  
+  return data;
+};
+
+// Delete image from storage and database
+export const deleteImage = async (url: string, id: string) => {
   try {
-    // Extract the file path from the URL
-    const urlParts = image.url.split('/');
-    const fileName = urlParts[urlParts.length - 1];
-    const category = image.category || 'general';
+    // Extract path from URL
+    const urlObj = new URL(url);
+    const pathWithBucket = urlObj.pathname;
     
-    // Delete from storage first
-    try {
-      const { error: storageError } = await supabase.storage
-        .from('images')
-        .remove([`${category}/${fileName}`]);
+    // Remove the /storage/v1/object/public/ prefix to get bucketName/path
+    const fullPath = pathWithBucket.replace('/storage/v1/object/public/', '');
+    
+    // Split into bucket and path
+    const [bucketName, ...pathParts] = fullPath.split('/');
+    const path = pathParts.join('/');
+    
+    console.log(`Deleting file from storage: bucket=${bucketName}, path=${path}`);
+    
+    // Delete from storage
+    const { error: storageError } = await supabase
+      .storage
+      .from(bucketName)
+      .remove([path]);
       
-      if (storageError) {
-        console.warn('Storage deletion error:', storageError);
-        // Continue anyway to remove from database
-      }
-    } catch (storageErr) {
-      console.warn('Storage deletion failed, continuing with database deletion:', storageErr);
+    if (storageError) {
+      console.error('Error deleting file from storage:', storageError);
+      throw new Error(`Error deleting file from storage: ${storageError.message}`);
     }
     
     // Delete from database
-    const { error } = await supabase
+    const { error: dbError } = await supabase
       .from('images')
       .delete()
-      .eq('url', image.url);
+      .eq('id', id);
       
-    if (error) {
-      console.error('Database deletion error:', error);
-      // Still return true to allow UI to remove the image
+    if (dbError) {
+      console.error('Error deleting image from database:', dbError);
+      throw new Error(`Error deleting image from database: ${dbError.message}`);
     }
     
-    return true;
-  } catch (err) {
-    console.error('Error deleting image or Supabase not available, removing from UI only', err);
-    // In case of error, we still return true to allow UI to remove the image
-    return true;
+    return { success: true };
+  } catch (err: any) {
+    console.error('Error in deleteImage:', err);
+    return { success: false, error: err.message };
   }
-}
+};

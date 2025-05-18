@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { generateUniqueFileName, uploadFileToStorage, ensureBucketExists } from '@/utils/supabaseStorageUtils';
+import { generateUniqueFileName, uploadFileToStorage, createBucketIfNotExists } from '@/utils/supabaseStorageUtils';
 
 type UploadProgressCallback = (progress: number) => void;
 
@@ -20,7 +20,7 @@ export const uploadAudioToSupabase = async (
   
   try {
     // First, ensure the sermon_audio bucket exists with proper permissions
-    const bucketExists = await ensureBucketExists('sermon_audio', true, 500 * 1024 * 1024, [
+    const bucketExists = await createBucketIfNotExists('sermon_audio', true, 500 * 1024 * 1024, [
       'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/*', 'audio/mp4', 'audio/m4a'
     ]);
     
@@ -40,7 +40,7 @@ export const uploadAudioToSupabase = async (
     
     console.log(`Uploading to sermon_audio bucket with path: ${filePath}`);
     
-    // Use the common file upload function with improved error handling
+    // Use the common file upload function
     const result = await uploadFileToStorage(file, 'sermon_audio', filePath, onProgress);
     
     if (!result.success) {

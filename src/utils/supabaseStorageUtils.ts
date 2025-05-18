@@ -1,216 +1,220 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 /**
- * Creates a Supabase storage bucket if it doesn't exist
- * @param bucketName Name of the bucket to ensure exists
- * @param isPublic Whether the bucket should be public 
- * @param fileSizeLimit Maximum file size limit in bytes
- * @param allowedMimeTypes Array of allowed MIME types (optional)
- * @returns Promise<boolean> indicating if bucket is ready
+ * Upload a file to a specified bucket and path.
  */
-export const ensureBucketExists = async (
-  bucketName: string, 
-  isPublic: boolean = true, 
-  fileSizeLimit: number = 500 * 1024 * 1024,
-  allowedMimeTypes?: string[]
-): Promise<boolean> => {
-  try {
-    // Default mime types if none provided
-    const defaultMimeTypes = allowedMimeTypes || [
-      'image/jpeg', 'image/png', 'image/gif', 'image/webp',
-      'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/*', 'audio/mp4', 'audio/m4a'
-    ];
-    
-    console.log(`Checking if ${bucketName} bucket exists...`);
-    
-    // Check if the bucket exists
-    const { data: buckets, error: listError } = await supabase.storage.listBuckets();
-    
-    if (listError) {
-      console.error(`Error checking buckets:`, listError);
-      return false;
-    }
-    
-    const bucketExists = buckets?.some(bucket => bucket.name === bucketName);
-    
-    if (!bucketExists) {
-      console.log(`Creating ${bucketName} bucket...`);
-      const { error: createError } = await supabase.storage.createBucket(bucketName, {
-        public: isPublic,
-        fileSizeLimit: fileSizeLimit,
-        allowedMimeTypes: defaultMimeTypes
-      });
-      
-      if (createError) {
-        console.error(`Error creating ${bucketName} bucket:`, createError);
-        // Try again with minimal options if the detailed config failed
-        const { error: simpleCreateError } = await supabase.storage.createBucket(bucketName, {
-          public: isPublic
-        });
-        
-        if (simpleCreateError) {
-          console.error(`Failed with minimal options:`, simpleCreateError);
-          return false;
-        }
-      }
-      
-      console.log(`${bucketName} bucket created successfully`);
-
-      // Wait a moment to allow bucket creation to fully process
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Add public access policy to the bucket if needed
-      if (isPublic) {
-        try {
-          await setupPublicAccessPolicy(bucketName);
-        } catch (policyError) {
-          console.error(`Error setting up policies for ${bucketName}:`, policyError);
-          // Even if policy setup fails, the bucket exists
-        }
-      }
-      
-      // Give Supabase a moment to fully set up the bucket
-      await new Promise(resolve => setTimeout(resolve, 2500));
-    } else {
-      console.log(`${bucketName} bucket already exists`);
-      
-      // Update bucket to ensure it's public with correct settings
-      if (isPublic) {
-        const { error: updateError } = await supabase.storage.updateBucket(bucketName, {
-          public: true,
-          fileSizeLimit: fileSizeLimit,
-          allowedMimeTypes: defaultMimeTypes
-        });
-        
-        if (updateError) {
-          console.error(`Error updating ${bucketName} bucket:`, updateError);
-          // Try with minimal options
-          const { error: simpleUpdateError } = await supabase.storage.updateBucket(bucketName, {
-            public: true
-          });
-          
-          if (simpleUpdateError) {
-            console.error(`Failed with minimal options:`, simpleUpdateError);
-          }
-        }
-      }
-    }
-    
-    // Final check to verify bucket is accessible
-    const canAccess = await testBucketAccess(bucketName);
-    if (!canAccess) {
-      console.error(`Created bucket but cannot access it: ${bucketName}`);
-      return false;
-    }
-    
-    return true;
-  } catch (err) {
-    console.error(`Error ensuring ${bucketName} bucket exists:`, err);
-    return false;
+export const uploadFileToBucket = async (
+  bucketName: string,
+  path: string,
+  file: File,
+  upsert: boolean = false,
+  onProgress?: (progress: number) => void
+): Promise<{ path: string; publicUrl: string }> => {
+  // Set up progress tracking if a callback is provided
+  let progressInterval: ReturnType<typeof setInterval> | undefined;
+  if (onProgress) {
+    let lastProgress = 0;
+    progressInterval = setInterval(() => {
+      // Simulate progress up to 85%
+      lastProgress = Math.min(85, lastProgress + Math.random() * 3);
+      onProgress(lastProgress);
+    }, 800);
   }
-};
 
-/**
- * Sets up a public access policy for the bucket
- * @param bucketName Name of the bucket to set policy for
- */
-export const setupPublicAccessPolicy = async (bucketName: string): Promise<void> => {
   try {
-    // Update the bucket to make it public
-    const { error: updateError } = await supabase.storage.updateBucket(bucketName, {
-      public: true
-    });
-    
-    if (updateError) {
-      console.error(`Error setting bucket to public:`, updateError);
-      throw updateError;
+    const { data, error } = await supabase.storage
+      .from(bucketName)
+      .upload(path, file, { upsert, contentType: file.type });
+
+    // Clear progress interval
+    if (progressInterval) {
+      clearInterval(progressInterval);
     }
-    
-    console.log(`Public access policy set for ${bucketName}`);
-  } catch (err) {
-    console.error(`Error setting up bucket policies:`, err);
+
+    if (error) {
+      if (onProgress) onProgress(0);
+      throw new Error(`Upload failed: ${error.message}`);
+    }
+
+    // Complete progress
+    if (onProgress) onProgress(100);
+
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from(bucketName)
+      .getPublicUrl(data.path);
+
+    return { path: data.path, publicUrl };
+  } catch (err: any) {
+    // Clean up interval on error
+    if (progressInterval) clearInterval(progressInterval);
+    if (onProgress) onProgress(0);
     throw err;
   }
 };
 
 /**
- * Generates a unique filename with timestamp for uploads
- * @param originalName Original file name
- * @returns Sanitized unique filename
+ * Create a new bucket if it does not exist.
  */
-export const generateUniqueFileName = (originalName: string): string => {
-  const timestamp = new Date().getTime();
-  const fileExt = originalName.split('.').pop() || '';
-  // Create a clean filename by removing special characters
-  const cleanFileName = originalName
-    .replace(/\.[^/.]+$/, "") // Remove extension
-    .replace(/[^a-zA-Z0-9]/g, '_') // Replace non-alphanumeric with underscore
-    .substring(0, 20); // Limit length
-    
-  return `${cleanFileName}_${timestamp}.${fileExt}`;
-};
-
-/**
- * Tests access to a storage bucket
- * @param bucketName Name of the bucket to test
- * @returns Promise<boolean> indicating if bucket is accessible
- */
-export const testBucketAccess = async (bucketName: string): Promise<boolean> => {
+export const createBucketIfNotExists = async (
+  bucketName: string,
+  publicAccess: boolean = true,
+  fileSizeLimit?: number,
+  allowedMimeTypes?: string[]
+): Promise<boolean> => {
   try {
-    // Try to list files in the bucket
-    const { data, error } = await supabase.storage
-      .from(bucketName)
-      .list();
+    console.log(`Checking if bucket '${bucketName}' exists...`);
+    const { data: list, error: listError } = await supabase.storage.listBuckets();
+
+    if (listError) {
+      console.error(`Failed to list buckets: ${listError.message}`);
+      return false;
+    }
+
+    const bucketExists = list?.some((b) => b.name === bucketName);
     
-    if (error) {
-      console.error(`Error accessing ${bucketName} bucket:`, error);
+    if (!bucketExists) {
+      console.log(`Creating bucket '${bucketName}'...`);
+      
+      // Options object for creating the bucket
+      const options: any = { public: publicAccess };
+      
+      // Add optional parameters if provided
+      if (fileSizeLimit) options.fileSizeLimit = fileSizeLimit;
+      if (allowedMimeTypes) options.allowedMimeTypes = allowedMimeTypes;
+      
+      const { error: createError } = await supabase.storage.createBucket(
+        bucketName, 
+        options
+      );
+
+      if (createError) {
+        console.error(`Bucket creation failed: ${createError.message}`);
+        
+        // Try again with minimal options if needed
+        if (fileSizeLimit || allowedMimeTypes) {
+          console.log('Retrying with minimal options...');
+          const { error: retryError } = await supabase.storage.createBucket(
+            bucketName, 
+            { public: publicAccess }
+          );
+          
+          if (retryError) {
+            console.error('Retry failed:', retryError.message);
+            return false;
+          }
+        } else {
+          return false;
+        }
+      }
+
+      // Give the system time to create the bucket
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      if (publicAccess) {
+        await setupPublicAccessPolicy(bucketName);
+      }
+    } else {
+      console.log(`Bucket '${bucketName}' already exists`);
+      
+      // Update bucket if it exists but we need to ensure it's public
+      if (publicAccess) {
+        try {
+          await setupPublicAccessPolicy(bucketName);
+        } catch (err) {
+          console.warn(`Failed to update bucket policy, but bucket exists: ${err.message}`);
+        }
+      }
+    }
+
+    // Verify bucket is accessible
+    const accessOk = await testBucketAccess(bucketName);
+    if (!accessOk) {
+      console.error(`Bucket exists but access test failed for: ${bucketName}`);
       return false;
     }
     
     return true;
-  } catch (err) {
-    console.error(`Error testing access to ${bucketName} bucket:`, err);
+  } catch (err: any) {
+    console.error(`Error working with bucket ${bucketName}:`, err.message);
     return false;
   }
 };
 
 /**
- * Get direct URL for a file with temporary access
- * This is useful for files in private buckets
- * @param bucketName Name of the bucket
- * @param filePath Path to the file
- * @param expiresIn Expiration time in seconds (default 60 minutes)
- * @returns URL with temporary access
+ * Generates a unique filename based on the original name.
  */
-export const getTemporaryFileUrl = async (
-  bucketName: string, 
-  filePath: string, 
-  expiresIn: number = 3600
-): Promise<string | null> => {
+export const generateUniqueFileName = (originalName: string): string => {
+  const timestamp = Date.now();
+  const randomString = Math.random().toString(36).substring(2, 8);
+  const extension = originalName.includes('.') 
+    ? originalName.substring(originalName.lastIndexOf('.')) 
+    : '';
+  const baseName = originalName.includes('.')
+    ? originalName.substring(0, originalName.lastIndexOf('.')).replace(/\s+/g, '-')
+    : originalName.replace(/\s+/g, '-');
+
+  return `${baseName}-${timestamp}-${randomString}${extension}`;
+};
+
+/**
+ * Sets up public access policy for a bucket.
+ */
+export const setupPublicAccessPolicy = async (bucketName: string): Promise<void> => {
   try {
-    const { data, error } = await supabase.storage
-      .from(bucketName)
-      .createSignedUrl(filePath, expiresIn);
-      
+    const { error } = await supabase.storage.updateBucket(bucketName, {
+      public: true
+    });
+
     if (error) {
-      console.error(`Error creating signed URL:`, error);
-      return null;
+      throw new Error(`Failed to set public access for bucket "${bucketName}": ${error.message}`);
     }
-    
-    return data.signedUrl;
-  } catch (err) {
-    console.error(`Error getting temporary URL:`, err);
-    return null;
+
+    console.log(`Public access enabled for bucket: ${bucketName}`);
+  } catch (err: any) {
+    console.error('Error setting up bucket policy:', err.message);
+    throw err;
   }
 };
 
 /**
- * Upload file to Supabase storage
- * @param file File to upload
- * @param bucketName Name of the bucket
- * @param filePath Path within the bucket
- * @param onProgress Optional progress callback
- * @returns Result object with success status and URL or error
+ * Tests if a bucket is accessible by uploading/removing a dummy file.
+ */
+export const testBucketAccess = async (bucketName: string): Promise<boolean> => {
+  const dummyPath = `access_test_${Date.now()}.txt`;
+  const dummyContent = new Blob(['access test']);
+
+  try {
+    console.log(`Testing access to bucket '${bucketName}'...`);
+    const uploadRes = await supabase.storage
+      .from(bucketName)
+      .upload(dummyPath, dummyContent, { upsert: true });
+
+    if (uploadRes.error) {
+      console.error(`Upload test failed:`, uploadRes.error);
+      return false;
+    }
+
+    const removeRes = await supabase.storage
+      .from(bucketName)
+      .remove([dummyPath]);
+
+    if (removeRes.error) {
+      console.error(`Cleanup after access test failed:`, removeRes.error);
+    }
+
+    console.log(`Access test successful for bucket '${bucketName}'`);
+    return true;
+  } catch (err) {
+    console.error(`Bucket access test failed:`, err);
+    return false;
+  }
+};
+
+/**
+ * Upload file to Supabase storage with progress tracking.
+ * Legacy wrapper for uploadFileToBucket for compatibility with existing code.
  */
 export const uploadFileToStorage = async (
   file: File,
@@ -218,133 +222,53 @@ export const uploadFileToStorage = async (
   filePath: string,
   onProgress?: (progress: number) => void
 ): Promise<{ success: boolean; url: string | null; path?: string; error?: string }> => {
-  console.log(`Starting file upload to Supabase bucket ${bucketName}: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`);
+  console.log(`Starting file upload to bucket ${bucketName}: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`);
   
   try {
-    // First ensure the bucket exists
-    const bucketExists = await ensureBucketExists(bucketName, true, 500 * 1024 * 1024);
+    // Ensure bucket exists first
+    const bucketExists = await createBucketIfNotExists(bucketName, true);
     
     if (!bucketExists) {
-      const errorMsg = `Failed to create or access the storage bucket ${bucketName}`;
-      console.error(errorMsg);
       if (onProgress) onProgress(0);
-      return { success: false, url: null, error: errorMsg };
+      return { 
+        success: false, 
+        url: null, 
+        error: `Failed to create or access bucket: ${bucketName}` 
+      };
     }
     
-    // Test bucket access
-    const canAccess = await testBucketAccess(bucketName);
-    if (!canAccess) {
-      const errorMsg = `Storage bucket ${bucketName} exists but cannot be accessed`;
-      console.error(errorMsg);
-      if (onProgress) onProgress(0);
-      return { success: false, url: null, error: errorMsg };
-    }
+    // Upload file
+    const result = await uploadFileToBucket(
+      bucketName,
+      filePath,
+      file,
+      true,  // upsert
+      onProgress
+    );
     
-    console.log('Uploading file to path:', filePath);
-    
-    // Set up progress tracking
-    let progressInterval: ReturnType<typeof setInterval> | undefined;
-    if (onProgress) {
-      // Real progress isn't available from Supabase, so simulate it
-      let lastProgress = 0;
-      progressInterval = setInterval(() => {
-        // Only increment progress up to 85% to avoid the 90% issue
-        lastProgress = Math.min(85, lastProgress + Math.random() * 3);
-        onProgress(lastProgress);
-      }, 800);
-    }
-    
-    try {
-      // Upload the file to Supabase Storage with improved options
-      const { data, error } = await supabase.storage
-        .from(bucketName)
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true, // Allow overwriting existing files
-          contentType: file.type || 'application/octet-stream', // Set correct content type
-        });
-      
-      // Clear progress interval  
-      if (progressInterval) {
-        clearInterval(progressInterval);
-      }
-      
-      if (error) {
-        console.error('Error uploading file to Supabase:', error);
-        if (onProgress) onProgress(0);
-        return { success: false, url: null, error: error.message };
-      }
-      
-      console.log('File uploaded successfully:', data?.path);
-      
-      if (onProgress) {
-        // Jump directly to 100% to avoid the 90% issue
-        onProgress(100);
-      }
-      
-      // Give the system a moment to process the upload
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Get the public URL for the uploaded file
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucketName)
-        .getPublicUrl(data.path);
-      
-      console.log('File public URL:', publicUrl);
-      
-      // Test the URL is accessible
-      try {
-        const response = await fetch(publicUrl, { method: 'HEAD' });
-        if (!response.ok) {
-          console.warn('Generated URL may not be accessible:', response.status);
-        }
-      } catch (urlTestError) {
-        console.warn('URL verification failed, but upload succeeded:', urlTestError);
-      }
-      
-      return { success: true, url: publicUrl, path: data.path };
-    } catch (uploadError: any) {
-      console.error('Upload error:', uploadError);
-      if (progressInterval) clearInterval(progressInterval);
-      if (onProgress) onProgress(0);
-      
-      // Try a simpler upload approach as fallback
-      try {
-        console.log('Attempting fallback upload method...');
-        const { data, error } = await supabase.storage
-          .from(bucketName)
-          .upload(filePath, file);
-          
-        if (error) {
-          console.error('Fallback upload failed:', error);
-          return { 
-            success: false, 
-            url: null, 
-            error: error.message || 'Upload failed even with fallback method' 
-          };
-        }
-        
-        if (onProgress) onProgress(100);
-        const { data: { publicUrl } } = supabase.storage
-          .from(bucketName)
-          .getPublicUrl(data.path);
-          
-        return { success: true, url: publicUrl, path: data.path };
-      } catch (fallbackError: any) {
-        return { 
-          success: false, 
-          url: null, 
-          error: uploadError.message || 'Unknown upload error' 
-        };
-      }
-    }
-  } catch (err: any) {
-    console.error('Unexpected error during upload:', err);
-    if (onProgress) onProgress(0);
+    return {
+      success: true,
+      url: result.publicUrl,
+      path: result.path
+    };
+  } catch (error: any) {
+    console.error('Error uploading file:', error);
     return { 
       success: false, 
       url: null, 
-      error: err.message || 'Unexpected error during upload' 
+      error: error.message
     };
   }
+};
+
+/**
+ * Simplified alias for createBucketIfNotExists for backward compatibility
+ */
+export const ensureBucketExists = (
+  bucketName: string,
+  isPublic: boolean = true,
+  fileSizeLimit: number = 500 * 1024 * 1024,
+  allowedMimeTypes?: string[]
+): Promise<boolean> => {
+  return createBucketIfNotExists(bucketName, isPublic, fileSizeLimit, allowedMimeTypes);
 };
