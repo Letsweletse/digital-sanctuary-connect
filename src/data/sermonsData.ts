@@ -1,3 +1,4 @@
+
 import { Sermon } from '@/types/sermonTypes';
 
 export const sermonsData: Sermon[] = [
@@ -119,7 +120,7 @@ export const sermonsData: Sermon[] = [
     speaker: 'Thamo Naidoo',
     speakerImage: '/lovable-uploads/6d156b1c-5055-4b49-a51e-032cea373e92.png',
     date: new Date('2025-05-10'),
-    audioUrl: '',
+    audioUrl: 'https://cdn.devdojo.com/episode/June2023/the-making-of-wave.mp3', // Update this with your actual Supabase audio URL
     youtubeId: '5qTWWzqg0q8',
     description: 'A powerful message on the apostolic perspective for the church today.',
     tags: ['Apostolic', 'Church', 'Kingdom', 'Perspective'],

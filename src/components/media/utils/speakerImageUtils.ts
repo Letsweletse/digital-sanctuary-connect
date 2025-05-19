@@ -1,29 +1,26 @@
-
 /**
- * Utility functions for handling speaker images
+ * Get the speaker image URL based on speaker name or fall back to a default
+ * 
+ * @param speakerName Name of the speaker
+ * @param defaultImage Optional default image to use if no specific image is found
+ * @returns URL to the speaker's image
  */
-
-// Image paths for all speakers
-export const SPEAKER_IMAGES = {
-  'Pastor Kobus Bezuidenhout': '/lovable-uploads/20736aa1-df4f-4d5b-b226-d41cb293bbe0.png',
-  'Pastor Oteng Leepile': '/lovable-uploads/bb2cad8b-0655-4b9e-acde-059a018eba68.png',
-  'Pastor Cynthia Harman': '/lovable-uploads/cfcf20f7-6921-4a44-b7ca-47809450d18c.png',
-  'Peter Taylor': '/lovable-uploads/a90674e8-ab9d-4607-97c5-e9553e6d0075.png',
-  'Thamo Naidoo': '/lovable-uploads/6d156b1c-5055-4b49-a51e-032cea373e92.png',
-  'Thabiso Thwane': '/lovable-uploads/e6febe02-1bbb-4eaf-97e1-9ee6e3fa12d4.png',
-};
-
-export const DEFAULT_LOGO = '/lovable-uploads/8c65fe13-b78a-486c-b18b-796c1ca1e52b.png';
-
-/**
- * Gets the appropriate image for a speaker
- * @param speaker - The speaker's name
- * @param fallbackImage - Optional fallback image URL
- * @returns The speaker's image URL or fallback/default image
- */
-export const getSpeakerImage = (speaker: string, fallbackImage?: string): string => {
-  if (speaker in SPEAKER_IMAGES) {
-    return SPEAKER_IMAGES[speaker as keyof typeof SPEAKER_IMAGES];
+export function getSpeakerImage(speakerName: string, defaultImage: string = '/placeholder.svg'): string {
+  // Return images based on speaker name
+  if (speakerName?.toLowerCase().includes('thamo')) {
+    return '/lovable-uploads/6d156b1c-5055-4b49-a51e-032cea373e92.png';
+  } else if (speakerName?.toLowerCase().includes('kobus')) {
+    return '/lovable-uploads/20736aa1-df4f-4d5b-b226-d41cb293bbe0.png';
+  } else if (speakerName?.toLowerCase().includes('peter taylor')) {
+    return '/lovable-uploads/a90674e8-ab9d-4607-97c5-e9553e6d0075.png';
+  } else if (speakerName?.toLowerCase().includes('cynthia')) {
+    return '/lovable-uploads/cfcf20f7-6921-4a44-b7ca-47809450d18c.png';
+  } else if (speakerName?.toLowerCase().includes('thabiso')) {
+    return '/lovable-uploads/e6febe02-1bbb-4eaf-97e1-9ee6e3fa12d4.png';
+  } else if (speakerName?.toLowerCase().includes('oteng')) {
+    return '/lovable-uploads/bb2cad8b-0655-4b9e-acde-059a018eba68.png';
   }
-  return fallbackImage || DEFAULT_LOGO;
-};
+  
+  // Return default image if no match found
+  return defaultImage;
+}
