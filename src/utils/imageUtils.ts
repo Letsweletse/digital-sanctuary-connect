@@ -31,6 +31,7 @@ export async function fetchImagesFromSupabase(category: ImageCategory): Promise<
         const validCategory: ImageCategory = isValidImageCategory(imgCategory) ? imgCategory : 'general';
         
         return {
+          id: img.id || `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           name: img.name || 'Untitled',
           url: img.url,
           category: validCategory,
@@ -48,30 +49,35 @@ export async function fetchImagesFromSupabase(category: ImageCategory): Promise<
 export function getMockImages(category: ImageCategory): ImageFile[] {
   const mockImages: ImageFile[] = [
     {
+      id: 'hero-1',
       name: 'hero-image.jpg',
       url: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3',
       category: 'hero',
       uploadedAt: new Date(2023, 5, 15)
     },
     {
+      id: 'sermon-1',
       name: 'sermon-cover.jpg',
       url: 'https://images.unsplash.com/photo-1508963493744-76fce69379c0',
       category: 'sermons',
       uploadedAt: new Date(2023, 6, 22)
     },
     {
+      id: 'event-1',
       name: 'event-banner.jpg',
-      url: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94',
+      url: 'https://images.unsplash.com/photo-1523580494863-6f31031224c94',
       category: 'events',
       uploadedAt: new Date(2023, 7, 10)
     },
     {
+      id: 'pastor-1',
       name: 'pastor-john.jpg',
       url: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81',
       category: 'leadership',
       uploadedAt: new Date(2023, 8, 5)
     },
     {
+      id: 'elders-1',
       name: 'elder-board.jpg',
       url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c',
       category: 'leadership',
