@@ -1,4 +1,3 @@
-
 import { format } from 'date-fns';
 import { Sermon } from '@/types/sermonTypes';
 
@@ -43,7 +42,11 @@ export const normalizeDate = (date: Date | string | any): Date => {
   return new Date();
 };
 
-// Process sermons to ensure consistent date formatting across devices
+/**
+ * Process sermons to ensure consistent date formatting across devices
+ * @param sermons Array of sermons to filter
+ * @returns Processed array of sermons with normalized dates
+ */
 export const processSermons = (sermons: Sermon[]): Sermon[] => {
   if (!sermons || !Array.isArray(sermons)) return [];
   
@@ -51,6 +54,21 @@ export const processSermons = (sermons: Sermon[]): Sermon[] => {
     ...sermon,
     date: normalizeDate(sermon.date)
   }));
+};
+
+/**
+ * Get sermons from the same series
+ * @param sermons All available sermons
+ * @param currentSermon The current sermon
+ * @returns Array of sermons from the same series as the current sermon
+ */
+export const getSermonsFromSameSeries = (sermons: Sermon[], currentSermon: Sermon): Sermon[] => {
+  if (!currentSermon || !currentSermon.series || !sermons) return [];
+  
+  return sermons.filter(sermon => 
+    sermon.series && 
+    sermon.series.toLowerCase() === currentSermon.series?.toLowerCase()
+  ).sort((a, b) => normalizeDate(a.date).getTime() - normalizeDate(b.date).getTime());
 };
 
 // Trigger sermon refresh (for use across components)

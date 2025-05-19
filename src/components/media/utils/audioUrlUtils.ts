@@ -1,49 +1,33 @@
 
 /**
- * Utility for verifying audio URLs
- */
-
-/**
- * Check if a URL is a valid audio file URL
+ * Check if a URL is a valid audio URL
  * 
- * @param url URL to check
- * @returns boolean indicating if URL is a valid audio URL
+ * @param url The URL to check
+ * @returns True if the URL is a valid audio URL
  */
-export const isValidAudioUrl = (url: string): boolean => {
+export function isValidAudioUrl(url: string | null | undefined): boolean {
   if (!url) return false;
   
-  // Check if it's a Supabase URL, blob URL or other common audio hosting URLs
-  return (
-    (url.startsWith('https://') && 
-      (url.includes('.supabase.co/storage/') || 
-       url.includes('cdn.devdojo.com') ||
-       url.includes('sermonaudio.com') ||
-       url.includes('soundcloud.com'))) || 
-    url.startsWith('blob:') || 
-    url.endsWith('.mp3') ||
-    url.endsWith('.wav') ||
-    url.endsWith('.ogg') ||
-    url.endsWith('.m4a')
-  );
-};
-
-/**
- * Test if an audio URL is accessible
- * 
- * @param url Audio URL to test
- * @returns Promise resolving to boolean indicating if URL is accessible
- */
-export const testAudioUrl = async (url: string): Promise<boolean> => {
-  if (!isValidAudioUrl(url)) return false;
-  
-  try {
-    const response = await fetch(url, { 
-      method: 'HEAD',
-      mode: 'no-cors' // Use no-cors to avoid CORS issues with external resources
-    });
-    return true; // If we get here, the URL is at least accessible
-  } catch (err) {
-    console.error('Error testing audio URL:', err);
-    return false;
+  // Check for direct Supabase URLs (public bucket access)
+  if (url.includes('supabase.co/storage/v1/object/public/sermon_audio')) {
+    return true;
   }
-};
+  
+  // Check for common audio file extensions
+  const audioExtensions = ['.mp3', '.wav', '.ogg', '.m4a', '.flac'];
+  if (audioExtensions.some(ext => url.toLowerCase().endsWith(ext))) {
+    return true;
+  }
+  
+  // Check for known audio hosting services
+  const knownAudioHosts = [
+    'cdn.devdojo.com',
+    'storage.googleapis.com',
+    'sermonaudio.com',
+    'buzzsprout.com',
+    'soundcloud.com',
+    'lojchdvtwypjqupsjynf.supabase.co'
+  ];
+  
+  return knownAudioHosts.some(host => url.includes(host));
+}
