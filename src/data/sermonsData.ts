@@ -1,4 +1,3 @@
-
 import { Sermon } from '@/types/sermonTypes';
 
 export const sermonsData: Sermon[] = [
@@ -147,7 +146,6 @@ export const sermonsData: Sermon[] = [
     views: 10,
     series: 'Faith Series'
   },
-  // Adding the new sermon by Thabiso Thwane
   {
     id: '25',
     title: 'Reformation Of The Mind',
@@ -164,5 +162,22 @@ export const sermonsData: Sermon[] = [
     downloads: 0,
     views: 0,
     series: 'Reformation Series'
+  },
+  {
+    id: '26',
+    title: 'Christ And Word Centeredness',
+    speaker: 'Pastor Kobus Bezuidenhout',
+    speakerImage: '/lovable-uploads/20736aa1-df4f-4d5b-b226-d41cb293bbe0.png',
+    date: new Date('2025-05-18'),
+    audioUrl: '',
+    youtubeId: '7fVsWOT7FQE',
+    description: 'A powerful sermon on centering our lives on Christ and the Word of God.',
+    tags: ['Christ-Centered', 'Word of God', 'Biblical Living'],
+    thumbnailUrl: '/lovable-uploads/c32f9d31-f3fc-4db1-83b9-f1f282b659e5.png',
+    featured: true,
+    duration: '48:30',
+    downloads: 0,
+    views: 0,
+    series: 'Biblical Foundations'
   }
 ];
