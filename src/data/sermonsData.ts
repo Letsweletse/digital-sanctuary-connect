@@ -1,4 +1,3 @@
-
 import { Sermon } from '@/types/sermonTypes';
 
 export const sermonsData: Sermon[] = [
@@ -10,7 +9,6 @@ export const sermonsData: Sermon[] = [
     date: new Date('2025-03-30'),
     audioUrl: 'https://cdn.devdojo.com/episode/June2023/the-making-of-wave.mp3',
     youtubeId: 'PpSxcNgBOqM',
-    spotifyEpisodeId: 'e333usj', // Added Spotify episode ID
     description: 'A powerful sermon about the Holy Spirit living in us and empowering us for ministry and life.',
     tags: ['Holy Spirit', 'Power', 'Christian Living'],
     thumbnailUrl: '/lovable-uploads/a90674e8-ab9d-4607-97c5-e9553e6d0075.png',
@@ -28,7 +26,6 @@ export const sermonsData: Sermon[] = [
     date: new Date('2025-03-23'),
     audioUrl: 'https://cdn.devdojo.com/episode/June2023/the-making-of-wave.mp3',
     youtubeId: 'Rt87TZ3cP2g',
-    spotifyEpisodeId: '7makk4oTQel546B0PZlDM5', // Added Spotify episode ID
     description: 'A transformative message on how our attitude shapes our Christian walk and impacts those around us.',
     tags: ['Christian Living', 'Growth', 'Mindset'],
     thumbnailUrl: '/lovable-uploads/bb2cad8b-0655-4b9e-acde-059a018eba68.png',
@@ -45,7 +42,6 @@ export const sermonsData: Sermon[] = [
     date: new Date('2025-04-06'),
     audioUrl: 'https://cdn.devdojo.com/episode/June2023/the-making-of-wave.mp3',
     youtubeId: 'syZyhjJffmU',
-    spotifyEpisodeId: '5HFibQ6GDnPL7Moa2QMoo6', // Added Spotify episode ID
     description: 'A powerful sermon the Prophetic Office In Context Of The Apostolic Seasons',
     tags: ['Prophetic', 'Restoration', 'Apostolic Season'],
     thumbnailUrl: '/lovable-uploads/20736aa1-df4f-4d5b-b226-d41cb293bbe0.png',

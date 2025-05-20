@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Sermon } from '@/types/sermonTypes';
 import SermonBasicInfo from './form-fields/SermonBasicInfo';
@@ -68,7 +67,7 @@ const SermonForm = ({ sermon, onSubmit, onCancel, isEditing }: SermonFormProps) 
               setTitle={setTitle}
               speaker={speaker}
               setSpeaker={setSpeaker}
-              date={date}
+              date={date instanceof Date ? date : new Date(date || '')}
               setDate={setDate}
               youtubeId={youtubeId}
               setYoutubeId={setYoutubeId}
