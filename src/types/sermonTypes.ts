@@ -6,7 +6,6 @@ export interface Sermon {
   speakerImage?: string;
   date: Date | string;
   audioUrl?: string;
-  spotifyEpisodeId?: string; // New field for Spotify integration
   youtubeId?: string;
   description?: string;
   tags?: string[];

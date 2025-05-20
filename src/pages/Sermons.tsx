@@ -7,7 +7,6 @@ import SermonHeader from '@/components/sermons/SermonHeader';
 import FilterBar from '@/components/sermons/FilterBar';
 import ViewSelector from '@/components/sermons/ViewSelector';
 import SermonSeriesList from '@/components/sermons/SermonSeriesList';
-import SpotifySermonExample from '@/components/sermons/SpotifySermonExample'; // Import the new example component
 import { Card, CardContent } from '@/components/ui/card';
 
 const Sermons = () => {
@@ -172,11 +171,6 @@ const Sermons = () => {
                     allSpeakers={allSpeakers}
                     allYears={allYears}
                   />
-                </div>
-                
-                {/* Spotify Example - This will show at the top of the sermons page */}
-                <div className="mb-6">
-                  <SpotifySermonExample />
                 </div>
                 
                 {/* Regular Sermon Views */}
