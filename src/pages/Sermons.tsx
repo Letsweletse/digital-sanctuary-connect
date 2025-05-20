@@ -6,7 +6,8 @@ import { useSermonFilters } from '@/hooks/useSermonFilters';
 import SermonHeader from '@/components/sermons/SermonHeader';
 import FilterBar from '@/components/sermons/FilterBar';
 import ViewSelector from '@/components/sermons/ViewSelector';
-import SermonSeriesList from '@/components/sermons/SermonSeriesList'; // Import the new component
+import SermonSeriesList from '@/components/sermons/SermonSeriesList';
+import SpotifySermonExample from '@/components/sermons/SpotifySermonExample'; // Import the new example component
 import { Card, CardContent } from '@/components/ui/card';
 
 const Sermons = () => {
@@ -173,7 +174,12 @@ const Sermons = () => {
                   />
                 </div>
                 
-                {/* Sermon Views */}
+                {/* Spotify Example - This will show at the top of the sermons page */}
+                <div className="mb-6">
+                  <SpotifySermonExample />
+                </div>
+                
+                {/* Regular Sermon Views */}
                 <div className="bg-white rounded-lg shadow-sm border border-church-neutral-200 p-4 md:p-6">
                   <ViewSelector filteredSermons={filteredSermons} />
                 </div>
