@@ -4,6 +4,7 @@ import { useSubscribers } from '@/hooks/useSubscribers';
 import SubscriberList from './subscriber/SubscriberList';
 import SubscriberForm from './subscriber/SubscriberForm';
 import SubscriberImport from './subscriber/SubscriberImport';
+import DatabaseStatus from './subscriber/DatabaseStatus';
 import { Subscriber, SubscriberFilter } from '@/types/subscriberTypes';
 import { Button } from '@/components/ui/button';
 import { Plus, Upload, Download, RefreshCw } from 'lucide-react';
@@ -17,7 +18,9 @@ const SubscriberManager = () => {
     updateSubscriber,
     deleteSubscriber,
     bulkImport,
-    exportSubscribers
+    exportSubscribers,
+    isUsingMockData,
+    refreshData
   } = useSubscribers();
   
   const [isAdding, setIsAdding] = useState(false);
@@ -137,6 +140,12 @@ const SubscriberManager = () => {
               </div>
             </div>
           </div>
+          
+          <DatabaseStatus 
+            isUsingMockData={isUsingMockData} 
+            refreshData={refreshData} 
+            isLoading={isLoading}
+          />
           
           <Tabs defaultValue="all" value={activeTab} onValueChange={(value) => setActiveTab(value as SubscriberFilter)}>
             <TabsList>

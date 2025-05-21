@@ -3,63 +3,99 @@ import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Subscriber, SubscriberSchema } from '@/types/subscriberTypes';
 import { subscribersData as initialData } from '@/data/subscribersData';
+import useMongoData from '@/hooks/useMongoData';
 
 export const useSubscribers = () => {
-  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [localSubscribers, setLocalSubscribers] = useState<Subscriber[]>([]);
+  const [isUsingMockData, setIsUsingMockData] = useState(true);
   const { toast } = useToast();
 
+  // Connect to MongoDB using the existing hook
+  const { 
+    data: mongoSubscribers, 
+    isLoading: mongoLoading, 
+    error: mongoError,
+    addData,
+    updateData,
+    deleteData,
+    refreshData
+  } = useMongoData<Subscriber>('subscribers', {}, { limit: 1000 });
+
+  // Determine if we should use mock data or real data
+  const subscribers = isUsingMockData ? localSubscribers : mongoSubscribers;
+  const isLoading = isUsingMockData ? false : mongoLoading;
+
   useEffect(() => {
-    // Simulate API call to fetch subscribers
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        // Load from localStorage if available, otherwise use initial data
-        const storedData = localStorage.getItem('church_subscribers');
-        if (storedData) {
-          setSubscribers(JSON.parse(storedData));
-        } else {
-          setSubscribers(initialData);
-          // Save initial data to localStorage
-          localStorage.setItem('church_subscribers', JSON.stringify(initialData));
-        }
-      } catch (error) {
-        console.error('Error loading subscribers:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load subscribers. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
+    // Check if we got real data from MongoDB
+    if (mongoSubscribers && mongoSubscribers.length > 0) {
+      setIsUsingMockData(false);
+      console.log('Using real subscriber data from database:', mongoSubscribers.length, 'records');
+    } else if (mongoError) {
+      console.error('Error loading subscribers from MongoDB:', mongoError);
+      console.log('Falling back to mock data');
+      loadLocalData();
+    } else if (!mongoLoading && mongoSubscribers && mongoSubscribers.length === 0) {
+      console.log('No subscribers found in database, using mock data');
+      loadLocalData();
+    }
+  }, [mongoSubscribers, mongoLoading, mongoError]);
+
+  const loadLocalData = () => {
+    try {
+      // Load from localStorage if available, otherwise use initial data
+      const storedData = localStorage.getItem('church_subscribers');
+      if (storedData) {
+        setLocalSubscribers(JSON.parse(storedData));
+      } else {
+        setLocalSubscribers(initialData);
+        // Save initial data to localStorage
+        localStorage.setItem('church_subscribers', JSON.stringify(initialData));
       }
-    };
+      setIsUsingMockData(true);
+    } catch (error) {
+      console.error('Error loading subscribers from localStorage:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load subscribers. Please try again.",
+        variant: "destructive",
+      });
+      setLocalSubscribers(initialData);
+      setIsUsingMockData(true);
+    }
+  };
 
-    fetchData();
-  }, [toast]);
-
-  const addSubscriber = (subscriberData: Omit<Subscriber, 'id'>) => {
+  const addSubscriber = async (subscriberData: Omit<Subscriber, 'id'>) => {
     try {
       // Validate with Zod schema
       SubscriberSchema.parse(subscriberData);
-      
-      // Create new subscriber with ID
-      const newSubscriber: Subscriber = {
-        ...subscriberData,
-        id: `subscriber-${Date.now()}`
-      };
 
-      // Update state and localStorage
-      const updatedSubscribers = [...subscribers, newSubscriber];
-      setSubscribers(updatedSubscribers);
-      localStorage.setItem('church_subscribers', JSON.stringify(updatedSubscribers));
+      if (isUsingMockData) {
+        // Local storage approach (mock data)
+        const newSubscriber: Subscriber = {
+          ...subscriberData,
+          id: `subscriber-${Date.now()}`
+        };
 
-      toast({
-        title: "Success",
-        description: "Subscriber added successfully.",
-      });
+        // Update state and localStorage
+        const updatedSubscribers = [...localSubscribers, newSubscriber];
+        setLocalSubscribers(updatedSubscribers);
+        localStorage.setItem('church_subscribers', JSON.stringify(updatedSubscribers));
 
-      return newSubscriber;
+        toast({
+          title: "Success",
+          description: "Subscriber added successfully.",
+        });
+
+        return newSubscriber;
+      } else {
+        // MongoDB approach (real data)
+        const result = await addData(subscriberData);
+        toast({
+          title: "Success",
+          description: "Subscriber added successfully to database.",
+        });
+        return result;
+      }
     } catch (error: any) {
       console.error('Error adding subscriber:', error);
       toast({
@@ -71,30 +107,41 @@ export const useSubscribers = () => {
     }
   };
 
-  const updateSubscriber = (id: string, updates: Partial<Omit<Subscriber, 'id'>>) => {
+  const updateSubscriber = async (id: string, updates: Partial<Omit<Subscriber, 'id'>>) => {
     try {
-      const subscriberIndex = subscribers.findIndex(s => s.id === id);
-      if (subscriberIndex === -1) {
-        throw new Error("Subscriber not found");
+      if (isUsingMockData) {
+        // Local storage approach (mock data)
+        const subscriberIndex = localSubscribers.findIndex(s => s.id === id);
+        if (subscriberIndex === -1) {
+          throw new Error("Subscriber not found");
+        }
+
+        const updatedSubscriber = {
+          ...localSubscribers[subscriberIndex],
+          ...updates
+        };
+
+        const updatedSubscribers = [...localSubscribers];
+        updatedSubscribers[subscriberIndex] = updatedSubscriber;
+        
+        setLocalSubscribers(updatedSubscribers);
+        localStorage.setItem('church_subscribers', JSON.stringify(updatedSubscribers));
+
+        toast({
+          title: "Success",
+          description: "Subscriber updated successfully.",
+        });
+
+        return updatedSubscriber;
+      } else {
+        // MongoDB approach (real data)
+        const result = await updateData(id, updates);
+        toast({
+          title: "Success",
+          description: "Subscriber updated successfully in database.",
+        });
+        return result;
       }
-
-      const updatedSubscriber = {
-        ...subscribers[subscriberIndex],
-        ...updates
-      };
-
-      const updatedSubscribers = [...subscribers];
-      updatedSubscribers[subscriberIndex] = updatedSubscriber;
-      
-      setSubscribers(updatedSubscribers);
-      localStorage.setItem('church_subscribers', JSON.stringify(updatedSubscribers));
-
-      toast({
-        title: "Success",
-        description: "Subscriber updated successfully.",
-      });
-
-      return updatedSubscriber;
     } catch (error: any) {
       console.error('Error updating subscriber:', error);
       toast({
@@ -106,17 +153,27 @@ export const useSubscribers = () => {
     }
   };
 
-  const deleteSubscriber = (id: string) => {
+  const deleteSubscriber = async (id: string) => {
     try {
-      const updatedSubscribers = subscribers.filter(s => s.id !== id);
-      
-      setSubscribers(updatedSubscribers);
-      localStorage.setItem('church_subscribers', JSON.stringify(updatedSubscribers));
+      if (isUsingMockData) {
+        // Local storage approach (mock data)
+        const updatedSubscribers = localSubscribers.filter(s => s.id !== id);
+        
+        setLocalSubscribers(updatedSubscribers);
+        localStorage.setItem('church_subscribers', JSON.stringify(updatedSubscribers));
 
-      toast({
-        title: "Success",
-        description: "Subscriber deleted successfully.",
-      });
+        toast({
+          title: "Success",
+          description: "Subscriber deleted successfully.",
+        });
+      } else {
+        // MongoDB approach (real data)
+        await deleteData(id);
+        toast({
+          title: "Success",
+          description: "Subscriber deleted successfully from database.",
+        });
+      }
     } catch (error: any) {
       console.error('Error deleting subscriber:', error);
       toast({
@@ -128,26 +185,44 @@ export const useSubscribers = () => {
     }
   };
 
-  const bulkImport = (newSubscribers: Omit<Subscriber, 'id'>[]) => {
+  const bulkImport = async (newSubscribers: Omit<Subscriber, 'id'>[]) => {
     try {
       const validSubscribers = newSubscribers.map(sub => {
         SubscriberSchema.parse(sub);
-        return {
+        return sub;
+      });
+
+      if (isUsingMockData) {
+        // Local storage approach (mock data)
+        const subscribersWithIds = validSubscribers.map(sub => ({
           ...sub,
           id: `subscriber-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
-        };
-      });
+        }));
 
-      const updatedSubscribers = [...subscribers, ...validSubscribers];
-      setSubscribers(updatedSubscribers);
-      localStorage.setItem('church_subscribers', JSON.stringify(updatedSubscribers));
+        const updatedSubscribers = [...localSubscribers, ...subscribersWithIds];
+        setLocalSubscribers(updatedSubscribers);
+        localStorage.setItem('church_subscribers', JSON.stringify(updatedSubscribers));
 
-      toast({
-        title: "Success",
-        description: `${validSubscribers.length} subscribers imported successfully.`,
-      });
+        toast({
+          title: "Success",
+          description: `${validSubscribers.length} subscribers imported successfully.`,
+        });
 
-      return validSubscribers;
+        return subscribersWithIds;
+      } else {
+        // MongoDB approach (real data)
+        // Add each subscriber to the database
+        const promises = validSubscribers.map(sub => addData(sub));
+        await Promise.all(promises);
+        refreshData(); // Refresh the data after bulk import
+
+        toast({
+          title: "Success",
+          description: `${validSubscribers.length} subscribers imported successfully to database.`,
+        });
+
+        return validSubscribers;
+      }
     } catch (error: any) {
       console.error('Error importing subscribers:', error);
       toast({
@@ -228,6 +303,8 @@ export const useSubscribers = () => {
     updateSubscriber,
     deleteSubscriber,
     bulkImport,
-    exportSubscribers
+    exportSubscribers,
+    isUsingMockData,
+    refreshData: isUsingMockData ? () => {} : refreshData
   };
 };
