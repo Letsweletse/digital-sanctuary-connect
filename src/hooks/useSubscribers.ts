@@ -110,7 +110,16 @@ export const useSubscribers = () => {
         return newSubscriber;
       } else {
         // Supabase approach (real data)
-        const { firstName, lastName, groups, lastContactDate, ...rest } = subscriberData;
+        const { firstName, lastName, groups, lastContactDate, subscribeDate, ...rest } = subscriberData;
+        
+        // Convert Date objects to ISO strings for Supabase
+        const subscribeString = subscribeDate instanceof Date 
+          ? subscribeDate.toISOString() 
+          : subscribeDate;
+          
+        const lastContactString = lastContactDate instanceof Date 
+          ? lastContactDate.toISOString() 
+          : lastContactDate;
         
         const { data, error } = await supabase
           .from('subscribers')
@@ -118,7 +127,8 @@ export const useSubscribers = () => {
             first_name: firstName,
             last_name: lastName,
             groups: groups,
-            last_contact_date: lastContactDate,
+            last_contact_date: lastContactString,
+            subscribe_date: subscribeString,
             ...rest
           })
           .select()
@@ -190,13 +200,25 @@ export const useSubscribers = () => {
         return updatedSubscriber;
       } else {
         // Supabase approach (real data)
-        const { firstName, lastName, groups, lastContactDate, ...rest } = updates;
+        const { firstName, lastName, groups, lastContactDate, subscribeDate, ...rest } = updates;
         
         const updateObject: any = { ...rest };
         if (firstName !== undefined) updateObject.first_name = firstName;
         if (lastName !== undefined) updateObject.last_name = lastName;
         if (groups !== undefined) updateObject.groups = groups;
-        if (lastContactDate !== undefined) updateObject.last_contact_date = lastContactDate;
+        
+        // Convert Date objects to ISO strings for Supabase
+        if (lastContactDate !== undefined) {
+          updateObject.last_contact_date = lastContactDate instanceof Date
+            ? lastContactDate.toISOString()
+            : lastContactDate;
+        }
+        
+        if (subscribeDate !== undefined) {
+          updateObject.subscribe_date = subscribeDate instanceof Date
+            ? subscribeDate.toISOString()
+            : subscribeDate;
+        }
         
         const { data, error } = await supabase
           .from('subscribers')
@@ -315,16 +337,27 @@ export const useSubscribers = () => {
       } else {
         // Supabase approach (real data)
         // Transform data for Supabase
-        const transformedSubscribers = validSubscribers.map(sub => ({
-          email: sub.email,
-          first_name: sub.firstName,
-          last_name: sub.lastName,
-          source: sub.source,
-          subscribe_date: sub.subscribeDate,
-          unsubscribed: sub.unsubscribed || false,
-          groups: sub.groups || [],
-          last_contact_date: sub.lastContactDate
-        }));
+        const transformedSubscribers = validSubscribers.map(sub => {
+          // Convert Date objects to ISO strings for Supabase
+          const subscribeString = sub.subscribeDate instanceof Date 
+            ? sub.subscribeDate.toISOString() 
+            : sub.subscribeDate;
+            
+          const lastContactString = sub.lastContactDate instanceof Date 
+            ? sub.lastContactDate.toISOString() 
+            : sub.lastContactDate;
+            
+          return {
+            email: sub.email,
+            first_name: sub.firstName,
+            last_name: sub.lastName,
+            source: sub.source,
+            subscribe_date: subscribeString,
+            unsubscribed: sub.unsubscribed || false,
+            groups: sub.groups || [],
+            last_contact_date: lastContactString
+          };
+        });
         
         const { data, error } = await supabase
           .from('subscribers')
