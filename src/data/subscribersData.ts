@@ -6,7 +6,8 @@ export const subscriberGroups = [
   'Events',
   'Prayer',
   'Featured Conference',
-  'Sermon Updates'
+  'Sermon Updates',
+  'Perspective On The Apostolic'
 ];
 
 export const subscribersData: Subscriber[] = [
@@ -87,5 +88,55 @@ export const subscribersData: Subscriber[] = [
     source: 'Featured Conference Registration',
     subscribeDate: new Date('2025-04-13'),
     groups: ['Featured Conference', 'Events'],
+  },
+  {
+    id: '9',
+    email: 'thomas.johnson@example.com',
+    firstName: 'Thomas',
+    lastName: 'Johnson',
+    source: 'Perspective On The Apostolic Registration',
+    subscribeDate: new Date('2025-03-25'),
+    groups: ['Perspective On The Apostolic'],
+    lastContactDate: new Date('2025-03-28')
+  },
+  {
+    id: '10',
+    email: 'grace.smith@example.com',
+    firstName: 'Grace',
+    lastName: 'Smith',
+    source: 'Perspective On The Apostolic Registration',
+    subscribeDate: new Date('2025-03-24'),
+    groups: ['Perspective On The Apostolic', 'Prayer'],
+    lastContactDate: new Date('2025-03-27')
+  },
+  {
+    id: '11',
+    email: 'daniel.brown@example.com',
+    firstName: 'Daniel',
+    lastName: 'Brown',
+    source: 'Perspective On The Apostolic Registration',
+    subscribeDate: new Date('2025-03-22'),
+    groups: ['Perspective On The Apostolic'],
+    lastContactDate: new Date('2025-03-26')
+  },
+  {
+    id: '12',
+    email: 'olivia.williams@example.com',
+    firstName: 'Olivia',
+    lastName: 'Williams',
+    source: 'Perspective On The Apostolic Registration',
+    subscribeDate: new Date('2025-03-21'),
+    groups: ['Perspective On The Apostolic', 'Newsletter'],
+    lastContactDate: new Date('2025-03-25')
+  },
+  {
+    id: '13',
+    email: 'samuel.davis@example.com',
+    firstName: 'Samuel',
+    lastName: 'Davis',
+    source: 'Perspective On The Apostolic Registration',
+    subscribeDate: new Date('2025-03-20'),
+    groups: ['Perspective On The Apostolic', 'Sermon Updates'],
+    lastContactDate: new Date('2025-03-24')
   }
 ];

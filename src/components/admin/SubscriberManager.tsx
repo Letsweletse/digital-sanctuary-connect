@@ -4,7 +4,7 @@ import { useSubscribers } from '@/hooks/useSubscribers';
 import SubscriberList from './subscriber/SubscriberList';
 import SubscriberForm from './subscriber/SubscriberForm';
 import SubscriberImport from './subscriber/SubscriberImport';
-import { Subscriber } from '@/types/subscriberTypes';
+import { Subscriber, SubscriberFilter } from '@/types/subscriberTypes';
 import { Button } from '@/components/ui/button';
 import { Plus, Upload, Download, RefreshCw } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -24,6 +24,7 @@ const SubscriberManager = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedSubscriber, setSelectedSubscriber] = useState<Subscriber | null>(null);
   const [showImport, setShowImport] = useState(false);
+  const [activeTab, setActiveTab] = useState<SubscriberFilter>('all');
   
   const resetState = () => {
     setIsAdding(false);
@@ -77,6 +78,22 @@ const SubscriberManager = () => {
   const handleExport = (format: 'csv' | 'json') => {
     exportSubscribers(format);
   };
+
+  const getFilteredSubscribers = (filter: SubscriberFilter) => {
+    switch(filter) {
+      case 'conference':
+        return subscribers.filter(s => s.groups?.includes('Featured Conference'));
+      case 'newsletter':
+        return subscribers.filter(s => s.groups?.includes('Newsletter'));
+      case 'events':
+        return subscribers.filter(s => s.groups?.includes('Events'));
+      case 'apostolic':
+        return subscribers.filter(s => s.groups?.includes('Perspective On The Apostolic'));
+      case 'all':
+      default:
+        return subscribers;
+    }
+  };
   
   return (
     <div className="space-y-6">
@@ -121,17 +138,18 @@ const SubscriberManager = () => {
             </div>
           </div>
           
-          <Tabs defaultValue="all">
+          <Tabs defaultValue="all" value={activeTab} onValueChange={(value) => setActiveTab(value as SubscriberFilter)}>
             <TabsList>
               <TabsTrigger value="all">All Subscribers</TabsTrigger>
               <TabsTrigger value="conference">Conference Registrants</TabsTrigger>
               <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
               <TabsTrigger value="events">Events</TabsTrigger>
+              <TabsTrigger value="apostolic">Apostolic Perspective</TabsTrigger>
             </TabsList>
             
             <TabsContent value="all" className="mt-4">
               <SubscriberList
-                subscribers={subscribers}
+                subscribers={getFilteredSubscribers('all')}
                 isLoading={isLoading}
                 onEdit={handleEditSubscriber}
                 onDelete={handleDeleteSubscriber}
@@ -140,7 +158,7 @@ const SubscriberManager = () => {
             
             <TabsContent value="conference" className="mt-4">
               <SubscriberList
-                subscribers={subscribers.filter(s => s.groups?.includes('Featured Conference'))}
+                subscribers={getFilteredSubscribers('conference')}
                 isLoading={isLoading}
                 onEdit={handleEditSubscriber}
                 onDelete={handleDeleteSubscriber}
@@ -149,7 +167,7 @@ const SubscriberManager = () => {
             
             <TabsContent value="newsletter" className="mt-4">
               <SubscriberList
-                subscribers={subscribers.filter(s => s.groups?.includes('Newsletter'))}
+                subscribers={getFilteredSubscribers('newsletter')}
                 isLoading={isLoading}
                 onEdit={handleEditSubscriber}
                 onDelete={handleDeleteSubscriber}
@@ -158,7 +176,16 @@ const SubscriberManager = () => {
             
             <TabsContent value="events" className="mt-4">
               <SubscriberList
-                subscribers={subscribers.filter(s => s.groups?.includes('Events'))}
+                subscribers={getFilteredSubscribers('events')}
+                isLoading={isLoading}
+                onEdit={handleEditSubscriber}
+                onDelete={handleDeleteSubscriber}
+              />
+            </TabsContent>
+            
+            <TabsContent value="apostolic" className="mt-4">
+              <SubscriberList
+                subscribers={getFilteredSubscribers('apostolic')}
                 isLoading={isLoading}
                 onEdit={handleEditSubscriber}
                 onDelete={handleDeleteSubscriber}

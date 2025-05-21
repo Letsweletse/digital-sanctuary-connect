@@ -5,6 +5,14 @@ import { Edit2, Trash2, User, Calendar, Mail, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Subscriber } from '@/types/subscriberTypes';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table';
 
 interface SubscriberListProps {
   subscribers: Subscriber[];
@@ -35,27 +43,27 @@ const SubscriberList = ({ subscribers, isLoading, onEdit, onDelete }: Subscriber
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-church-neutral-100">
-            <th className="p-3 text-left text-church-neutral-700 font-medium">Email</th>
-            <th className="p-3 text-left text-church-neutral-700 font-medium">Name</th>
-            <th className="p-3 text-left text-church-neutral-700 font-medium">Source</th>
-            <th className="p-3 text-left text-church-neutral-700 font-medium">Subscribe Date</th>
-            <th className="p-3 text-left text-church-neutral-700 font-medium">Groups</th>
-            <th className="p-3 text-left text-church-neutral-700 font-medium">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Email</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Source</TableHead>
+            <TableHead>Subscribe Date</TableHead>
+            <TableHead>Groups</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {subscribers.map((subscriber) => (
-            <tr key={subscriber.id} className="border-b border-church-neutral-200 hover:bg-church-neutral-50">
-              <td className="p-3">
+            <TableRow key={subscriber.id} className="hover:bg-church-neutral-50">
+              <TableCell>
                 <div className="flex items-center">
                   <Mail className="mr-2 h-4 w-4 text-church-neutral-400" />
                   <span className="text-church-neutral-900">{subscriber.email}</span>
                 </div>
-              </td>
-              <td className="p-3">
+              </TableCell>
+              <TableCell>
                 <div className="flex items-center">
                   <User className="mr-2 h-4 w-4 text-church-neutral-400" />
                   <span className="text-church-neutral-800">
@@ -64,11 +72,11 @@ const SubscriberList = ({ subscribers, isLoading, onEdit, onDelete }: Subscriber
                       : subscriber.firstName || subscriber.lastName || "—"}
                   </span>
                 </div>
-              </td>
-              <td className="p-3">
+              </TableCell>
+              <TableCell>
                 <span className="text-church-neutral-700">{subscriber.source}</span>
-              </td>
-              <td className="p-3">
+              </TableCell>
+              <TableCell>
                 <div className="flex items-center">
                   <Calendar className="mr-2 h-4 w-4 text-church-neutral-400" />
                   <span className="text-church-neutral-700">
@@ -77,8 +85,8 @@ const SubscriberList = ({ subscribers, isLoading, onEdit, onDelete }: Subscriber
                       : format(new Date(subscriber.subscribeDate), 'PP')}
                   </span>
                 </div>
-              </td>
-              <td className="p-3">
+              </TableCell>
+              <TableCell>
                 <div className="flex flex-wrap gap-1">
                   {subscriber.groups && subscriber.groups.length > 0 ? (
                     subscriber.groups.map((group, index) => (
@@ -90,8 +98,8 @@ const SubscriberList = ({ subscribers, isLoading, onEdit, onDelete }: Subscriber
                     <span className="text-church-neutral-500">—</span>
                   )}
                 </div>
-              </td>
-              <td className="p-3">
+              </TableCell>
+              <TableCell>
                 <div className="flex items-center space-x-2">
                   <Button
                     variant="ghost"
@@ -110,11 +118,11 @@ const SubscriberList = ({ subscribers, isLoading, onEdit, onDelete }: Subscriber
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 };

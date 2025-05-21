@@ -25,3 +25,5 @@ export const SubscriberSchema = z.object({
   groups: z.array(z.string()).optional().default([]),
   lastContactDate: z.union([z.date(), z.string(), z.null()]).optional(),
 });
+
+export type SubscriberFilter = 'all' | 'conference' | 'newsletter' | 'events' | 'apostolic';
