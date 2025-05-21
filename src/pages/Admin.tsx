@@ -7,11 +7,13 @@ import ImageUploader from '@/components/media/ImageUploader';
 import LogoUploader from '@/components/media/LogoUploader';
 import SermonManager from '@/components/media/SermonManager';
 import SermonAudioManager from '@/components/admin/SermonAudioManager';
+import SubscriberManager from '@/components/admin/SubscriberManager';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LogoProvider } from '@/components/layout/LogoContext';
+import { Mail } from 'lucide-react';
 
 const Admin = () => {
   const [authenticated, setAuthenticated] = useState(false);
@@ -92,6 +94,7 @@ const Admin = () => {
                   <TabsList className="mb-8">
                     <TabsTrigger value="sermon-audio">Sermon Audio</TabsTrigger>
                     <TabsTrigger value="sermons">Sermon Details</TabsTrigger>
+                    <TabsTrigger value="subscribers">Email Subscribers</TabsTrigger>
                     <TabsTrigger value="logo">Church Logo</TabsTrigger>
                     <TabsTrigger value="leadership">Leadership Photos</TabsTrigger>
                     <TabsTrigger value="images">General Images</TabsTrigger>
@@ -129,6 +132,23 @@ const Admin = () => {
                         Upload and manage sermons with speaker photos, audio files, and details. These will appear on the Sermons page.
                       </p>
                       <SermonManager />
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="subscribers" className="space-y-8">
+                    <div className="glass-panel p-8">
+                      <div className="flex items-start justify-between mb-6">
+                        <div>
+                          <h2 className="text-2xl font-bold text-church-neutral-900 mb-2 flex items-center">
+                            <Mail className="w-6 h-6 mr-2 text-church-blue" />
+                            Email Subscriber Management
+                          </h2>
+                          <p className="text-church-neutral-700">
+                            Manage your email subscribers and event registrations. View and export email lists from events like the Featured Conference.
+                          </p>
+                        </div>
+                      </div>
+                      <SubscriberManager />
                     </div>
                   </TabsContent>
                   

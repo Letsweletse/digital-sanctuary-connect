@@ -1,3 +1,4 @@
+
 import { Sermon } from '@/types/sermonTypes';
 
 export const sermonsData: Sermon[] = [
@@ -179,5 +180,39 @@ export const sermonsData: Sermon[] = [
     downloads: 0,
     views: 0,
     series: 'Biblical Foundations'
+  },
+  {
+    id: '27',
+    title: 'Character/Subsidence Session 1',
+    speaker: 'Pastor Cynthia Harman',
+    speakerImage: '/lovable-uploads/cfcf20f7-6921-4a44-b7ca-47809450d18c.png',
+    date: new Date('2025-05-04'),
+    audioUrl: '',
+    youtubeId: 'UpxCGUBRAIg',
+    description: 'The first session in the Character/Subsidence series exploring the foundations of Christian character.',
+    tags: ['Character', 'Christian Living', 'Growth', 'Foundations'],
+    thumbnailUrl: '/lovable-uploads/cfcf20f7-6921-4a44-b7ca-47809450d18c.png',
+    featured: true,
+    duration: '45:20',
+    downloads: 0,
+    views: 0,
+    series: 'Character/Subsidence'
+  },
+  {
+    id: '28',
+    title: 'Character/Subsidence Session 2',
+    speaker: 'Pastor Cynthia Harman',
+    speakerImage: '/lovable-uploads/cfcf20f7-6921-4a44-b7ca-47809450d18c.png',
+    date: new Date('2025-05-11'),
+    audioUrl: '',
+    youtubeId: 'Lvf_-4fC-LE',
+    description: 'The second session in the Character/Subsidence series diving deeper into developing godly character.',
+    tags: ['Character', 'Christian Living', 'Growth', 'Development'],
+    thumbnailUrl: '/lovable-uploads/cfcf20f7-6921-4a44-b7ca-47809450d18c.png',
+    featured: true,
+    duration: '47:30',
+    downloads: 0,
+    views: 0,
+    series: 'Character/Subsidence'
   }
 ];
