@@ -3,43 +3,63 @@ import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Subscriber, SubscriberSchema } from '@/types/subscriberTypes';
 import { subscribersData as initialData } from '@/data/subscribersData';
-import useMongoData from '@/hooks/useMongoData';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useSubscribers = () => {
   const [localSubscribers, setLocalSubscribers] = useState<Subscriber[]>([]);
+  const [supabaseSubscribers, setSupabaseSubscribers] = useState<Subscriber[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isUsingMockData, setIsUsingMockData] = useState(true);
   const { toast } = useToast();
-
-  // Connect to MongoDB using the existing hook
-  const { 
-    data: mongoSubscribers, 
-    isLoading: mongoLoading, 
-    error: mongoError,
-    addData,
-    updateData,
-    deleteData,
-    refreshData
-  } = useMongoData<Subscriber>('subscribers', {}, { limit: 1000 });
-
-  // Determine if we should use mock data or real data
-  const subscribers = isUsingMockData ? localSubscribers : mongoSubscribers;
-  const isLoading = isUsingMockData ? false : mongoLoading;
-
+  
+  // Determine which subscriber data to use
+  const subscribers = isUsingMockData ? localSubscribers : supabaseSubscribers;
+  
+  // Fetch subscribers from Supabase
   useEffect(() => {
-    // Check if we got real data from MongoDB
-    if (mongoSubscribers && mongoSubscribers.length > 0) {
-      setIsUsingMockData(false);
-      console.log('Using real subscriber data from database:', mongoSubscribers.length, 'records');
-    } else if (mongoError) {
-      console.error('Error loading subscribers from MongoDB:', mongoError);
-      console.log('Falling back to mock data');
-      loadLocalData();
-    } else if (!mongoLoading && mongoSubscribers && mongoSubscribers.length === 0) {
-      console.log('No subscribers found in database, using mock data');
-      loadLocalData();
-    }
-  }, [mongoSubscribers, mongoLoading, mongoError]);
-
+    const fetchSupabaseSubscribers = async () => {
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from('subscribers')
+          .select('*');
+          
+        if (error) {
+          console.error('Error fetching subscribers from Supabase:', error);
+          loadLocalData();
+        } else if (data) {
+          console.log('Fetched subscribers from Supabase:', data.length);
+          
+          // Transform Supabase data to match our Subscriber interface
+          const transformedData = data.map(item => ({
+            id: item.id,
+            email: item.email,
+            firstName: item.first_name || undefined,
+            lastName: item.last_name || undefined,
+            source: item.source,
+            subscribeDate: item.subscribe_date,
+            unsubscribed: item.unsubscribed || false,
+            groups: item.groups || [],
+            lastContactDate: item.last_contact_date || undefined
+          }));
+          
+          setSupabaseSubscribers(transformedData);
+          setIsUsingMockData(false);
+        } else {
+          // Fall back to local data if no data in Supabase
+          loadLocalData();
+        }
+      } catch (error) {
+        console.error('Error connecting to Supabase:', error);
+        loadLocalData();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchSupabaseSubscribers();
+  }, []);
+  
   const loadLocalData = () => {
     try {
       // Load from localStorage if available, otherwise use initial data
@@ -52,13 +72,14 @@ export const useSubscribers = () => {
         localStorage.setItem('church_subscribers', JSON.stringify(initialData));
       }
       setIsUsingMockData(true);
-    } catch (error) {
-      console.error('Error loading subscribers from localStorage:', error);
+      
       toast({
-        title: "Error",
-        description: "Failed to load subscribers. Please try again.",
+        title: "Using mock data",
+        description: "Could not connect to Supabase. Using local mock data instead.",
         variant: "destructive",
       });
+    } catch (error) {
+      console.error('Error loading subscribers from localStorage:', error);
       setLocalSubscribers(initialData);
       setIsUsingMockData(true);
     }
@@ -88,13 +109,47 @@ export const useSubscribers = () => {
 
         return newSubscriber;
       } else {
-        // MongoDB approach (real data)
-        const result = await addData(subscriberData);
+        // Supabase approach (real data)
+        const { firstName, lastName, groups, lastContactDate, ...rest } = subscriberData;
+        
+        const { data, error } = await supabase
+          .from('subscribers')
+          .insert({
+            first_name: firstName,
+            last_name: lastName,
+            groups: groups,
+            last_contact_date: lastContactDate,
+            ...rest
+          })
+          .select()
+          .single();
+          
+        if (error) {
+          throw new Error(error.message);
+        }
+        
+        // Transform response to match our Subscriber interface
+        const newSubscriber: Subscriber = {
+          id: data.id,
+          email: data.email,
+          firstName: data.first_name || undefined,
+          lastName: data.last_name || undefined,
+          source: data.source,
+          subscribeDate: data.subscribe_date,
+          unsubscribed: data.unsubscribed || false,
+          groups: data.groups || [],
+          lastContactDate: data.last_contact_date || undefined
+        };
+        
+        // Update our local state
+        setSupabaseSubscribers(prev => [...prev, newSubscriber]);
+        
         toast({
           title: "Success",
           description: "Subscriber added successfully to database.",
         });
-        return result;
+        
+        return newSubscriber;
       }
     } catch (error: any) {
       console.error('Error adding subscriber:', error);
@@ -134,13 +189,50 @@ export const useSubscribers = () => {
 
         return updatedSubscriber;
       } else {
-        // MongoDB approach (real data)
-        const result = await updateData(id, updates);
+        // Supabase approach (real data)
+        const { firstName, lastName, groups, lastContactDate, ...rest } = updates;
+        
+        const updateObject: any = { ...rest };
+        if (firstName !== undefined) updateObject.first_name = firstName;
+        if (lastName !== undefined) updateObject.last_name = lastName;
+        if (groups !== undefined) updateObject.groups = groups;
+        if (lastContactDate !== undefined) updateObject.last_contact_date = lastContactDate;
+        
+        const { data, error } = await supabase
+          .from('subscribers')
+          .update(updateObject)
+          .eq('id', id)
+          .select()
+          .single();
+        
+        if (error) {
+          throw new Error(error.message);
+        }
+        
+        // Transform the response
+        const updatedSubscriber: Subscriber = {
+          id: data.id,
+          email: data.email,
+          firstName: data.first_name || undefined,
+          lastName: data.last_name || undefined,
+          source: data.source,
+          subscribeDate: data.subscribe_date,
+          unsubscribed: data.unsubscribed || false,
+          groups: data.groups || [],
+          lastContactDate: data.last_contact_date || undefined
+        };
+        
+        // Update our local state
+        setSupabaseSubscribers(prev => 
+          prev.map(s => s.id === id ? updatedSubscriber : s)
+        );
+        
         toast({
           title: "Success",
           description: "Subscriber updated successfully in database.",
         });
-        return result;
+        
+        return updatedSubscriber;
       }
     } catch (error: any) {
       console.error('Error updating subscriber:', error);
@@ -167,8 +259,19 @@ export const useSubscribers = () => {
           description: "Subscriber deleted successfully.",
         });
       } else {
-        // MongoDB approach (real data)
-        await deleteData(id);
+        // Supabase approach (real data)
+        const { error } = await supabase
+          .from('subscribers')
+          .delete()
+          .eq('id', id);
+          
+        if (error) {
+          throw new Error(error.message);
+        }
+        
+        // Update our local state
+        setSupabaseSubscribers(prev => prev.filter(s => s.id !== id));
+        
         toast({
           title: "Success",
           description: "Subscriber deleted successfully from database.",
@@ -210,18 +313,50 @@ export const useSubscribers = () => {
 
         return subscribersWithIds;
       } else {
-        // MongoDB approach (real data)
-        // Add each subscriber to the database
-        const promises = validSubscribers.map(sub => addData(sub));
-        await Promise.all(promises);
-        refreshData(); // Refresh the data after bulk import
-
+        // Supabase approach (real data)
+        // Transform data for Supabase
+        const transformedSubscribers = validSubscribers.map(sub => ({
+          email: sub.email,
+          first_name: sub.firstName,
+          last_name: sub.lastName,
+          source: sub.source,
+          subscribe_date: sub.subscribeDate,
+          unsubscribed: sub.unsubscribed || false,
+          groups: sub.groups || [],
+          last_contact_date: sub.lastContactDate
+        }));
+        
+        const { data, error } = await supabase
+          .from('subscribers')
+          .insert(transformedSubscribers)
+          .select();
+          
+        if (error) {
+          throw new Error(error.message);
+        }
+        
+        // Transform the response
+        const importedSubscribers = data.map((item: any) => ({
+          id: item.id,
+          email: item.email,
+          firstName: item.first_name || undefined,
+          lastName: item.last_name || undefined,
+          source: item.source,
+          subscribeDate: item.subscribe_date,
+          unsubscribed: item.unsubscribed || false,
+          groups: item.groups || [],
+          lastContactDate: item.last_contact_date || undefined
+        }));
+        
+        // Update our local state
+        setSupabaseSubscribers(prev => [...prev, ...importedSubscribers]);
+        
         toast({
           title: "Success",
-          description: `${validSubscribers.length} subscribers imported successfully to database.`,
+          description: `${importedSubscribers.length} subscribers imported successfully to database.`,
         });
-
-        return validSubscribers;
+        
+        return importedSubscribers;
       }
     } catch (error: any) {
       console.error('Error importing subscribers:', error);
@@ -296,6 +431,52 @@ export const useSubscribers = () => {
     }
   };
 
+  const refreshData = async () => {
+    if (isUsingMockData) return;
+    
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('subscribers')
+        .select('*');
+        
+      if (error) {
+        throw new Error(error.message);
+      }
+      
+      if (data) {
+        // Transform Supabase data to match our Subscriber interface
+        const transformedData = data.map(item => ({
+          id: item.id,
+          email: item.email,
+          firstName: item.first_name || undefined,
+          lastName: item.last_name || undefined,
+          source: item.source,
+          subscribeDate: item.subscribe_date,
+          unsubscribed: item.unsubscribed || false,
+          groups: item.groups || [],
+          lastContactDate: item.last_contact_date || undefined
+        }));
+        
+        setSupabaseSubscribers(transformedData);
+      }
+      
+      toast({
+        title: "Success",
+        description: "Subscriber data refreshed successfully.",
+      });
+    } catch (error: any) {
+      console.error('Error refreshing data:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to refresh subscriber data.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     subscribers,
     isLoading,
@@ -305,6 +486,6 @@ export const useSubscribers = () => {
     bulkImport,
     exportSubscribers,
     isUsingMockData,
-    refreshData: isUsingMockData ? () => {} : refreshData
+    refreshData
   };
 };

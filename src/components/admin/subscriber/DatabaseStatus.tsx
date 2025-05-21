@@ -26,8 +26,8 @@ const DatabaseStatus = ({ isUsingMockData, refreshData, isLoading }: DatabaseSta
               <span className="flex items-center gap-2">
                 <DatabaseIcon className="h-4 w-4" />
                 {isUsingMockData 
-                  ? "Using mock data from localStorage. No database connection available."
-                  : "Connected to database. Showing real registration data."}
+                  ? "Using mock data from localStorage. No Supabase connection available."
+                  : "Connected to Supabase. Showing real registration data."}
               </span>
             </AlertDescription>
           </div>

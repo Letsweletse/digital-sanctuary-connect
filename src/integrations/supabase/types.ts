@@ -33,6 +33,42 @@ export type Database = {
         }
         Relationships: []
       }
+      subscribers: {
+        Row: {
+          email: string
+          first_name: string | null
+          groups: string[] | null
+          id: string
+          last_contact_date: string | null
+          last_name: string | null
+          source: string
+          subscribe_date: string
+          unsubscribed: boolean
+        }
+        Insert: {
+          email: string
+          first_name?: string | null
+          groups?: string[] | null
+          id?: string
+          last_contact_date?: string | null
+          last_name?: string | null
+          source?: string
+          subscribe_date?: string
+          unsubscribed?: boolean
+        }
+        Update: {
+          email?: string
+          first_name?: string | null
+          groups?: string[] | null
+          id?: string
+          last_contact_date?: string | null
+          last_name?: string | null
+          source?: string
+          subscribe_date?: string
+          unsubscribed?: boolean
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
