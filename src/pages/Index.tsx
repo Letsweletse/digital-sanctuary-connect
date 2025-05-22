@@ -9,21 +9,11 @@ import { EventData } from '@/types/eventTypes';
 import FeaturedEvent from '@/components/home/FeaturedEvent';
 import FeaturedSections from '@/components/home/FeaturedSections';
 import { useEventRegistration } from '@/hooks/useEventRegistration';
+import { events } from '@/data/eventsData'; // Import events from data file
 
 const Index = () => {
-  // Featured event data
-  const featuredEvent: EventData = {
-    id: '4',
-    title: 'Perspectives on the Apostolic with Thamo Naidoo',
-    date: 'TBA',
-    time: 'To be announced',
-    location: 'Gate Gaborone Auditorium',
-    description: 'Join us for our next Perspectives on the Apostolic conference with guest speaker Thamo Naidoo. Future dates will be announced soon. Stay tuned for powerful teachings, workshops, and fellowship.',
-    category: 'conference',
-    image: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/May%2010%20Conference%20Gate%20Gaborone_1746167943667.jpeg',
-    registration: true,
-    registrationLink: '#register-event'
-  };
+  // Featured event data - use the event from data file
+  const featuredEvent: EventData = events[1]; // Using the second event (Apostolic Conference) from events array
   
   const {
     isRegistrationOpen,

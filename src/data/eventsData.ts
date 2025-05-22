@@ -19,7 +19,7 @@ export const events: EventData[] = [
     title: 'Apostolic Conference: Rule Your Domain',
     date: '2025-07-03',
     endDate: '2025-07-04',
-    time: 'Multiple Sessions',
+    time: '18:00 - 20:30',
     location: 'Travelodge Conference Centre',
     description: 'Join us for this transformative conference as we explore apostolic principles for ruling your domain. This two-day event features powerful teaching, workshops, and fellowship opportunities.',
     category: 'conference',
