@@ -23,6 +23,7 @@ import EmailTest from "./components/email-test"; // Updated import path to match
 import RegistrationConfirmation from "./pages/RegistrationConfirmation"; // Add the new page import
 import WhatsAppTester from "./components/examples/WhatsAppTester"; // Add WhatsApp tester
 import CheckIn from "./pages/CheckIn"; // Add import for the new CheckIn page
+import Conference from "./pages/Conference"; // Add import for the new Conference page
 
 const queryClient = new QueryClient();
 
@@ -56,7 +57,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/sermons" element={<Sermons />} />
-            <Route path="/sermon-series/:seriesName" element={<SermonSeries />} /> {/* Add the new route */}
+            <Route path="/sermon-series/:seriesName" element={<SermonSeries />} />
             <Route path="/leadership" element={<Leadership />} />
             <Route path="/house-church" element={<HouseChurch />} />
             <Route path="/about" element={<About />} />
@@ -67,7 +68,8 @@ const App = () => (
             <Route path="/email-test" element={<EmailTest />} />
             <Route path="/registration-confirmation" element={<RegistrationConfirmation />} />
             <Route path="/whatsapp-test" element={<WhatsAppTester />} />
-            <Route path="/check-in/:id" element={<CheckIn />} /> {/* Add the CheckIn route with parameter */}
+            <Route path="/check-in/:id" element={<CheckIn />} />
+            <Route path="/conference" element={<Conference />} /> {/* Add the new Conference route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { EventData } from '@/types/eventTypes';
 import { formatDate } from '@/utils/dateUtils';
 import { CalendarDays, Clock, MapPin, Users } from "lucide-react";
+import EventCountdownTimer from '@/components/events/EventCountdownTimer';
 
 interface FeaturedEventProps {
   featuredEvent: EventData;
@@ -14,6 +15,17 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
   // Function to handle date display - shows formatted date or TBA
   const displayDate = (date: string) => {
     return date === 'TBA' ? 'Dates to be announced' : formatDate(date);
+  };
+
+  // Parse the conference date for the countdown
+  const getTargetDate = () => {
+    if (featuredEvent.date === 'TBA') {
+      // Use a date in the future for TBA events
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 30); // 30 days from now
+      return futureDate;
+    }
+    return new Date(featuredEvent.date);
   };
 
   return (
@@ -57,7 +69,15 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
                 </div>
               </div>
               
-              <p className="text-white/80 mb-6 line-clamp-3">
+              {/* Add countdown timer */}
+              <div className="mb-5">
+                <EventCountdownTimer 
+                  targetDate={getTargetDate()} 
+                  eventTitle={featuredEvent.title}
+                />
+              </div>
+              
+              <p className="text-white/80 mb-6">
                 {featuredEvent.description}
               </p>
               
@@ -75,7 +95,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
                   className="border-[#b8a156] text-white hover:bg-[#24324b]/40"
                   asChild
                 >
-                  <a href="/events">View All Events</a>
+                  <a href="/conference">View Conference Details</a>
                 </Button>
               </div>
             </div>
