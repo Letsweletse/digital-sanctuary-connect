@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -8,6 +7,7 @@ import LogoUploader from '@/components/media/LogoUploader';
 import SermonManager from '@/components/media/SermonManager';
 import SermonAudioManager from '@/components/admin/SermonAudioManager';
 import SubscriberManager from '@/components/admin/SubscriberManager';
+import SubscriberEmailList from '@/components/admin/subscriber/SubscriberEmailList';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -148,6 +148,14 @@ const Admin = () => {
                           </p>
                         </div>
                       </div>
+                      
+                      <div className="mb-8">
+                        <h3 className="text-xl font-semibold text-church-neutral-800 mb-4">
+                          Subscriber Information
+                        </h3>
+                        <SubscriberEmailList />
+                      </div>
+                      
                       <SubscriberManager />
                     </div>
                   </TabsContent>
