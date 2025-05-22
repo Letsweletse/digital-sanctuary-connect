@@ -8,17 +8,20 @@ interface SermonAudioProps {
   showLatest?: boolean;
   count?: number;
   useMongoConfig?: boolean;
+  forceRefresh?: boolean;
 }
 
 const SermonAudio = ({ 
   churchId = "gategaborone", 
   showLatest = true,
-  count = 5,
-  useMongoConfig = false
+  count = 10, // Increased default count to show more sermons
+  useMongoConfig = false,
+  forceRefresh = false
 }: SermonAudioProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [config, setConfig] = useState<ChurchConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0); // Used to force iframe refresh
   
   // Fetch configuration from MongoDB if enabled
   useEffect(() => {
@@ -40,14 +43,22 @@ const SermonAudio = ({
     }
   }, [useMongoConfig]);
   
+  // Force refresh if requested
+  useEffect(() => {
+    if (forceRefresh) {
+      setRefreshKey(prevKey => prevKey + 1);
+    }
+  }, [forceRefresh]);
+  
   // Ensure the iframe loads properly
   useEffect(() => {
+    setIsLoading(true);
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1500);
     
     return () => clearTimeout(timer);
-  }, []);
+  }, [refreshKey]);
   
   // Use MongoDB config if available, otherwise use props
   const effectiveChurchId = (useMongoConfig && config?.sermonAudioId) ? config.sermonAudioId : churchId;
@@ -74,6 +85,7 @@ const SermonAudio = ({
       )}
       
       <iframe 
+        key={refreshKey}
         src={embedUrl}
         style={{ minHeight: "500px" }}
         className={`w-full border-0 rounded-lg transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}

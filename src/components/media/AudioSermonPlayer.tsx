@@ -18,7 +18,7 @@ interface AudioSermonPlayerProps {
 }
 
 const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
-  const { sermons: fetchedSermons } = useSermons();
+  const { sermons: fetchedSermons, loading: sermonsLoading } = useSermons();
   
   const {
     audioRef,
@@ -92,6 +92,12 @@ const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
       };
     }
   }, [currentSermon?.audioUrl]);
+
+  // Auto-refresh sermons data on first load
+  useEffect(() => {
+    refreshSermons();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   // Check if the current sermon has a valid audio URL
   const hasValidAudio = currentSermon?.audioUrl && isValidAudioUrl(currentSermon.audioUrl);
@@ -136,7 +142,7 @@ const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
       
       {!isAudioLoading && currentSermon ? (
         <SermonInfo sermon={currentSermon} />
-      ) : !isAudioLoading ? (
+      ) : !isAudioLoading && !sermonsLoading ? (
         <div className="p-4 bg-church-neutral-50 rounded-md text-center mb-4">
           <p className="text-church-neutral-500">No sermon selected. Please refresh or select one from the playlist.</p>
         </div>

@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { useSermons } from '@/hooks/useSermons';
@@ -6,7 +7,6 @@ import SermonHeader from '@/components/sermons/SermonHeader';
 import FilterBar from '@/components/sermons/FilterBar';
 import ViewSelector from '@/components/sermons/ViewSelector';
 import SermonSeriesList from '@/components/sermons/SermonSeriesList';
-import SubscriberEmailList from '@/components/admin/subscriber/SubscriberEmailList';
 import { Card, CardContent } from '@/components/ui/card';
 
 const Sermons = () => {
@@ -179,14 +179,6 @@ const Sermons = () => {
                     <ViewSelector filteredSermons={filteredSermons} />
                   </div>
                 </div>
-              </div>
-              
-              {/* Subscriber Email List */}
-              <div className="mt-12 mb-8">
-                <h2 className="text-2xl font-bold text-church-neutral-800 mb-4">
-                  Subscriber Information
-                </h2>
-                <SubscriberEmailList />
               </div>
             </>
           )}
