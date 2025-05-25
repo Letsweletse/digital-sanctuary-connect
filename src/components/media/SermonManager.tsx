@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import SermonForm from './SermonForm';
 import SermonList from './SermonList';
+import DatabaseSwitcher from '../admin/DatabaseSwitcher';
 import { useSermonManager } from '@/hooks/useSermonManager';
+import { useDualSermons } from '@/hooks/useDualSermons';
 
 const SermonManager = () => {
   const {
@@ -19,8 +21,24 @@ const SermonManager = () => {
     startAddSermon
   } = useSermonManager();
   
+  const {
+    activeProvider,
+    switchProvider,
+    refreshSermons,
+    loading
+  } = useDualSermons();
+  
   return (
     <div className="space-y-6">
+      {/* Database Configuration */}
+      <DatabaseSwitcher
+        activeProvider={activeProvider}
+        onSwitchProvider={switchProvider}
+        onRefresh={refreshSermons}
+        sermonCount={sermons.length}
+        loading={loading}
+      />
+      
       {/* Add/Edit form */}
       {(isAdding || isEditing) ? (
         <SermonForm
