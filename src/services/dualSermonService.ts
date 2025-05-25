@@ -60,12 +60,14 @@ class DualSermonService {
   }
 
   private async getSermonsFromSupabase(): Promise<Sermon[]> {
+    console.log('Querying Supabase sermons table...');
     const { data, error } = await supabase
       .from('sermons')
       .select('*')
       .order('date', { ascending: false });
 
     if (error) {
+      console.error('Supabase query error:', error);
       throw new Error(`Supabase error: ${error.message}`);
     }
 
@@ -74,6 +76,7 @@ class DualSermonService {
       return [];
     }
 
+    console.log(`Found ${data.length} sermons in Supabase`);
     return data.map(sermon => ({
       id: sermon.id,
       title: sermon.title,
@@ -94,6 +97,7 @@ class DualSermonService {
   }
 
   private async getSermonsFromMongoDB(): Promise<Sermon[]> {
+    console.log('Querying MongoDB sermons collection...');
     const mongoSermons = await findMany('sermons', {}, { sort: { date: -1 } });
     
     if (!mongoSermons || mongoSermons.length === 0) {
@@ -101,6 +105,7 @@ class DualSermonService {
       return [];
     }
 
+    console.log(`Found ${mongoSermons.length} sermons in MongoDB`);
     return mongoSermons.map((doc: any) => {
       const { _id, ...rest } = doc;
       return {
@@ -113,7 +118,7 @@ class DualSermonService {
 
   async addSermon(sermon: Omit<Sermon, 'id'>, provider?: DatabaseProvider): Promise<Sermon> {
     const targetProvider = provider || this.config.primaryProvider;
-    console.log(`Adding sermon to ${targetProvider}`);
+    console.log(`Adding sermon to ${targetProvider}:`, sermon.title);
 
     try {
       const newSermon = await this.addSermonToProvider(sermon, targetProvider);
@@ -152,6 +157,7 @@ class DualSermonService {
   }
 
   private async addSermonToSupabase(sermon: Omit<Sermon, 'id'>): Promise<Sermon> {
+    console.log('Inserting sermon into Supabase...');
     const { data, error } = await supabase
       .from('sermons')
       .insert({
@@ -174,9 +180,11 @@ class DualSermonService {
       .single();
 
     if (error) {
+      console.error('Supabase insert error:', error);
       throw new Error(`Supabase insert error: ${error.message}`);
     }
 
+    console.log('Successfully inserted sermon into Supabase');
     return {
       id: data.id,
       title: data.title,
@@ -197,11 +205,13 @@ class DualSermonService {
   }
 
   private async addSermonToMongoDB(sermon: Omit<Sermon, 'id'>): Promise<Sermon> {
+    console.log('Inserting sermon into MongoDB...');
     const result = await insertOne('sermons', {
       ...sermon,
       date: sermon.date instanceof Date ? sermon.date.toISOString() : sermon.date,
     });
 
+    console.log('Successfully inserted sermon into MongoDB');
     return {
       ...sermon,
       id: result.insertedId || Date.now().toString(),
@@ -211,6 +221,7 @@ class DualSermonService {
 
   private async syncSermonToProvider(sermon: Sermon, provider: DatabaseProvider): Promise<void> {
     try {
+      console.log(`Syncing sermon to ${provider}...`);
       const { id, ...sermonWithoutId } = sermon;
       await this.addSermonToProvider(sermonWithoutId, provider);
       console.log(`Successfully synced sermon to ${provider}`);
@@ -221,10 +232,11 @@ class DualSermonService {
 
   async updateSermon(id: string, updates: Partial<Sermon>, provider?: DatabaseProvider): Promise<void> {
     const targetProvider = provider || this.config.primaryProvider;
-    console.log(`Updating sermon in ${targetProvider}`);
+    console.log(`Updating sermon in ${targetProvider}:`, id);
 
     try {
       await this.updateSermonInProvider(id, updates, targetProvider);
+      console.log(`Successfully updated sermon in ${targetProvider}`);
     } catch (error) {
       console.error(`Failed to update sermon in ${targetProvider}:`, error);
       
@@ -252,6 +264,7 @@ class DualSermonService {
   }
 
   private async updateSermonInSupabase(id: string, updates: Partial<Sermon>): Promise<void> {
+    console.log('Updating sermon in Supabase...');
     const supabaseUpdates: any = {};
     
     if (updates.title !== undefined) supabaseUpdates.title = updates.title;
@@ -275,11 +288,15 @@ class DualSermonService {
       .eq('id', id);
 
     if (error) {
+      console.error('Supabase update error:', error);
       throw new Error(`Supabase update error: ${error.message}`);
     }
+    
+    console.log('Successfully updated sermon in Supabase');
   }
 
   private async updateSermonInMongoDB(id: string, updates: Partial<Sermon>): Promise<void> {
+    console.log('Updating sermon in MongoDB...');
     const mongoUpdates = { ...updates };
     if (mongoUpdates.date instanceof Date) {
       mongoUpdates.date = mongoUpdates.date.toISOString();
@@ -287,14 +304,16 @@ class DualSermonService {
     delete (mongoUpdates as any).id; // Remove id from updates
 
     await updateOne('sermons', { _id: id }, { $set: mongoUpdates });
+    console.log('Successfully updated sermon in MongoDB');
   }
 
   async deleteSermon(id: string, provider?: DatabaseProvider): Promise<void> {
     const targetProvider = provider || this.config.primaryProvider;
-    console.log(`Deleting sermon from ${targetProvider}`);
+    console.log(`Deleting sermon from ${targetProvider}:`, id);
 
     try {
       await this.deleteSermonFromProvider(id, targetProvider);
+      console.log(`Successfully deleted sermon from ${targetProvider}`);
     } catch (error) {
       console.error(`Failed to delete sermon from ${targetProvider}:`, error);
       
@@ -311,17 +330,22 @@ class DualSermonService {
   private async deleteSermonFromProvider(id: string, provider: DatabaseProvider): Promise<void> {
     switch (provider) {
       case 'supabase':
+        console.log('Deleting sermon from Supabase...');
         const { error } = await supabase
           .from('sermons')
           .delete()
           .eq('id', id);
         
         if (error) {
+          console.error('Supabase delete error:', error);
           throw new Error(`Supabase delete error: ${error.message}`);
         }
+        console.log('Successfully deleted sermon from Supabase');
         break;
       case 'mongodb':
+        console.log('Deleting sermon from MongoDB...');
         await deleteOne('sermons', { _id: id });
+        console.log('Successfully deleted sermon from MongoDB');
         break;
       default:
         throw new Error(`Unknown provider: ${provider}`);

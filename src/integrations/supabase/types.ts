@@ -33,6 +33,66 @@ export type Database = {
         }
         Relationships: []
       }
+      sermons: {
+        Row: {
+          audio_url: string | null
+          created_at: string
+          date: string
+          description: string | null
+          downloads: number | null
+          duration: string | null
+          featured: boolean | null
+          id: string
+          series: string | null
+          speaker: string
+          speaker_image: string | null
+          tags: string[] | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          views: number | null
+          youtube_id: string | null
+        }
+        Insert: {
+          audio_url?: string | null
+          created_at?: string
+          date: string
+          description?: string | null
+          downloads?: number | null
+          duration?: string | null
+          featured?: boolean | null
+          id?: string
+          series?: string | null
+          speaker: string
+          speaker_image?: string | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          views?: number | null
+          youtube_id?: string | null
+        }
+        Update: {
+          audio_url?: string | null
+          created_at?: string
+          date?: string
+          description?: string | null
+          downloads?: number | null
+          duration?: string | null
+          featured?: boolean | null
+          id?: string
+          series?: string | null
+          speaker?: string
+          speaker_image?: string | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          views?: number | null
+          youtube_id?: string | null
+        }
+        Relationships: []
+      }
       subscribers: {
         Row: {
           email: string
