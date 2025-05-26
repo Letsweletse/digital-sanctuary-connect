@@ -14,7 +14,7 @@ interface TimeLeft {
   seconds: number;
 }
 
-const EventCountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate, eventTitle }) => {
+const EventCountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate }) => {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
@@ -51,29 +51,27 @@ const EventCountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate, eventT
   }, [targetDate]);
 
   return (
-    <div className="w-full p-4 rounded-lg bg-gradient-to-br from-[#162035] to-[#24324b] shadow-lg border border-[#b8a156]/20">
-      <div className="text-center mb-3">
-        {eventTitle && (
-          <h3 className="text-white/90 font-medium mb-1">{eventTitle}</h3>
-        )}
-        <div className="flex items-center justify-center text-[#b8a156] text-sm">
-          <Calendar className="h-4 w-4 mr-1" />
-          <span>Event Countdown</span>
+    <div className="w-full p-6 lg:p-8 rounded-2xl bg-gradient-to-br from-[#162035] to-[#24324b] shadow-2xl border border-[#b8a156]/30">
+      <div className="text-center mb-6">
+        <div className="flex items-center justify-center text-[#b8a156] text-lg mb-2">
+          <Calendar className="h-6 w-6 mr-2" />
+          <span className="font-semibold">Event Countdown</span>
         </div>
+        <div className="text-white/70 text-sm">Don't miss out on this transformative experience</div>
       </div>
       
-      <div className="grid grid-cols-4 gap-2 text-center">
+      <div className="grid grid-cols-4 gap-4 lg:gap-6">
         {[
           { label: 'Days', value: timeLeft.days },
           { label: 'Hours', value: timeLeft.hours },
           { label: 'Minutes', value: timeLeft.minutes },
           { label: 'Seconds', value: timeLeft.seconds }
         ].map((item, index) => (
-          <div key={index} className="bg-white/10 rounded-lg p-2 backdrop-blur-sm">
-            <div className="text-2xl font-bold text-white">
+          <div key={index} className="bg-white/10 rounded-xl p-4 lg:p-6 backdrop-blur-sm border border-[#b8a156]/20">
+            <div className="text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-2">
               {String(item.value).padStart(2, '0')}
             </div>
-            <div className="text-xs text-white/70 uppercase tracking-wider">
+            <div className="text-sm lg:text-base text-white/70 uppercase tracking-wider font-medium">
               {item.label}
             </div>
           </div>

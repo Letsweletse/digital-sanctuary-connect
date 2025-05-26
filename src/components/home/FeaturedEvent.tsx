@@ -62,20 +62,29 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
             </h2>
           </div>
 
+          {/* Large Countdown Timer at the top */}
+          <div className="mb-8">
+            <EventCountdownTimer 
+              targetDate={getTargetDate()} 
+            />
+          </div>
+
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl overflow-hidden shadow-2xl border border-[#b8a156]/20 hover:border-[#b8a156]/40 transition-all duration-300">
             <div className="flex flex-col lg:flex-row">
-              {/* Event Image - Increased size and improved fitting */}
-              <div className="lg:w-1/2 h-[400px] lg:h-[600px] relative">
-                <img
-                  src={featuredEvent.image}
-                  alt={featuredEvent.title}
-                  className="w-full h-full object-cover object-center"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+              {/* Event Image - Mobile responsive with proper aspect ratio */}
+              <div className="lg:w-1/2 relative">
+                <div className="aspect-[4/3] lg:aspect-auto lg:h-[600px] w-full">
+                  <img
+                    src={featuredEvent.image}
+                    alt={featuredEvent.title}
+                    className="w-full h-full object-cover object-center"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                </div>
               </div>
               
               {/* Event Details */}
-              <div className="lg:w-1/2 p-8 lg:p-10 flex flex-col justify-center">
+              <div className="lg:w-1/2 p-6 lg:p-10 flex flex-col justify-center">
                 <div className="mb-6">
                   <h3 className="text-2xl lg:text-3xl font-bold mb-4 text-white leading-tight">
                     {featuredEvent.title}
@@ -136,14 +145,6 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
                   <p className="text-white/90 mb-6 leading-relaxed">
                     {featuredEvent.description}
                   </p>
-                  
-                  {/* Add countdown timer */}
-                  <div className="mb-6">
-                    <EventCountdownTimer 
-                      targetDate={getTargetDate()} 
-                      eventTitle={featuredEvent.title}
-                    />
-                  </div>
                   
                   <div className="flex flex-col sm:flex-row gap-4">
                     <Button
