@@ -1,3 +1,4 @@
+
 /**
  * Get the speaker image URL based on speaker name or fall back to a default
  * 
@@ -8,7 +9,7 @@
 export function getSpeakerImage(speakerName: string, defaultImage: string = '/placeholder.svg'): string {
   // Return images based on speaker name
   if (speakerName?.toLowerCase().includes('thamo')) {
-    return '/lovable-uploads/6d156b1c-5055-4b49-a51e-032cea373e92.png';
+    return '/lovable-uploads/957d2ec2-9f2a-456d-a93c-574a4143e97c.png';
   } else if (speakerName?.toLowerCase().includes('kobus')) {
     return '/lovable-uploads/20736aa1-df4f-4d5b-b226-d41cb293bbe0.png';
   } else if (speakerName?.toLowerCase().includes('peter taylor')) {

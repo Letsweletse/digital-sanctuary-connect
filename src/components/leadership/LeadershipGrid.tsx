@@ -1,3 +1,4 @@
+
 import React from 'react';
 import ProfileCard from './ProfileCard';
 import PastorCard from './PastorCard';
@@ -114,7 +115,7 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
           </div>
         </div>
         
-        {/* Pastors Section - No Text Header */}
+        {/* Pastors Section */}
         {pastors.length > 0 && (
           <div className="mb-16">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -131,7 +132,7 @@ const LeadershipGrid: React.FC<LeadershipGridProps> = ({ leaders = [] }) => {
           </div>
         )}
 
-        {/* Elders Section - No Text Header */}
+        {/* Elders Section */}
         <div className="mb-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {elders.map(elder => (
