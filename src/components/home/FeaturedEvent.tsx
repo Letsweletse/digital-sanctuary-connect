@@ -55,7 +55,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
           {/* Premium header */}
           <div className="text-center mb-8">
             <span className="inline-block bg-gradient-to-r from-[#b8a156] to-[#d4c278] text-white px-6 py-2 text-sm font-semibold rounded-full uppercase tracking-wider mb-4">
-              Premium Conference Experience
+              Apostolic conference
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 bg-gradient-to-r from-white to-[#b8a156] bg-clip-text text-transparent">
               Upcoming Conference
@@ -131,7 +131,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
                           <BadgeDollarSign className="h-6 w-6 mr-3 text-[#b8a156]" />
                           <div>
                             <div className="font-semibold text-white">Registration Fee</div>
-                            <div className="text-white/80 text-sm">Per person (includes materials)</div>
+                            <div className="text-white/80 text-sm">Per person (catering purposes)</div>
                           </div>
                         </div>
                         <div className="text-right">
