@@ -23,7 +23,7 @@ export const events: EventData[] = [
     location: 'Travelodge Conference Centre',
     description: 'Join us for this transformative conference as we explore apostolic principles for ruling your domain. This three-day event features powerful teaching, workshops, and fellowship opportunities.',
     category: 'conference',
-    image: '/lovable-uploads/cfcf20f7-6921-4a44-b7ca-47809450d18c.png',
+    image: '/lovable-uploads/6f1ed145-0434-4105-81e3-81bed7ee143a.png',
     registration: true,
     registrationLink: '/conference'
   }

@@ -13,8 +13,23 @@ interface FeaturedEventProps {
 
 const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegisterClick }) => {
   // Function to handle date display - shows formatted date or TBA
-  const displayDate = (date: string) => {
-    return date === 'TBA' ? 'Dates to be announced' : formatDate(date);
+  const displayDate = (date: string, endDate?: string) => {
+    if (date === 'TBA') return 'Dates to be announced';
+    
+    if (endDate) {
+      const startDate = new Date(date);
+      const endDateObj = new Date(endDate);
+      
+      // Format as "July 3-5, 2025"
+      const startMonth = startDate.toLocaleDateString('en-US', { month: 'long' });
+      const startDay = startDate.getDate();
+      const endDay = endDateObj.getDate();
+      const year = startDate.getFullYear();
+      
+      return `${startMonth} ${startDay}-${endDay}, ${year}`;
+    }
+    
+    return formatDate(date);
   };
 
   // Parse the conference date for the countdown
@@ -71,7 +86,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
                       <CalendarDays className="h-5 w-5 mr-3 text-[#b8a156] flex-shrink-0" />
                       <div>
                         <div className="font-medium text-sm text-[#b8a156]">Date</div>
-                        <div className="font-semibold">{displayDate(featuredEvent.date)}</div>
+                        <div className="font-semibold">{displayDate(featuredEvent.date, featuredEvent.endDate)}</div>
                       </div>
                     </div>
                     
