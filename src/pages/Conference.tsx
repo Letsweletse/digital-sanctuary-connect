@@ -6,6 +6,7 @@ import { CalendarDays, Clock, MapPin, User, Users } from 'lucide-react';
 import EventCountdownTimer from '@/components/events/EventCountdownTimer';
 import { Button } from '@/components/ui/button';
 import { useEventRegistration } from '@/hooks/useEventRegistration';
+import { getSpeakerImage } from '@/components/media/utils/speakerImageUtils';
 
 // Define the conference data
 const conferenceData = {
@@ -22,7 +23,7 @@ const conferenceData = {
       time: "18:00 - 20:30",
       title: "Evening Session 1",
       description: "Opening session with worship and keynote message on apostolic foundations.",
-      speakers: ["Pastor Kobus Bezuidenhout", "Dr. Thamo Naidoo"],
+      speakers: ["Pastor Kobus Bezuidenhout", "Thamo Naidoo"],
       location: "Main Auditorium"
     },
     {
@@ -31,7 +32,7 @@ const conferenceData = {
       time: "08:30 - 13:30",
       title: "Morning Sessions 2-4",
       description: "Morning workshops on practical application of apostolic principles in different domains.",
-      speakers: ["Pastor Kobus Bezuidenhout", "Dr. Thamo Naidoo", "James Mbugua"],
+      speakers: ["Pastor Kobus Bezuidenhout", "Thamo Naidoo", "James Mbugua"],
       location: "Main Auditorium & Breakout Rooms"
     },
     {
@@ -40,7 +41,7 @@ const conferenceData = {
       time: "18:00 - 20:30",
       title: "Evening Session 5",
       description: "Prophetic impartation and ministry session.",
-      speakers: ["Pastor Kobus Bezuidenhout", "Dr. Thamo Naidoo"],
+      speakers: ["Pastor Kobus Bezuidenhout", "Thamo Naidoo"],
       location: "Main Auditorium"
     },
     {
@@ -49,7 +50,7 @@ const conferenceData = {
       time: "08:30 - 13:30",
       title: "Morning Sessions 6-8",
       description: "Final sessions with commissioning and closing ceremony.",
-      speakers: ["Pastor Kobus Bezuidenhout", "Dr. Thamo Naidoo", "James Mbugua"],
+      speakers: ["Pastor Kobus Bezuidenhout", "Thamo Naidoo", "James Mbugua"],
       location: "Main Auditorium"
     }
   ],
@@ -59,21 +60,21 @@ const conferenceData = {
       name: "Pastor Kobus Bezuidenhout",
       role: "Senior Pastor, Gate Gaborone",
       bio: "Pastor Kobus Bezuidenhout is the Senior Pastor of Gate Gaborone. He has been instrumental in establishing apostolic centers across Botswana and beyond.",
-      image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Pastor%20Kobus%20Bezuidenhout_1743680599419.jpeg"
+      image: getSpeakerImage("Pastor Kobus Bezuidenhout")
     },
     {
       id: "thamo",
-      name: "Dr. Thamo Naidoo",
+      name: "Thamo Naidoo",
       role: "Apostolic Voice, Global Speaker",
-      bio: "Dr. Thamo Naidoo is a respected apostolic voice who travels globally teaching on apostolic reformation and kingdom principles. He is the founder of the Global Gate movement.",
-      image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg"
+      bio: "Thamo Naidoo is a respected apostolic voice who travels globally teaching on apostolic reformation and kingdom principles. He is the founder of the Global Gate movement.",
+      image: getSpeakerImage("Thamo Naidoo")
     },
     {
       id: "james",
       name: "James Mbugua",
       role: "Apostolic Leader, Kenya",
       bio: "James Mbugua is an apostolic leader from Kenya with extensive experience in church planting and leadership development across East Africa.",
-      image: "/placeholder.svg"
+      image: getSpeakerImage("James Mbugua")
     }
   ]
 };
