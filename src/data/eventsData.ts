@@ -18,12 +18,12 @@ export const events: EventData[] = [
     id: '5',
     title: 'Apostolic Conference: Rule Your Domain',
     date: '2025-07-03',
-    endDate: '2025-07-04',
-    time: '18:00 - 20:30',
+    endDate: '2025-07-05',
+    time: 'Thursday (Evening) — Session 1: 18:00–20:30 | Friday (Morning) — Sessions 2–4: 08:30–13:30 | Friday (Evening) — Session 5: 18:00–20:30 | Saturday (Morning) — Sessions 6–8: 08:30–13:30',
     location: 'Travelodge Conference Centre',
-    description: 'Join us for this transformative conference as we explore apostolic principles for ruling your domain. This two-day event features powerful teaching, workshops, and fellowship opportunities.',
+    description: 'Join us for this transformative conference as we explore apostolic principles for ruling your domain. This three-day event features powerful teaching, workshops, and fellowship opportunities.',
     category: 'conference',
-    image: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/May%2010%20Conference%20Gate%20Gaborone_1746167943667.jpeg',
+    image: '/lovable-uploads/919c482f-8402-410d-933a-3dba7156a457.png',
     registration: true,
     registrationLink: '/conference'
   }

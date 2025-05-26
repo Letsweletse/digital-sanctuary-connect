@@ -36,7 +36,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
             {/* Event Image - takes up less space on mobile */}
             <div className="w-full md:w-2/5 h-[240px] md:h-auto">
               <img
-                src={featuredEvent.image}
+                src="/lovable-uploads/919c482f-8402-410d-933a-3dba7156a457.png"
                 alt={featuredEvent.title}
                 className="w-full h-full object-cover"
               />

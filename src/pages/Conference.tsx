@@ -10,17 +10,17 @@ import { useEventRegistration } from '@/hooks/useEventRegistration';
 // Define the conference data
 const conferenceData = {
   title: "Apostolic Conference: Rule Your Domain",
-  dates: "July 3-4, 2025",
+  dates: "July 3-5, 2025",
   venue: "Travelodge Conference Centre",
-  description: "Join us for this transformative conference as we explore apostolic principles for ruling your domain. This two-day event features powerful teaching, workshops, and fellowship opportunities.",
-  image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/May%2010%20Conference%20Gate%20Gaborone_1746167943667.jpeg",
+  description: "Join us for this transformative conference as we explore apostolic principles for ruling your domain. This three-day event features powerful teaching, workshops, and fellowship opportunities.",
+  image: "/lovable-uploads/919c482f-8402-410d-933a-3dba7156a457.png",
   targetDate: new Date("2025-07-03T18:00:00"),
   sessions: [
     {
       id: "day1-evening",
       day: "Thursday, July 3",
       time: "18:00 - 20:30",
-      title: "Evening Session",
+      title: "Evening Session 1",
       description: "Opening session with worship and keynote message on apostolic foundations.",
       speakers: ["Pastor Kobus Bezuidenhout", "Dr. Thamo Naidoo"],
       location: "Main Auditorium"
@@ -29,18 +29,27 @@ const conferenceData = {
       id: "day2-morning",
       day: "Friday, July 4",
       time: "08:30 - 13:30",
-      title: "Morning Session",
+      title: "Morning Sessions 2-4",
       description: "Morning workshops on practical application of apostolic principles in different domains.",
-      speakers: ["Pastor Kobus Bezuidenhout", "Dr. Thamo Naidoo", "Guest Speakers"],
+      speakers: ["Pastor Kobus Bezuidenhout", "Dr. Thamo Naidoo", "James Mbugua"],
       location: "Main Auditorium & Breakout Rooms"
     },
     {
       id: "day2-evening",
       day: "Friday, July 4",
       time: "18:00 - 20:30",
-      title: "Evening Session",
-      description: "Closing session with prophetic impartation and commissioning.",
+      title: "Evening Session 5",
+      description: "Prophetic impartation and ministry session.",
       speakers: ["Pastor Kobus Bezuidenhout", "Dr. Thamo Naidoo"],
+      location: "Main Auditorium"
+    },
+    {
+      id: "day3-morning",
+      day: "Saturday, July 5",
+      time: "08:30 - 13:30",
+      title: "Morning Sessions 6-8",
+      description: "Final sessions with commissioning and closing ceremony.",
+      speakers: ["Pastor Kobus Bezuidenhout", "Dr. Thamo Naidoo", "James Mbugua"],
       location: "Main Auditorium"
     }
   ],
@@ -58,6 +67,13 @@ const conferenceData = {
       role: "Apostolic Voice, Global Speaker",
       bio: "Dr. Thamo Naidoo is a respected apostolic voice who travels globally teaching on apostolic reformation and kingdom principles. He is the founder of the Global Gate movement.",
       image: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg"
+    },
+    {
+      id: "james",
+      name: "James Mbugua",
+      role: "Apostolic Leader, Kenya",
+      bio: "James Mbugua is an apostolic leader from Kenya with extensive experience in church planting and leadership development across East Africa.",
+      image: "/placeholder.svg"
     }
   ]
 };
@@ -67,8 +83,8 @@ const conferenceEvent = {
   id: "conf-2025",
   title: conferenceData.title,
   date: "2025-07-03",
-  endDate: "2025-07-04",
-  time: "18:00 - 20:30",
+  endDate: "2025-07-05",
+  time: "Multiple Sessions",
   location: conferenceData.venue,
   description: conferenceData.description,
   category: "conference" as const,
@@ -141,7 +157,7 @@ const Conference = () => {
                     <Button 
                       variant="outline" 
                       className="w-full border-church-blue text-church-blue"
-                      onClick={() => window.open("https://calendar.google.com/calendar/render?action=TEMPLATE&text=Apostolic%20Conference:%20Rule%20Your%20Domain&dates=20250703T180000/20250704T203000&details=Join%20us%20for%20this%20transformative%20conference%20as%20we%20explore%20apostolic%20principles%20for%20ruling%20your%20domain.&location=Travelodge%20Conference%20Centre,%20Gaborone&sprop=&sprop=name:", "_blank")}
+                      onClick={() => window.open("https://calendar.google.com/calendar/render?action=TEMPLATE&text=Apostolic%20Conference:%20Rule%20Your%20Domain&dates=20250703T180000/20250705T133000&details=Join%20us%20for%20this%20transformative%20conference%20as%20we%20explore%20apostolic%20principles%20for%20ruling%20your%20domain.&location=Travelodge%20Conference%20Centre,%20Gaborone&sprop=&sprop=name:", "_blank")}
                     >
                       Add to Calendar
                     </Button>
@@ -180,7 +196,7 @@ const Conference = () => {
                 </p>
                 
                 <p className="mb-4">
-                  Over two power-packed days, participants will engage with apostolic teachings, practical workshops, and prophetic impartation sessions led by seasoned ministers including Pastor Kobus Bezuidenhout and Dr. Thamo Naidoo.
+                  Over three power-packed days, participants will engage with apostolic teachings, practical workshops, and prophetic impartation sessions led by seasoned ministers including Pastor Kobus Bezuidenhout, Dr. Thamo Naidoo, and James Mbugua.
                 </p>
                 
                 <h3 className="text-xl font-semibold text-church-blue-dark mt-6 mb-3">What to Expect:</h3>
