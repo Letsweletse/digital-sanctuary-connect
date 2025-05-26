@@ -20,6 +20,8 @@ export function getSpeakerImage(speakerName: string, defaultImage: string = '/pl
     return '/lovable-uploads/e6febe02-1bbb-4eaf-97e1-9ee6e3fa12d4.png';
   } else if (speakerName?.toLowerCase().includes('oteng')) {
     return '/lovable-uploads/bb2cad8b-0655-4b9e-acde-059a018eba68.png';
+  } else if (speakerName?.toLowerCase().includes('james mbugua')) {
+    return '/lovable-uploads/b19066f8-8ca3-4d77-b251-4c54dfef1b0f.png';
   }
   
   // Return default image if no match found
