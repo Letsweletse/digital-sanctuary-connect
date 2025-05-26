@@ -1,4 +1,3 @@
-
 import { Sermon } from '@/types/sermonTypes';
 import { supabase } from '@/integrations/supabase/client';
 import { findMany, insertOne, updateOne, deleteOne } from '@/lib/mongodb';
@@ -81,18 +80,18 @@ class DualSermonService {
       id: sermon.id,
       title: sermon.title,
       speaker: sermon.speaker,
-      speakerImage: sermon.speaker_image,
+      speakerImage: sermon.speaker_image || '',
       date: new Date(sermon.date),
-      audioUrl: sermon.audio_url,
-      youtubeId: sermon.youtube_id,
-      description: sermon.description,
+      audioUrl: sermon.audio_url || '',
+      youtubeId: sermon.youtube_id || '',
+      description: sermon.description || '',
       tags: sermon.tags || [],
-      thumbnailUrl: sermon.thumbnail_url,
+      thumbnailUrl: sermon.thumbnail_url || '',
       featured: sermon.featured || false,
-      duration: sermon.duration,
+      duration: sermon.duration || '',
       downloads: sermon.downloads || 0,
       views: sermon.views || 0,
-      series: sermon.series,
+      series: sermon.series || '',
     }));
   }
 
@@ -158,23 +157,27 @@ class DualSermonService {
 
   private async addSermonToSupabase(sermon: Omit<Sermon, 'id'>): Promise<Sermon> {
     console.log('Inserting sermon into Supabase...');
+    
+    // Ensure date is a string for Supabase
+    const dateString = sermon.date instanceof Date ? sermon.date.toISOString() : sermon.date;
+    
     const { data, error } = await supabase
       .from('sermons')
       .insert({
         title: sermon.title,
         speaker: sermon.speaker,
-        speaker_image: sermon.speakerImage,
-        date: sermon.date,
-        audio_url: sermon.audioUrl,
-        youtube_id: sermon.youtubeId,
-        description: sermon.description,
-        tags: sermon.tags,
-        thumbnail_url: sermon.thumbnailUrl,
-        featured: sermon.featured,
-        duration: sermon.duration,
-        downloads: sermon.downloads,
-        views: sermon.views,
-        series: sermon.series,
+        speaker_image: sermon.speakerImage || null,
+        date: dateString,
+        audio_url: sermon.audioUrl || null,
+        youtube_id: sermon.youtubeId || null,
+        description: sermon.description || null,
+        tags: sermon.tags || [],
+        thumbnail_url: sermon.thumbnailUrl || null,
+        featured: sermon.featured || false,
+        duration: sermon.duration || null,
+        downloads: sermon.downloads || 0,
+        views: sermon.views || 0,
+        series: sermon.series || null,
       })
       .select()
       .single();
@@ -189,18 +192,18 @@ class DualSermonService {
       id: data.id,
       title: data.title,
       speaker: data.speaker,
-      speakerImage: data.speaker_image,
+      speakerImage: data.speaker_image || '',
       date: new Date(data.date),
-      audioUrl: data.audio_url,
-      youtubeId: data.youtube_id,
-      description: data.description,
+      audioUrl: data.audio_url || '',
+      youtubeId: data.youtube_id || '',
+      description: data.description || '',
       tags: data.tags || [],
-      thumbnailUrl: data.thumbnail_url,
+      thumbnailUrl: data.thumbnail_url || '',
       featured: data.featured || false,
-      duration: data.duration,
+      duration: data.duration || '',
       downloads: data.downloads || 0,
       views: data.views || 0,
-      series: data.series,
+      series: data.series || '',
     };
   }
 
@@ -270,7 +273,9 @@ class DualSermonService {
     if (updates.title !== undefined) supabaseUpdates.title = updates.title;
     if (updates.speaker !== undefined) supabaseUpdates.speaker = updates.speaker;
     if (updates.speakerImage !== undefined) supabaseUpdates.speaker_image = updates.speakerImage;
-    if (updates.date !== undefined) supabaseUpdates.date = updates.date;
+    if (updates.date !== undefined) {
+      supabaseUpdates.date = updates.date instanceof Date ? updates.date.toISOString() : updates.date;
+    }
     if (updates.audioUrl !== undefined) supabaseUpdates.audio_url = updates.audioUrl;
     if (updates.youtubeId !== undefined) supabaseUpdates.youtube_id = updates.youtubeId;
     if (updates.description !== undefined) supabaseUpdates.description = updates.description;
