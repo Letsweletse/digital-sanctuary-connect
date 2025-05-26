@@ -51,7 +51,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
       }}></div>
       
       <div className="container px-4 mx-auto relative z-10">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           {/* Premium header */}
           <div className="text-center mb-8">
             <span className="inline-block bg-gradient-to-r from-[#b8a156] to-[#d4c278] text-white px-6 py-2 text-sm font-semibold rounded-full uppercase tracking-wider mb-4">
@@ -64,18 +64,18 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
 
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl overflow-hidden shadow-2xl border border-[#b8a156]/20 hover:border-[#b8a156]/40 transition-all duration-300">
             <div className="flex flex-col lg:flex-row">
-              {/* Event Image */}
-              <div className="lg:w-2/5 h-[300px] lg:h-auto relative">
+              {/* Event Image - Increased size and improved fitting */}
+              <div className="lg:w-1/2 h-[400px] lg:h-[600px] relative">
                 <img
                   src={featuredEvent.image}
                   alt={featuredEvent.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-center"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
               </div>
               
               {/* Event Details */}
-              <div className="lg:w-3/5 p-8 lg:p-10">
+              <div className="lg:w-1/2 p-8 lg:p-10 flex flex-col justify-center">
                 <div className="mb-6">
                   <h3 className="text-2xl lg:text-3xl font-bold mb-4 text-white leading-tight">
                     {featuredEvent.title}
