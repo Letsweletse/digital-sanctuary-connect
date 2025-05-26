@@ -8,6 +8,8 @@ import FilterBar from '@/components/sermons/FilterBar';
 import ViewSelector from '@/components/sermons/ViewSelector';
 import SermonSeriesList from '@/components/sermons/SermonSeriesList';
 import { Card, CardContent } from '@/components/ui/card';
+import { AlertTriangle, Settings } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const Sermons = () => {
   const { sermons, loading, error } = useSermons();
@@ -43,6 +45,15 @@ const Sermons = () => {
     <Layout>
       <main className="flex-grow py-10 md:py-16 bg-church-neutral-50 page-transition">
         <div className="container mx-auto px-4">
+          {/* Update Notice */}
+          <Alert className="mb-8 bg-amber-50 border-amber-200">
+            <Settings className="h-5 w-5 text-amber-600" />
+            <AlertDescription className="text-amber-800">
+              <strong>Page Update Notice:</strong> Our sermons page is currently being updated to improve your experience. 
+              We apologize for any inconvenience. Please check back soon for the full sermon library.
+            </AlertDescription>
+          </Alert>
+
           {loading ? (
             <div className="text-center py-10">
               <div className="w-10 h-10 border-2 border-church-blue border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -51,15 +62,17 @@ const Sermons = () => {
           ) : error ? (
             <Card className="mx-auto max-w-2xl bg-red-50 border-red-200">
               <CardContent className="text-center py-10">
+                <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
                 <p className="text-red-600 mb-2">Error: {error}</p>
-                <p className="text-church-neutral-500 text-sm">Please try refreshing the page.</p>
+                <p className="text-church-neutral-500 text-sm">Please try refreshing the page or contact support if the issue persists.</p>
               </CardContent>
             </Card>
           ) : sermons?.length === 0 ? (
             <Card className="mx-auto max-w-2xl bg-church-neutral-50">
               <CardContent className="text-center py-10">
-                <p className="text-church-neutral-600 mb-4">No sermons found in your library.</p>
-                <p className="text-church-neutral-500 text-sm">Please add some sermons to get started.</p>
+                <Settings className="h-12 w-12 text-church-neutral-400 mx-auto mb-4" />
+                <p className="text-church-neutral-600 mb-4">Sermon library is being updated.</p>
+                <p className="text-church-neutral-500 text-sm">We're working to bring you the latest sermons. Thank you for your patience.</p>
               </CardContent>
             </Card>
           ) : (
@@ -146,7 +159,6 @@ const Sermons = () => {
                     
                     <div className="bg-white rounded-lg shadow-sm border border-church-neutral-200 p-4">
                       <h3 className="font-semibold text-church-neutral-800 mb-3 border-b pb-2">Sermon Series</h3>
-                      {/* Replace the previous static content with the SermonSeriesList component */}
                       <SermonSeriesList sermons={sermons} />
                     </div>
                   </div>
