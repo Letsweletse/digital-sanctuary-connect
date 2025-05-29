@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -8,6 +9,7 @@ import SermonManager from '@/components/media/SermonManager';
 import SermonAudioManager from '@/components/admin/SermonAudioManager';
 import SubscriberManager from '@/components/admin/SubscriberManager';
 import SubscriberEmailList from '@/components/admin/subscriber/SubscriberEmailList';
+import KioskManager from '@/components/admin/KioskManager';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -95,6 +97,7 @@ const Admin = () => {
                     <TabsTrigger value="sermon-audio">Sermon Audio</TabsTrigger>
                     <TabsTrigger value="sermons">Sermon Details</TabsTrigger>
                     <TabsTrigger value="subscribers">Email Subscribers</TabsTrigger>
+                    <TabsTrigger value="kiosk">Kiosk Management</TabsTrigger>
                     <TabsTrigger value="logo">Church Logo</TabsTrigger>
                     <TabsTrigger value="leadership">Leadership Photos</TabsTrigger>
                     <TabsTrigger value="images">General Images</TabsTrigger>
@@ -103,6 +106,12 @@ const Admin = () => {
                   
                   <TabsContent value="sermon-audio">
                     <SermonAudioManager />
+                  </TabsContent>
+                  
+                  <TabsContent value="kiosk">
+                    <div className="glass-panel p-8">
+                      <KioskManager />
+                    </div>
                   </TabsContent>
                   
                   <TabsContent value="logo" className="space-y-8">

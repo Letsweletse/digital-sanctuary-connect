@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,7 +9,7 @@ import { LogoProvider } from "./components/layout/LogoContext";
 // Pages
 import Index from "./pages/Index";
 import Sermons from "./pages/Sermons";
-import SermonSeries from "./pages/SermonSeries"; // Add the new page import
+import SermonSeries from "./pages/SermonSeries";
 import Leadership from "./pages/Leadership";
 import HouseChurch from "./pages/HouseChurch";
 import About from "./pages/About";
@@ -19,11 +18,12 @@ import Contact from "./pages/Contact";
 import Admin from "./pages/Admin";
 import Give from "./pages/Give"; 
 import NotFound from "./pages/NotFound";
-import EmailTest from "./components/email-test"; // Updated import path to match new directory structure
-import RegistrationConfirmation from "./pages/RegistrationConfirmation"; // Add the new page import
-import WhatsAppTester from "./components/examples/WhatsAppTester"; // Add WhatsApp tester
-import CheckIn from "./pages/CheckIn"; // Add import for the new CheckIn page
-import Conference from "./pages/Conference"; // Add import for the new Conference page
+import EmailTest from "./components/email-test";
+import RegistrationConfirmation from "./pages/RegistrationConfirmation";
+import WhatsAppTester from "./components/examples/WhatsAppTester";
+import CheckIn from "./pages/CheckIn";
+import Conference from "./pages/Conference";
+import KioskCheckIn from "./pages/KioskCheckIn";
 
 const queryClient = new QueryClient();
 
@@ -69,7 +69,8 @@ const App = () => (
             <Route path="/registration-confirmation" element={<RegistrationConfirmation />} />
             <Route path="/whatsapp-test" element={<WhatsAppTester />} />
             <Route path="/check-in/:id" element={<CheckIn />} />
-            <Route path="/conference" element={<Conference />} /> {/* Add the new Conference route */}
+            <Route path="/conference" element={<Conference />} />
+            <Route path="/kiosk-checkin" element={<KioskCheckIn />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

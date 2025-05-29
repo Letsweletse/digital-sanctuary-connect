@@ -9,6 +9,71 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      event_checkins: {
+        Row: {
+          attendee_id: string
+          checkin_time: string
+          created_at: string
+          device_id: string | null
+          id: string
+          method: string
+        }
+        Insert: {
+          attendee_id: string
+          checkin_time?: string
+          created_at?: string
+          device_id?: string | null
+          id?: string
+          method: string
+        }
+        Update: {
+          attendee_id?: string
+          checkin_time?: string
+          created_at?: string
+          device_id?: string | null
+          id?: string
+          method?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_checkins_attendee_id_fkey"
+            columns: ["attendee_id"]
+            isOneToOne: false
+            referencedRelation: "subscribers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_config: {
+        Row: {
+          active_from: string | null
+          active_until: string | null
+          created_at: string
+          event_name: string
+          id: string
+          kiosk_mode: boolean
+          updated_at: string
+        }
+        Insert: {
+          active_from?: string | null
+          active_until?: string | null
+          created_at?: string
+          event_name: string
+          id?: string
+          kiosk_mode?: boolean
+          updated_at?: string
+        }
+        Update: {
+          active_from?: string | null
+          active_until?: string | null
+          created_at?: string
+          event_name?: string
+          id?: string
+          kiosk_mode?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       images: {
         Row: {
           category: string
