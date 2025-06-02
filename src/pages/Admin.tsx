@@ -10,6 +10,7 @@ import SermonAudioManager from '@/components/admin/SermonAudioManager';
 import SubscriberManager from '@/components/admin/SubscriberManager';
 import SubscriberEmailList from '@/components/admin/subscriber/SubscriberEmailList';
 import KioskManager from '@/components/admin/KioskManager';
+import DatabaseMonitor from '@/components/admin/DatabaseMonitor';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';

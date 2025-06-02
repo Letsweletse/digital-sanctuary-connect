@@ -27,10 +27,6 @@ const Sermons = () => {
     allYears
   } = useSermonFilters(sermons);
 
-  console.log('Sermons page - sermons data:', sermons);
-  console.log('Sermons page - loading:', loading);
-  console.log('Sermons page - error:', error);
-
   if (loading) {
     return (
       <Layout>
@@ -93,30 +89,6 @@ const Sermons = () => {
           <SermonHeader totalSermons={sermons.length} />
           
           <div className="max-w-6xl mx-auto space-y-6">
-            {/* Debug info - will be removed in production */}
-            {process.env.NODE_ENV === 'development' && (
-              <Card className="bg-blue-50 border-blue-200">
-                <CardContent className="p-4">
-                  <h3 className="font-semibold text-blue-800 mb-2">Debug Info:</h3>
-                  <p className="text-sm text-blue-700">
-                    Total sermons loaded: {sermons.length}
-                  </p>
-                  <p className="text-sm text-blue-700">
-                    Filtered sermons: {filteredSermons.length}
-                  </p>
-                  <Button 
-                    onClick={refreshSermons} 
-                    size="sm" 
-                    variant="outline" 
-                    className="mt-2 flex items-center gap-1"
-                  >
-                    <RefreshCw className="h-3 w-3" />
-                    Refresh Data
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-            
             <FilterBar
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
