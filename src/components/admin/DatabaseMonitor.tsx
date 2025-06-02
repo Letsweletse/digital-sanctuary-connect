@@ -133,7 +133,9 @@ const DatabaseMonitor = () => {
                 <div key={sermon.id} className="flex justify-between items-center p-2 bg-gray-50 rounded">
                   <div>
                     <p className="font-medium">{sermon.title}</p>
-                    <p className="text-sm text-gray-600">{sermon.speaker} • {sermon.date.toLocaleDateString()}</p>
+                    <p className="text-sm text-gray-600">
+                      {sermon.speaker} • {sermon.date instanceof Date ? sermon.date.toLocaleDateString() : new Date(sermon.date).toLocaleDateString()}
+                    </p>
                   </div>
                   <div className="flex gap-1">
                     {sermon.audioUrl && (

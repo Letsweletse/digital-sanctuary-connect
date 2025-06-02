@@ -1,4 +1,3 @@
-
 /**
  * Email service utility for sending notifications
  * Using Supabase Edge Functions
@@ -19,18 +18,18 @@ import { supabase } from "@/integrations/supabase/client";
  */
 async function sendEmail(requestBody: any) {
   try {
-    console.log("Calling Supabase function with request body:", JSON.stringify(requestBody));
+    console.log("🚀 [Email Service] Calling Supabase function with request body:", JSON.stringify(requestBody, null, 2));
     
     const { data, error } = await supabase.functions.invoke('send-email', {
       body: requestBody
     });
     
     if (error) {
-      console.error('Error invoking send-email function:', error);
+      console.error('❌ [Email Service] Error invoking send-email function:', error);
       return { success: false, message: error.message };
     }
     
-    console.log("Email function response:", data);
+    console.log("✅ [Email Service] Email function response:", data);
     
     return {
       success: true,
@@ -38,7 +37,7 @@ async function sendEmail(requestBody: any) {
       data
     };
   } catch (invokeError) {
-    console.error('Error in email service:', invokeError);
+    console.error('💥 [Email Service] Error in email service:', invokeError);
     return { 
       success: false, 
       message: invokeError instanceof Error ? invokeError.message : 'Unknown error occurred'
@@ -51,11 +50,12 @@ async function sendEmail(requestBody: any) {
  */
 export const sendEventRegistrationEmail = async (eventName: string, registrantData: any) => {
   try {
-    console.log("Sending event registration email for:", eventName);
-    console.log("Registration data:", registrantData);
+    console.log("📧 [Email Service] Sending event registration email for:", eventName);
+    console.log("👤 [Email Service] Registration data:", registrantData);
     
     // Generate a unique check-in ID for this registration
     const checkInId = crypto.randomUUID();
+    console.log("🆔 [Email Service] Generated check-in ID:", checkInId);
     
     // Ensure we have all the required data for the enhanced confirmation email
     // Direct Google Maps URL for Gate Gaborone - no shortened URL
@@ -87,6 +87,8 @@ export const sendEventRegistrationEmail = async (eventName: string, registrantDa
       churchLogo: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png' // Ensure Gate Gaborone logo is used
     };
     
+    console.log("📤 [Email Service] Prepared email request body:", emailRequestBody);
+    
     const result = await sendEmail(emailRequestBody);
     
     if (!result.success) {
@@ -95,6 +97,9 @@ export const sendEventRegistrationEmail = async (eventName: string, registrantDa
     
     // Make sure to return the check-in information
     const checkInUrl = `https://gategaborone.com/check-in/${checkInId}`;
+    
+    console.log("🎉 [Email Service] Registration email sent successfully");
+    console.log("🔗 [Email Service] Check-in URL:", checkInUrl);
     
     return {
       success: true,
@@ -108,7 +113,7 @@ export const sendEventRegistrationEmail = async (eventName: string, registrantDa
       }
     };
   } catch (error) {
-    console.error('Error preparing event registration email:', error);
+    console.error('💥 [Email Service] Error preparing event registration email:', error);
     return {
       success: false,
       message: error instanceof Error ? error.message : 'Unknown error occurred'
