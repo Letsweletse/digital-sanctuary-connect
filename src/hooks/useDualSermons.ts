@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Sermon } from '@/types/sermonTypes';
@@ -20,21 +19,27 @@ export const useDualSermons = () => {
       console.log('Loading sermons from dual service...');
       const result = await dualSermonService.getSermons();
       
+      console.log('Dual service result:', result);
+      
       setSermons(result.sermons);
       setActiveProvider(result.provider);
       
       console.log(`Successfully loaded ${result.sermons.length} sermons from ${result.provider}`);
       
       if (result.sermons.length === 0) {
+        console.log('No sermons found - this might be normal if none have been added yet');
         toast({
           title: "No Sermons Found",
-          description: "No sermons are currently available in the database.",
+          description: "No sermons are currently available in the database. Use the Admin panel to add some.",
         });
-      } else if (result.provider !== 'supabase') {
-        toast({
-          title: "Using Fallback Database",
-          description: `Loaded sermons from ${result.provider} database.`,
-        });
+      } else {
+        console.log('Sermons loaded successfully:', result.sermons);
+        if (result.provider !== 'supabase') {
+          toast({
+            title: "Using Fallback Database",
+            description: `Loaded sermons from ${result.provider} database.`,
+          });
+        }
       }
     } catch (err) {
       console.error('Failed to load sermons:', err);
@@ -52,8 +57,17 @@ export const useDualSermons = () => {
     }
   };
 
+  // Initial load and setup interval for auto-refresh
   useEffect(() => {
     loadSermons();
+    
+    // Set up auto-refresh every 30 seconds
+    const interval = setInterval(() => {
+      console.log('Auto-refreshing sermons...');
+      loadSermons();
+    }, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const addSermon = async (sermon: Omit<Sermon, 'id'>) => {
@@ -138,6 +152,7 @@ export const useDualSermons = () => {
   };
 
   const refreshSermons = () => {
+    console.log('Manual refresh triggered');
     loadSermons();
   };
 

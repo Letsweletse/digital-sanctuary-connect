@@ -7,10 +7,11 @@ import FilterBar from '@/components/sermons/FilterBar';
 import ViewSelector from '@/components/sermons/ViewSelector';
 import { useSermonFilters } from '@/hooks/useSermonFilters';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Loader2, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Sermons = () => {
-  const { sermons, loading, error } = useDualSermons();
+  const { sermons, loading, error, refreshSermons } = useDualSermons();
   const {
     filteredSermons,
     searchTerm,
@@ -25,6 +26,10 @@ const Sermons = () => {
     allSpeakers,
     allYears
   } = useSermonFilters(sermons);
+
+  console.log('Sermons page - sermons data:', sermons);
+  console.log('Sermons page - loading:', loading);
+  console.log('Sermons page - error:', error);
 
   if (loading) {
     return (
@@ -66,9 +71,13 @@ const Sermons = () => {
                 <p className="text-red-700 mb-4">
                   We're experiencing difficulty connecting to our sermon database.
                 </p>
-                <p className="text-red-600 text-sm">
+                <p className="text-red-600 text-sm mb-4">
                   Error: {error}
                 </p>
+                <Button onClick={refreshSermons} className="flex items-center gap-2">
+                  <RefreshCw className="h-4 w-4" />
+                  Try Again
+                </Button>
               </CardContent>
             </Card>
           </div>
@@ -84,6 +93,30 @@ const Sermons = () => {
           <SermonHeader totalSermons={sermons.length} />
           
           <div className="max-w-6xl mx-auto space-y-6">
+            {/* Debug info - will be removed in production */}
+            {process.env.NODE_ENV === 'development' && (
+              <Card className="bg-blue-50 border-blue-200">
+                <CardContent className="p-4">
+                  <h3 className="font-semibold text-blue-800 mb-2">Debug Info:</h3>
+                  <p className="text-sm text-blue-700">
+                    Total sermons loaded: {sermons.length}
+                  </p>
+                  <p className="text-sm text-blue-700">
+                    Filtered sermons: {filteredSermons.length}
+                  </p>
+                  <Button 
+                    onClick={refreshSermons} 
+                    size="sm" 
+                    variant="outline" 
+                    className="mt-2 flex items-center gap-1"
+                  >
+                    <RefreshCw className="h-3 w-3" />
+                    Refresh Data
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+            
             <FilterBar
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
