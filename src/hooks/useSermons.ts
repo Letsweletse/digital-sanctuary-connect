@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from 'react';
 import { Sermon } from '@/types/sermonTypes';
-import { sermonsData } from '@/data/sermonsData';
 import { useDualSermons } from './useDualSermons';
 import { 
   createSermon, 
@@ -36,7 +35,7 @@ export const useSermons = () => {
     setUseLocalStorage(shouldUseLocalStorage);
     
     if (shouldUseLocalStorage) {
-      // Load from localStorage (existing behavior)
+      // Load from localStorage (legacy support)
       loadFromLocalStorage();
     } else {
       // Use dual database system
@@ -60,29 +59,20 @@ export const useSermons = () => {
             date: sermon.date ? new Date(sermon.date) : new Date()
           }));
           console.log('Loaded sermons from localStorage:', processedSermons.length);
-          
-          if (processedSermons.length === 0) {
-            console.log('No sermons found in localStorage, using sample data');
-            setLocalSermons(sermonsData);
-            localStorage.setItem('church_sermons', JSON.stringify(sermonsData));
-          } else {
-            setLocalSermons(processedSermons);
-          }
+          setLocalSermons(processedSermons);
         } catch (parseError) {
           console.error('Error parsing sermons from localStorage:', parseError);
-          setLocalSermons(sermonsData);
-          localStorage.setItem('church_sermons', JSON.stringify(sermonsData));
+          setLocalSermons([]);
         }
       } else {
-        console.log('No sermons in localStorage, using sample data');
-        setLocalSermons(sermonsData);
-        localStorage.setItem('church_sermons', JSON.stringify(sermonsData));
+        console.log('No sermons in localStorage');
+        setLocalSermons([]);
       }
       setError(null);
     } catch (err) {
       console.error('Error loading sermons:', err);
-      setError('Failed to load sermons.');
-      setLocalSermons(sermonsData);
+      setError('Failed to load sermons from localStorage.');
+      setLocalSermons([]);
     } finally {
       setLoading(false);
     }

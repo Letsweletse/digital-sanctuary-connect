@@ -1,14 +1,16 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import Layout from '@/components/layout/Layout';
-import { useSermons } from '@/hooks/useSermons';
+import { useDualSermons } from '@/hooks/useDualSermons';
+import SermonHeader from '@/components/sermons/SermonHeader';
+import FilterBar from '@/components/sermons/FilterBar';
+import ViewSelector from '@/components/sermons/ViewSelector';
 import { useSermonFilters } from '@/hooks/useSermonFilters';
 import { Card, CardContent } from '@/components/ui/card';
-import { Settings } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2 } from 'lucide-react';
 
 const Sermons = () => {
-  const { sermons, loading, error } = useSermons();
+  const { sermons, loading, error } = useDualSermons();
   const {
     filteredSermons,
     searchTerm,
@@ -19,46 +21,85 @@ const Sermons = () => {
     setSelectedSpeaker,
     selectedYear,
     setSelectedYear,
-    activeView,
-    setActiveView,
     allTopics,
     allSpeakers,
     allYears
   } = useSermonFilters(sermons);
 
-  // Debug logs to track data flow
-  useEffect(() => {
-    console.log('Sermons page - Loaded sermons:', sermons?.length || 0);
-    console.log('Sermons page - Filtered sermons:', filteredSermons?.length || 0);
-    if (sermons?.length > 0) {
-      console.log('Sermons page - Sample sermon:', sermons[0]);
-    }
-    console.log('Sermons page - Loading state:', loading);
-    if (error) console.error('Sermons page - Error:', error);
-  }, [sermons, filteredSermons, loading, error]);
+  if (loading) {
+    return (
+      <Layout>
+        <main className="flex-grow py-10 md:py-16 bg-church-neutral-50 page-transition">
+          <div className="container mx-auto px-4">
+            <Card className="mx-auto max-w-4xl">
+              <CardContent className="text-center py-16">
+                <Loader2 className="h-16 w-16 text-church-blue mx-auto mb-6 animate-spin" />
+                <h1 className="text-2xl font-bold text-church-neutral-800 mb-4">
+                  Loading Sermons...
+                </h1>
+                <p className="text-church-neutral-600">
+                  Please wait while we fetch the latest sermons from our database.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <main className="flex-grow py-10 md:py-16 bg-church-neutral-50 page-transition">
+          <div className="container mx-auto px-4">
+            <Card className="mx-auto max-w-4xl bg-red-50 border-red-200">
+              <CardContent className="text-center py-16">
+                <div className="text-red-600 mb-6">
+                  <svg className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </div>
+                <h1 className="text-2xl font-bold text-red-800 mb-4">
+                  Unable to Load Sermons
+                </h1>
+                <p className="text-red-700 mb-4">
+                  We're experiencing difficulty connecting to our sermon database.
+                </p>
+                <p className="text-red-600 text-sm">
+                  Error: {error}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
       <main className="flex-grow py-10 md:py-16 bg-church-neutral-50 page-transition">
         <div className="container mx-auto px-4">
-          {/* Main Update Notice */}
-          <Card className="mx-auto max-w-4xl bg-amber-50 border-amber-200 shadow-lg">
-            <CardContent className="text-center py-16">
-              <Settings className="h-16 w-16 text-amber-600 mx-auto mb-6" />
-              <h1 className="text-4xl font-bold text-amber-800 mb-6">
-                Sermons Page Update in Progress
-              </h1>
-              <div className="max-w-2xl mx-auto">
-                <p className="text-xl text-amber-700 mb-4">
-                  We're currently updating our sermons page to provide you with a better experience.
-                </p>
-                <p className="text-lg text-amber-600">
-                  We apologize for any inconvenience and appreciate your patience. 
-                  Please check back soon for our complete sermon library.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <SermonHeader />
+          
+          <div className="max-w-6xl mx-auto space-y-6">
+            <FilterBar
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              selectedTopic={selectedTopic}
+              setSelectedTopic={setSelectedTopic}
+              selectedSpeaker={selectedSpeaker}
+              setSelectedSpeaker={setSelectedSpeaker}
+              selectedYear={selectedYear}
+              setSelectedYear={setSelectedYear}
+              allTopics={allTopics}
+              allSpeakers={allSpeakers}
+              allYears={allYears}
+            />
+            
+            <ViewSelector filteredSermons={filteredSermons} />
+          </div>
         </div>
       </main>
     </Layout>
