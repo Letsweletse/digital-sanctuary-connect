@@ -81,7 +81,7 @@ const Sermons = () => {
     <Layout>
       <main className="flex-grow py-10 md:py-16 bg-church-neutral-50 page-transition">
         <div className="container mx-auto px-4">
-          <SermonHeader />
+          <SermonHeader totalSermons={sermons.length} />
           
           <div className="max-w-6xl mx-auto space-y-6">
             <FilterBar
