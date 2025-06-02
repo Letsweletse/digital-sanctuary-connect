@@ -26,6 +26,7 @@ import WhatsAppTester from "./components/examples/WhatsAppTester";
 import CheckIn from "./pages/CheckIn";
 import Conference from "./pages/Conference";
 import KioskCheckIn from "./pages/KioskCheckIn";
+import TestSermonUpload from "./pages/TestSermonUpload";
 
 const queryClient = new QueryClient();
 
@@ -73,6 +74,7 @@ const App = () => (
             <Route path="/check-in/:id" element={<CheckIn />} />
             <Route path="/conference" element={<Conference />} />
             <Route path="/kiosk-checkin" element={<KioskCheckIn />} />
+            <Route path="/test-sermon-upload" element={<TestSermonUpload />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
