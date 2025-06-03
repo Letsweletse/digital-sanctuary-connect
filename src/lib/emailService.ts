@@ -1,190 +1,143 @@
-/**
- * Email service utility for sending notifications
- * Using Supabase Edge Functions
- */
-
-// Email address for admin notifications - exported for use in components
-export const ADMIN_EMAIL = 'otenggate@gmail.com';
-// Add additional recipient emails
-export const BACKUP_EMAIL = 'info@gategaborone.com';
-export const ZOHO_EMAIL = 'iblimenterprise@zohomail.com';
-export const ADMIN_EMAILS = [ADMIN_EMAIL, BACKUP_EMAIL, ZOHO_EMAIL];
 
 import { supabase } from "@/integrations/supabase/client";
 
-/**
- * Base email sending function
- * @param requestBody - The email request data to send
- */
-async function sendEmail(requestBody: any) {
+// Admin email addresses for notifications
+export const ADMIN_EMAILS = [
+  'otenggate@gmail.com',
+  'info@gategaborone.com'
+];
+
+// Core email sending function with improved error handling
+const sendEmail = async (emailData: any) => {
+  console.log('📧 [Email Service] Sending email with data:', emailData);
+  
   try {
-    console.log("🚀 [Email Service] Calling Supabase function with request body:", JSON.stringify(requestBody, null, 2));
-    
+    // Call the Supabase edge function with timeout
     const { data, error } = await supabase.functions.invoke('send-email', {
-      body: requestBody
+      body: emailData,
     });
-    
+
     if (error) {
       console.error('❌ [Email Service] Error invoking send-email function:', error);
-      return { success: false, message: error.message };
+      throw error;
     }
-    
-    console.log("✅ [Email Service] Email function response:", data);
-    
+
+    console.log('✅ [Email Service] Email sent successfully:', data);
     return {
       success: true,
-      message: 'Email sent successfully',
-      data
+      data: data,
+      message: 'Email sent successfully'
     };
-  } catch (invokeError) {
-    console.error('💥 [Email Service] Error in email service:', invokeError);
-    return { 
-      success: false, 
-      message: invokeError instanceof Error ? invokeError.message : 'Unknown error occurred'
-    };
+  } catch (error) {
+    console.error('💥 [Email Service] Error in sendEmail:', error);
+    throw error;
   }
-}
+};
 
-/**
- * Sends event registration notification to church admins
- */
-export const sendEventRegistrationEmail = async (eventName: string, registrantData: any) => {
+// Send event registration email with improved data handling
+export const sendEventRegistrationEmail = async (eventTitle: string, registrationData: any) => {
+  console.log('📧 [Email Service] Sending event registration email for:', eventTitle);
+  console.log('👤 [Email Service] Registration data:', registrationData);
+  
   try {
-    console.log("📧 [Email Service] Sending event registration email for:", eventName);
-    console.log("👤 [Email Service] Registration data:", registrantData);
-    
-    // Generate a unique check-in ID for this registration
+    // Generate a unique check-in ID
     const checkInId = crypto.randomUUID();
-    console.log("🆔 [Email Service] Generated check-in ID:", checkInId);
-    
-    // Ensure we have all the required data for the enhanced confirmation email
-    // Direct Google Maps URL for Gate Gaborone - no shortened URL
-    const eventLocation = registrantData.location || 'https://www.google.com/maps/place/Gate+Gaborone/@-24.6618567,25.9048083,15z/data=!4m6!3m5!1s0x1ebb5b26225a6213:0xaed9e468c1e4ef31!8m2!3d-24.6618567!4d25.9048083!16s%2Fg%2F11q89m2yrq';
-    const eventDate = registrantData.eventDate || '2025-05-10';
-    const eventTime = registrantData.eventTime || '9:00 AM - 1:30 PM';
-    const eventImage = registrantData.eventImage || 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg';
+    console.log('🆔 [Email Service] Generated check-in ID:', checkInId);
     
     // Prepare the email request body with all required fields
     const emailRequestBody = {
-      to: ADMIN_EMAILS,
-      subject: `New Registration for ${eventName}`,
-      name: registrantData.attendee.name,
-      email: registrantData.attendee.email,
-      title: registrantData.attendee.title,
-      role: registrantData.attendee.role,
-      denomination: registrantData.attendee.denomination,
-      phone: registrantData.attendee.phone,
-      message: registrantData.message || `numberOfAttendees: ${registrantData.attendee.numberOfAttendees}`,
-      eventName: eventName,
-      registrationType: registrantData.registrationType || 'Standard',
-      sendConfirmation: true, // Always enable sending confirmation email to the registrant
-      location: eventLocation,
-      eventDate: eventDate,
-      eventTime: eventTime,
-      eventImage: eventImage,
-      checkInId: checkInId, // Pass the unique check-in ID
-      attendeeEmail: registrantData.attendee.email, // Pass the attendee email for personalized check-in
-      churchLogo: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png' // Ensure Gate Gaborone logo is used
+      to: [
+        ...ADMIN_EMAILS,
+        registrationData.attendee.email
+      ],
+      subject: `New Registration for ${eventTitle}`,
+      name: registrationData.attendee.name,
+      email: registrationData.attendee.email,
+      title: registrationData.attendee.title || 'Mr',
+      role: registrationData.attendee.role || 'Individual',
+      denomination: registrationData.attendee.denomination || 'N/A',
+      phone: registrationData.attendee.phone || 'N/A',
+      message: registrationData.message || 'No additional message',
+      eventName: eventTitle,
+      registrationType: registrationData.registrationType || 'Standard',
+      sendConfirmation: true,
+      location: registrationData.location || 'TBD',
+      eventDate: registrationData.eventDate || 'TBD',
+      eventTime: registrationData.eventTime || 'TBD',
+      eventImage: registrationData.eventImage || '',
+      checkInId: checkInId,
+      attendeeEmail: registrationData.attendee.email,
+      churchLogo: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png'
     };
-    
-    console.log("📤 [Email Service] Prepared email request body:", emailRequestBody);
+
+    console.log('📤 [Email Service] Prepared email request body:', emailRequestBody);
+    console.log('🚀 [Email Service] Calling Supabase function with request body:', emailRequestBody);
     
     const result = await sendEmail(emailRequestBody);
     
-    if (!result.success) {
-      throw new Error(result.message || "Failed to send registration email");
-    }
-    
-    // Make sure to return the check-in information
-    const checkInUrl = `https://gategaborone.com/check-in/${checkInId}`;
-    
-    console.log("🎉 [Email Service] Registration email sent successfully");
-    console.log("🔗 [Email Service] Check-in URL:", checkInUrl);
-    
+    // Return successful result with check-in information
     return {
       success: true,
-      message: 'Email notification and confirmation sent successfully',
-      recipients: ADMIN_EMAILS,
-      timestamp: new Date().toISOString(),
       data: {
         ...result.data,
-        checkInId,
-        checkInUrl
-      }
+        checkInId: checkInId,
+        checkInUrl: `https://gategaborone.com/check-in/${checkInId}`
+      },
+      recipients: emailRequestBody.to,
+      message: 'Event registration email sent successfully'
     };
+    
   } catch (error) {
     console.error('💥 [Email Service] Error preparing event registration email:', error);
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : 'Unknown error occurred'
-    };
+    throw new Error(error instanceof Error ? error.message : 'Unknown email service error');
   }
 };
 
-/**
- * Sends contact form submission notification to church admins
- */
-export const sendContactFormEmail = async (formData: any) => {
+// Simple contact form email
+export const sendContactEmail = async (contactData: any) => {
   try {
-    const emailRequestBody = {
+    const emailData = {
       to: ADMIN_EMAILS,
-      subject: 'New Contact Form Submission',
-      name: formData.name,
-      email: formData.email,
-      message: formData.message
+      subject: `New Contact Form Submission from ${contactData.name}`,
+      name: contactData.name,
+      email: contactData.email,
+      message: contactData.message,
+      sendConfirmation: false,
+      phone: contactData.phone || 'Not provided'
     };
-    
-    const result = await sendEmail(emailRequestBody);
-    
-    if (!result.success) {
-      throw new Error(result.message || "Failed to send contact form email");
-    }
-    
+
+    const result = await sendEmail(emailData);
     return {
       success: true,
-      message: 'Email notification sent successfully',
-      recipients: ADMIN_EMAILS,
-      timestamp: new Date().toISOString(),
+      message: 'Contact email sent successfully',
       data: result.data
     };
   } catch (error) {
-    console.error('Error sending contact form email:', error);
-    return {
-      success: false, 
-      message: error instanceof Error ? error.message : 'Unknown error occurred'
-    };
+    console.error('Error sending contact email:', error);
+    throw error;
   }
 };
 
-/**
- * Sends image upload notification to church admins
- */
-export const sendImageUploadEmail = async (imageName: string, category: string) => {
+// Newsletter subscription email
+export const sendNewsletterSubscriptionEmail = async (subscriberData: any) => {
   try {
-    const emailRequestBody = {
-      to: ADMIN_EMAILS,
-      subject: 'New Image Uploaded',
-      name: 'System',
-      email: 'info@gategaborone.com',
-      message: `A new image "${imageName}" has been uploaded in the ${category} category.`
+    const emailData = {
+      to: [...ADMIN_EMAILS, subscriberData.email],
+      subject: 'Welcome to Gate Gaborone Newsletter',
+      name: subscriberData.name || subscriberData.email,
+      email: subscriberData.email,
+      message: 'Thank you for subscribing to our newsletter!',
+      sendConfirmation: true
     };
-    
-    const result = await sendEmail(emailRequestBody);
-    
-    if (!result.success) {
-      throw new Error(result.message || "Failed to send image upload email");
-    }
-    
+
+    const result = await sendEmail(emailData);
     return {
       success: true,
-      message: 'Email notification sent successfully',
+      message: 'Newsletter subscription email sent successfully',
       data: result.data
     };
   } catch (error) {
-    console.error('Error sending image upload email:', error);
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : 'Unknown error occurred'
-    };
+    console.error('Error sending newsletter subscription email:', error);
+    throw error;
   }
 };

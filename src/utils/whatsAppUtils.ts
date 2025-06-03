@@ -1,113 +1,145 @@
 
-/**
- * Utility for sending WhatsApp notifications directly using fetch API
- * This can be used independently alongside the existing hook-based implementation
- */
+import { RegistrationData } from '@/types/eventTypes';
 
-/**
- * Send a WhatsApp notification directly using the UltraMsg API
- * @param phone - Phone number with country code (e.g. +26771234567)
- * @param message - Message to send via WhatsApp
- * @returns Promise with the response data
- */
+// Direct WhatsApp API configuration
+const ULTRAMSG_API_KEY = 'zpivrjhut12tefx6';
+const ULTRAMSG_INSTANCE_ID = '114633';
+
+// Send WhatsApp message directly via UltraMsg API
 export const sendDirectWhatsAppMessage = async (phone: string, message: string) => {
+  console.log('📱 [WhatsApp Direct] Sending message to:', phone);
+  console.log('💬 [WhatsApp Direct] Message length:', message.length);
+  
   try {
-    console.log("📱 [Direct WhatsApp] Sending message to:", phone);
-    
-    // Validate phone number format (basic validation)
+    // Validate phone number format
     const phoneRegex = /^\+\d{10,15}$/;
     if (!phoneRegex.test(phone)) {
-      console.error("❌ [Direct WhatsApp] Invalid phone number format:", phone);
+      console.error('❌ [WhatsApp Direct] Invalid phone format:', phone);
       return {
         error: true,
-        message: "Invalid phone number format. Please provide number with country code (e.g. +267XXXXXXXX)"
+        message: "Invalid phone number format. Please include country code."
       };
     }
-    
-    // Add Gate Gaborone branding if not present
+
+    // Ensure message includes branding
     let finalMessage = message;
-    if (!finalMessage.includes("Gate Gaborone") && !finalMessage.includes("Reach | Resource | Reform")) {
-      finalMessage += "\n\nGate Gaborone - Reach | Resource | Reform";
+    if (!finalMessage.includes("Gate Gaborone")) {
+      finalMessage += "\n\n*Gate Gaborone* - Reach | Resource | Reform";
     }
-    
-    // DIRECT API CALL TO ULTRAMSG - bypassing Edge Function
-    const ULTRAMSG_API_KEY = 'zpivrjhut12tefx6';
-    const ULTRAMSG_INSTANCE_ID = '114633';
-    
+
+    // Make direct API call to UltraMsg
     const response = await fetch(`https://api.ultramsg.com/instance${ULTRAMSG_INSTANCE_ID}/messages/chat`, {
-      method: "POST",
+      method: 'POST',
       headers: { 
-        "Content-Type": "application/json" 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
       body: JSON.stringify({
         token: ULTRAMSG_API_KEY,
         to: phone,
         body: finalMessage,
-        priority: 10 // High priority to ensure faster delivery
+        priority: 10
       })
     });
+
+    console.log('📱 [WhatsApp Direct] API Response status:', response.status);
     
     if (!response.ok) {
-      throw new Error(`WhatsApp API responded with status: ${response.status}`);
+      const errorText = await response.text();
+      console.error('❌ [WhatsApp Direct] API Error:', errorText);
+      return {
+        error: true,
+        message: `WhatsApp API error: ${response.status} - ${errorText}`
+      };
     }
-    
-    const data = await response.json();
-    console.log("✅ [Direct WhatsApp] Message sent successfully:", data);
-    
+
+    const responseData = await response.json();
+    console.log('✅ [WhatsApp Direct] Success response:', responseData);
+
     return {
       success: true,
-      data
+      data: responseData,
+      message: "WhatsApp message sent successfully"
     };
+
   } catch (error) {
-    console.error("🚨 [Direct WhatsApp] Error sending message:", error);
+    console.error('❌ [WhatsApp Direct] Exception:', error);
     return {
       error: true,
-      message: error instanceof Error ? error.message : "Unknown error sending WhatsApp message"
+      message: error instanceof Error ? error.message : "Unknown WhatsApp error"
     };
   }
 };
 
-/**
- * Generate a premium-looking WhatsApp confirmation message with enhanced formatting
- * @param registrationData - The registration data object
- * @returns Formatted WhatsApp message with professional styling
- */
-export const generatePremiumWhatsAppConfirmation = (registrationData: any) => {
+// Generate premium WhatsApp confirmation message
+export const generatePremiumWhatsAppConfirmation = (registrationData: RegistrationData): string => {
   const { event, attendee } = registrationData;
   
-  // Create QR code value for check-in
-  const qrCodeValue = JSON.stringify({
-    eventId: event.id,
-    eventName: event.title,
-    attendeeName: attendee.name,
-    attendeeEmail: attendee.email
-  });
-  
-  // Direct Google Maps URL for Gate Gaborone - no shortened URL
-  const mapsUrl = "https://www.google.com/maps/place/Gate+Gaborone/@-24.6618567,25.9048083,15z/data=!4m6!3m5!1s0x1ebb5b26225a6213:0xaed9e468c1e4ef31!8m2!3d-24.6618567!4d25.9048083!16s%2Fg%2F11q89m2yrq";
-  
-  // Create a professional, visually appealing message with emojis and formatting
-  return `✅ *REGISTRATION CONFIRMED*\n
-🎫 *Event:* ${event.title}
+  const message = `✅ *REGISTRATION CONFIRMED*
+
+🎉 *${event.title}*
+
 📅 *Date:* ${event.date}
 ⏰ *Time:* ${event.time}
-📍 *Location:* Gate Gaborone
-🔗 *Map:* ${mapsUrl}
+📍 *Location:* ${event.location}
 
-👤 *ATTENDEE DETAILS*
-*Name:* ${attendee.name}
-*Email:* ${attendee.email}
-*Phone:* ${attendee.phone}
-*Role:* ${attendee.role}
-*Number of Attendees:* ${attendee.numberOfAttendees || 1}
+👤 *Attendee Details:*
+• *Name:* ${attendee.name}
+• *Email:* ${attendee.email}
+• *Phone:* ${attendee.phone}
+• *Role:* ${attendee.role}
+• *Church:* ${attendee.denomination}
+• *Attendees:* ${attendee.numberOfAttendees}
 
-Your registration has been successfully confirmed! 
-We are excited to welcome you to this event.
+${registrationData.checkInUrl ? `🎫 *Check-in Link:* ${registrationData.checkInUrl}\n` : ''}
 
-Please save this message for your reference and show it at entry.
+*Thank you for registering!* We look forward to seeing you at this event.
 
-*GATE GABORONE*
-_Reach | Resource | Reform_
+For any questions, please contact us at info@gategaborone.com
 
-For any questions, please contact us at +267 3500194 / +267 75507981`;
+*Gate Gaborone*
+_Reach | Resource | Reform_`;
+
+  return message;
+};
+
+// Generate simple confirmation message
+export const generateSimpleWhatsAppMessage = (eventTitle: string, attendeeName: string, eventDate: string): string => {
+  return `✅ Registration confirmed for ${eventTitle}
+
+Hello ${attendeeName}, your registration has been successfully processed.
+
+Event Date: ${eventDate}
+
+Thank you for registering! We'll send you more details closer to the event.
+
+Gate Gaborone
+Reach | Resource | Reform`;
+};
+
+// Validate phone number for WhatsApp
+export const validateWhatsAppPhone = (phone: string): { isValid: boolean; cleanedPhone: string; message?: string } => {
+  // Remove all non-digit characters except +
+  let cleaned = phone.replace(/[^\d+]/g, '');
+  
+  // Ensure it starts with +
+  if (!cleaned.startsWith('+')) {
+    cleaned = '+' + cleaned;
+  }
+  
+  // Check if it's a valid international format
+  const phoneRegex = /^\+\d{10,15}$/;
+  
+  if (!phoneRegex.test(cleaned)) {
+    return {
+      isValid: false,
+      cleanedPhone: cleaned,
+      message: "Phone number must be in international format (+country code + number)"
+    };
+  }
+  
+  return {
+    isValid: true,
+    cleanedPhone: cleaned
+  };
 };
