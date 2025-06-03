@@ -2,6 +2,7 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 import { useDualSermons } from '@/hooks/useDualSermons';
+import { useLatestSermon } from '@/hooks/useLatestSermon';
 import SermonHeader from '@/components/sermons/SermonHeader';
 import FilterBar from '@/components/sermons/FilterBar';
 import ViewSelector from '@/components/sermons/ViewSelector';
@@ -12,6 +13,7 @@ import { Button } from '@/components/ui/button';
 
 const Sermons = () => {
   const { sermons, loading, error, refreshSermons } = useDualSermons();
+  const { latestSermon, isAdding } = useLatestSermon();
   const {
     filteredSermons,
     searchTerm,
@@ -27,7 +29,7 @@ const Sermons = () => {
     allYears
   } = useSermonFilters(sermons);
 
-  if (loading) {
+  if (loading || isAdding) {
     return (
       <Layout>
         <main className="flex-grow py-10 md:py-16 bg-church-neutral-50 page-transition">
@@ -36,10 +38,13 @@ const Sermons = () => {
               <CardContent className="text-center py-16">
                 <Loader2 className="h-16 w-16 text-church-blue mx-auto mb-6 animate-spin" />
                 <h1 className="text-2xl font-bold text-church-neutral-800 mb-4">
-                  Loading Sermons...
+                  {isAdding ? 'Adding Latest Sermon...' : 'Loading Sermons...'}
                 </h1>
                 <p className="text-church-neutral-600">
-                  Please wait while we fetch the latest sermons from our database.
+                  {isAdding 
+                    ? 'Please wait while we add the latest sermon to our database.'
+                    : 'Please wait while we fetch the latest sermons from our database.'
+                  }
                 </p>
               </CardContent>
             </Card>

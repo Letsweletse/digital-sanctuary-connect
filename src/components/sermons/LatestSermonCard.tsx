@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, Play, User, ExternalLink } from 'lucide-react';
+import { Calendar, Play, User, ExternalLink, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useLatestSermon } from '@/hooks/useLatestSermon';
 
@@ -24,8 +24,9 @@ const LatestSermonCard = () => {
             Latest Sermon
           </Badge>
           {isAdding && (
-            <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-100">
-              Adding...
+            <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-100 flex items-center gap-1">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Adding to Database...
             </Badge>
           )}
         </div>
@@ -69,6 +70,7 @@ const LatestSermonCard = () => {
               onClick={handleWatchOnYouTube}
               className="bg-white/20 hover:bg-white/30 text-white border-white/30 flex-1"
               variant="outline"
+              disabled={isAdding}
             >
               <Play className="h-4 w-4 mr-2" />
               Watch on YouTube
@@ -78,6 +80,7 @@ const LatestSermonCard = () => {
           <Button 
             onClick={handleWatchOnYouTube}
             className="bg-white text-church-blue hover:bg-white/90"
+            disabled={isAdding}
           >
             <ExternalLink className="h-4 w-4 mr-2" />
             View

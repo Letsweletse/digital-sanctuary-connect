@@ -61,6 +61,12 @@ export const useRegistrationSubmission = () => {
     }
     
     setIsSubmitting(true);
+    
+    // Show initial loading toast
+    sonnerToast.loading("Processing Registration...", {
+      description: "Please wait while we process your registration",
+      duration: 2000
+    });
 
     try {
       // Prepare comprehensive registration data with all needed details
@@ -85,7 +91,13 @@ export const useRegistrationSubmission = () => {
         registrationType: 'Standard'
       };
 
-      console.log('Registration submitted with enhanced data:', registrationData);
+      console.log('🚀 [Registration] Starting registration process for:', registrationData);
+      
+      // Show email sending progress
+      sonnerToast.loading("Sending Email Confirmation...", {
+        description: "Sending confirmation emails to admin and attendee",
+        duration: 3000
+      });
       
       // Format data for email service
       const emailRegistrationData = {
@@ -101,8 +113,13 @@ export const useRegistrationSubmission = () => {
       };
       
       // Send email
+      console.log('📧 [Registration] Sending email via email service...');
       const emailResult = await sendEventRegistrationEmail(currentEvent.title, emailRegistrationData);
-      console.log('Enhanced email service response:', emailResult);
+      console.log('📧 [Registration] Email service response:', emailResult);
+      
+      if (!emailResult.success) {
+        throw new Error(`Email failed: ${emailResult.message}`);
+      }
       
       // Save the check-in URL and ID from the email response
       let checkInUrl = '';
@@ -116,39 +133,46 @@ export const useRegistrationSubmission = () => {
         registrationData.checkInId = checkInId;
         registrationData.checkInUrl = checkInUrl;
         
-        console.log('Check-in information received:', { checkInId, checkInUrl });
-      } else {
-        console.error("Failed to get check-in information from email service:", emailResult.message);
+        console.log('✅ [Registration] Check-in information received:', { checkInId, checkInUrl });
       }
+      
+      // Show WhatsApp sending progress
+      sonnerToast.loading("Sending WhatsApp Confirmation...", {
+        description: "Sending WhatsApp confirmation message",
+        duration: 3000
+      });
       
       // Generate premium formatted WhatsApp message
       const premiumWhatsAppMessage = generatePremiumWhatsAppConfirmation(registrationData);
       
-      // Send direct WhatsApp notification with premium formatted message - NOW USING DIRECT ULTRAMSG API
-      console.log('[Registration] Sending premium WhatsApp message to:', registrationData.attendee.phone);
+      // Send direct WhatsApp notification with premium formatted message
+      console.log('📱 [Registration] Sending premium WhatsApp message to:', registrationData.attendee.phone);
       const directWhatsAppResult = await sendDirectWhatsAppMessage(
         registrationData.attendee.phone, 
         premiumWhatsAppMessage
       );
       
-      console.log('[Registration] Premium WhatsApp result:', directWhatsAppResult);
+      console.log('📱 [Registration] Premium WhatsApp result:', directWhatsAppResult);
       
       // Only attempt Edge function as a fallback if direct method fails
       if (directWhatsAppResult.error) {
-        console.log('[Registration] Direct WhatsApp failed, attempting via Edge Function...');
+        console.log('📱 [Registration] Direct WhatsApp failed, attempting via Edge Function...');
         const whatsappResult = await sendWhatsAppNotification(registrationData);
-        console.log('[Registration] WhatsApp notification result:', whatsappResult);
+        console.log('📱 [Registration] WhatsApp notification result:', whatsappResult);
       }
       
+      // Success notifications
       toast({
-        title: "Registration Successful!",
-        description: `Thank you for registering for ${currentEvent.title}. A confirmation has been sent to your WhatsApp and email (${formData.email}).`,
+        title: "Registration Successful! 🎉",
+        description: `Thank you for registering for ${currentEvent.title}. Confirmation sent to your WhatsApp and email.`,
       });
       
       sonnerToast.success("Registration Complete!", {
-        description: "Check your WhatsApp for a confirmation message",
+        description: "Check your WhatsApp and email for confirmation details",
         duration: 5000
       });
+      
+      console.log('✅ [Registration] Registration completed successfully');
       
       // Close the registration dialog
       onSuccess();
@@ -163,7 +187,8 @@ export const useRegistrationSubmission = () => {
       });
       
     } catch (error) {
-      console.error("Error submitting registration:", error);
+      console.error("❌ [Registration] Error submitting registration:", error);
+      
       toast({
         title: "Registration Failed",
         description: error instanceof Error ? error.message : "There was an error submitting your registration. Please try again.",

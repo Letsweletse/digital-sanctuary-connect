@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
-import { Mail, Send, CheckCircle, XCircle } from 'lucide-react';
+import { Mail, Send, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { sendEventRegistrationEmail } from '@/lib/emailService';
 
 const EmailTestPanel = () => {
@@ -25,10 +25,10 @@ const EmailTestPanel = () => {
     }
 
     setIsTesting(true);
-    console.log('🧪 [Email Test] Starting email test to:', testEmail);
+    console.log('🧪 [Email Test] Starting comprehensive email test to:', testEmail);
 
     try {
-      // Create test registration data
+      // Create comprehensive test registration data
       const testData = {
         event: "Test Event - The Apostolic Conference 2025",
         eventDate: "2025-05-24",
@@ -44,24 +44,28 @@ const EmailTestPanel = () => {
           denomination: "Test Church",
           numberOfAttendees: 1
         },
-        message: "This is a test registration from the admin panel",
+        message: "This is a comprehensive test registration from the admin panel to verify all email functionality",
         submitDate: new Date().toISOString(),
         registrationType: "Standard",
         churchLogo: "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png"
       };
 
-      console.log('🧪 [Email Test] Test data prepared:', testData);
+      console.log('🧪 [Email Test] Comprehensive test data prepared:', testData);
 
-      // Send test email
-      const response = await sendEventRegistrationEmail("Test Registration", testData);
+      // Send test email using the full registration flow
+      const response = await sendEventRegistrationEmail("Test Registration - Email System Verification", testData);
       
-      console.log('🧪 [Email Test] Response received:', response);
-      setLastTestResult(response);
+      console.log('🧪 [Email Test] Full response received:', response);
+      setLastTestResult({
+        ...response,
+        timestamp: new Date().toISOString(),
+        testEmail: testEmail
+      });
 
       if (response.success) {
         toast({
-          title: "Test Email Sent!",
-          description: `Test emails sent successfully to ${testEmail}`,
+          title: "Test Email System Success! ✅",
+          description: `All emails sent successfully to ${testEmail} and admin addresses`,
         });
       } else {
         throw new Error(response.message || "Unknown error");
@@ -71,7 +75,8 @@ const EmailTestPanel = () => {
       const errorResult = {
         success: false,
         message: error instanceof Error ? error.message : "Unknown error occurred",
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        testEmail: testEmail
       };
       setLastTestResult(errorResult);
       
@@ -90,7 +95,7 @@ const EmailTestPanel = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Mail className="h-5 w-5" />
-          Email Service Test
+          Email Service Test Panel
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -102,7 +107,7 @@ const EmailTestPanel = () => {
             <Input
               id="testEmail"
               type="email"
-              placeholder="Enter email to test"
+              placeholder="Enter email to test complete flow"
               value={testEmail}
               onChange={(e) => setTestEmail(e.target.value)}
               className="flex-1"
@@ -112,8 +117,12 @@ const EmailTestPanel = () => {
               disabled={isTesting || !testEmail}
               className="flex items-center gap-2"
             >
-              <Send className={`h-4 w-4 ${isTesting ? 'animate-pulse' : ''}`} />
-              {isTesting ? 'Sending...' : 'Test'}
+              {isTesting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+              {isTesting ? 'Testing...' : 'Test'}
             </Button>
           </div>
         </div>
@@ -132,18 +141,29 @@ const EmailTestPanel = () => {
               </Badge>
             </div>
             
-            <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
+            <div className="text-xs text-gray-600 bg-gray-50 p-3 rounded">
+              <p><strong>Test Email:</strong> {lastTestResult.testEmail}</p>
               <p><strong>Message:</strong> {lastTestResult.message}</p>
               <p><strong>Time:</strong> {lastTestResult.timestamp}</p>
               {lastTestResult.data && (
-                <p><strong>Check-in ID:</strong> {lastTestResult.data.checkInId}</p>
+                <>
+                  <p><strong>Check-in ID:</strong> {lastTestResult.data.checkInId}</p>
+                  <p><strong>Recipients:</strong> {lastTestResult.recipients?.join(', ')}</p>
+                </>
               )}
             </div>
           </div>
         )}
 
-        <div className="text-xs text-gray-500 bg-blue-50 p-2 rounded">
-          <p><strong>Note:</strong> This will send test emails to both the specified address and admin addresses (otenggate@gmail.com, info@gategaborone.com, iblimenterprise@zohomail.com)</p>
+        <div className="text-xs text-gray-500 bg-blue-50 p-3 rounded">
+          <p><strong>Test Coverage:</strong></p>
+          <ul className="list-disc list-inside mt-1 space-y-1">
+            <li>Admin notification emails to all three addresses</li>
+            <li>Attendee confirmation email with check-in QR codes</li>
+            <li>Calendar integration (.ics file generation)</li>
+            <li>WhatsApp share links and location maps</li>
+            <li>Check-in URL generation and validation</li>
+          </ul>
         </div>
       </CardContent>
     </Card>
