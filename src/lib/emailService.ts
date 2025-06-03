@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 // Admin email addresses for notifications
@@ -138,6 +137,30 @@ export const sendNewsletterSubscriptionEmail = async (subscriberData: any) => {
     };
   } catch (error) {
     console.error('Error sending newsletter subscription email:', error);
+    throw error;
+  }
+};
+
+// Image upload notification email
+export const sendImageUploadEmail = async (fileName: string, category: string) => {
+  try {
+    const emailData = {
+      to: ADMIN_EMAILS,
+      subject: `New Image Uploaded - ${category}`,
+      name: 'System',
+      email: 'system@gategaborone.com',
+      message: `A new image has been uploaded to the ${category} category: ${fileName}`,
+      sendConfirmation: false
+    };
+
+    const result = await sendEmail(emailData);
+    return {
+      success: true,
+      message: 'Image upload notification sent successfully',
+      data: result.data
+    };
+  } catch (error) {
+    console.error('Error sending image upload notification:', error);
     throw error;
   }
 };

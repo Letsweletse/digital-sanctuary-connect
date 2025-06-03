@@ -1,30 +1,10 @@
-
 import React from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Mail, Phone, User, MessageSquare, Send } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
-import { sendContactFormEmail } from '@/lib/emailService';
-
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { sendContactEmail } from '@/lib/emailService';
 
 // Define form schema with zod - enhanced validation rules
 const formSchema = z.object({
@@ -71,8 +51,8 @@ const ContactForm = () => {
     try {
       console.log('Form submitted:', data);
       
-      // Send email notification
-      const emailResult = await sendContactFormEmail(data);
+      // Send email notification - using the correct function name
+      const emailResult = await sendContactEmail(data);
       console.log('Email result:', emailResult);
       
       if (emailResult.success) {
