@@ -5,6 +5,24 @@ import * as z from "zod";
 import { Mail, Phone, User, MessageSquare, Send } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 import { sendContactEmail } from '@/lib/emailService';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Define form schema with zod - enhanced validation rules
 const formSchema = z.object({
