@@ -24,13 +24,17 @@ const RegistrationConfirmation = () => {
   
   const { event, attendee } = registrationData;
   
+  // Updated Google Maps URL for the conference location
+  const googleMapsUrl = "https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA";
+  
   // Create QR code value - a JSON string of important registration data
   const qrCodeValue = JSON.stringify({
     eventId: event.id,
     eventName: event.title,
     attendeeName: attendee.name,
     attendeeEmail: attendee.email,
-    registrationId: registrationData.submitDate
+    registrationId: registrationData.submitDate,
+    location: googleMapsUrl
   });
   
   const handleAddToCalendar = () => {
@@ -39,7 +43,7 @@ const RegistrationConfirmation = () => {
     const endDate = new Date(startDate);
     endDate.setHours(startDate.getHours() + 3); // Default 3-hour event
     
-    const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z/${endDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z&details=${encodeURIComponent(`You registered for this event on ${new Date(registrationData.submitDate).toLocaleDateString()}`)}&location=${encodeURIComponent(event.location)}`;
+    const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z/${endDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z&details=${encodeURIComponent(`You registered for this event on ${new Date(registrationData.submitDate).toLocaleDateString()}`)}&location=${encodeURIComponent(googleMapsUrl)}`;
     
     window.open(googleCalUrl, '_blank');
   };
@@ -48,7 +52,7 @@ const RegistrationConfirmation = () => {
     if (navigator.share) {
       navigator.share({
         title: `I'm attending ${event.title}`,
-        text: `Join me at ${event.title} on ${formatDate(event.date)} at ${event.time}. Location: ${event.location}`,
+        text: `Join me at ${event.title} on ${formatDate(event.date)} at ${event.time}. Location: ${googleMapsUrl}`,
         url: window.location.href
       }).catch(err => console.error('Error sharing:', err));
     } else {
@@ -99,7 +103,14 @@ const RegistrationConfirmation = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     <MapPin className="h-6 w-6 text-church-blue" />
-                    <span className="text-lg">{event.location}</span>
+                    <a 
+                      href={googleMapsUrl}
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-lg hover:text-church-blue hover:underline"
+                    >
+                      Travelodge Conference Centre
+                    </a>
                   </div>
                 </div>
                 

@@ -18,13 +18,13 @@ const EventQRCode: React.FC<EventQRCodeProps> = ({
   className = '' 
 }) => {
   // Ensure QR code value is properly formatted for scanning
-  // If it's a location URL, ensure we use a direct Google Maps URL, not a shortened one
+  // If it's a location URL, ensure we use the updated Google Maps URL
   let formattedValue = value;
   
-  // If the value contains "maps.app.goo.gl" or other shortened URLs, replace with direct URL
-  if (value.includes('maps.app.goo.gl') || value.includes('goo.gl')) {
-    // Replace with direct Google Maps URL
-    formattedValue = "https://www.google.com/maps/place/Gate+Gaborone/@-24.6618567,25.9048083,15z/data=!4m6!3m5!1s0x1ebb5b26225a6213:0xaed9e468c1e4ef31!8m2!3d-24.6618567!4d25.9048083!16s%2Fg%2F11q89m2yrq";
+  // If the value contains old location URLs, replace with the updated one
+  if (value.includes('maps.app.goo.gl') && !value.includes('Y5BPKfURyqQJ8EuXA')) {
+    // Replace with the updated Google Maps URL
+    formattedValue = "https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA";
   }
   
   return (

@@ -48,8 +48,8 @@ const QRScanner: React.FC<QRScannerProps> = ({ onCheckIn, onBack }) => {
   }, []);
 
   const handleManualEntry = () => {
-    // For demo purposes, simulate QR code scanning
-    const demoEmail = 'demo@gatechurch.com';
+    // For demo purposes, simulate QR code scanning with updated location
+    const demoEmail = 'demo@gategaborone.com';
     onCheckIn(demoEmail, 'qr');
   };
 
