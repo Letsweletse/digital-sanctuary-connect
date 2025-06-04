@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -53,13 +52,16 @@ const BankingDetailsCard: React.FC<BankingDetailsCardProps> = ({
           <p>Please transfer to the following bank account:</p>
         </div>
         
-        {/* QR Code Section */}
-        <div className="flex justify-center mb-4">
-          <BankingQRCode 
-            eventTitle={eventTitle}
-            registrationFee={registrationFee}
-            size={140}
-          />
+        {/* QR Code Section - Mobile Optimized */}
+        <div className="flex justify-center mb-6 px-2">
+          <div className="w-full max-w-xs">
+            <BankingQRCode 
+              eventTitle={eventTitle}
+              registrationFee={registrationFee}
+              size={160}
+              className="w-full"
+            />
+          </div>
         </div>
         
         <div className="text-center mb-4">
