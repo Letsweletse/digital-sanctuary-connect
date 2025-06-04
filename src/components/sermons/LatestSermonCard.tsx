@@ -3,12 +3,35 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, Play, User, ExternalLink, Loader2 } from 'lucide-react';
+import { Calendar, Play, User, ExternalLink, Plus } from 'lucide-react';
 import { format } from 'date-fns';
 import { useLatestSermon } from '@/hooks/useLatestSermon';
+import { useNavigate } from 'react-router-dom';
 
 const LatestSermonCard = () => {
-  const { latestSermon, isAdding } = useLatestSermon();
+  const { latestSermon } = useLatestSermon();
+  const navigate = useNavigate();
+
+  // Show message to upload sermons if none exist
+  if (!latestSermon) {
+    return (
+      <Card className="bg-gradient-to-r from-church-blue to-church-blue-dark text-white shadow-xl">
+        <CardContent className="p-6 text-center">
+          <h3 className="text-2xl font-bold mb-4">No Sermons Yet</h3>
+          <p className="text-white/90 mb-6">
+            Upload your first sermon to get started with your sermon library.
+          </p>
+          <Button 
+            onClick={() => navigate('/admin')}
+            className="bg-white text-church-blue hover:bg-white/90"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Upload Sermon
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const handleWatchOnYouTube = () => {
     if (latestSermon.youtubeId) {
@@ -23,12 +46,6 @@ const LatestSermonCard = () => {
           <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
             Latest Sermon
           </Badge>
-          {isAdding && (
-            <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-100 flex items-center gap-1">
-              <Loader2 className="h-3 w-3 animate-spin" />
-              Adding to Database...
-            </Badge>
-          )}
         </div>
         
         <h3 className="text-2xl font-bold mb-2">{latestSermon.title}</h3>
@@ -70,7 +87,6 @@ const LatestSermonCard = () => {
               onClick={handleWatchOnYouTube}
               className="bg-white/20 hover:bg-white/30 text-white border-white/30 flex-1"
               variant="outline"
-              disabled={isAdding}
             >
               <Play className="h-4 w-4 mr-2" />
               Watch on YouTube
@@ -80,7 +96,6 @@ const LatestSermonCard = () => {
           <Button 
             onClick={handleWatchOnYouTube}
             className="bg-white text-church-blue hover:bg-white/90"
-            disabled={isAdding}
           >
             <ExternalLink className="h-4 w-4 mr-2" />
             View
