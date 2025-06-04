@@ -31,7 +31,7 @@ const EventDetailCard: React.FC<EventDetailCardProps> = ({ event, formatDate }) 
       <CardContent className="p-4 space-y-2.5">
         <h3 className="font-bold text-base md:text-lg text-church-blue-dark line-clamp-2">{event.title}</h3>
         <div className="flex items-center gap-2 text-xs md:text-sm">
-          <CalendarCheck className="h-4 w-4 text-church-blue flex-shrink-0" />
+          <CalendarDays className="h-4 w-4 text-church-blue flex-shrink-0" />
           <span className="font-medium">{displayDate(event.date || '')}</span>
         </div>
         <div className="flex items-center gap-2 text-xs md:text-sm">
