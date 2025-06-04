@@ -157,10 +157,19 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
                     
                     <Button
                       variant="outline"
-                      className="border-2 border-[#b8a156] text-white hover:bg-[#b8a156]/20 hover:border-[#d4c278] px-6 py-6 text-lg font-medium transition-all duration-300 rounded-lg"
+                      className="relative bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 hover:from-yellow-300 hover:via-amber-400 hover:to-yellow-500 text-black font-bold px-6 py-6 text-lg border-0 rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden"
+                      style={{
+                        background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 25%, #FFD700 50%, #FFA500 75%, #FFD700 100%)',
+                        backgroundSize: '200% 200%',
+                        animation: 'shine 3s ease-in-out infinite'
+                      }}
                       asChild
                     >
-                      <a href="/conference">View Full Details</a>
+                      <a href="/conference" className="relative z-10 flex items-center justify-center">
+                        <span className="bg-gradient-to-r from-amber-900 to-yellow-900 bg-clip-text text-transparent font-extrabold">
+                          View Full Details
+                        </span>
+                      </a>
                     </Button>
                   </div>
                 </div>
