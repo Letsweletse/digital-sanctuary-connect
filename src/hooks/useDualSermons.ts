@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Sermon } from '@/types/sermonTypes';
 import { dualSermonService, DatabaseProvider } from '@/services/dualSermonService';
@@ -10,8 +11,8 @@ export const useDualSermons = () => {
   const [activeProvider, setActiveProvider] = useState<DatabaseProvider>('supabase');
   const { toast } = useToast();
 
-  // Load sermons with proper error handling
-  const loadSermons = async () => {
+  // Memoized load function to prevent infinite loops
+  const loadSermons = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -27,13 +28,9 @@ export const useDualSermons = () => {
       console.log(`Successfully loaded ${result.sermons.length} sermons from ${result.provider}`);
       
       if (result.sermons.length === 0) {
-        console.log('No sermons found - this might be normal if none have been added yet');
-        toast({
-          title: "No Sermons Found",
-          description: "No sermons are currently available in the database. Use the Admin panel to add some.",
-        });
+        console.log('No sermons found - database may be empty');
       } else {
-        console.log('Sermons loaded successfully:', result.sermons);
+        console.log('Sermons loaded successfully');
         if (result.provider !== 'supabase') {
           toast({
             title: "Using Fallback Database",
@@ -55,22 +52,24 @@ export const useDualSermons = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
-  // Initial load and setup interval for auto-refresh
+  // Initial load
   useEffect(() => {
     loadSermons();
-    
-    // Set up auto-refresh every 30 seconds
+  }, [loadSermons]);
+
+  // Auto-refresh with better interval management
+  useEffect(() => {
     const interval = setInterval(() => {
       console.log('Auto-refreshing sermons...');
       loadSermons();
-    }, 30000);
+    }, 60000); // Increased to 60 seconds for better performance
     
     return () => clearInterval(interval);
-  }, []);
+  }, [loadSermons]);
 
-  const addSermon = async (sermon: Omit<Sermon, 'id'>) => {
+  const addSermon = useCallback(async (sermon: Omit<Sermon, 'id'>) => {
     try {
       const newSermon = await dualSermonService.addSermon(sermon);
       setSermons(prev => [newSermon, ...prev]);
@@ -90,9 +89,9 @@ export const useDualSermons = () => {
       });
       throw err;
     }
-  };
+  }, [activeProvider, toast]);
 
-  const updateSermon = async (id: string, updatedSermon: Partial<Sermon>) => {
+  const updateSermon = useCallback(async (id: string, updatedSermon: Partial<Sermon>) => {
     try {
       await dualSermonService.updateSermon(id, updatedSermon);
       setSermons(prev => 
@@ -114,9 +113,9 @@ export const useDualSermons = () => {
       });
       throw err;
     }
-  };
+  }, [activeProvider, toast]);
 
-  const deleteSermon = async (id: string) => {
+  const deleteSermon = useCallback(async (id: string) => {
     try {
       await dualSermonService.deleteSermon(id);
       setSermons(prev => prev.filter(sermon => sermon.id !== id));
@@ -134,13 +133,13 @@ export const useDualSermons = () => {
       });
       throw err;
     }
-  };
+  }, [activeProvider, toast]);
 
-  const getFeaturedSermon = (): Sermon | undefined => {
+  const getFeaturedSermon = useCallback((): Sermon | undefined => {
     return sermons.find(sermon => sermon.featured);
-  };
+  }, [sermons]);
 
-  const switchProvider = (provider: DatabaseProvider) => {
+  const switchProvider = useCallback((provider: DatabaseProvider) => {
     dualSermonService.setPrimaryProvider(provider);
     setActiveProvider(provider);
     loadSermons();
@@ -149,12 +148,12 @@ export const useDualSermons = () => {
       title: "Provider Switched",
       description: `Now using ${provider} as primary database.`,
     });
-  };
+  }, [loadSermons, toast]);
 
-  const refreshSermons = () => {
+  const refreshSermons = useCallback(() => {
     console.log('Manual refresh triggered');
     loadSermons();
-  };
+  }, [loadSermons]);
 
   return {
     sermons,

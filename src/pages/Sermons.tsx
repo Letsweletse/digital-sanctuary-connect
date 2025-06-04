@@ -8,7 +8,7 @@ import FilterBar from '@/components/sermons/FilterBar';
 import ViewSelector from '@/components/sermons/ViewSelector';
 import { useSermonFilters } from '@/hooks/useSermonFilters';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2, RefreshCw } from 'lucide-react';
+import { Loader2, RefreshCw, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Sermons = () => {
@@ -43,7 +43,7 @@ const Sermons = () => {
                 <p className="text-church-neutral-600">
                   {isAdding 
                     ? 'Please wait while we add the latest sermon to our database.'
-                    : 'Please wait while we fetch the latest sermons from our database.'
+                    : 'Connecting to database and loading sermons...'
                   }
                 </p>
               </CardContent>
@@ -61,24 +61,25 @@ const Sermons = () => {
           <div className="container mx-auto px-4">
             <Card className="mx-auto max-w-4xl bg-red-50 border-red-200">
               <CardContent className="text-center py-16">
-                <div className="text-red-600 mb-6">
-                  <svg className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                  </svg>
-                </div>
+                <AlertTriangle className="h-16 w-16 text-red-600 mx-auto mb-6" />
                 <h1 className="text-2xl font-bold text-red-800 mb-4">
-                  Unable to Load Sermons
+                  Database Connection Error
                 </h1>
                 <p className="text-red-700 mb-4">
                   We're experiencing difficulty connecting to our sermon database.
                 </p>
-                <p className="text-red-600 text-sm mb-4">
+                <p className="text-red-600 text-sm mb-6 bg-red-100 p-3 rounded">
                   Error: {error}
                 </p>
-                <Button onClick={refreshSermons} className="flex items-center gap-2">
-                  <RefreshCw className="h-4 w-4" />
-                  Try Again
-                </Button>
+                <div className="space-y-3">
+                  <Button onClick={refreshSermons} className="flex items-center gap-2">
+                    <RefreshCw className="h-4 w-4" />
+                    Retry Connection
+                  </Button>
+                  <p className="text-sm text-red-600">
+                    If the problem persists, please contact support.
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </div>
