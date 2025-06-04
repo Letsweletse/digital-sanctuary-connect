@@ -79,9 +79,14 @@ export const generatePremiumWhatsAppConfirmation = (registrationData: Registrati
 
 🎉 *${event.title}*
 
-📅 *Date:* ${event.date}
-⏰ *Time:* ${event.time}
-📍 *Location:* ${event.location}
+📅 *Dates:* July 3-5, 2025
+📍 *Location:* Travelodge Conference Centre, Gaborone
+
+⏰ *Schedule:*
+• Thursday Evening: Session 1 (18:00–20:30)
+• Friday Morning: Sessions 2–4 (08:30–13:30)
+• Friday Evening: Session 5 (18:00–20:30)
+• Saturday Morning: Sessions 6–8 (08:30–13:30)
 
 👤 *Attendee Details:*
 • *Name:* ${attendee.name}
@@ -90,10 +95,11 @@ export const generatePremiumWhatsAppConfirmation = (registrationData: Registrati
 • *Role:* ${attendee.role}
 • *Church:* ${attendee.denomination}
 • *Attendees:* ${attendee.numberOfAttendees}
+• *Registration Fee:* P250
 
 ${registrationData.checkInUrl ? `🎫 *Check-in Link:* ${registrationData.checkInUrl}\n` : ''}
 
-*Thank you for registering!* We look forward to seeing you at this event.
+*Thank you for registering!* We look forward to seeing you at this transformative conference where you'll learn to rule your domain through apostolic principles.
 
 For any questions, please contact us at info@gategaborone.com
 
@@ -109,9 +115,11 @@ export const generateSimpleWhatsAppMessage = (eventTitle: string, attendeeName: 
 
 Hello ${attendeeName}, your registration has been successfully processed.
 
-Event Date: ${eventDate}
+Conference Dates: July 3-5, 2025
+Location: Travelodge Conference Centre, Gaborone
+Registration Fee: P250
 
-Thank you for registering! We'll send you more details closer to the event.
+Thank you for registering! We'll send you more details closer to the conference.
 
 Gate Gaborone
 Reach | Resource | Reform`;

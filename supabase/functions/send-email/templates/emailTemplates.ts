@@ -46,9 +46,9 @@ export function generateAdminEmailContent({
 }: AdminEmailProps): string {
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;">
-      <h1 style="color: #3b82f6;">New Event Registration</h1>
+      <h1 style="color: #3b82f6;">New Conference Registration</h1>
       <table style="width: 100%;">
-        <tr><td><strong>Event:</strong></td><td>${eventName}</td></tr>
+        <tr><td><strong>Conference:</strong></td><td>${eventName}</td></tr>
         <tr><td><strong>Registration Type:</strong></td><td>${registrationType}</td></tr>
         <tr><td><strong>Title:</strong></td><td>${title}</td></tr>
         <tr><td><strong>Name:</strong></td><td>${name}</td></tr>
@@ -84,7 +84,7 @@ export function generateConfirmationEmailContent({
   churchLogo = 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png'
 }: ConfirmationEmailProps): string {
   const churchUrl = "https://www.gategaborone.com"; // Ensure using www subdomain
-  const shareTextBase = `Join me at ${eventName} at Gate Gaborone on ${eventDate} at ${eventTime}.`;
+  const shareTextBase = `Join me at ${eventName} at Gate Gaborone on July 3-5, 2025 at Travelodge Conference Centre, Gaborone.`;
   const checkInUrl = `${churchUrl}/check-in/${checkInId}`;
 
   return `
@@ -97,21 +97,28 @@ export function generateConfirmationEmailContent({
       <img src="${eventImage}" alt="${eventName}" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
     </div>
     
-    <h2 style="color: #3b82f6; text-align: center; margin-bottom: 20px;">Registration Confirmation</h2>
+    <h2 style="color: #3b82f6; text-align: center; margin-bottom: 20px;">Conference Registration Confirmation</h2>
     <p style="margin-bottom: 15px;">Dear ${title} ${name},</p>
     <p style="margin-bottom: 15px;">Thank you for registering for <strong>${eventName}</strong>.</p>
     
     <div style="background-color: #f0f9ff; border-left: 4px solid #3b82f6; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
-      <h3 style="color: #3b82f6; margin-top: 0; margin-bottom: 10px;">Event Details</h3>
+      <h3 style="color: #3b82f6; margin-top: 0; margin-bottom: 10px;">Conference Details</h3>
       <ul style="padding-left: 20px; margin-bottom: 0;">
-        <li style="margin-bottom: 8px;"><strong>Event:</strong> ${eventName}</li>
-        <li style="margin-bottom: 8px;"><strong>Date:</strong> ${eventDate}</li>
-        <li style="margin-bottom: 8px;"><strong>Time:</strong> ${eventTime}</li>
-        <li style="margin-bottom: 8px;"><strong>Type:</strong> ${registrationType}</li>
+        <li style="margin-bottom: 8px;"><strong>Conference:</strong> ${eventName}</li>
+        <li style="margin-bottom: 8px;"><strong>Dates:</strong> July 3-5, 2025</li>
+        <li style="margin-bottom: 8px;"><strong>Schedule:</strong></li>
+        <ul style="padding-left: 20px; margin-top: 5px;">
+          <li style="margin-bottom: 4px;">Thursday Evening: Session 1 (18:00–20:30)</li>
+          <li style="margin-bottom: 4px;">Friday Morning: Sessions 2–4 (08:30–13:30)</li>
+          <li style="margin-bottom: 4px;">Friday Evening: Session 5 (18:00–20:30)</li>
+          <li style="margin-bottom: 4px;">Saturday Morning: Sessions 6–8 (08:30–13:30)</li>
+        </ul>
+        <li style="margin-bottom: 8px;"><strong>Registration Type:</strong> ${registrationType}</li>
         <li style="margin-bottom: 8px;"><strong>Role:</strong> ${role}</li>
         <li style="margin-bottom: 8px;"><strong>Denomination:</strong> ${denomination}</li>
         <li style="margin-bottom: 8px;"><strong>Phone:</strong> ${phone}</li>
-        <li style="margin-bottom: 8px;"><strong>Location:</strong> <a href="${location}" style="color: #3b82f6;">View on Map</a></li>
+        <li style="margin-bottom: 8px;"><strong>Location:</strong> <a href="https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA" style="color: #3b82f6;">Travelodge Conference Centre, Gaborone</a></li>
+        <li style="margin-bottom: 8px;"><strong>Registration Fee:</strong> P250</li>
         <li style="margin-bottom: 8px;"><strong>Check-in ID:</strong> ${checkInId}</li>
         <li style="margin-bottom: 8px;"><strong>Check-in Link:</strong> <a href="${checkInUrl}" style="color: #3b82f6;">Quick Check-in Portal</a></li>
       </ul>
@@ -119,15 +126,16 @@ export function generateConfirmationEmailContent({
 
     <div style="display: flex; justify-content: space-between; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;">
       <div style="flex: 1; min-width: 250px; text-align: center; padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <h3 style="color: #3b82f6; margin-top: 0; margin-bottom: 15px;">Event Location</h3>
+        <h3 style="color: #3b82f6; margin-top: 0; margin-bottom: 15px;">Conference Location</h3>
         <img src="${locationQrCodeUrl}" alt="Location QR Code" style="max-width: 180px; height: auto; margin-bottom: 10px; border: 1px solid #e5e7eb; padding: 5px; background-color: #fff;" />
         <p style="font-size: 14px; color: #6b7280; margin-bottom: 0;">Scan to open in Google Maps</p>
+        <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">Travelodge Conference Centre, Gaborone</p>
       </div>
       
       <div style="flex: 1; min-width: 250px; text-align: center; padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <h3 style="color: #3b82f6; margin-top: 0; margin-bottom: 15px;">Quick Check-In</h3>
         <img src="${checkInQrCodeUrl}" alt="Check-In QR Code" style="max-width: 180px; height: auto; margin-bottom: 10px; border: 1px solid #e5e7eb; padding: 5px; background-color: #fff;" />
-        <p style="font-size: 14px; color: #6b7280; margin-bottom: 0;">Show this code at the door for faster check-in</p>
+        <p style="font-size: 14px; color: #6b7280; margin-bottom: 0;">Show this code at registration for faster check-in</p>
         <p style="font-size: 12px; color: #6b7280; margin-top: 5px; font-style: italic;">Your Check-in ID: ${checkInId}</p>
         <p style="font-size: 14px; margin-top: 10px;"><a href="${checkInUrl}" style="color: #3b82f6; text-decoration: underline;">Access Your Check-in Portal</a></p>
       </div>
@@ -190,7 +198,7 @@ export function generateConfirmationEmailContent({
         </a>
       </div>
       
-      <p style="font-size: 14px; color: #6b7280; margin-top: 10px;">Invite friends and family to join you!</p>
+      <p style="font-size: 14px; color: #6b7280; margin-top: 10px;">Invite friends and family to join you at this transformative conference!</p>
     </div>
     
     <div style="text-align: center; margin-bottom: 30px;">

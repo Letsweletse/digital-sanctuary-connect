@@ -24,7 +24,7 @@ const RegistrationConfirmation = () => {
   
   const { event, attendee } = registrationData;
   
-  // Updated Google Maps URL for the conference location
+  // Updated Google Maps URL for Travelodge Conference Centre
   const googleMapsUrl = "https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA";
   
   // Create QR code value - a JSON string of important registration data
@@ -34,16 +34,16 @@ const RegistrationConfirmation = () => {
     attendeeName: attendee.name,
     attendeeEmail: attendee.email,
     registrationId: registrationData.submitDate,
-    location: googleMapsUrl
+    location: googleMapsUrl,
+    eventDates: "July 3-5, 2025"
   });
   
   const handleAddToCalendar = () => {
-    // Simple calendar URL for Google Calendar
-    const startDate = new Date(event.date);
-    const endDate = new Date(startDate);
-    endDate.setHours(startDate.getHours() + 3); // Default 3-hour event
+    // Calendar event for the conference start date
+    const startDate = new Date("2025-07-03T18:00:00");
+    const endDate = new Date("2025-07-05T13:30:00");
     
-    const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z/${endDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z&details=${encodeURIComponent(`You registered for this event on ${new Date(registrationData.submitDate).toLocaleDateString()}`)}&location=${encodeURIComponent(googleMapsUrl)}`;
+    const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z/${endDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z&details=${encodeURIComponent(`You registered for this conference on ${new Date(registrationData.submitDate).toLocaleDateString()}. Conference runs July 3-5, 2025 at Travelodge Conference Centre, Gaborone.`)}&location=${encodeURIComponent("Travelodge Conference Centre, Gaborone, Botswana")}`;
     
     window.open(googleCalUrl, '_blank');
   };
@@ -52,12 +52,12 @@ const RegistrationConfirmation = () => {
     if (navigator.share) {
       navigator.share({
         title: `I'm attending ${event.title}`,
-        text: `Join me at ${event.title} on ${formatDate(event.date)} at ${event.time}. Location: ${googleMapsUrl}`,
+        text: `Join me at ${event.title} on July 3-5, 2025 at Travelodge Conference Centre, Gaborone. Registration fee: P250`,
         url: window.location.href
       }).catch(err => console.error('Error sharing:', err));
     } else {
       // Fallback for browsers that don't support navigator.share
-      alert('Share this page URL with your friends to invite them to the event!');
+      alert('Share this page URL with your friends to invite them to the conference!');
     }
   };
   
@@ -72,7 +72,7 @@ const RegistrationConfirmation = () => {
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-church-neutral-800 mb-3">Registration Confirmed</h1>
             <p className="text-church-neutral-600 text-lg">
-              Thank you for registering for this event.
+              Thank you for registering for the Apostolic Conference.
             </p>
           </div>
           
@@ -95,11 +95,15 @@ const RegistrationConfirmation = () => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Calendar className="h-6 w-6 text-church-blue" />
-                    <span className="text-lg">{formatDate(event.date)}</span>
+                    <span className="text-lg">July 3-5, 2025</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Clock className="h-6 w-6 text-church-blue" />
-                    <span className="text-lg">{event.time}</span>
+                  <div className="flex items-start gap-3">
+                    <Clock className="h-6 w-6 text-church-blue mt-1" />
+                    <div className="text-lg">
+                      <div>Thursday Evening: 18:00–20:30</div>
+                      <div>Friday: 08:30–13:30 & 18:00–20:30</div>
+                      <div>Saturday: 08:30–13:30</div>
+                    </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <MapPin className="h-6 w-6 text-church-blue" />
@@ -109,13 +113,13 @@ const RegistrationConfirmation = () => {
                       rel="noopener noreferrer" 
                       className="text-lg hover:text-church-blue hover:underline"
                     >
-                      Travelodge Conference Centre
+                      Travelodge Conference Centre, Gaborone
                     </a>
                   </div>
                 </div>
                 
                 <div className="flex flex-col items-center justify-center p-6 bg-church-blue-light/5 rounded-xl shadow-sm border border-church-blue-light/20">
-                  <p className="text-church-neutral-700 font-medium mb-3">Quick Check-In Code</p>
+                  <p className="text-church-neutral-700 font-medium mb-3">Conference Check-In Code</p>
                   <QRCodeSVG 
                     value={qrCodeValue} 
                     size={160} 
@@ -124,7 +128,7 @@ const RegistrationConfirmation = () => {
                     className="rounded-md shadow-sm bg-white p-2"
                   />
                   <p className="text-sm text-church-neutral-600 mt-3">
-                    Present this code at the event
+                    Present this code at the conference registration
                   </p>
                 </div>
               </div>
@@ -167,7 +171,7 @@ const RegistrationConfirmation = () => {
                   className="border-church-blue text-church-blue py-5 sm:py-3 font-medium"
                 >
                   <Share2 className="mr-2 h-5 w-5" />
-                  Share Event
+                  Share Conference
                 </Button>
               </div>
             </CardContent>

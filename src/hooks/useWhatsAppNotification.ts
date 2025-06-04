@@ -2,7 +2,6 @@
 import { toast as sonnerToast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { usePhoneValidation } from "./usePhoneValidation";
-import { formatDate } from "@/utils/dateUtils";
 
 export const useWhatsAppNotification = () => {
   const { validatePhone } = usePhoneValidation();
@@ -35,18 +34,23 @@ export const useWhatsAppNotification = () => {
 
       // Create a more detailed confirmation message with Gate Gaborone branding
       const messageText = `✅ *Registration Confirmed for Gate Gaborone!*\n
-*Event:* ${registrationData.event.title}
-*Date:* ${formatDate(registrationData.event.date)}
-*Time:* ${registrationData.event.time}
-*Location:* ${registrationData.event.location}
+*Conference:* ${registrationData.event.title}
+*Dates:* July 3-5, 2025
+*Location:* Travelodge Conference Centre, Gaborone
+*Schedule:*
+• Thursday Evening: Session 1 (18:00–20:30)
+• Friday Morning: Sessions 2–4 (08:30–13:30)
+• Friday Evening: Session 5 (18:00–20:30)
+• Saturday Morning: Sessions 6–8 (08:30–13:30)
       
 🙋‍♂️ *Registration Details:*
 *Name:* ${registrationData.attendee.name}
 *Email:* ${registrationData.attendee.email}
 *Phone:* ${registrationData.attendee.phone}
 *Number of Attendees:* ${registrationData.attendee.numberOfAttendees}
+*Registration Fee:* P250
 
-Your registration has been confirmed. We look forward to seeing you!
+Your registration has been confirmed. We look forward to seeing you at this transformative conference!
 Save this message for your reference.
 
 *Reach | Resource | Reform*
@@ -83,7 +87,7 @@ Save this message for your reference.
         console.log("✅ [WhatsApp] Notification Sent Successfully via Edge Function");
         
         sonnerToast.success("WhatsApp Confirmation Sent", {
-          description: "Detailed confirmation sent to your WhatsApp.",
+          description: "Detailed conference confirmation sent to your WhatsApp.",
           duration: 5000
         });
         

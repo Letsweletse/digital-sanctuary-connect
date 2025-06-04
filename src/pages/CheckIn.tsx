@@ -12,7 +12,7 @@ const CheckIn = () => {
   const { id } = useParams<{ id: string }>();
   const [checkedIn, setCheckedIn] = useState(false);
   
-  // Updated Google Maps URL for Gate Gaborone - matching the conference location
+  // Updated Google Maps URL for Travelodge Conference Centre
   const googleMapsUrl = "https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA";
   
   useEffect(() => {
@@ -31,14 +31,14 @@ const CheckIn = () => {
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: 'My Gate Gaborone Event Check-in',
-        text: 'I\'m attending an event at Gate Gaborone! You should join too.',
+        title: 'My Gate Gaborone Conference Check-in',
+        text: 'I\'m attending the Apostolic Conference at Gate Gaborone! You should join too.',
         url: window.location.href,
       })
       .catch(err => console.error('Error sharing:', err));
     } else {
       // Fallback for browsers that don't support navigator.share
-      alert('Share this page URL with your friends to invite them to the event!');
+      alert('Share this page URL with your friends to invite them to the conference!');
     }
   };
   
@@ -54,12 +54,12 @@ const CheckIn = () => {
             )}
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-church-neutral-800 mb-3">
-            {checkedIn ? 'Check-in Successful!' : 'Event Check-in'}
+            {checkedIn ? 'Check-in Successful!' : 'Conference Check-in'}
           </h1>
           <p className="text-lg text-church-neutral-600 max-w-xl mx-auto">
             {checkedIn 
-              ? 'You have been successfully checked in to the event. We look forward to seeing you!' 
-              : 'Please wait while we process your check-in...'}
+              ? 'You have been successfully checked in to the Apostolic Conference. We look forward to seeing you!' 
+              : 'Please wait while we process your conference check-in...'}
           </p>
         </div>
         
@@ -67,15 +67,19 @@ const CheckIn = () => {
           <CardContent className="p-8 md:p-10">
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-church-blue-dark">Gate Gaborone Event</h2>
+                <h2 className="text-2xl font-bold text-church-blue-dark">Apostolic Conference: Rule Your Domain</h2>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5 text-church-blue flex-shrink-0" />
-                    <span>Experience the presence of God with us</span>
+                    <span>July 3-5, 2025 - Transform your understanding of apostolic principles</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Clock className="h-5 w-5 text-church-blue flex-shrink-0" />
-                    <span>Service times: Sunday 9:00AM - 12:00PM</span>
+                    <div className="text-sm">
+                      <div>Thursday Evening: Session 1 (18:00–20:30)</div>
+                      <div>Friday: Sessions 2–5 (08:30–13:30 & 18:00–20:30)</div>
+                      <div>Saturday: Sessions 6–8 (08:30–13:30)</div>
+                    </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <MapPin className="h-5 w-5 text-church-blue mt-1 flex-shrink-0" />
@@ -96,7 +100,7 @@ const CheckIn = () => {
                     Your check-in ID: <span className="font-semibold">{id}</span>
                   </p>
                   <p className="text-church-neutral-700">
-                    Please show this page to the ushers when you arrive.
+                    Please show this page to the registration team when you arrive at the conference.
                   </p>
                 </div>
               </div>
@@ -106,7 +110,9 @@ const CheckIn = () => {
                   value={JSON.stringify({
                     checkInId: id,
                     timestamp: new Date().toISOString(),
-                    mapsUrl: googleMapsUrl // Include the updated map URL in the QR code data
+                    mapsUrl: googleMapsUrl,
+                    eventTitle: "Apostolic Conference: Rule Your Domain",
+                    eventDates: "July 3-5, 2025"
                   })}
                   size={200}
                   level="H"
@@ -114,7 +120,7 @@ const CheckIn = () => {
                   className="border-4 border-white shadow-md rounded-lg"
                 />
                 <p className="text-sm text-church-neutral-600 mt-4">
-                  Scan this code at the event entrance
+                  Scan this code at the conference entrance
                 </p>
               </div>
             </div>
@@ -123,7 +129,7 @@ const CheckIn = () => {
               <Button 
                 className="bg-church-blue hover:bg-church-blue-dark" onClick={handleShare}>
                 <Share className="mr-2 h-4 w-4" />
-                Share Check-in
+                Share Conference Check-in
               </Button>
               <Link to="/events">
                 <Button variant="outline" className="w-full sm:w-auto">
@@ -135,7 +141,7 @@ const CheckIn = () => {
         </Card>
         
         <div className="mb-10">
-          <h3 className="text-xl font-semibold text-church-neutral-800 mb-4">Event Location</h3>
+          <h3 className="text-xl font-semibold text-church-neutral-800 mb-4">Conference Location</h3>
           <LocationMap />
         </div>
       </div>
