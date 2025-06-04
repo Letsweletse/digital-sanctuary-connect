@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Building2, CreditCard, Hash, MapPin, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import BankingQRCode from './BankingQRCode';
 
 interface BankingDetailsCardProps {
   eventTitle: string;
@@ -50,6 +51,21 @@ const BankingDetailsCard: React.FC<BankingDetailsCardProps> = ({
         <div className="text-sm text-amber-700 mb-4">
           <p className="font-medium">Payment is required to complete registration for {eventTitle}</p>
           <p>Please transfer to the following bank account:</p>
+        </div>
+        
+        {/* QR Code Section */}
+        <div className="flex justify-center mb-4">
+          <BankingQRCode 
+            eventTitle={eventTitle}
+            registrationFee={registrationFee}
+            size={140}
+          />
+        </div>
+        
+        <div className="text-center mb-4">
+          <p className="text-sm text-amber-700 font-medium">
+            Scan QR code above or use manual details below
+          </p>
         </div>
         
         <div className="grid gap-3">
