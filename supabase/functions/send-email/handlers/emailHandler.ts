@@ -1,4 +1,3 @@
-
 import { Resend } from "npm:resend@2.0.0";
 import { v4 as uuidv4 } from "https://deno.land/std@0.190.0/uuid/mod.ts";
 import { corsHeaders } from "../utils/cors.ts";
@@ -60,8 +59,8 @@ export async function processEmailRequest(req: Request): Promise<Response> {
     const checkInUrl = `${baseUrl}/check-in/${checkInId}`;
     console.log(`🔗 [Email Handler] Check-in URL generated: ${checkInUrl}`);
     
-    // Use direct Google Maps URL
-    const googleMapsUrl = "https://www.google.com/maps/place/Gate+Gaborone/@-24.6618567,25.9048083,15z/data=!4m6!3m5!1s0x1ebb5b26225a6213:0xaed9e468c1e4ef31!8m2!3d-24.6618567!4d25.9048083!16s%2Fg%2F11q89m2yrq";
+    // Updated Google Maps URL for the conference location
+    const googleMapsUrl = "https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA";
     
     // Generate QR codes
     const locationQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(googleMapsUrl)}&size=300x300&margin=10&qzone=2`;
