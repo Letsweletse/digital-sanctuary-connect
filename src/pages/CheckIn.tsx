@@ -12,8 +12,8 @@ const CheckIn = () => {
   const { id } = useParams<{ id: string }>();
   const [checkedIn, setCheckedIn] = useState(false);
   
-  // Direct Google Maps URL for Gate Gaborone - no shortened URL
-  const googleMapsUrl = "https://www.google.com/maps/place/Gate+Gaborone/@-24.6618567,25.9048083,15z/data=!4m6!3m5!1s0x1ebb5b26225a6213:0xaed9e468c1e4ef31!8m2!3d-24.6618567!4d25.9048083!16s%2Fg%2F11q89m2yrq";
+  // Updated Google Maps URL for Gate Gaborone - matching the conference location
+  const googleMapsUrl = "https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA";
   
   useEffect(() => {
     // Log page visit for analytics
@@ -85,7 +85,7 @@ const CheckIn = () => {
                       rel="noopener noreferrer"
                       className="hover:text-church-blue hover:underline"
                     >
-                      Gate Gaborone, Plot 26773, Block 9<br />
+                      Travelodge Conference Centre<br />
                       Gaborone, Botswana
                     </a>
                   </div>
@@ -106,7 +106,7 @@ const CheckIn = () => {
                   value={JSON.stringify({
                     checkInId: id,
                     timestamp: new Date().toISOString(),
-                    mapsUrl: googleMapsUrl // Include the map URL in the QR code data
+                    mapsUrl: googleMapsUrl // Include the updated map URL in the QR code data
                   })}
                   size={200}
                   level="H"
