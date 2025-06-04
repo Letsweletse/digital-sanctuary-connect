@@ -11,12 +11,12 @@ interface EventDetailCardProps {
 }
 
 const EventDetailCard: React.FC<EventDetailCardProps> = ({ event, formatDate }) => {
-  // Updated Google Maps URL for the conference location
+  // Updated Google Maps URL for Travelodge Conference Centre
   const googleMapsUrl = "https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA";
   
   // Function to handle date display - shows formatted date or TBA
   const displayDate = (dateString: string) => {
-    return dateString === 'TBA' ? 'Dates to be announced' : formatDate(dateString);
+    return dateString === 'TBA' ? 'July 3-5, 2025' : formatDate(dateString);
   };
   
   return (
@@ -46,7 +46,7 @@ const EventDetailCard: React.FC<EventDetailCardProps> = ({ event, formatDate }) 
             rel="noopener noreferrer" 
             className="hover:text-church-blue hover:underline flex items-center gap-1 group"
           >
-            <span>Travelodge Conference Centre</span>
+            <span>Travelodge Conference Centre, Gaborone</span>
             <ExternalLink className="h-3 w-3 opacity-70 group-hover:opacity-100" />
           </a>
         </div>
