@@ -29,6 +29,14 @@ const Sermons = () => {
     allYears
   } = useSermonFilters(sermons);
 
+  // Force refresh when component mounts
+  React.useEffect(() => {
+    console.log('Sermons page mounted, forcing refresh');
+    setTimeout(() => {
+      refreshSermons();
+    }, 100);
+  }, []);
+
   if (loading || isAdding) {
     return (
       <Layout>
