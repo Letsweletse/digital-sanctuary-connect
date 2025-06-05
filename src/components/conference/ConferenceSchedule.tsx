@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Clock, Users, MapPin } from 'lucide-react';
+import { Clock, MapPin } from 'lucide-react';
 
 interface Session {
   id: string;
@@ -36,18 +36,9 @@ const ConferenceSchedule: React.FC<ConferenceScheduleProps> = ({ sessions }) => 
           
           <p className="text-church-neutral-700 mb-4">{session.description}</p>
           
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center">
-              <Users className="h-4 w-4 text-church-neutral-500 mr-2" />
-              <span className="text-church-neutral-600 text-sm">
-                Speakers: {session.speakers.join(", ")}
-              </span>
-            </div>
-            
-            <div className="flex items-center">
-              <MapPin className="h-4 w-4 text-church-neutral-500 mr-2" />
-              <span className="text-church-neutral-600 text-sm">{session.location}</span>
-            </div>
+          <div className="flex items-center">
+            <MapPin className="h-4 w-4 text-church-neutral-500 mr-2" />
+            <span className="text-church-neutral-600 text-sm">{session.location}</span>
           </div>
         </div>
       ))}
