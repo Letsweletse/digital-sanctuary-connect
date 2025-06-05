@@ -22,9 +22,9 @@ export const conferenceData = {
       day: "Friday, July 4",
       time: "08:30 - 13:30",
       title: "Morning Sessions 2-4",
-      description: "Morning workshops on practical application of apostolic principles in different domains.",
+      description: "Morning sessions covering foundational apostolic principles and their practical application in various spheres of influence.",
       speakers: ["Pastor Kobus Bezuidenhout", "Thamo Naidoo", "James Mbugua"],
-      location: "Main Auditorium & Breakout Rooms"
+      location: "Main Auditorium"
     },
     {
       id: "day2-evening",
