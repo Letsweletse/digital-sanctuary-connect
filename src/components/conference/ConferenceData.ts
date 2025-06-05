@@ -40,7 +40,7 @@ export const conferenceData = {
       day: "Saturday, July 5",
       time: "08:30 - 13:30",
       title: "Morning Sessions 6-8",
-      description: "Final sessions with commissioning and closing ceremony.",
+      description: "",
       speakers: ["Pastor Kobus Bezuidenhout", "Thamo Naidoo", "James Mbugua"],
       location: "Main Auditorium"
     }
