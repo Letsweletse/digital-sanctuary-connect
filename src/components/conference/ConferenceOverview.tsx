@@ -8,7 +8,7 @@ const ConferenceOverview: React.FC = () => {
       
       <div className="prose max-w-none text-church-neutral-700">
         <p className="mb-4">
-          The "Apostolic Conference: Rule Your Domain" is a pivotal gathering designed to equip believers with the tools and understanding needed to establish apostolic governance in their respective spheres of influence.
+          Conference Overview: The "Apostolic Conference: Rule Your Domain" is a pivotal gathering designed to equip believers with the tools and understanding needed to establish apostolic governance in their respective spheres of influence.
         </p>
         
         <p className="mb-4">
