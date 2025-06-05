@@ -45,6 +45,9 @@ const KioskManager = () => {
 
       if (data) {
         setConfig(data);
+      } else {
+        // Create default conference configuration
+        await createDefaultConfig();
       }
     } catch (error) {
       console.error('Error fetching event config:', error);
@@ -55,6 +58,38 @@ const KioskManager = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const createDefaultConfig = async () => {
+    try {
+      const defaultConfig = {
+        kiosk_mode: true,
+        event_name: 'Apostolic Conference: Rule Your Domain',
+        active_from: '2025-07-03T06:00:00Z',
+        active_until: '2025-07-06T23:59:59Z',
+      };
+
+      const { data, error } = await supabase
+        .from('event_config')
+        .insert(defaultConfig)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setConfig(data);
+      toast({
+        title: "Success",
+        description: "Conference kiosk has been activated with default settings.",
+      });
+    } catch (error) {
+      console.error('Error creating default config:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create conference configuration.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -87,7 +122,7 @@ const KioskManager = () => {
       setConfig({ ...config, kiosk_mode: enabled });
       toast({
         title: "Success",
-        description: `Kiosk mode ${enabled ? 'activated' : 'deactivated'} successfully.`,
+        description: `Conference kiosk ${enabled ? 'activated' : 'deactivated'} successfully.`,
       });
     } catch (error) {
       console.error('Error updating kiosk mode:', error);
@@ -151,7 +186,7 @@ const KioskManager = () => {
       <div className="flex items-center space-x-3 mb-6">
         <Monitor className="h-8 w-8 text-church-blue" />
         <h2 className="text-3xl font-bold text-church-neutral-900">
-          Kiosk Management
+          Conference Kiosk Management
         </h2>
       </div>
 
@@ -210,10 +245,10 @@ const KioskManager = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <Label htmlFor="kiosk-toggle" className="text-base font-medium">
-                    Enable Kiosk Mode
+                    Enable Conference Kiosk
                   </Label>
                   <p className="text-sm text-church-neutral-600">
-                    Allow attendees to check in at the kiosk
+                    Allow attendees to check in at the conference kiosk
                   </p>
                 </div>
                 <Switch
@@ -230,7 +265,7 @@ const KioskManager = () => {
                   className="w-full bg-church-blue hover:bg-church-blue-dark"
                 >
                   <Monitor className="mr-2 h-4 w-4" />
-                  Open Kiosk Screen
+                  Open Conference Kiosk
                 </Button>
               </div>
             </CardContent>
