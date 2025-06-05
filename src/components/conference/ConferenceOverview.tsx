@@ -11,17 +11,10 @@ const ConferenceOverview: React.FC = () => {
           Conference Overview: The "Apostolic Conference: Rule Your Domain" is a pivotal gathering designed to equip believers with the tools and understanding needed to establish apostolic governance in their respective spheres of influence.
         </p>
         
-        <p className="mb-4">
-          Over three power-packed days, participants will engage with apostolic teachings, practical workshops, and prophetic impartation sessions led by seasoned ministers including Pastor Kobus Bezuidenhout, Thamo Naidoo, and James Mbugua.
-        </p>
-        
         <h3 className="text-xl font-semibold text-church-blue-dark mt-6 mb-3">What to Expect:</h3>
         
         <ul className="list-disc pl-5 space-y-2 mb-6">
           <li>In-depth teaching on apostolic principles</li>
-          <li>Practical workshops for different domains of influence</li>
-          <li>Prophetic ministry and impartation</li>
-          <li>Networking with like-minded believers</li>
           <li>Resources for continued growth</li>
         </ul>
         
