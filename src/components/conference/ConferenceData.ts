@@ -1,4 +1,3 @@
-
 import { getSpeakerImage } from '@/components/media/utils/speakerImageUtils';
 
 export const conferenceData = {
@@ -14,7 +13,7 @@ export const conferenceData = {
       day: "Thursday, July 3",
       time: "18:00 - 20:30",
       title: "Evening Session 1",
-      description: "Opening session with worship and keynote message on apostolic foundations.",
+      description: "",
       speakers: ["Pastor Kobus Bezuidenhout", "Thamo Naidoo"],
       location: "Main Auditorium"
     },
