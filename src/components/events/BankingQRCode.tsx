@@ -17,19 +17,14 @@ const BankingQRCode: React.FC<BankingQRCodeProps> = ({
   size = 160,
   className = '' 
 }) => {
-  // Simplified banking details - only essential information
-  const bankingDetails = {
-    accountName: "Gate Gaborone",
-    bank: "FNB",
-    branch: "FNB Kgale",
-    branchNumber: "284567",
-    accountNumber: "62767853213",
-    amount: registrationFee,
-    reference: eventTitle
-  };
-
-  // Clean QR code data - just the banking details
-  const qrData = JSON.stringify(bankingDetails);
+  // Clean banking details format - no brackets or commas
+  const qrData = `Account Name: Gate Gaborone
+Bank: FNB
+Branch: FNB Kgale
+Branch Number: 284567
+Account Number: 62767853213
+Amount: ${registrationFee}
+Reference: ${eventTitle}`;
 
   return (
     <Card className={`w-full max-w-sm mx-auto overflow-hidden border-amber-200 bg-amber-50/50 ${className}`}>
