@@ -29,12 +29,6 @@ const ConferenceOverview: React.FC = () => {
           This conference is designed for church leaders, ministers, and believers who are passionate about seeing the Kingdom of God established on earth as it is in heaven.
         </p>
         
-        <div className="bg-church-blue-light/20 border-l-4 border-church-blue p-4 rounded my-6">
-          <p className="font-medium text-church-blue-dark">
-            "And I will give you the keys of the kingdom of heaven, and whatever you bind on earth will be bound in heaven, and whatever you loose on earth will be loosed in heaven." - Matthew 16:19
-          </p>
-        </div>
-        
         <p>
           Join us as we discover how to effectively rule our domains with the authority Christ has given us.
         </p>
