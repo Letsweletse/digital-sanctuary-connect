@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { CalendarDays, Clock, MapPin, Users, BadgeDollarSign, Star, Crown } from 'lucide-react';
 import { useEventRegistration } from '@/hooks/useEventRegistration';
 import EventCountdownTimer from '@/components/events/EventCountdownTimer';
+import { EventData } from '@/types/eventTypes';
 
 const ApostolicConference = () => {
   const { handleOpenRegistration } = useEventRegistration();
@@ -54,7 +55,7 @@ const ApostolicConference = () => {
     };
   }, []);
 
-  const conferenceEvent = {
+  const conferenceEvent: EventData = {
     id: '5',
     title: 'Apostolic Conference: Rule Your Domain',
     date: '2025-07-03',
