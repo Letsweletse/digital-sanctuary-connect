@@ -17,32 +17,26 @@ const BankingQRCode: React.FC<BankingQRCodeProps> = ({
   size = 160,
   className = '' 
 }) => {
-  // Banking details for Gate Gaborone
+  // Simplified banking details - only essential information
   const bankingDetails = {
     accountName: "Gate Gaborone",
     bank: "FNB",
-    branchName: "FNB Kgale",
+    branch: "FNB Kgale",
     branchNumber: "284567",
     accountNumber: "62767853213",
     amount: registrationFee,
-    reference: `[Your Name] + ${eventTitle}`,
-    currency: "BWP",
-    country: "Botswana"
+    reference: eventTitle
   };
 
-  // Format the QR code data as JSON for easy parsing
-  const qrData = JSON.stringify({
-    type: "banking_details",
-    ...bankingDetails,
-    instructions: "Transfer the amount and use your name + event title as reference"
-  });
+  // Clean QR code data - just the banking details
+  const qrData = JSON.stringify(bankingDetails);
 
   return (
     <Card className={`w-full max-w-sm mx-auto overflow-hidden border-amber-200 bg-amber-50/50 ${className}`}>
       <CardContent className="p-4 flex flex-col items-center">
         <div className="flex items-center gap-2 mb-3">
           <QrCode className="h-5 w-5 text-amber-700" />
-          <span className="text-sm font-semibold text-amber-800">Scan to Pay</span>
+          <span className="text-sm font-semibold text-amber-800">Banking Details</span>
         </div>
         
         <div className="bg-white p-4 rounded-lg border border-amber-200 shadow-sm w-full flex justify-center">
@@ -69,7 +63,7 @@ const BankingQRCode: React.FC<BankingQRCodeProps> = ({
             <span className="text-sm font-semibold text-amber-800">{registrationFee}</span>
           </div>
           <p className="text-xs text-amber-700">
-            Banking details included in QR code
+            Scan for banking details
           </p>
         </div>
       </CardContent>
