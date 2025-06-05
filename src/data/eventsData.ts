@@ -25,7 +25,7 @@ export const events: EventData[] = [
     category: 'conference',
     image: '/lovable-uploads/6f1ed145-0434-4105-81e3-81bed7ee143a.png',
     registration: true,
-    registrationLink: '/conference'
+    registrationLink: '/apostolic-conference'
   }
 ];
 

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { EventData } from '@/types/eventTypes';
@@ -160,8 +159,8 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
                       className="bg-gradient-to-r from-church-blue to-church-blue-dark hover:from-church-blue-dark hover:to-church-blue text-white font-semibold px-6 py-6 text-lg border-2 border-church-blue rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                       asChild
                     >
-                      <a href="/conference" className="flex items-center justify-center">
-                        View Full Details
+                      <a href="/apostolic-conference" className="flex items-center justify-center">
+                        View Conference Page
                       </a>
                     </Button>
                   </div>

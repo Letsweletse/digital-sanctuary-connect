@@ -27,6 +27,7 @@ import CheckIn from "./pages/CheckIn";
 import Conference from "./pages/Conference";
 import KioskCheckIn from "./pages/KioskCheckIn";
 import TestSermonUpload from "./pages/TestSermonUpload";
+import ApostolicConference from "./pages/ApostolicConference";
 
 const queryClient = new QueryClient();
 
@@ -75,6 +76,7 @@ const App = () => (
             <Route path="/conference" element={<Conference />} />
             <Route path="/kiosk-checkin" element={<KioskCheckIn />} />
             <Route path="/test-sermon-upload" element={<TestSermonUpload />} />
+            <Route path="/apostolic-conference" element={<ApostolicConference />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
