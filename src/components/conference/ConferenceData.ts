@@ -31,7 +31,7 @@ export const conferenceData = {
       day: "Friday, July 4",
       time: "18:00 - 20:30",
       title: "Evening Session 5",
-      description: "Prophetic impartation and ministry session.",
+      description: "",
       speakers: ["Pastor Kobus Bezuidenhout", "Thamo Naidoo"],
       location: "Main Auditorium"
     },
