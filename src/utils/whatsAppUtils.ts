@@ -71,7 +71,7 @@ export const sendDirectWhatsAppMessage = async (phone: string, message: string) 
   }
 };
 
-// Generate premium WhatsApp confirmation message
+// Generate premium WhatsApp confirmation message with clickable location link
 export const generatePremiumWhatsAppConfirmation = (registrationData: RegistrationData): string => {
   const { event, attendee } = registrationData;
   
@@ -81,6 +81,7 @@ export const generatePremiumWhatsAppConfirmation = (registrationData: Registrati
 
 📅 *Dates:* July 3-5, 2025
 📍 *Location:* Travelodge Conference Centre, Gaborone
+🗺️ *Get Directions:* https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA
 
 ⏰ *Schedule:*
 • Thursday Evening: Session 1 (18:00–20:30)
@@ -109,7 +110,7 @@ _Reach | Resource | Reform_`;
   return message;
 };
 
-// Generate simple confirmation message
+// Generate simple confirmation message with clickable location link
 export const generateSimpleWhatsAppMessage = (eventTitle: string, attendeeName: string, eventDate: string): string => {
   return `✅ Registration confirmed for ${eventTitle}
 
@@ -117,6 +118,7 @@ Hello ${attendeeName}, your registration has been successfully processed.
 
 Conference Dates: July 3-5, 2025
 Location: Travelodge Conference Centre, Gaborone
+📍 Get Directions: https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA
 Registration Fee: P250
 
 Thank you for registering! We'll send you more details closer to the conference.

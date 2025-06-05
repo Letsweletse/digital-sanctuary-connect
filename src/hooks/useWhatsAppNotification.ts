@@ -32,11 +32,14 @@ export const useWhatsAppNotification = () => {
         };
       }
 
-      // Create a more detailed confirmation message with Gate Gaborone branding
-      const messageText = `✅ *Registration Confirmed for Gate Gaborone!*\n
+      // Create a more detailed confirmation message with Gate Gaborone branding and clickable location link
+      const messageText = `✅ *Registration Confirmed for Gate Gaborone!*
+
 *Conference:* ${registrationData.event.title}
 *Dates:* July 3-5, 2025
 *Location:* Travelodge Conference Centre, Gaborone
+📍 *Get Directions:* https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA
+
 *Schedule:*
 • Thursday Evening: Session 1 (18:00–20:30)
 • Friday Morning: Sessions 2–4 (08:30–13:30)
