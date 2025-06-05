@@ -1,3 +1,4 @@
+
 import { getSpeakerImage } from '@/components/media/utils/speakerImageUtils';
 
 export const conferenceData = {
@@ -22,7 +23,7 @@ export const conferenceData = {
       day: "Friday, July 4",
       time: "08:30 - 13:30",
       title: "Morning Sessions 2-4",
-      description: "Morning sessions covering foundational apostolic principles and their practical application in various spheres of influence.",
+      description: "",
       speakers: ["Pastor Kobus Bezuidenhout", "Thamo Naidoo", "James Mbugua"],
       location: "Main Auditorium"
     },
