@@ -1,4 +1,3 @@
-
 import { getSpeakerImage } from '@/components/media/utils/speakerImageUtils';
 
 export const conferenceData = {
@@ -58,7 +57,7 @@ export const conferenceData = {
       id: "thamo",
       name: "Thamo Naidoo",
       role: "Apostolic Voice, Global Speaker",
-      bio: "Thamo Naidoo is a respected apostolic voice who travels globally teaching on apostolic reformation and kingdom principles. He is the founder of the Global Gate movement.",
+      bio: "Thamo Naidoo is a respected apostolic voice who travels globally teaching on apostolic reformation and kingdom principles. He is the founder of the Global Gate Family.",
       image: getSpeakerImage("Thamo Naidoo")
     },
     {
