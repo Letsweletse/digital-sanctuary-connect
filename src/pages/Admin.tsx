@@ -12,6 +12,7 @@ import SubscriberEmailList from '@/components/admin/subscriber/SubscriberEmailLi
 import KioskManager from '@/components/admin/KioskManager';
 import DatabaseMonitor from '@/components/admin/DatabaseMonitor';
 import EmailTestPanel from '@/components/admin/EmailTestPanel';
+import BankingQRManager from '@/components/admin/BankingQRManager';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -99,6 +100,7 @@ const Admin = () => {
                     <TabsTrigger value="sermon-audio">Sermon Audio</TabsTrigger>
                     <TabsTrigger value="sermons">Sermon Details</TabsTrigger>
                     <TabsTrigger value="subscribers">Email Subscribers</TabsTrigger>
+                    <TabsTrigger value="banking-qr">Banking QR</TabsTrigger>
                     <TabsTrigger value="database">Database Monitor</TabsTrigger>
                     <TabsTrigger value="email-test">Email Testing</TabsTrigger>
                     <TabsTrigger value="kiosk">Kiosk Management</TabsTrigger>
@@ -110,6 +112,12 @@ const Admin = () => {
                   
                   <TabsContent value="sermon-audio">
                     <SermonAudioManager />
+                  </TabsContent>
+                  
+                  <TabsContent value="banking-qr">
+                    <div className="glass-panel p-8">
+                      <BankingQRManager />
+                    </div>
                   </TabsContent>
                   
                   <TabsContent value="database">

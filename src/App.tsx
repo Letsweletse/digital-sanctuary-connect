@@ -27,6 +27,7 @@ import CheckIn from "./pages/CheckIn";
 import Conference from "./pages/Conference";
 import KioskCheckIn from "./pages/KioskCheckIn";
 import TestSermonUpload from "./pages/TestSermonUpload";
+import BankingQR from "./pages/BankingQR";
 
 const queryClient = new QueryClient();
 
@@ -75,6 +76,7 @@ const App = () => (
             <Route path="/conference" element={<Conference />} />
             <Route path="/kiosk-checkin" element={<KioskCheckIn />} />
             <Route path="/test-sermon-upload" element={<TestSermonUpload />} />
+            <Route path="/banking-qr" element={<BankingQR />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
