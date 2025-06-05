@@ -63,7 +63,7 @@ const ApostolicConference = () => {
     time: '• Thursday Evening: Session 1 (18:00–20:30)\n• Friday Morning: Sessions 2–4 (08:30–13:30)\n• Friday Evening: Session 5 (18:00–20:30)\n• Saturday Morning: Sessions 6–8 (08:30–13:30)',
     location: 'Travelodge Conference Centre',
     description: 'Join us for this transformative conference as we explore apostolic principles for ruling your domain. This three-day event features powerful teaching, workshops, and fellowship opportunities.',
-    category: 'conference',
+    category: 'conference' as const,
     image: '/lovable-uploads/6f1ed145-0434-4105-81e3-81bed7ee143a.png',
     registration: true,
     registrationLink: '/apostolic-conference'
