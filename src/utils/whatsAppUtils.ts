@@ -75,7 +75,7 @@ export const sendDirectWhatsAppMessage = async (phone: string, message: string) 
 export const generatePremiumWhatsAppConfirmation = (registrationData: RegistrationData): string => {
   const { event, attendee } = registrationData;
   
-  const message = `✅ *REGISTRATION CONFIRMED*
+  const message = `✅ *FREE REGISTRATION CONFIRMED*
 
 🎉 *${event.title}*
 
@@ -96,11 +96,13 @@ export const generatePremiumWhatsAppConfirmation = (registrationData: Registrati
 • *Role:* ${attendee.role}
 • *Church:* ${attendee.denomination}
 • *Attendees:* ${attendee.numberOfAttendees}
-• *Registration Fee:* P250
+• *Registration Fee:* ✨ FREE ✨
 
 ${registrationData.checkInUrl ? `🎫 *Check-in Link:* ${registrationData.checkInUrl}\n` : ''}
 
-*Thank you for registering!* We look forward to seeing you at this transformative conference where you'll learn to rule your domain through apostolic principles.
+*Thank you for your FREE registration!* We look forward to seeing you at this transformative conference where you'll learn to rule your domain through apostolic principles.
+
+No payment required - your spot is secured! 🙌
 
 For any questions, please contact us at info@gategaborone.com
 
@@ -112,16 +114,16 @@ _Reach | Resource | Reform_`;
 
 // Generate simple confirmation message with clickable location link
 export const generateSimpleWhatsAppMessage = (eventTitle: string, attendeeName: string, eventDate: string): string => {
-  return `✅ Registration confirmed for ${eventTitle}
+  return `✅ FREE Registration confirmed for ${eventTitle}
 
-Hello ${attendeeName}, your registration has been successfully processed.
+Hello ${attendeeName}, your FREE registration has been successfully processed.
 
 Conference Dates: July 3-5, 2025
 Location: Travelodge Conference Centre, Gaborone
 📍 Get Directions: https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA
-Registration Fee: P250
+Registration Fee: ✨ FREE ✨
 
-Thank you for registering! We'll send you more details closer to the conference.
+Thank you for your FREE registration! We'll send you more details closer to the conference.
 
 Gate Gaborone
 Reach | Resource | Reform`;

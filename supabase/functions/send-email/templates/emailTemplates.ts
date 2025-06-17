@@ -46,10 +46,10 @@ export function generateAdminEmailContent({
 }: AdminEmailProps): string {
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;">
-      <h1 style="color: #3b82f6;">New Conference Registration</h1>
+      <h1 style="color: #3b82f6;">New FREE Conference Registration</h1>
       <table style="width: 100%;">
         <tr><td><strong>Conference:</strong></td><td>${eventName}</td></tr>
-        <tr><td><strong>Registration Type:</strong></td><td>${registrationType}</td></tr>
+        <tr><td><strong>Registration Type:</strong></td><td>FREE REGISTRATION</td></tr>
         <tr><td><strong>Title:</strong></td><td>${title}</td></tr>
         <tr><td><strong>Name:</strong></td><td>${name}</td></tr>
         <tr><td><strong>Email:</strong></td><td>${email}</td></tr>
@@ -59,6 +59,7 @@ export function generateAdminEmailContent({
         <tr><td><strong>Message:</strong></td><td>${message}</td></tr>
         <tr><td><strong>Check-in ID:</strong></td><td>${checkInId}</td></tr>
         <tr><td><strong>Check-in Link:</strong></td><td><a href="https://www.gategaborone.com/check-in/${checkInId}">View Check-in</a></td></tr>
+        <tr><td><strong>Registration Fee:</strong></td><td style="color: #22c55e; font-weight: bold;">FREE</td></tr>
       </table>
     </div>
   `;
@@ -84,7 +85,7 @@ export function generateConfirmationEmailContent({
   churchLogo = 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png'
 }: ConfirmationEmailProps): string {
   const churchUrl = "https://www.gategaborone.com"; // Ensure using www subdomain
-  const shareTextBase = `Join me at ${eventName} at Gate Gaborone on July 3-5, 2025 at Travelodge Conference Centre, Gaborone.`;
+  const shareTextBase = `Join me at ${eventName} at Gate Gaborone on July 3-5, 2025 at Travelodge Conference Centre, Gaborone. FREE REGISTRATION!`;
   const checkInUrl = `${churchUrl}/check-in/${checkInId}`;
 
   return `
@@ -97,9 +98,14 @@ export function generateConfirmationEmailContent({
       <img src="${eventImage}" alt="${eventName}" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
     </div>
     
-    <h2 style="color: #3b82f6; text-align: center; margin-bottom: 20px;">Conference Registration Confirmation</h2>
+    <h2 style="color: #3b82f6; text-align: center; margin-bottom: 20px;">FREE Conference Registration Confirmation</h2>
     <p style="margin-bottom: 15px;">Dear ${title} ${name},</p>
-    <p style="margin-bottom: 15px;">Thank you for registering for <strong>${eventName}</strong>.</p>
+    <p style="margin-bottom: 15px;">Thank you for your <strong style="color: #22c55e;">FREE registration</strong> for <strong>${eventName}</strong>.</p>
+    
+    <div style="background-color: #dcfce7; border-left: 4px solid #22c55e; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+      <h3 style="color: #16a34a; margin-top: 0; margin-bottom: 10px;">✅ FREE Conference Registration Confirmed</h3>
+      <p style="color: #15803d; font-weight: bold; margin: 0; font-size: 16px;">No payment required - your spot is secured!</p>
+    </div>
     
     <div style="background-color: #f0f9ff; border-left: 4px solid #3b82f6; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
       <h3 style="color: #3b82f6; margin-top: 0; margin-bottom: 10px;">Conference Details</h3>
@@ -113,12 +119,12 @@ export function generateConfirmationEmailContent({
           <li style="margin-bottom: 4px;">Friday Evening: Session 5 (18:00–20:30)</li>
           <li style="margin-bottom: 4px;">Saturday Morning: Sessions 6–8 (08:30–13:30)</li>
         </ul>
-        <li style="margin-bottom: 8px;"><strong>Registration Type:</strong> ${registrationType}</li>
+        <li style="margin-bottom: 8px;"><strong>Registration Type:</strong> <span style="color: #22c55e; font-weight: bold;">FREE REGISTRATION</span></li>
         <li style="margin-bottom: 8px;"><strong>Role:</strong> ${role}</li>
         <li style="margin-bottom: 8px;"><strong>Denomination:</strong> ${denomination}</li>
         <li style="margin-bottom: 8px;"><strong>Phone:</strong> ${phone}</li>
         <li style="margin-bottom: 8px;"><strong>Location:</strong> <a href="https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA" style="color: #3b82f6;">Travelodge Conference Centre, Gaborone</a></li>
-        <li style="margin-bottom: 8px;"><strong>Registration Fee:</strong> P250</li>
+        <li style="margin-bottom: 8px;"><strong>Registration Fee:</strong> <span style="color: #22c55e; font-weight: bold; font-size: 18px;">FREE ✨</span></li>
         <li style="margin-bottom: 8px;"><strong>Check-in ID:</strong> ${checkInId}</li>
         <li style="margin-bottom: 8px;"><strong>Check-in Link:</strong> <a href="${checkInUrl}" style="color: #3b82f6;">Quick Check-in Portal</a></li>
       </ul>
@@ -144,7 +150,7 @@ export function generateConfirmationEmailContent({
     <div style="text-align: center; margin-bottom: 30px; padding: 20px; background-color: #f0f9ff; border-radius: 8px;">
       <h3 style="color: #3b82f6; margin-bottom: 15px;">Add to Calendar</h3>
       <a href="data:text/calendar;charset=utf8,${encodedIcsContent}" download="${eventName.replace(/\\s+/g, '-')}.ics" style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        📅 Add to Calendar
+        📅 Add FREE Conference to Calendar
       </a>
       <p style="font-size: 14px; color: #6b7280; margin-top: 10px;">Works with Google Calendar, Apple Calendar, Outlook and more</p>
       <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">
@@ -152,8 +158,8 @@ export function generateConfirmationEmailContent({
       </p>
     </div>
 
-    <div style="text-align: center; margin-bottom: 30px; padding: 20px; background-color: #f0f9ff; border-radius: 8px;">
-      <h3 style="color: #3b82f6; margin-bottom: 15px;">Share with Friends</h3>
+    <div style="text-align: center; margin-bottom: 30px; padding: 20px; background-color: #dcfce7; border-radius: 8px;">
+      <h3 style="color: #16a34a; margin-bottom: 15px;">Share this FREE Conference with Friends</h3>
       
       <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 15px;">
         <!-- WhatsApp -->
@@ -161,7 +167,7 @@ export function generateConfirmationEmailContent({
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#ffffff" style="margin-right: 8px;">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
           </svg>
-          WhatsApp
+          Share FREE Event
         </a>
         
         <!-- Facebook -->
@@ -189,7 +195,7 @@ export function generateConfirmationEmailContent({
         </a>
         
         <!-- Email -->
-        <a href="mailto:?subject=${encodeURIComponent(eventName)}&body=${encodeURIComponent(`${shareTextBase} Register here: ${churchUrl}/events`)}" style="display: inline-flex; align-items: center; padding: 10px 15px; background-color: #718096; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <a href="mailto:?subject=${encodeURIComponent('FREE Conference: ' + eventName)}&body=${encodeURIComponent(`${shareTextBase} Register here: ${churchUrl}/events`)}" style="display: inline-flex; align-items: center; padding: 10px 15px; background-color: #718096; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#ffffff" style="margin-right: 8px;">
             <path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a3 3 0 01-3.144 0L1.5 8.67z"/>
             <path d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 5.978a1.5 1.5 0 001.572 0L22.5 6.908z"/>
@@ -198,7 +204,7 @@ export function generateConfirmationEmailContent({
         </a>
       </div>
       
-      <p style="font-size: 14px; color: #6b7280; margin-top: 10px;">Invite friends and family to join you at this transformative conference!</p>
+      <p style="font-size: 14px; color: #15803d; margin-top: 10px; font-weight: bold;">Invite friends and family to join you at this FREE transformative conference!</p>
     </div>
     
     <div style="text-align: center; margin-bottom: 30px;">

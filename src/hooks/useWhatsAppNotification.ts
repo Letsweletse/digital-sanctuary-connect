@@ -33,7 +33,7 @@ export const useWhatsAppNotification = () => {
       }
 
       // Create a more detailed confirmation message with Gate Gaborone branding and clickable location link
-      const messageText = `✅ *Registration Confirmed for Gate Gaborone!*
+      const messageText = `✅ *FREE REGISTRATION Confirmed for Gate Gaborone!*
 
 *Conference:* ${registrationData.event.title}
 *Dates:* July 3-5, 2025
@@ -51,9 +51,9 @@ export const useWhatsAppNotification = () => {
 *Email:* ${registrationData.attendee.email}
 *Phone:* ${registrationData.attendee.phone}
 *Number of Attendees:* ${registrationData.attendee.numberOfAttendees}
-*Registration Fee:* P250
+*Registration Fee:* ✨ FREE ✨
 
-Your registration has been confirmed. We look forward to seeing you at this transformative conference!
+Your FREE registration has been confirmed. We look forward to seeing you at this transformative conference!
 Save this message for your reference.
 
 *Reach | Resource | Reform*
@@ -90,7 +90,7 @@ Save this message for your reference.
         console.log("✅ [WhatsApp] Notification Sent Successfully via Edge Function");
         
         sonnerToast.success("WhatsApp Confirmation Sent", {
-          description: "Detailed conference confirmation sent to your WhatsApp.",
+          description: "Detailed FREE conference confirmation sent to your WhatsApp.",
           duration: 5000
         });
         
