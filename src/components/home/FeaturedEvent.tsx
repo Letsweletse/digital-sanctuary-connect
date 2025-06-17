@@ -123,20 +123,20 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
                     </div>
                   </div>
 
-                  {/* Registration Fee */}
+                  {/* FREE Registration Notice */}
                   <div className="mb-6">
-                    <div className="bg-gradient-to-r from-[#b8a156]/20 to-[#d4c278]/20 border border-[#b8a156]/30 rounded-lg p-4">
+                    <div className="bg-gradient-to-r from-green-500/20 to-green-400/20 border border-green-400/30 rounded-lg p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                          <BadgeDollarSign className="h-6 w-6 mr-3 text-[#b8a156]" />
+                          <BadgeDollarSign className="h-6 w-6 mr-3 text-green-400" />
                           <div>
-                            <div className="font-semibold text-white">Registration Fee</div>
-                            <div className="text-white/80 text-sm">Per person (catering purposes)</div>
+                            <div className="font-semibold text-white">FREE Registration</div>
+                            <div className="text-white/80 text-sm">No cost - just reserve your spot</div>
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-2xl font-bold text-[#b8a156]">P250</div>
-                          <div className="text-white/70 text-xs">Botswana Pula</div>
+                          <div className="text-2xl font-bold text-green-400">FREE</div>
+                          <div className="text-white/70 text-xs">No charge</div>
                         </div>
                       </div>
                     </div>
@@ -152,7 +152,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
                       className="bg-gradient-to-r from-[#b8a156] to-[#d4c278] hover:from-[#d4c278] hover:to-[#b8a156] text-white px-8 py-6 text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-0 rounded-lg"
                     >
                       <Users className="h-5 w-5 mr-3" />
-                      Secure Your Spot - P250
+                      FREE REGISTRATION
                     </Button>
                     
                     <Button
