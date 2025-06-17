@@ -43,7 +43,7 @@ const RegistrationConfirmation = () => {
     const startDate = new Date("2025-07-03T18:00:00");
     const endDate = new Date("2025-07-05T13:30:00");
     
-    const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z/${endDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z&details=${encodeURIComponent(`You registered for this conference on ${new Date(registrationData.submitDate).toLocaleDateString()}. Conference runs July 3-5, 2025 at Travelodge Conference Centre, Gaborone.`)}&location=${encodeURIComponent("Travelodge Conference Centre, Gaborone, Botswana")}`;
+    const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z/${endDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z&details=${encodeURIComponent(`You registered for this FREE conference on ${new Date(registrationData.submitDate).toLocaleDateString()}. Conference runs July 3-5, 2025 at Travelodge Conference Centre, Gaborone.`)}&location=${encodeURIComponent("Travelodge Conference Centre, Gaborone, Botswana")}`;
     
     window.open(googleCalUrl, '_blank');
   };
@@ -52,12 +52,12 @@ const RegistrationConfirmation = () => {
     if (navigator.share) {
       navigator.share({
         title: `I'm attending ${event.title}`,
-        text: `Join me at ${event.title} on July 3-5, 2025 at Travelodge Conference Centre, Gaborone. Registration fee: P250`,
+        text: `Join me at ${event.title} on July 3-5, 2025 at Travelodge Conference Centre, Gaborone. FREE Registration!`,
         url: window.location.href
       }).catch(err => console.error('Error sharing:', err));
     } else {
       // Fallback for browsers that don't support navigator.share
-      alert('Share this page URL with your friends to invite them to the conference!');
+      alert('Share this page URL with your friends to invite them to the FREE conference!');
     }
   };
   
@@ -70,9 +70,9 @@ const RegistrationConfirmation = () => {
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <Check className="h-10 w-10 text-green-600" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-church-neutral-800 mb-3">Registration Confirmed</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-church-neutral-800 mb-3">FREE Registration Confirmed</h1>
             <p className="text-church-neutral-600 text-lg">
-              Thank you for registering for the Apostolic Conference.
+              Thank you for your FREE registration for the Apostolic Conference.
             </p>
           </div>
           
@@ -171,7 +171,7 @@ const RegistrationConfirmation = () => {
                   className="border-church-blue text-church-blue py-5 sm:py-3 font-medium"
                 >
                   <Share2 className="mr-2 h-5 w-5" />
-                  Share Conference
+                  Share FREE Conference
                 </Button>
               </div>
             </CardContent>

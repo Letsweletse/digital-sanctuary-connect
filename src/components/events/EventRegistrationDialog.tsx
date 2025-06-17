@@ -37,9 +37,9 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-xl md:max-w-4xl w-[95%] max-h-[90vh] overflow-y-auto p-0 gap-0 dialog-animation">
         <DialogHeader className="p-4 md:p-6 pb-2 bg-gradient-to-r from-[#24324b]/10 to-white">
-          <DialogTitle className="text-lg md:text-xl font-montserrat">Register for {currentEvent?.title}</DialogTitle>
+          <DialogTitle className="text-lg md:text-xl font-montserrat">FREE REGISTRATION for {currentEvent?.title}</DialogTitle>
           <DialogDescription className="text-sm md:text-base font-montserrat">
-            Complete the form below to reserve your spot
+            Complete the form below to reserve your spot at no cost
           </DialogDescription>
         </DialogHeader>
         
@@ -54,7 +54,7 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
             {requiresPayment && currentEvent && (
               <BankingDetailsCard 
                 eventTitle={currentEvent.title}
-                registrationFee="P250"
+                registrationFee="FREE"
               />
             )}
           </div>

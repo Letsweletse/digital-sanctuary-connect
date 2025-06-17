@@ -13,7 +13,7 @@ interface BankingDetailsCardProps {
 
 const BankingDetailsCard: React.FC<BankingDetailsCardProps> = ({ 
   eventTitle, 
-  registrationFee = "P250" 
+  registrationFee = "FREE" 
 }) => {
   const { toast } = useToast();
 
@@ -32,6 +32,37 @@ const BankingDetailsCard: React.FC<BankingDetailsCardProps> = ({
       duration: 2000,
     });
   };
+
+  // Don't show banking details if registration is free
+  if (registrationFee === "FREE") {
+    return (
+      <Card className="border-green-200 bg-green-50/50">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg text-green-800 flex items-center gap-2">
+              <CreditCard className="h-5 w-5" />
+              Registration Details
+            </CardTitle>
+            <Badge variant="secondary" className="bg-green-100 text-green-800">
+              {registrationFee}
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="text-sm text-green-700 mb-4">
+            <p className="font-medium">🎉 {eventTitle} is completely FREE!</p>
+            <p>No payment required - just complete the registration form to secure your spot.</p>
+          </div>
+          
+          <div className="bg-green-100 border border-green-300 rounded-lg p-3 mt-4">
+            <p className="text-xs text-green-800">
+              <strong>Note:</strong> This is a free event. Simply complete the registration form above to confirm your attendance.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="border-amber-200 bg-amber-50/50">

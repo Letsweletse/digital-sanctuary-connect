@@ -56,7 +56,7 @@ const ConferenceHero: React.FC<ConferenceHeroProps> = ({
                   onClick={onRegister}
                 >
                   <Users className="h-5 w-5 mr-2" />
-                  Register Now
+                  FREE REGISTRATION
                 </Button>
               </div>
               

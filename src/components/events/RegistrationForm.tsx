@@ -74,7 +74,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
               </svg>
               Submitting...
             </span> 
-            : "Submit Registration"
+            : "Submit FREE Registration"
           }
         </Button>
       </DialogFooter>
