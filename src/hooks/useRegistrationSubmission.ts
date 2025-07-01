@@ -8,6 +8,7 @@ import { formatDate } from '@/utils/dateUtils';
 import { useWhatsAppNotification } from './useWhatsAppNotification';
 import { useNavigate } from 'react-router-dom';
 import { sendDirectWhatsAppMessage, generatePremiumWhatsAppConfirmation } from '@/utils/whatsAppUtils';
+import { registrationService } from '@/services/registrationService';
 
 export const useRegistrationSubmission = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -90,7 +91,24 @@ export const useRegistrationSubmission = () => {
 
       console.log('🚀 Starting registration process for:', registrationData);
       
-      // Try WhatsApp notification first
+      // Generate check-in ID
+      const checkInId = `event-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const checkInUrl = `https://gategaborone.com/check-in/${checkInId}`;
+      registrationData.checkInId = checkInId;
+      registrationData.checkInUrl = checkInUrl;
+
+      // First, save registration to database
+      console.log('💾 Saving registration to database...');
+      const saveResult = await registrationService.saveRegistration(registrationData);
+      
+      if (!saveResult.success) {
+        console.warn('⚠️ Failed to save registration to database:', saveResult.error);
+        // Continue with notifications even if database save fails
+      } else {
+        console.log('✅ Registration saved to database successfully');
+      }
+      
+      // Try WhatsApp notification
       sonnerToast.loading("Sending WhatsApp Confirmation...", {
         description: "Sending WhatsApp confirmation message",
         duration: 3000
@@ -105,6 +123,13 @@ export const useRegistrationSubmission = () => {
       );
       
       console.log('📱 WhatsApp result:', directWhatsAppResult);
+
+      // Update WhatsApp status in database
+      if (saveResult.success && saveResult.data) {
+        await registrationService.updateRegistrationStatus(saveResult.data.id, {
+          whatsapp_sent: !directWhatsAppResult.error
+        });
+      }
       
       // Try email
       sonnerToast.loading("Sending Email Confirmation...", {
@@ -124,8 +149,6 @@ export const useRegistrationSubmission = () => {
         registrationType: registrationData.registrationType
       };
       
-      let checkInUrl = '';
-      let checkInId = '';
       let emailSuccess = false;
       
       try {
@@ -133,23 +156,19 @@ export const useRegistrationSubmission = () => {
         const emailResult = await sendEventRegistrationEmail(currentEvent.title, emailRegistrationData);
         console.log('📧 Email service response:', emailResult);
         
-        if (emailResult.success && emailResult.data) {
+        if (emailResult.success) {
           emailSuccess = true;
-          checkInId = emailResult.data.checkInId || '';
-          checkInUrl = emailResult.data.checkInUrl || `https://gategaborone.com/check-in/${checkInId}`;
-          
-          registrationData.checkInId = checkInId;
-          registrationData.checkInUrl = checkInUrl;
-          
           console.log('✅ Email sent successfully');
         }
       } catch (emailError) {
-        console.warn('⚠️ Email failed, but continuing with registration:', emailError);
-        
-        checkInId = `manual-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        checkInUrl = `https://gategaborone.com/check-in/${checkInId}`;
-        registrationData.checkInId = checkInId;
-        registrationData.checkInUrl = checkInUrl;
+        console.warn('⚠️ Email failed:', emailError);
+      }
+
+      // Update email status in database
+      if (saveResult.success && saveResult.data) {
+        await registrationService.updateRegistrationStatus(saveResult.data.id, {
+          email_sent: emailSuccess
+        });
       }
       
       // If direct WhatsApp failed, try Edge function as fallback
@@ -173,9 +192,9 @@ export const useRegistrationSubmission = () => {
       });
       
       sonnerToast.success("Registration Complete!", {
-        description: emailSuccess 
-          ? "Check your WhatsApp and email for confirmation details"
-          : "Check your WhatsApp for confirmation. Email confirmation may follow separately.",
+        description: saveResult.success 
+          ? "Your registration has been saved and confirmations sent!"
+          : "Confirmations sent! Registration data may take a moment to appear in our system.",
         duration: 5000
       });
       
@@ -188,7 +207,8 @@ export const useRegistrationSubmission = () => {
           registrationData,
           checkInUrl,
           checkInId,
-          emailSent: emailSuccess
+          emailSent: emailSuccess,
+          savedToDatabase: saveResult.success
         }
       });
       
@@ -233,7 +253,8 @@ export const useRegistrationSubmission = () => {
             checkInId: '',
             emailSent: false,
             hasError: true,
-            errorMessage
+            errorMessage,
+            savedToDatabase: false
           }
         });
       }

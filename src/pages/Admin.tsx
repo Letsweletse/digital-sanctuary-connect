@@ -1,234 +1,118 @@
 
 import React, { useState } from 'react';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
-import MediaSection from '@/components/home/MediaSection';
-import ImageUploader from '@/components/media/ImageUploader';
-import LogoUploader from '@/components/media/LogoUploader';
-import SermonManager from '@/components/media/SermonManager';
+import Layout from '@/components/layout/Layout';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import SermonAudioManager from '@/components/admin/SermonAudioManager';
 import SubscriberManager from '@/components/admin/SubscriberManager';
-import SubscriberEmailList from '@/components/admin/subscriber/SubscriberEmailList';
-import KioskManager from '@/components/admin/KioskManager';
 import DatabaseMonitor from '@/components/admin/DatabaseMonitor';
 import EmailTestPanel from '@/components/admin/EmailTestPanel';
+import KioskManager from '@/components/admin/KioskManager';
 import BankingQRManager from '@/components/admin/BankingQRManager';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LogoProvider } from '@/components/layout/LogoContext';
-import { Mail } from 'lucide-react';
+import RegistrationManager from '@/components/admin/RegistrationManager';
 
 const Admin = () => {
-  const [authenticated, setAuthenticated] = useState(false);
-  const [password, setPassword] = useState('');
-  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("overview");
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password === '5986###') {
-      setAuthenticated(true);
-      toast({
-        title: "Access granted",
-        description: "Welcome to the admin panel",
-      });
-    } else {
-      toast({
-        title: "Access denied",
-        description: "Incorrect password",
-        variant: "destructive",
-      });
-    }
-  };
+  const adminSections = [
+    { id: "overview", label: "Overview", icon: "📊" },
+    { id: "registrations", label: "Registrations", icon: "📝" },
+    { id: "sermons", label: "Sermons", icon: "🎵" },
+    { id: "subscribers", label: "Subscribers", icon: "👥" },
+    { id: "database", label: "Database", icon: "💾" },
+    { id: "email", label: "Email Test", icon: "📧" },
+    { id: "kiosk", label: "Kiosk", icon: "🖥️" },
+    { id: "banking", label: "Banking QR", icon: "💳" }
+  ];
 
   return (
-    <LogoProvider>
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        
-        <main className="flex-grow pt-24 page-transition">
-          <section className="py-16 bg-church-blue text-white">
-            <div className="container mx-auto px-4">
-              <div className="max-w-3xl">
-                <span className="inline-block bg-white px-3 py-1 rounded-full text-sm font-medium text-church-blue mb-4">
-                  Admin Area
-                </span>
-                <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                  Media Management
-                </h1>
-                <p className="text-lg text-white/90">
-                  This area is for church administrators to manage media content.
-                </p>
-              </div>
+    <Layout>
+      <main className="flex-grow pt-24 page-transition">
+        <section className="bg-gradient-to-b from-church-blue-light to-white py-16 md:py-24">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl">
+              <span className="inline-block bg-white px-3 py-1 rounded-full text-sm font-medium text-church-neutral-700 mb-4 shadow-sm">
+                Administration
+              </span>
+              <h1 className="text-4xl md:text-5xl font-bold text-church-neutral-900 mb-6">
+                Admin Dashboard
+              </h1>
+              <p className="text-lg text-church-neutral-700">
+                Manage church content, monitor systems, and configure settings.
+              </p>
             </div>
-          </section>
-          
-          {!authenticated ? (
-            <section className="py-16 bg-white">
-              <div className="container mx-auto px-4">
-                <div className="max-w-md mx-auto glass-panel p-8">
-                  <h2 className="text-2xl font-bold text-church-neutral-900 mb-6">
-                    Admin Login
-                  </h2>
-                  <form onSubmit={handleLogin} className="space-y-4">
-                    <div>
-                      <label htmlFor="password" className="block text-sm font-medium text-church-neutral-700 mb-1">
-                        Password
-                      </label>
-                      <Input 
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter admin password"
-                        className="w-full"
-                      />
-                    </div>
-                    <Button type="submit" className="w-full btn-primary">
-                      Login
-                    </Button>
-                  </form>
-                </div>
-              </div>
-            </section>
-          ) : (
-            <section className="py-16 bg-white">
-              <div className="container mx-auto px-4">
-                <Tabs defaultValue="sermon-audio" className="w-full">
-                  <TabsList className="mb-8">
-                    <TabsTrigger value="sermon-audio">Sermon Audio</TabsTrigger>
-                    <TabsTrigger value="sermons">Sermon Details</TabsTrigger>
-                    <TabsTrigger value="subscribers">Email Subscribers</TabsTrigger>
-                    <TabsTrigger value="banking-qr">Banking QR</TabsTrigger>
-                    <TabsTrigger value="database">Database Monitor</TabsTrigger>
-                    <TabsTrigger value="email-test">Email Testing</TabsTrigger>
-                    <TabsTrigger value="kiosk">Kiosk Management</TabsTrigger>
-                    <TabsTrigger value="logo">Church Logo</TabsTrigger>
-                    <TabsTrigger value="leadership">Leadership Photos</TabsTrigger>
-                    <TabsTrigger value="images">General Images</TabsTrigger>
-                    <TabsTrigger value="youtube">YouTube Videos</TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="sermon-audio">
-                    <SermonAudioManager />
-                  </TabsContent>
-                  
-                  <TabsContent value="banking-qr">
-                    <div className="glass-panel p-8">
-                      <BankingQRManager />
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="database">
-                    <div className="glass-panel p-8">
-                      <DatabaseMonitor />
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="email-test">
-                    <div className="glass-panel p-8">
-                      <EmailTestPanel />
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="kiosk">
-                    <div className="glass-panel p-8">
-                      <KioskManager />
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="logo" className="space-y-8">
-                    <div className="glass-panel">
-                      <LogoUploader />
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="leadership" className="space-y-8">
-                    <div className="glass-panel p-8">
-                      <h2 className="text-2xl font-bold text-church-neutral-900 mb-6">
-                        Leadership Photos Management
-                      </h2>
-                      <p className="text-church-neutral-700 mb-6">
-                        Upload and manage photos of church leadership team members. These images will appear on the Leadership page.
-                      </p>
-                      <ImageUploader />
-                    </div>
-                  </TabsContent>
+          </div>
+        </section>
 
-                  <TabsContent value="sermons" className="space-y-8">
-                    <div className="glass-panel p-8">
-                      <h2 className="text-2xl font-bold text-church-neutral-900 mb-6">
-                        Sermon Management
-                      </h2>
-                      <p className="text-church-neutral-700 mb-6">
-                        Upload and manage sermons with speaker photos, audio files, and details. These will appear on the Sermons page.
-                      </p>
-                      <SermonManager />
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="subscribers" className="space-y-8">
-                    <div className="glass-panel p-8">
-                      <div className="flex items-start justify-between mb-6">
-                        <div>
-                          <h2 className="text-2xl font-bold text-church-neutral-900 mb-2 flex items-center">
-                            <Mail className="w-6 h-6 mr-2 text-church-blue" />
-                            Email Subscriber Management
-                          </h2>
-                          <p className="text-church-neutral-700">
-                            Manage your email subscribers and event registrations. View and export email lists from events like the Featured Conference.
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <div className="mb-8">
-                        <h3 className="text-xl font-semibold text-church-neutral-800 mb-4">
-                          Subscriber Information
-                        </h3>
-                        <SubscriberEmailList />
-                      </div>
-                      
-                      <SubscriberManager />
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="images" className="space-y-8">
-                    <ImageUploader />
-                  </TabsContent>
-                  
-                  <TabsContent value="audio">
-                    <MediaSection />
-                  </TabsContent>
-                  
-                  <TabsContent value="youtube">
-                    <div className="glass-panel p-8">
-                      <h2 className="text-2xl font-bold text-church-neutral-900 mb-6">
-                        YouTube Channel Management
-                      </h2>
-                      <p className="text-church-neutral-700 mb-4">
-                        This section allows you to manage YouTube videos that appear on the website.
-                        The videos are pulled directly from the Gate Gaborone YouTube channel.
-                      </p>
-                      <div className="bg-church-neutral-100 p-4 rounded-md">
-                        <p className="text-sm text-church-neutral-700">
-                          Channel ID: <span className="font-mono">gategaboronebotswana2702</span>
-                        </p>
-                        <p className="text-sm text-church-neutral-500 mt-2">
-                          To update videos, simply upload new content to your YouTube channel.
-                        </p>
-                      </div>
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </div>
-            </section>
-          )}
-        </main>
-        
-        <Footer />
-      </div>
-    </LogoProvider>
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 mb-8">
+                {adminSections.map((section) => (
+                  <TabsTrigger key={section.id} value={section.id} className="text-xs">
+                    <span className="mr-1">{section.icon}</span>
+                    <span className="hidden sm:inline">{section.label}</span>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+
+              <TabsContent value="overview" className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {adminSections.slice(1).map((section) => (
+                    <Card key={section.id} className="cursor-pointer hover:shadow-lg transition-shadow"
+                          onClick={() => setActiveTab(section.id)}>
+                      <CardHeader>
+                        <CardTitle className="flex items-center">
+                          <span className="text-2xl mr-2">{section.icon}</span>
+                          {section.label}
+                        </CardTitle>
+                        <CardDescription>
+                          {section.id === 'registrations' && 'View and manage event registrations'}
+                          {section.id === 'sermons' && 'Upload and manage sermon audio files'}
+                          {section.id === 'subscribers' && 'Manage newsletter subscribers'}
+                          {section.id === 'database' && 'Monitor database connections'}
+                          {section.id === 'email' && 'Test email functionality'}
+                          {section.id === 'kiosk' && 'Configure kiosk check-in system'}
+                          {section.id === 'banking' && 'Generate banking QR codes'}
+                        </CardDescription>
+                      </CardHeader>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="registrations">
+                <RegistrationManager />
+              </TabsContent>
+
+              <TabsContent value="sermons">
+                <SermonAudioManager />
+              </TabsContent>
+
+              <TabsContent value="subscribers">
+                <SubscriberManager />
+              </TabsContent>
+
+              <TabsContent value="database">
+                <DatabaseMonitor />
+              </TabsContent>
+
+              <TabsContent value="email">
+                <EmailTestPanel />
+              </TabsContent>
+
+              <TabsContent value="kiosk">
+                <KioskManager />
+              </TabsContent>
+
+              <TabsContent value="banking">
+                <BankingQRManager />
+              </TabsContent>
+            </Tabs>
+          </div>
+        </section>
+      </main>
+    </Layout>
   );
 };
 

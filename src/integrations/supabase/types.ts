@@ -74,6 +74,75 @@ export type Database = {
         }
         Relationships: []
       }
+      event_registrations: {
+        Row: {
+          additional_message: string | null
+          attendee_denomination: string | null
+          attendee_email: string
+          attendee_name: string
+          attendee_phone: string | null
+          attendee_role: string | null
+          attendee_title: string | null
+          check_in_id: string | null
+          check_in_url: string | null
+          created_at: string
+          email_sent: boolean | null
+          event_date: string
+          event_location: string | null
+          event_name: string
+          event_time: string | null
+          id: string
+          number_of_attendees: number | null
+          registration_type: string | null
+          updated_at: string
+          whatsapp_sent: boolean | null
+        }
+        Insert: {
+          additional_message?: string | null
+          attendee_denomination?: string | null
+          attendee_email: string
+          attendee_name: string
+          attendee_phone?: string | null
+          attendee_role?: string | null
+          attendee_title?: string | null
+          check_in_id?: string | null
+          check_in_url?: string | null
+          created_at?: string
+          email_sent?: boolean | null
+          event_date: string
+          event_location?: string | null
+          event_name: string
+          event_time?: string | null
+          id?: string
+          number_of_attendees?: number | null
+          registration_type?: string | null
+          updated_at?: string
+          whatsapp_sent?: boolean | null
+        }
+        Update: {
+          additional_message?: string | null
+          attendee_denomination?: string | null
+          attendee_email?: string
+          attendee_name?: string
+          attendee_phone?: string | null
+          attendee_role?: string | null
+          attendee_title?: string | null
+          check_in_id?: string | null
+          check_in_url?: string | null
+          created_at?: string
+          email_sent?: boolean | null
+          event_date?: string
+          event_location?: string | null
+          event_name?: string
+          event_time?: string | null
+          id?: string
+          number_of_attendees?: number | null
+          registration_type?: string | null
+          updated_at?: string
+          whatsapp_sent?: boolean | null
+        }
+        Relationships: []
+      }
       images: {
         Row: {
           category: string

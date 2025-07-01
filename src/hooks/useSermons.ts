@@ -1,182 +1,116 @@
 
 import { useState, useEffect } from 'react';
 import { Sermon } from '@/types/sermonTypes';
-import { useDualSermons } from './useDualSermons';
-import { 
-  createSermon, 
-  updateSermonInList, 
-  removeSermonFromList, 
-  findFeaturedSermon 
-} from '@/utils/sermonUtils';
+import { supabase } from '@/integrations/supabase/client';
 
-// This hook now acts as a wrapper around the dual database system
-// but maintains backward compatibility with existing components
 export const useSermons = () => {
-  const {
-    sermons: dualSermons,
-    loading: dualLoading,
-    error: dualError,
-    activeProvider,
-    addSermon: dualAddSermon,
-    updateSermon: dualUpdateSermon,
-    deleteSermon: dualDeleteSermon,
-    getFeaturedSermon: dualGetFeaturedSermon,
-    refreshSermons: dualRefreshSermons
-  } = useDualSermons();
-
-  const [localSermons, setLocalSermons] = useState<Sermon[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [sermons, setSermons] = useState<Sermon[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [useLocalStorage, setUseLocalStorage] = useState(false);
 
-  // Determine whether to use dual database or localStorage
-  useEffect(() => {
-    const shouldUseLocalStorage = localStorage.getItem('use_local_storage') === 'true';
-    setUseLocalStorage(shouldUseLocalStorage);
-    
-    if (shouldUseLocalStorage) {
-      // Load from localStorage (legacy support)
-      loadFromLocalStorage();
-    } else {
-      // Use dual database system
-      setLocalSermons(dualSermons);
-      setLoading(dualLoading);
-      setError(dualError);
-    }
-  }, [dualSermons, dualLoading, dualError]);
-
-  // Load sermons from localStorage (legacy support)
-  const loadFromLocalStorage = () => {
+  const fetchSermons = async () => {
     try {
-      setLoading(true);
-      
-      const savedSermons = localStorage.getItem('church_sermons');
-      if (savedSermons) {
-        try {
-          const parsedSermons = JSON.parse(savedSermons);
-          const processedSermons = parsedSermons.map((sermon: any) => ({
-            ...sermon,
-            date: sermon.date ? new Date(sermon.date) : new Date()
-          }));
-          console.log('Loaded sermons from localStorage:', processedSermons.length);
-          setLocalSermons(processedSermons);
-        } catch (parseError) {
-          console.error('Error parsing sermons from localStorage:', parseError);
-          setLocalSermons([]);
-        }
-      } else {
-        console.log('No sermons in localStorage');
-        setLocalSermons([]);
-      }
+      setIsLoading(true);
       setError(null);
-    } catch (err) {
-      console.error('Error loading sermons:', err);
-      setError('Failed to load sermons from localStorage.');
-      setLocalSermons([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+      
+      console.log('🔍 Fetching sermons from Supabase...');
+      
+      const { data, error: supabaseError } = await supabase
+        .from('sermons')
+        .select('*')
+        .order('date', { ascending: false });
 
-  // Save sermons to localStorage when they change (if using localStorage)
-  useEffect(() => {
-    if (useLocalStorage && localSermons.length > 0 && !loading) {
-      try {
-        const sermonsCopy = localSermons.map(sermon => ({
-          ...sermon,
-          date: sermon.date instanceof Date ? sermon.date.toISOString() : sermon.date,
-        }));
-        
-        localStorage.setItem('church_sermons', JSON.stringify(sermonsCopy));
-        console.log('Saved sermons to localStorage:', localSermons.length);
-        
-        window.dispatchEvent(new Event('sermon-refresh'));
-      } catch (err) {
-        console.error('Error saving sermons to localStorage:', err);
+      if (supabaseError) {
+        console.error('❌ Supabase error:', supabaseError);
+        setError(`Database error: ${supabaseError.message}`);
+        return;
       }
-    }
-  }, [localSermons, loading, useLocalStorage]);
 
-  const addSermon = async (sermon: Omit<Sermon, 'id'>) => {
-    if (useLocalStorage) {
-      // Use localStorage (legacy behavior)
-      const newSermon = createSermon(sermon);
-      console.log('Adding new sermon to localStorage:', newSermon);
-      setLocalSermons(prev => {
-        const updated = [newSermon, ...prev];
-        return updated;
-      });
-      return newSermon;
-    } else {
-      // Use dual database system
-      return await dualAddSermon(sermon);
-    }
-  };
+      console.log(`✅ Found ${data.length} sermons in database`);
+      
+      if (data.length === 0) {
+        console.log('ℹ️ No sermons found in database');
+        setError('No sermons found. Please upload some sermons using the Admin panel.');
+        return;
+      }
 
-  const updateSermon = async (id: string, updatedSermon: Partial<Sermon>) => {
-    if (useLocalStorage) {
-      // Use localStorage (legacy behavior)
-      console.log('Updating sermon in localStorage:', id, updatedSermon);
-      setLocalSermons(prev => {
-        const updated = updateSermonInList(prev, id, updatedSermon);
-        return updated;
-      });
-    } else {
-      // Use dual database system
-      await dualUpdateSermon(id, updatedSermon);
-    }
-  };
+      // Transform the data to match our Sermon type
+      const transformedSermons: Sermon[] = data.map(sermon => ({
+        id: sermon.id,
+        title: sermon.title,
+        speaker: sermon.speaker,
+        date: new Date(sermon.date).toISOString().split('T')[0],
+        duration: sermon.duration || undefined,
+        description: sermon.description || undefined,
+        audioUrl: sermon.audio_url || undefined,
+        youtubeId: sermon.youtube_id || undefined,
+        series: sermon.series || undefined,
+        tags: sermon.tags || [],
+        featured: sermon.featured || false,
+        thumbnailUrl: sermon.thumbnail_url || undefined,
+        speakerImage: sermon.speaker_image || undefined,
+        views: sermon.views || 0,
+        downloads: sermon.downloads || 0
+      }));
 
-  const deleteSermon = async (id: string) => {
-    if (useLocalStorage) {
-      // Use localStorage (legacy behavior)
-      console.log('Deleting sermon from localStorage:', id);
-      setLocalSermons(prev => {
-        const updated = removeSermonFromList(prev, id);
-        return updated;
-      });
-    } else {
-      // Use dual database system
-      await dualDeleteSermon(id);
+      setSermons(transformedSermons);
+      console.log('✅ Sermons loaded successfully');
+      
+    } catch (err) {
+      console.error('❌ Error fetching sermons:', err);
+      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const getFeaturedSermon = (): Sermon | undefined => {
-    if (useLocalStorage) {
-      return findFeaturedSermon(localSermons);
-    } else {
-      return dualGetFeaturedSermon();
-    }
+  useEffect(() => {
+    fetchSermons();
+  }, []);
+
+  const refreshSermons = () => {
+    fetchSermons();
   };
 
-  // Method to switch between localStorage and database
-  const toggleStorageMode = () => {
-    const newMode = !useLocalStorage;
-    setUseLocalStorage(newMode);
-    localStorage.setItem('use_local_storage', newMode.toString());
-    
-    if (newMode) {
-      loadFromLocalStorage();
-    } else {
-      dualRefreshSermons();
+  const addSermon = async (sermonData: Omit<Sermon, 'id'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('sermons')
+        .insert([{
+          title: sermonData.title,
+          speaker: sermonData.speaker,
+          date: sermonData.date,
+          duration: sermonData.duration,
+          description: sermonData.description,
+          audio_url: sermonData.audioUrl,
+          youtube_id: sermonData.youtubeId,
+          series: sermonData.series,
+          tags: sermonData.tags,
+          featured: sermonData.featured,
+          thumbnail_url: sermonData.thumbnailUrl,
+          speaker_image: sermonData.speakerImage,
+          views: sermonData.views || 0,
+          downloads: sermonData.downloads || 0
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      await refreshSermons();
+      return { success: true, data };
+    } catch (error) {
+      console.error('Error adding sermon:', error);
+      return { success: false, error };
     }
   };
-
-  // Get the appropriate sermon list
-  const sermons = useLocalStorage ? localSermons : dualSermons;
 
   return {
     sermons,
-    loading,
+    isLoading,
     error,
+    refreshSermons,
     addSermon,
-    updateSermon,
-    deleteSermon,
-    getFeaturedSermon,
-    // Additional properties for dual database support
-    activeProvider: useLocalStorage ? 'localStorage' as const : activeProvider,
-    useLocalStorage,
-    toggleStorageMode,
-    refreshSermons: useLocalStorage ? loadFromLocalStorage : dualRefreshSermons,
+    isUsingSupabase: true // Always use Supabase now
   };
 };
