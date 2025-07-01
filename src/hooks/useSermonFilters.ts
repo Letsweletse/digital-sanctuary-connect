@@ -1,94 +1,70 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Sermon } from '@/types/sermonTypes';
 
 export const useSermonFilters = (sermons: Sermon[]) => {
-  const [filteredSermons, setFilteredSermons] = useState<Sermon[]>(sermons);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTopic, setSelectedTopic] = useState('all');
-  const [selectedSpeaker, setSelectedSpeaker] = useState('all');
-  const [selectedYear, setSelectedYear] = useState('all');
-  const [activeView, setActiveView] = useState('list');
+  const [selectedSpeaker, setSelectedSpeaker] = useState('');
+  const [selectedSeries, setSelectedSeries] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  // Get all unique topics from sermons
-  const allTopics = Array.from(
-    new Set(sermons.flatMap(sermon => sermon.tags || []))
-  );
-
-  // Get all unique speakers
-  const allSpeakers = Array.from(
-    new Set(sermons.map(sermon => sermon.speaker))
-  );
-
-  // Get all unique years
-  const allYears = Array.from(
-    new Set(sermons.map(sermon => {
-      const date = new Date(sermon.date);
-      return date.getFullYear().toString();
-    }))
-  ).sort((a, b) => b.localeCompare(a)); // Sort descending
-
-  // Filter sermons based on search term and selected filters
-  useEffect(() => {
-    console.log('useSermonFilters - Input sermons:', sermons);
-    
-    let result = [...sermons];
-    
-    // Filter by search term
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      result = result.filter(sermon => 
-        sermon.title.toLowerCase().includes(term) ||
-        sermon.speaker.toLowerCase().includes(term) ||
-        (sermon.description && sermon.description.toLowerCase().includes(term))
-      );
-    }
-    
-    // Filter by topic
-    if (selectedTopic !== 'all') {
-      result = result.filter(sermon => 
-        sermon.tags && sermon.tags.includes(selectedTopic)
-      );
-    }
-    
-    // Filter by speaker
-    if (selectedSpeaker !== 'all') {
-      result = result.filter(sermon => 
-        sermon.speaker === selectedSpeaker
-      );
-    }
-    
-    // Filter by year
-    if (selectedYear !== 'all') {
-      result = result.filter(sermon => {
-        const date = new Date(sermon.date);
-        return date.getFullYear().toString() === selectedYear;
-      });
-    }
-    
-    console.log('useSermonFilters - Filtered result:', result);
-    setFilteredSermons(result);
-  }, [searchTerm, selectedTopic, selectedSpeaker, selectedYear, sermons]);
-
-  // Reset filters when sermons change
-  useEffect(() => {
-    setFilteredSermons(sermons);
+  // Extract unique speakers
+  const speakers = useMemo(() => {
+    const uniqueSpeakers = [...new Set(sermons.map(sermon => sermon.speaker))];
+    return uniqueSpeakers.sort();
   }, [sermons]);
+
+  // Extract unique series
+  const series = useMemo(() => {
+    const uniqueSeries = [...new Set(sermons.map(sermon => sermon.series).filter(Boolean))];
+    return uniqueSeries.sort();
+  }, [sermons]);
+
+  // Extract unique tags
+  const availableTags = useMemo(() => {
+    const allTags = sermons.flatMap(sermon => sermon.tags || []);
+    const uniqueTags = [...new Set(allTags)];
+    return uniqueTags.sort();
+  }, [sermons]);
+
+  // Filter sermons based on all criteria
+  const filteredSermons = useMemo(() => {
+    return sermons.filter(sermon => {
+      const matchesSearch = searchTerm === '' || 
+        sermon.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        sermon.speaker.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (sermon.description && sermon.description.toLowerCase().includes(searchTerm.toLowerCase()));
+
+      const matchesSpeaker = selectedSpeaker === '' || sermon.speaker === selectedSpeaker;
+      const matchesSeries = selectedSeries === '' || sermon.series === selectedSeries;
+      
+      const matchesTags = selectedTags.length === 0 || 
+        selectedTags.some(tag => sermon.tags?.includes(tag));
+
+      return matchesSearch && matchesSpeaker && matchesSeries && matchesTags;
+    });
+  }, [sermons, searchTerm, selectedSpeaker, selectedSeries, selectedTags]);
+
+  const clearAllFilters = () => {
+    setSearchTerm('');
+    setSelectedSpeaker('');
+    setSelectedSeries('');
+    setSelectedTags([]);
+  };
 
   return {
     filteredSermons,
+    speakers,
+    series,
     searchTerm,
-    setSearchTerm,
-    selectedTopic,
-    setSelectedTopic,
     selectedSpeaker,
+    selectedSeries,
+    selectedTags,
+    availableTags,
+    setSearchTerm,
     setSelectedSpeaker,
-    selectedYear,
-    setSelectedYear,
-    activeView,
-    setActiveView,
-    allTopics,
-    allSpeakers,
-    allYears
+    setSelectedSeries,
+    setSelectedTags,
+    clearAllFilters
   };
 };

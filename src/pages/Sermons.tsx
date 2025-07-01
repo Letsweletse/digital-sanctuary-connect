@@ -40,7 +40,7 @@ const Sermons = () => {
     return (
       <Layout>
         <main className="flex-grow pt-24 page-transition">
-          <SermonHeader />
+          <SermonHeader totalSermons={sermons.length} />
           
           <section className="py-16">
             <div className="container mx-auto px-4">
@@ -75,7 +75,7 @@ const Sermons = () => {
   return (
     <Layout>
       <main className="flex-grow pt-24 page-transition">
-        <SermonHeader />
+        <SermonHeader totalSermons={sermons.length} />
         
         <section className="py-16">
           <div className="container mx-auto px-4">

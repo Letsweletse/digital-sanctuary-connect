@@ -18,7 +18,7 @@ interface AudioSermonPlayerProps {
 }
 
 const AudioSermonPlayer = ({ customSermons }: AudioSermonPlayerProps) => {
-  const { sermons: fetchedSermons, loading: sermonsLoading } = useSermons();
+  const { sermons: fetchedSermons, isLoading: sermonsLoading } = useSermons();
   
   const {
     audioRef,

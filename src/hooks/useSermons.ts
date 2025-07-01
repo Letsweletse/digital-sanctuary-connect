@@ -105,12 +105,63 @@ export const useSermons = () => {
     }
   };
 
+  const updateSermon = async (id: string, sermonData: Partial<Sermon>) => {
+    try {
+      const { error } = await supabase
+        .from('sermons')
+        .update({
+          title: sermonData.title,
+          speaker: sermonData.speaker,
+          date: sermonData.date,
+          duration: sermonData.duration,
+          description: sermonData.description,
+          audio_url: sermonData.audioUrl,
+          youtube_id: sermonData.youtubeId,
+          series: sermonData.series,
+          tags: sermonData.tags,
+          featured: sermonData.featured,
+          thumbnail_url: sermonData.thumbnailUrl,
+          speaker_image: sermonData.speakerImage,
+          views: sermonData.views,
+          downloads: sermonData.downloads
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      await refreshSermons();
+      return { success: true };
+    } catch (error) {
+      console.error('Error updating sermon:', error);
+      return { success: false, error };
+    }
+  };
+
+  const deleteSermon = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('sermons')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      await refreshSermons();
+      return { success: true };
+    } catch (error) {
+      console.error('Error deleting sermon:', error);
+      return { success: false, error };
+    }
+  };
+
   return {
     sermons,
     isLoading,
     error,
     refreshSermons,
     addSermon,
-    isUsingSupabase: true // Always use Supabase now
+    updateSermon,
+    deleteSermon,
+    isUsingSupabase: true
   };
 };
