@@ -79,7 +79,7 @@ export const useSermons = () => {
         .insert([{
           title: sermonData.title,
           speaker: sermonData.speaker,
-          date: sermonData.date,
+          date: typeof sermonData.date === 'string' ? sermonData.date : sermonData.date.toISOString().split('T')[0],
           duration: sermonData.duration,
           description: sermonData.description,
           audio_url: sermonData.audioUrl,
@@ -112,7 +112,7 @@ export const useSermons = () => {
         .update({
           title: sermonData.title,
           speaker: sermonData.speaker,
-          date: sermonData.date,
+          date: sermonData.date ? (typeof sermonData.date === 'string' ? sermonData.date : sermonData.date.toISOString().split('T')[0]) : undefined,
           duration: sermonData.duration,
           description: sermonData.description,
           audio_url: sermonData.audioUrl,

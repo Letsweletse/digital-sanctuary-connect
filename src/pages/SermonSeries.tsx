@@ -12,7 +12,7 @@ import { Card } from '@/components/ui/card';
 
 const SermonSeries = () => {
   const { seriesName } = useParams<{ seriesName: string }>();
-  const { sermons, loading, error } = useSermons();
+  const { sermons, isLoading, error } = useSermons();
   const [seriesSermons, setSeriesSermons] = useState<Sermon[]>([]);
   
   useEffect(() => {
@@ -25,7 +25,7 @@ const SermonSeries = () => {
 
   const decodedSeriesName = seriesName ? decodeURIComponent(seriesName) : '';
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-10">

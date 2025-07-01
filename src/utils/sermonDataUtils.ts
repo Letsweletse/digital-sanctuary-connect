@@ -9,7 +9,7 @@ export const addSermonToDatabase = async (sermonData: Omit<Sermon, 'id'>) => {
       .insert([{
         title: sermonData.title,
         speaker: sermonData.speaker,
-        date: sermonData.date,
+        date: typeof sermonData.date === 'string' ? sermonData.date : sermonData.date.toISOString().split('T')[0],
         duration: sermonData.duration,
         description: sermonData.description,
         audio_url: sermonData.audioUrl,
