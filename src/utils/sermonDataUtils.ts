@@ -59,7 +59,7 @@ const addPastorKobusSermon = async () => {
       .select('id')
       .eq('title', sermonData.title)
       .eq('speaker', sermonData.speaker)
-      .eq('date', sermonData.date);
+      .eq('date', typeof sermonData.date === 'string' ? sermonData.date : sermonData.date.toISOString().split('T')[0]);
 
     if (!existingSermons || existingSermons.length === 0) {
       const result = await addSermonToDatabase(sermonData);

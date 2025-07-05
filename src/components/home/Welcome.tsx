@@ -4,9 +4,9 @@ import useMongoData from '@/hooks/useMongoData';
 import { LeadershipPerson } from '@/types/leadershipTypes';
 
 const Welcome = () => {
-  // Use the provided pastor image directly
+  // Use the uploaded cityscape image
   const [pastorImage, setPastorImage] = useState(
-    "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Pastor%20Kobus%20Bezuidenhout_1743680599419.jpeg"
+    "/lovable-uploads/849d9947-60e4-40d9-b4c1-6820666d91d9.png"
   );
   
   const { uploadedImages } = useImageLibrary('general');
@@ -53,7 +53,7 @@ const Welcome = () => {
             <div className="relative z-10">
               <img 
                 src={pastorImage} 
-                alt="Pastor Kobus Bezuidenhout" 
+                alt="Gate Gaborone Cityscape" 
                 className="rounded-xl shadow-card w-full h-auto object-cover"
               />
             </div>
@@ -92,7 +92,7 @@ const Welcome = () => {
             <div className="mt-8">
               <div className="flex items-center">
                 <img 
-                  src={pastorImage} 
+                  src="https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Pastor%20Kobus%20Bezuidenhout_1743680599419.jpeg"
                   alt="Pastor Kobus Bezuidenhout" 
                   className="w-12 h-12 rounded-full object-cover mr-4"
                 />
