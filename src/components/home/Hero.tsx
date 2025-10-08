@@ -9,7 +9,7 @@ const Hero = () => {
       <div className="absolute inset-0 w-full h-full">
         <div className="absolute inset-0 bg-gradient-to-r from-church-blue-dark/70 to-church-blue-dark/70 z-10"></div>
         {/* Replace with actual video when available */}
-        <div className="w-full h-full bg-church-blue bg-[url('/lovable-uploads/hero-couple.jpeg')] bg-cover bg-center"></div>
+        <div className="w-full h-full bg-church-blue bg-[url('/lovable-uploads/welcome-cityscape.jpeg')] bg-cover bg-center"></div>
       </div>
       
       {/* Content */}

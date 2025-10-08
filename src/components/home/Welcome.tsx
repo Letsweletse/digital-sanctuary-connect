@@ -4,9 +4,9 @@ import useMongoData from '@/hooks/useMongoData';
 import { LeadershipPerson } from '@/types/leadershipTypes';
 
 const Welcome = () => {
-  // Use the uploaded cityscape image
+  // Use the uploaded couple image
   const [pastorImage, setPastorImage] = useState(
-    "/lovable-uploads/welcome-cityscape.jpeg"
+    "/lovable-uploads/hero-couple.jpeg"
   );
   
   const { uploadedImages } = useImageLibrary('general');
