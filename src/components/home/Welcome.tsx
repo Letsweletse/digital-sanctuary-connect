@@ -6,7 +6,7 @@ import { LeadershipPerson } from '@/types/leadershipTypes';
 const Welcome = () => {
   // Use the uploaded cityscape image
   const [pastorImage, setPastorImage] = useState(
-    "/lovable-uploads/849d9947-60e4-40d9-b4c1-6820666d91d9.png"
+    "/lovable-uploads/cityscape-night.jpeg"
   );
   
   const { uploadedImages } = useImageLibrary('general');

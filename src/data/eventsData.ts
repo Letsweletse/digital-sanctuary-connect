@@ -3,6 +3,18 @@ import { EventData, EventCategoryObject, EventCategoryType } from '@/types/event
 
 export const events: EventData[] = [
   {
+    id: '6',
+    title: 'Apostolic Conference: November 2025',
+    date: '2025-11-01',
+    time: 'Conference schedule and details to be announced',
+    location: 'Venue to be announced',
+    description: 'Join us for our upcoming apostolic conference. More details about the schedule, speakers, and sessions will be announced soon. Free registration is now open!',
+    category: 'conference',
+    image: '/lovable-uploads/c7d7d70a-edce-451c-83fd-da92f8e07431.png',
+    registration: true,
+    registrationLink: '#register-event'
+  },
+  {
     id: '4',
     title: 'Perspectives on the Apostolic with Thamo Naidoo',
     date: 'TBA',

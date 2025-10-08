@@ -12,8 +12,8 @@ import { useEventRegistration } from '@/hooks/useEventRegistration';
 import { events } from '@/data/eventsData'; // Import events from data file
 
 const Index = () => {
-  // Featured event data - use the event from data file
-  const featuredEvent: EventData = events[1]; // Using the second event (Apostolic Conference) from events array
+  // Featured event data - use the first event (November 2025 conference)
+  const featuredEvent: EventData = events[0];
   
   const {
     isRegistrationOpen,

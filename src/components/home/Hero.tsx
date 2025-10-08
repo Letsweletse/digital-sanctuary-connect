@@ -9,7 +9,7 @@ const Hero = () => {
       <div className="absolute inset-0 w-full h-full">
         <div className="absolute inset-0 bg-gradient-to-r from-church-blue-dark/70 to-church-blue-dark/70 z-10"></div>
         {/* Replace with actual video when available */}
-        <div className="w-full h-full bg-church-blue bg-[url('https://images.unsplash.com/photo-1438232992991-995b7058bbb3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80')] bg-cover bg-center"></div>
+        <div className="w-full h-full bg-church-blue bg-[url('/lovable-uploads/pastor-couple.jpeg')] bg-cover bg-center"></div>
       </div>
       
       {/* Content */}
