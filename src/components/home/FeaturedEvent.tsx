@@ -1,34 +1,33 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { EventData } from '@/types/eventTypes';
 import { formatDate } from '@/utils/dateUtils';
 import { CalendarDays, Clock, MapPin, Users, BadgeDollarSign } from "lucide-react";
 import EventCountdownTimer from '@/components/events/EventCountdownTimer';
-
 interface FeaturedEventProps {
   featuredEvent: EventData;
   onRegisterClick: () => void;
 }
-
-const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegisterClick }) => {
+const FeaturedEvent: React.FC<FeaturedEventProps> = ({
+  featuredEvent,
+  onRegisterClick
+}) => {
   // Function to handle date display - shows formatted date or TBA
   const displayDate = (date: string, endDate?: string) => {
     if (date === 'TBA') return 'Dates to be announced';
-    
     if (endDate) {
       const startDate = new Date(date);
       const endDateObj = new Date(endDate);
-      
+
       // Format as "July 3-5, 2025"
-      const startMonth = startDate.toLocaleDateString('en-US', { month: 'long' });
+      const startMonth = startDate.toLocaleDateString('en-US', {
+        month: 'long'
+      });
       const startDay = startDate.getDate();
       const endDay = endDateObj.getDate();
       const year = startDate.getFullYear();
-      
       return `${startMonth} ${startDay}-${endDay}, ${year}`;
     }
-    
     return formatDate(date);
   };
 
@@ -42,13 +41,11 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
     }
     return new Date(featuredEvent.date);
   };
-
-  return (
-    <section className="py-16 bg-gradient-to-br from-[#1a2332] via-[#24324b] to-[#2d3e5a] text-white relative overflow-hidden">
+  return <section className="py-16 bg-gradient-to-br from-[#1a2332] via-[#24324b] to-[#2d3e5a] text-white relative overflow-hidden">
       {/* Premium background pattern */}
       <div className="absolute inset-0 opacity-50" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b8a156' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-      }}></div>
+      backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b8a156' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+    }}></div>
       
       <div className="container px-4 mx-auto relative z-10">
         <div className="max-w-7xl mx-auto">
@@ -64,9 +61,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
 
           {/* Large Countdown Timer at the top */}
           <div className="mb-8">
-            <EventCountdownTimer 
-              targetDate={getTargetDate()} 
-            />
+            <EventCountdownTimer targetDate={getTargetDate()} />
           </div>
 
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl overflow-hidden shadow-2xl border border-[#b8a156]/20 hover:border-[#b8a156]/40 transition-all duration-300">
@@ -74,12 +69,8 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
               {/* Event Image - Mobile responsive with proper aspect ratio */}
               <div className="lg:w-1/2 relative">
                 <div className="aspect-[4/3] lg:aspect-auto lg:h-[600px] w-full">
-                  <img
-                    src={featuredEvent.image}
-                    alt={featuredEvent.title}
-                    className="w-full h-full object-cover object-center"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                  <img src="/lovable-uploads/c7d7d70a-edce-451c-83fd-da92f8e07431.png" alt={featuredEvent.title} className="w-full h-full object-cover object-center" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent mx-0 px-[6px]"></div>
                 </div>
               </div>
               
@@ -115,11 +106,9 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
                       <span className="font-semibold text-[#b8a156]">Conference Schedule</span>
                     </div>
                     <div className="bg-white/5 rounded-lg p-4 space-y-2">
-                      {featuredEvent.time.split('\n').map((timeSlot, index) => (
-                        <div key={index} className="text-white/90 font-medium">
+                      {featuredEvent.time.split('\n').map((timeSlot, index) => <div key={index} className="text-white/90 font-medium">
                           {timeSlot}
-                        </div>
-                      ))}
+                        </div>)}
                     </div>
                   </div>
 
@@ -147,19 +136,12 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
                   </p>
                   
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Button
-                      onClick={onRegisterClick}
-                      className="bg-gradient-to-r from-[#b8a156] to-[#d4c278] hover:from-[#d4c278] hover:to-[#b8a156] text-white px-8 py-6 text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-0 rounded-lg"
-                    >
+                    <Button onClick={onRegisterClick} className="bg-gradient-to-r from-[#b8a156] to-[#d4c278] hover:from-[#d4c278] hover:to-[#b8a156] text-white px-8 py-6 text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-0 rounded-lg">
                       <Users className="h-5 w-5 mr-3" />
                       FREE REGISTRATION
                     </Button>
                     
-                    <Button
-                      variant="outline"
-                      className="bg-gradient-to-r from-church-blue to-church-blue-dark hover:from-church-blue-dark hover:to-church-blue text-white font-semibold px-6 py-6 text-lg border-2 border-church-blue rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                      asChild
-                    >
+                    <Button variant="outline" className="bg-gradient-to-r from-church-blue to-church-blue-dark hover:from-church-blue-dark hover:to-church-blue text-white font-semibold px-6 py-6 text-lg border-2 border-church-blue rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105" asChild>
                       <a href="/conference" className="flex items-center justify-center">
                         View Full Details
                       </a>
@@ -171,8 +153,6 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ featuredEvent, onRegister
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default FeaturedEvent;
