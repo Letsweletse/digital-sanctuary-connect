@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -12,8 +11,8 @@ const CheckIn = () => {
   const { id } = useParams<{ id: string }>();
   const [checkedIn, setCheckedIn] = useState(false);
   
-  // Updated Google Maps URL for Gate Gaborone
-  const googleMapsUrl = "https://maps.app.goo.gl/GateGaborone";
+  // Updated Google Maps URL for Cresta Lodge Gaborone
+  const googleMapsUrl = "https://maps.app.goo.gl/qTbip9HaE5B1zbaUA";
   
   useEffect(() => {
     // Log page visit for analytics
@@ -31,8 +30,8 @@ const CheckIn = () => {
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: 'My Gate Gaborone Conference Check-in',
-        text: 'I\'m attending the Apostolic Conference at Gate Gaborone! You should join too.',
+        title: 'My Cresta Lodge Conference Check-in',
+        text: 'I\'m attending the Apostolic Conference at Cresta Lodge Gaborone! You should join too.',
         url: window.location.href,
       })
       .catch(err => console.error('Error sharing:', err));
@@ -71,7 +70,7 @@ const CheckIn = () => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5 text-church-blue flex-shrink-0" />
-                    <span>Saturday, November 1, 2025 - 09:00 - 13:30</span>
+                    <span>Saturday, November 1, 2025 - 08:30 - 13:30</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Clock className="h-5 w-5 text-church-blue flex-shrink-0" />
@@ -89,8 +88,8 @@ const CheckIn = () => {
                       rel="noopener noreferrer"
                       className="hover:text-church-blue hover:underline"
                     >
-                      Gate Gaborone, Plot 54014<br />
-                      Gaborone West, Botswana
+                      Cresta Lodge Gaborone, Samora Machel Dr<br />
+                      Gaborone, Botswana
                     </a>
                   </div>
                 </div>
