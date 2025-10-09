@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 
 interface YouTubeEmbedProps {
@@ -21,43 +20,25 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
 }) => {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   
-  // Actual videos from Gate Gaborone Ministries YouTube channel
+  // Pastor Kobus Bezuidenhout sermons only
   const videos: VideoItem[] = [
     {
-      id: 'dMf8NevhDv8',
-      title: 'The Prophetic Office in Context of the Apostolic Season - Session 2',
-      thumbnail: 'https://images.unsplash.com/photo-1543269865-cbf427effbad',
-      publishedAt: '2025-04-13'
+      id: 'IwMUujsr4QI',
+      title: 'Sunday Sermon - The Wisdom Of God - 05 Oct 2025',
+      thumbnail: 'https://img.youtube.com/vi/IwMUujsr4QI/maxresdefault.jpg',
+      publishedAt: '2025-10-05'
     },
     {
-      id: '0Nkx8oww13E',
-      title: 'SUNDAY SERVICE || THIS MORNING || 10/12/2023',
-      thumbnail: 'https://images.unsplash.com/photo-1543269865-cbf427effbad',
-      publishedAt: '2023-12-10'
+      id: 'OVYHy6jebeo',
+      title: 'The Nation Of God - Sunday Sermon - 24 Aug 2025',
+      thumbnail: 'https://img.youtube.com/vi/OVYHy6jebeo/maxresdefault.jpg',
+      publishedAt: '2025-08-24'
     },
     {
-      id: 'p6Q5iqTIEqw',
-      title: 'SUNDAY SERVICE || THIS MORNING || 26/11/2023',
-      thumbnail: 'https://images.unsplash.com/photo-1577896851698-52dd2060e3b0',
-      publishedAt: '2023-11-26'
-    },
-    {
-      id: 'PcfStYPwYnI',
-      title: 'How to Turn Your Life into a House of God ft Dr Thabo Senkhane',
-      thumbnail: 'https://images.unsplash.com/photo-1543269865-cbf427effbad',
-      publishedAt: '2023-05-28'
-    },
-    {
-      id: 'pPLDsqBQmDA',
-      title: 'When God Builds Your House | Pastor Kobus Bezuidenhout',
-      thumbnail: 'https://images.unsplash.com/photo-1577896851698-52dd2060e3b0',
-      publishedAt: '2023-05-21'
-    },
-    {
-      id: 'rJgfBOuVrUQ',
-      title: 'Sunday Worship Service | Mothersday Service',
-      thumbnail: 'https://images.unsplash.com/photo-1508963493744-76fce69379c0',
-      publishedAt: '2023-05-14'
+      id: 'g4SkdDWkUUQ',
+      title: 'Sunday Sermon - 14 Sept 2025',
+      thumbnail: 'https://img.youtube.com/vi/g4SkdDWkUUQ/maxresdefault.jpg',
+      publishedAt: '2025-09-14'
     }
   ];
   
@@ -103,9 +84,13 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
           >
             <div className="relative pb-[56.25%]">
               <img 
-                src={`${video.thumbnail}?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`}
+                src={video.thumbnail}
                 alt={video.title}
                 className="absolute top-0 left-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                onError={(e) => {
+                  // Fallback if thumbnail doesn't load
+                  e.currentTarget.src = `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`;
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-center justify-center">
                 <div className="w-12 h-12 rounded-full bg-church-blue/80 flex items-center justify-center group-hover:bg-church-blue transition-colors">
