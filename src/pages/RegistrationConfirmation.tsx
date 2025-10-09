@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
@@ -24,8 +23,8 @@ const RegistrationConfirmation = () => {
   
   const { event, attendee } = registrationData;
   
-  // Updated Google Maps URL for Gate Gaborone
-  const googleMapsUrl = "https://maps.app.goo.gl/GateGaborone";
+  // Updated Google Maps URL for Cresta Lodge Gaborone
+  const googleMapsUrl = "https://maps.app.goo.gl/qTbip9HaE5B1zbaUA";
   
   // Create QR code value - a JSON string of important registration data
   const qrCodeValue = JSON.stringify({
@@ -40,10 +39,10 @@ const RegistrationConfirmation = () => {
   
   const handleAddToCalendar = () => {
     // Add to Google Calendar with full event details
-    const startDate = new Date("2025-11-01T09:00:00");
+    const startDate = new Date("2025-11-01T08:30:00");
     const endDate = new Date("2025-11-01T13:30:00");
     
-    const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z/${endDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z&details=${encodeURIComponent(`You registered for this conference on ${new Date(registrationData.submitDate).toLocaleDateString()}. Conference is on Saturday, November 1, 2025 at Gate Gaborone, Plot 54014, Gaborone West.`)}&location=${encodeURIComponent("Gate Gaborone, Plot 54014, Gaborone West, Botswana")}`;
+    const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z/${endDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z&details=${encodeURIComponent(`You registered for this conference on ${new Date(registrationData.submitDate).toLocaleDateString()}. Conference is on Saturday, November 1, 2025 at Cresta Lodge Gaborone, Samora Machel Dr, Gaborone.`)}&location=${encodeURIComponent("Cresta Lodge Gaborone, Samora Machel Dr, Gaborone, Botswana")}`;
     
     window.open(googleCalUrl, '_blank');
   };
@@ -52,7 +51,7 @@ const RegistrationConfirmation = () => {
     if (navigator.share) {
       navigator.share({
         title: `I'm attending ${event.title}`,
-        text: `Join me at ${event.title} on Saturday, November 1, 2025 at Gate Gaborone, Plot 54014, Gaborone West. Registration is compulsory!`,
+        text: `Join me at ${event.title} on Saturday, November 1, 2025 at Cresta Lodge Gaborone, Samora Machel Dr, Gaborone. Registration is compulsory!`,
         url: window.location.href
       }).catch(err => console.error('Error sharing:', err));
     } else {
@@ -95,11 +94,11 @@ const RegistrationConfirmation = () => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Calendar className="h-6 w-6 text-church-blue" />
-                    <span className="text-lg">Saturday, November 1, 2025 - 09:00 - 13:30</span>
+                    <span className="text-lg">Saturday, November 1, 2025 - 08:30 - 13:30</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Clock className="h-6 w-6 text-church-blue" />
-                    <span className="text-lg">09:00 - 13:30</span>
+                    <span className="text-lg">08:30 - 13:30</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <MapPin className="h-6 w-6 text-church-blue" />
@@ -109,7 +108,7 @@ const RegistrationConfirmation = () => {
                       rel="noopener noreferrer" 
                       className="text-lg hover:text-church-blue hover:underline"
                     >
-                      Gate Gaborone, Plot 54014, Gaborone West
+                      Cresta Lodge Gaborone, Samora Machel Dr, Gaborone
                     </a>
                   </div>
                 </div>
