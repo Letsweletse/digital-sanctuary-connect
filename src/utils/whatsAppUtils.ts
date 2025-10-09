@@ -75,19 +75,17 @@ export const sendDirectWhatsAppMessage = async (phone: string, message: string) 
 export const generatePremiumWhatsAppConfirmation = (registrationData: RegistrationData): string => {
   const { event, attendee } = registrationData;
   
-  const message = `✅ *FREE REGISTRATION CONFIRMED*
+  const message = `✅ *REGISTRATION CONFIRMED*
 
 🎉 *${event.title}*
 
-📅 *Dates:* July 3-5, 2025
-📍 *Location:* Travelodge Conference Centre, Gaborone
+📅 *Date:* Saturday, November 1, 2025
+⏰ *Time:* 09:00 - 13:30
+📍 *Location:* Gate Gaborone, Plot 54014, Gaborone West
 🗺️ *Get Directions:* https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA
 
-⏰ *Schedule:*
-• Thursday Evening: Session 1 (18:00–20:30)
-• Friday Morning: Sessions 2–4 (08:30–13:30)
-• Friday Evening: Session 5 (18:00–20:30)
-• Saturday Morning: Sessions 6–8 (08:30–13:30)
+*About the Event:*
+Join us for Perspectives on the Apostolic with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family. Registration is compulsory. Refreshments provided, freewill offerings received.
 
 👤 *Attendee Details:*
 • *Name:* ${attendee.name}
@@ -96,13 +94,10 @@ export const generatePremiumWhatsAppConfirmation = (registrationData: Registrati
 • *Role:* ${attendee.role}
 • *Church:* ${attendee.denomination}
 • *Attendees:* ${attendee.numberOfAttendees}
-• *Registration Fee:* ✨ FREE ✨
 
 ${registrationData.checkInUrl ? `🎫 *Check-in Link:* ${registrationData.checkInUrl}\n` : ''}
 
-*Thank you for your FREE registration!* We look forward to seeing you at this transformative conference where you'll learn to rule your domain through apostolic principles.
-
-No payment required - your spot is secured! 🙌
+*Thank you for your registration!* We look forward to seeing you at this transformative conference.
 
 For any questions, please contact us at info@gategaborone.com
 
@@ -114,16 +109,16 @@ _Reach | Resource | Reform_`;
 
 // Generate simple confirmation message with clickable location link
 export const generateSimpleWhatsAppMessage = (eventTitle: string, attendeeName: string, eventDate: string): string => {
-  return `✅ FREE Registration confirmed for ${eventTitle}
+  return `✅ Registration confirmed for ${eventTitle}
 
-Hello ${attendeeName}, your FREE registration has been successfully processed.
+Hello ${attendeeName}, your registration has been successfully processed.
 
-Conference Dates: July 3-5, 2025
-Location: Travelodge Conference Centre, Gaborone
+Date: Saturday, November 1, 2025
+Time: 09:00 - 13:30
+Location: Gate Gaborone, Plot 54014, Gaborone West
 📍 Get Directions: https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA
-Registration Fee: ✨ FREE ✨
 
-Thank you for your FREE registration! We'll send you more details closer to the conference.
+Thank you for your registration! We'll send you more details closer to the conference.
 
 Gate Gaborone
 Reach | Resource | Reform`;
