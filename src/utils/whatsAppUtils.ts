@@ -1,4 +1,3 @@
-
 import { RegistrationData } from '@/types/eventTypes';
 
 // Direct WhatsApp API configuration
@@ -23,8 +22,8 @@ export const sendDirectWhatsAppMessage = async (phone: string, message: string) 
 
     // Ensure message includes branding
     let finalMessage = message;
-    if (!finalMessage.includes("Gate Gaborone")) {
-      finalMessage += "\n\n*Gate Gaborone* - Reach | Resource | Reform";
+    if (!finalMessage.includes("Apostolic Conference")) {
+      finalMessage += "\n\n*Perspectives on the Apostolic Conference*";
     }
 
     // Make direct API call to UltraMsg
@@ -80,9 +79,9 @@ export const generatePremiumWhatsAppConfirmation = (registrationData: Registrati
 🎉 *${event.title}*
 
 📅 *Date:* Saturday, November 1, 2025
-⏰ *Time:* 09:00 - 13:30
-📍 *Location:* Gate Gaborone, Plot 54014, Gaborone West
-🗺️ *Get Directions:* https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA
+⏰ *Time:* 08:30 - 13:30
+📍 *Location:* Cresta Lodge Gaborone, Samora Machel Dr, Gaborone
+🗺️ *Get Directions:* https://maps.app.goo.gl/qTbip9HaE5B1zbaUA
 
 *About the Event:*
 Join us for Perspectives on the Apostolic with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family. Registration is compulsory. Refreshments provided, freewill offerings received.
@@ -99,10 +98,9 @@ ${registrationData.checkInUrl ? `🎫 *Check-in Link:* ${registrationData.checkI
 
 *Thank you for your registration!* We look forward to seeing you at this transformative conference.
 
-For any questions, please contact us at info@gategaborone.com
+For any questions, please reply to this message.
 
-*Gate Gaborone*
-_Reach | Resource | Reform_`;
+*Perspectives on the Apostolic Conference*`;
 
   return message;
 };
@@ -114,14 +112,13 @@ export const generateSimpleWhatsAppMessage = (eventTitle: string, attendeeName: 
 Hello ${attendeeName}, your registration has been successfully processed.
 
 Date: Saturday, November 1, 2025
-Time: 09:00 - 13:30
-Location: Gate Gaborone, Plot 54014, Gaborone West
-📍 Get Directions: https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA
+Time: 08:30 - 13:30
+Location: Cresta Lodge Gaborone, Samora Machel Dr, Gaborone
+📍 Get Directions: https://maps.app.goo.gl/qTbip9HaE5B1zbaUA
 
 Thank you for your registration! We'll send you more details closer to the conference.
 
-Gate Gaborone
-Reach | Resource | Reform`;
+Perspectives on the Apostolic Conference`;
 };
 
 // Validate phone number for WhatsApp
