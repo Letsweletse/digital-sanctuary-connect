@@ -65,9 +65,9 @@ const KioskManager = () => {
     try {
       const defaultConfig = {
         kiosk_mode: true,
-        event_name: 'Apostolic Conference: Rule Your Domain',
-        active_from: '2025-07-03T06:00:00Z',
-        active_until: '2025-07-06T23:59:59Z',
+        event_name: 'Perspectives on the Apostolic',
+        active_from: '2025-11-01T06:00:00Z',
+        active_until: '2025-11-01T23:59:59Z',
       };
 
       const { data, error } = await supabase

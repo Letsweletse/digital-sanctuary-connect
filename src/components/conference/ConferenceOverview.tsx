@@ -8,7 +8,7 @@ const ConferenceOverview: React.FC = () => {
       
       <div className="prose max-w-none text-church-neutral-700">
         <p className="mb-4">
-          Conference Overview: The "Apostolic Conference: Rule Your Domain" is a pivotal gathering designed to equip believers with the tools and understanding needed to establish apostolic governance in their respective spheres of influence.
+          Join us for Perspectives on the Apostolic with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family. This pivotal gathering is designed to equip believers with apostolic principles and understanding.
         </p>
         
         <h3 className="text-xl font-semibold text-church-blue-dark mt-6 mb-3">What to Expect:</h3>

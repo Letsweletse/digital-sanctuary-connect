@@ -12,8 +12,8 @@ const CheckIn = () => {
   const { id } = useParams<{ id: string }>();
   const [checkedIn, setCheckedIn] = useState(false);
   
-  // Updated Google Maps URL for Travelodge Conference Centre
-  const googleMapsUrl = "https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA";
+  // Updated Google Maps URL for Gate Gaborone
+  const googleMapsUrl = "https://maps.app.goo.gl/GateGaborone";
   
   useEffect(() => {
     // Log page visit for analytics
@@ -67,11 +67,11 @@ const CheckIn = () => {
           <CardContent className="p-8 md:p-10">
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-church-blue-dark">Apostolic Conference: Rule Your Domain</h2>
+                <h2 className="text-2xl font-bold text-church-blue-dark">Perspectives on the Apostolic</h2>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5 text-church-blue flex-shrink-0" />
-                    <span>July 3-5, 2025 - Transform your understanding of apostolic principles</span>
+                    <span>Saturday, November 1, 2025 - 09:00 - 13:30</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Clock className="h-5 w-5 text-church-blue flex-shrink-0" />
@@ -89,8 +89,8 @@ const CheckIn = () => {
                       rel="noopener noreferrer"
                       className="hover:text-church-blue hover:underline"
                     >
-                      Travelodge Conference Centre<br />
-                      Gaborone, Botswana
+                      Gate Gaborone, Plot 54014<br />
+                      Gaborone West, Botswana
                     </a>
                   </div>
                 </div>
@@ -111,8 +111,8 @@ const CheckIn = () => {
                     checkInId: id,
                     timestamp: new Date().toISOString(),
                     mapsUrl: googleMapsUrl,
-                    eventTitle: "Apostolic Conference: Rule Your Domain",
-                    eventDates: "July 3-5, 2025"
+                    eventTitle: "Perspectives on the Apostolic",
+                    eventDates: "Saturday, November 1, 2025"
                   })}
                   size={200}
                   level="H"

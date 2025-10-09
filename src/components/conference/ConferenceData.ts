@@ -1,11 +1,11 @@
 import { getSpeakerImage } from '@/components/media/utils/speakerImageUtils';
 
 export const conferenceData = {
-  title: "Apostolic Conference: Rule Your Domain",
-  dates: "July 3-5, 2025",
-  venue: "Travelodge Conference Centre",
-  description: "Join us for this transformative conference as we explore apostolic principles for ruling your domain. This three-day event features powerful teaching, workshops, and fellowship opportunities.",
-  image: "/lovable-uploads/919c482f-8402-410d-933a-3dba7156a457.png",
+  title: "Perspectives on the Apostolic",
+  dates: "Saturday, November 1, 2025",
+  venue: "Gate Gaborone, Plot 54014, Gaborone West",
+  description: "Join us for Perspectives on the Apostolic with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family. Registration is compulsory. Refreshments provided, freewill offerings received.",
+  image: "/lovable-uploads/poa-november-2025.jpeg",
   targetDate: new Date("2025-07-03T18:00:00"),
   sessions: [
     {

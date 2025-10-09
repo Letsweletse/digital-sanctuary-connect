@@ -3,8 +3,8 @@ import React from 'react';
 import { ExternalLink, MapPin } from 'lucide-react';
 
 const LocationMap = () => {
-  // Updated Google Maps URL for Travelodge Conference Centre
-  const googleMapsUrl = "https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA";
+  // Updated Google Maps URL for Gate Gaborone
+  const googleMapsUrl = "https://maps.app.goo.gl/GateGaborone";
   
   return (
     <div className="mt-8">
@@ -15,7 +15,7 @@ const LocationMap = () => {
           allowFullScreen 
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
-          title="Travelodge Conference Centre Location"
+          title="Gate Gaborone Location"
         ></iframe>
       </div>
       <div className="mt-3 flex justify-center items-center">
@@ -26,7 +26,7 @@ const LocationMap = () => {
           className="flex items-center gap-1.5 text-church-blue hover:text-church-blue-dark transition-colors group"
         >
           <MapPin className="h-4 w-4" />
-          <span className="font-medium underline-offset-2 group-hover:underline">View Travelodge Conference Centre in Google Maps</span>
+          <span className="font-medium underline-offset-2 group-hover:underline">View Gate Gaborone in Google Maps</span>
           <ExternalLink className="h-3.5 w-3.5" />
         </a>
       </div>

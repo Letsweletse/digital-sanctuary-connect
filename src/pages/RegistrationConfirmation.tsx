@@ -24,8 +24,8 @@ const RegistrationConfirmation = () => {
   
   const { event, attendee } = registrationData;
   
-  // Updated Google Maps URL for Travelodge Conference Centre
-  const googleMapsUrl = "https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA";
+  // Updated Google Maps URL for Gate Gaborone
+  const googleMapsUrl = "https://maps.app.goo.gl/GateGaborone";
   
   // Create QR code value - a JSON string of important registration data
   const qrCodeValue = JSON.stringify({
@@ -35,15 +35,15 @@ const RegistrationConfirmation = () => {
     attendeeEmail: attendee.email,
     registrationId: registrationData.submitDate,
     location: googleMapsUrl,
-    eventDates: "July 3-5, 2025"
+    eventDates: "Saturday, November 1, 2025"
   });
   
   const handleAddToCalendar = () => {
-    // Calendar event for the conference start date
-    const startDate = new Date("2025-07-03T18:00:00");
-    const endDate = new Date("2025-07-05T13:30:00");
+    // Add to Google Calendar with full event details
+    const startDate = new Date("2025-11-01T09:00:00");
+    const endDate = new Date("2025-11-01T13:30:00");
     
-    const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z/${endDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z&details=${encodeURIComponent(`You registered for this FREE conference on ${new Date(registrationData.submitDate).toLocaleDateString()}. Conference runs July 3-5, 2025 at Travelodge Conference Centre, Gaborone.`)}&location=${encodeURIComponent("Travelodge Conference Centre, Gaborone, Botswana")}`;
+    const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z/${endDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z&details=${encodeURIComponent(`You registered for this conference on ${new Date(registrationData.submitDate).toLocaleDateString()}. Conference is on Saturday, November 1, 2025 at Gate Gaborone, Plot 54014, Gaborone West.`)}&location=${encodeURIComponent("Gate Gaborone, Plot 54014, Gaborone West, Botswana")}`;
     
     window.open(googleCalUrl, '_blank');
   };
@@ -52,7 +52,7 @@ const RegistrationConfirmation = () => {
     if (navigator.share) {
       navigator.share({
         title: `I'm attending ${event.title}`,
-        text: `Join me at ${event.title} on July 3-5, 2025 at Travelodge Conference Centre, Gaborone. FREE Registration!`,
+        text: `Join me at ${event.title} on Saturday, November 1, 2025 at Gate Gaborone, Plot 54014, Gaborone West. Registration is compulsory!`,
         url: window.location.href
       }).catch(err => console.error('Error sharing:', err));
     } else {
@@ -70,9 +70,9 @@ const RegistrationConfirmation = () => {
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <Check className="h-10 w-10 text-green-600" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-church-neutral-800 mb-3">FREE Registration Confirmed</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-church-neutral-800 mb-3">Registration Confirmed</h1>
             <p className="text-church-neutral-600 text-lg">
-              Thank you for your FREE registration for the Apostolic Conference.
+              Thank you for your registration for Perspectives on the Apostolic.
             </p>
           </div>
           
@@ -95,15 +95,11 @@ const RegistrationConfirmation = () => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Calendar className="h-6 w-6 text-church-blue" />
-                    <span className="text-lg">July 3-5, 2025</span>
+                    <span className="text-lg">Saturday, November 1, 2025 - 09:00 - 13:30</span>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <Clock className="h-6 w-6 text-church-blue mt-1" />
-                    <div className="text-lg">
-                      <div>Thursday Evening: 18:00–20:30</div>
-                      <div>Friday: 08:30–13:30 & 18:00–20:30</div>
-                      <div>Saturday: 08:30–13:30</div>
-                    </div>
+                  <div className="flex items-center gap-3">
+                    <Clock className="h-6 w-6 text-church-blue" />
+                    <span className="text-lg">09:00 - 13:30</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <MapPin className="h-6 w-6 text-church-blue" />
@@ -113,7 +109,7 @@ const RegistrationConfirmation = () => {
                       rel="noopener noreferrer" 
                       className="text-lg hover:text-church-blue hover:underline"
                     >
-                      Travelodge Conference Centre, Gaborone
+                      Gate Gaborone, Plot 54014, Gaborone West
                     </a>
                   </div>
                 </div>
@@ -171,7 +167,7 @@ const RegistrationConfirmation = () => {
                   className="border-church-blue text-church-blue py-5 sm:py-3 font-medium"
                 >
                   <Share2 className="mr-2 h-5 w-5" />
-                  Share FREE Conference
+                  Share Conference
                 </Button>
               </div>
             </CardContent>

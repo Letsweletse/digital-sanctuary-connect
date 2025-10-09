@@ -25,8 +25,8 @@ const CheckInOptions: React.FC<CheckInOptionsProps> = ({ onSelectMethod }) => {
       >
         <div className="w-full max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-2xl border-4 border-church-gold/20">
           <img 
-            src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3"
-            alt="Apostolic Conference: Rule Your Domain" 
+            src="/lovable-uploads/poa-november-2025.jpeg"
+            alt="Perspectives on the Apostolic" 
             className="w-full h-64 object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>

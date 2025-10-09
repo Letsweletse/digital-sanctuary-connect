@@ -74,16 +74,16 @@ const KioskHeader = () => {
           className="space-y-4"
         >
           <h2 className="text-4xl font-bold text-white mb-2">
-            Apostolic Conference: Rule Your Domain
+            Perspectives on the Apostolic
           </h2>
           <div className="flex items-center justify-center space-x-8 text-white/90">
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-church-gold rounded-full"></div>
-              <span className="text-xl">July 3-5, 2025</span>
+              <span className="text-xl">Saturday, November 1, 2025</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-church-gold rounded-full"></div>
-              <span className="text-xl">Travelodge Conference Centre</span>
+              <span className="text-xl">Gate Gaborone</span>
             </div>
           </div>
           <p className="text-2xl text-white/80 font-light">Conference Check-In</p>

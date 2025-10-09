@@ -10,7 +10,7 @@ const ContactInfoSection = () => {
       <div className="space-y-4">
         <h3 className="text-xl font-semibold text-church-neutral-800">Conference Location</h3>
         <p className="text-church-neutral-600">
-          The Apostolic Conference: Rule Your Domain will be held at Travelodge Conference Centre, Gaborone.
+          Perspectives on the Apostolic will be held at Gate Gaborone, Plot 54014, Gaborone West.
         </p>
         <LocationMap />
       </div>
