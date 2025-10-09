@@ -4,10 +4,12 @@ import { EventData } from '@/types/eventTypes';
 import { formatDate } from '@/utils/dateUtils';
 import { CalendarDays, Clock, MapPin, Users, BadgeDollarSign } from "lucide-react";
 import EventCountdownTimer from '@/components/events/EventCountdownTimer';
+
 interface FeaturedEventProps {
   featuredEvent: EventData;
   onRegisterClick: () => void;
 }
+
 const FeaturedEvent: React.FC<FeaturedEventProps> = ({
   featuredEvent,
   onRegisterClick
@@ -41,18 +43,20 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
     }
     return new Date(featuredEvent.date);
   };
-  return <section className="py-16 bg-gradient-to-br from-[#1a2332] via-[#24324b] to-[#2d3e5a] text-white relative overflow-hidden">
+
+  return (
+    <section className="py-16 bg-gradient-to-br from-[#1a2332] via-[#24324b] to-[#2d3e5a] text-white relative overflow-hidden">
       {/* Premium background pattern */}
       <div className="absolute inset-0 opacity-50" style={{
-      backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b8a156' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-    }}></div>
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b8a156' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+      }}></div>
       
       <div className="container px-4 mx-auto relative z-10">
         <div className="max-w-7xl mx-auto">
           {/* Premium header */}
           <div className="text-center mb-8">
             <span className="inline-block bg-gradient-to-r from-[#b8a156] to-[#d4c278] text-white px-6 py-2 text-sm font-semibold rounded-full uppercase tracking-wider mb-4">
-              Apostolic conference
+              Perspectives On The Apostolic
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 bg-gradient-to-r from-white to-[#b8a156] bg-clip-text text-transparent">
               Upcoming Conference
@@ -69,7 +73,11 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
               {/* Event Image - Mobile responsive with proper aspect ratio */}
               <div className="lg:w-1/2 relative">
                 <div className="aspect-[4/3] lg:aspect-auto lg:h-[600px] w-full">
-                  <img src="/lovable-uploads/c7d7d70a-edce-451c-83fd-da92f8e07431.png" alt={featuredEvent.title} className="w-full h-full object-cover object-center" />
+                  <img 
+                    src="/lovable-uploads/c7d7d70a-edce-451c-83fd-da92f8e07431.png" 
+                    alt={featuredEvent.title} 
+                    className="w-full h-full object-cover object-center" 
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent mx-0 px-[6px]"></div>
                 </div>
               </div>
@@ -94,7 +102,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
                       <MapPin className="h-5 w-5 mr-3 text-[#b8a156] flex-shrink-0" />
                       <div>
                         <div className="font-medium text-sm text-[#b8a156]">Venue</div>
-                        <div className="font-semibold">{featuredEvent.location}</div>
+                        <div className="font-semibold">Cresta Lodge Gaborone, Samora Machel Dr, Gaborone</div>
                       </div>
                     </div>
                   </div>
@@ -106,9 +114,9 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
                       <span className="font-semibold text-[#b8a156]">Conference Schedule</span>
                     </div>
                     <div className="bg-white/5 rounded-lg p-4 space-y-2">
-                      {featuredEvent.time.split('\n').map((timeSlot, index) => <div key={index} className="text-white/90 font-medium">
-                          {timeSlot}
-                        </div>)}
+                      <div className="text-white/90 font-medium">Saturday: Session 1 (09:00–10:15)</div>
+                      <div className="text-white/90 font-medium">Saturday: Session 2 (10:45–12:00)</div>
+                      <div className="text-white/90 font-medium">Saturday: Session 3 (12:05–13:10)</div>
                     </div>
                   </div>
 
@@ -136,12 +144,19 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
                   </p>
                   
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Button onClick={onRegisterClick} className="bg-gradient-to-r from-[#b8a156] to-[#d4c278] hover:from-[#d4c278] hover:to-[#b8a156] text-white px-8 py-6 text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-0 rounded-lg">
+                    <Button 
+                      onClick={onRegisterClick} 
+                      className="bg-gradient-to-r from-[#b8a156] to-[#d4c278] hover:from-[#d4c278] hover:to-[#b8a156] text-white px-8 py-6 text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-0 rounded-lg"
+                    >
                       <Users className="h-5 w-5 mr-3" />
                       FREE REGISTRATION
                     </Button>
                     
-                    <Button variant="outline" className="bg-gradient-to-r from-church-blue to-church-blue-dark hover:from-church-blue-dark hover:to-church-blue text-white font-semibold px-6 py-6 text-lg border-2 border-church-blue rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105" asChild>
+                    <Button 
+                      variant="outline" 
+                      className="bg-gradient-to-r from-church-blue to-church-blue-dark hover:from-church-blue-dark hover:to-church-blue text-white font-semibold px-6 py-6 text-lg border-2 border-church-blue rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105" 
+                      asChild
+                    >
                       <a href="/conference" className="flex items-center justify-center">
                         View Full Details
                       </a>
@@ -153,6 +168,8 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
           </div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default FeaturedEvent;
