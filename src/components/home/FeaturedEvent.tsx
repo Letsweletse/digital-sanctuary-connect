@@ -74,7 +74,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
               <div className="lg:w-1/2 relative">
                 <div className="aspect-[4/3] lg:aspect-auto lg:h-[600px] w-full">
                   <img 
-                    src="/lovable-uploads/c7d7d70a-edce-451c-83fd-da92f8e07431.png" 
+                    src="/lovable-uploads/poa-november-2025.jpeg" 
                     alt={featuredEvent.title} 
                     className="w-full h-full object-cover object-center" 
                   />
@@ -173,3 +173,4 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
 };
 
 export default FeaturedEvent;
+
