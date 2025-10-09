@@ -57,7 +57,7 @@ const CheckIn = () => {
           </h1>
           <p className="text-lg text-church-neutral-600 max-w-xl mx-auto">
             {checkedIn 
-              ? 'You have been successfully checked in to the Apostolic Conference. We look forward to seeing you!' 
+              ? 'You have been successfully checked in to the Perspectives On The Apostolic. We look forward to seeing you!' 
               : 'Please wait while we process your conference check-in...'}
           </p>
         </div>
@@ -66,11 +66,11 @@ const CheckIn = () => {
           <CardContent className="p-8 md:p-10">
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-church-blue-dark">Perspectives on the Apostolic</h2>
+                <h2 className="text-2xl font-bold text-church-blue-dark">Perspectives On The Apostolic</h2>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5 text-church-blue flex-shrink-0" />
-                    <span>Saturday, November 1, 2025 - 09:00 - 13:10</span>
+                    <span>Saturday, November 1, 2025 - 08:30 - 13:10</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Clock className="h-5 w-5 text-church-blue flex-shrink-0" />
