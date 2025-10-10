@@ -3,7 +3,7 @@ import { EventData, EventCategoryObject, EventCategoryType } from '@/types/event
 export const events: EventData[] = [
   {
     id: '6',
-    title: 'Perspectives on the Apostolic',
+    title: 'Perspectives On The Apostolic',
     date: '2025-11-01',
     time: '08:30 - 13:10',
     location: 'Cresta Lodge Gaborone, Samora Machel Dr, Gaborone',
