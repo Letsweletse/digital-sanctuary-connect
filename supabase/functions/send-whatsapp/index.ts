@@ -64,9 +64,10 @@ serve(async (req) => {
 
   } catch (error) {
     console.error("❌ Error in WhatsApp function:", error);
+    const errorMessage = error instanceof Error ? error.message : "Something went wrong sending WhatsApp message";
     return new Response(JSON.stringify({
       error: true,
-      message: error.message || "Something went wrong sending WhatsApp message"
+      message: errorMessage
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }

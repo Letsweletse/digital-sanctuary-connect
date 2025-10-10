@@ -32,7 +32,8 @@ const EventCard: React.FC<EventCardProps> = ({
           <img 
             src={event.image} 
             alt={event.title} 
-            className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+            className="object-cover object-top w-full h-full transition-transform duration-300 hover:scale-105"
+            style={{ objectPosition: '50% 20%' }}
           />
         </AspectRatio>
         <div className="absolute top-3 right-3">
