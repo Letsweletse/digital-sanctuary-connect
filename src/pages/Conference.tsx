@@ -23,6 +23,7 @@ const Conference = () => {
           venue={conferenceData.venue}
           description={conferenceData.description}
           image={conferenceData.image}
+          time="08:30 - 13:10"
           onRegister={openRegistration}
         />
         

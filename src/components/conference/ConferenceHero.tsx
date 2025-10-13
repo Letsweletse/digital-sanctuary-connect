@@ -9,6 +9,7 @@ interface ConferenceHeroProps {
   venue: string;
   description: string;
   image: string;
+  time?: string;
   onRegister: () => void;
 }
 
@@ -18,6 +19,7 @@ const ConferenceHero: React.FC<ConferenceHeroProps> = ({
   venue,
   description,
   image,
+  time = "08:30 - 13:10",
   onRegister
 }) => {
   return (
@@ -38,7 +40,7 @@ const ConferenceHero: React.FC<ConferenceHeroProps> = ({
               
               <div className="flex items-center text-church-neutral-700">
                 <Clock className="h-5 w-5 mr-2 text-church-blue" />
-                <span>Multiple Sessions</span>
+                <span>{time}</span>
               </div>
               
               <div className="flex items-center text-church-neutral-700">
@@ -64,7 +66,7 @@ const ConferenceHero: React.FC<ConferenceHeroProps> = ({
                 <Button 
                   variant="outline" 
                   className="w-full border-church-blue text-church-blue"
-                  onClick={() => window.open("https://calendar.google.com/calendar/render?action=TEMPLATE&text=Apostolic%20Conference:%20Rule%20Your%20Domain&dates=20250703T180000/20250705T133000&details=Join%20us%20for%20this%20transformative%20conference%20as%20we%20explore%20apostolic%20principles%20for%20ruling%20your%20domain.&location=Travelodge%20Conference%20Centre,%20Gaborone&sprop=&sprop=name:", "_blank")}
+                  onClick={() => window.open("https://calendar.google.com/calendar/render?action=TEMPLATE&text=Perspectives%20on%20the%20Apostolic&dates=20251101T083000/20251101T131000&details=Join%20us%20for%20Perspectives%20on%20the%20Apostolic%20with%20Thamo%20Naidoo,%20Presiding%20Apostolic%20Elder%20of%20Gate%20Global%20Family.&location=Cresta%20Lodge%20Gaborone,%20Samora%20Machel%20Dr,%20Gaborone&sprop=&sprop=name:", "_blank")}
                 >
                   Add to Calendar
                 </Button>
