@@ -56,7 +56,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
           {/* Premium header */}
           <div className="text-center mb-8">
             <span className="inline-block bg-gradient-to-r from-[#b8a156] to-[#d4c278] text-white px-6 py-2 text-sm font-semibold rounded-full uppercase tracking-wider mb-4">
-              Perspectives On The Apostolic
+              {featuredEvent.title}
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 bg-gradient-to-r from-white to-[#b8a156] bg-clip-text text-transparent">
               Upcoming Conference
@@ -74,7 +74,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
               <div className="lg:w-1/2 relative">
                 <div className="aspect-[4/3] lg:aspect-auto lg:h-[600px] w-full">
                   <img 
-                    src="/lovable-uploads/poa-november-2025.jpeg" 
+                    src={featuredEvent.image} 
                     alt={featuredEvent.title} 
                     className="w-full h-full object-cover object-center" 
                   />
@@ -102,7 +102,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
                       <MapPin className="h-5 w-5 mr-3 text-[#b8a156] flex-shrink-0" />
                       <div>
                         <div className="font-medium text-sm text-[#b8a156]">Venue</div>
-                        <div className="font-semibold">Cresta Lodge Gaborone, Samora Machel Dr, Gaborone</div>
+                        <div className="font-semibold">{featuredEvent.location}</div>
                       </div>
                     </div>
                   </div>
@@ -111,12 +111,10 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
                   <div className="mb-6">
                     <div className="flex items-center mb-3">
                       <Clock className="h-5 w-5 mr-2 text-[#b8a156]" />
-                      <span className="font-semibold text-[#b8a156]">Conference Schedule</span>
+                      <span className="font-semibold text-[#b8a156]">Event Time</span>
                     </div>
-                    <div className="bg-white/5 rounded-lg p-4 space-y-2">
-                      <div className="text-white/90 font-medium">Saturday: Session 1 (09:00–10:15)</div>
-                      <div className="text-white/90 font-medium">Saturday: Session 2 (10:45–12:00)</div>
-                      <div className="text-white/90 font-medium">Saturday: Session 3 (12:05–13:10)</div>
+                    <div className="bg-white/5 rounded-lg p-4">
+                      <div className="text-white/90 font-medium text-lg">{featuredEvent.time}</div>
                     </div>
                   </div>
 
