@@ -67,8 +67,8 @@ const Admin = () => {
                           {section.label}
                         </CardTitle>
                         <CardDescription>
-                          {section.id === 'registrations' && 'View and manage event registrations'}
-                          {section.id === 'sermons' && 'Upload and manage sermon audio files'}
+                          {section.id === 'registrations' && 'View and manage event registrations with location details'}
+                          {section.id === 'sermons' && 'Upload and manage sermon audio files and YouTube videos'}
                           {section.id === 'subscribers' && 'Manage newsletter subscribers'}
                           {section.id === 'database' && 'Monitor database connections'}
                           {section.id === 'email' && 'Test email functionality'}
