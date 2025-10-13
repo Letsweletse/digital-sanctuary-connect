@@ -11,8 +11,10 @@ interface EventDetailCardProps {
 }
 
 const EventDetailCard: React.FC<EventDetailCardProps> = ({ event, formatDate }) => {
-  // Updated Google Maps URL for Gate Gaborone
-  const googleMapsUrl = "https://maps.app.goo.gl/GateGaborone";
+  // Generate Google Maps search URL based on event location
+  const googleMapsUrl = event.location 
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`
+    : "https://maps.app.goo.gl/GateGaborone";
   
   // Function to handle date display - shows formatted date or TBA
   const displayDate = (dateString: string) => {
@@ -46,7 +48,7 @@ const EventDetailCard: React.FC<EventDetailCardProps> = ({ event, formatDate }) 
             rel="noopener noreferrer" 
             className="hover:text-church-blue hover:underline flex items-center gap-1 group"
           >
-            <span>Gate Gaborone, Plot 54014, Gaborone West</span>
+            <span>{event.location}</span>
             <ExternalLink className="h-3 w-3 opacity-70 group-hover:opacity-100" />
           </a>
         </div>
