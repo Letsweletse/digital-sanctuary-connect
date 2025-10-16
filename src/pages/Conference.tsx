@@ -2,13 +2,24 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 import { useEventRegistration } from '@/hooks/useEventRegistration';
+import EventRegistrationDialog from '@/components/events/EventRegistrationDialog';
 import ConferenceHero from '@/components/conference/ConferenceHero';
 import ConferenceCountdown from '@/components/conference/ConferenceCountdown';
 import ConferenceTabs from '@/components/conference/ConferenceTabs';
 import { conferenceData, conferenceEvent } from '@/components/conference/ConferenceData';
+import { formatDate } from '@/utils/dateUtils';
 
 const Conference = () => {
-  const { handleOpenRegistration } = useEventRegistration();
+  const {
+    isRegistrationOpen,
+    currentEvent,
+    formData,
+    isSubmitting,
+    handleOpenRegistration,
+    handleCloseRegistration,
+    handleInputChange,
+    handleSubmitRegistration
+  } = useEventRegistration();
   
   const openRegistration = () => {
     handleOpenRegistration(conferenceEvent);
@@ -35,6 +46,17 @@ const Conference = () => {
         <ConferenceTabs
           sessions={conferenceData.sessions}
           speakers={conferenceData.speakers}
+        />
+
+        <EventRegistrationDialog
+          isOpen={isRegistrationOpen}
+          onClose={handleCloseRegistration}
+          currentEvent={currentEvent}
+          formData={formData}
+          onInputChange={handleInputChange}
+          onSubmit={handleSubmitRegistration}
+          isSubmitting={isSubmitting}
+          formatDate={formatDate}
         />
       </main>
     </Layout>
