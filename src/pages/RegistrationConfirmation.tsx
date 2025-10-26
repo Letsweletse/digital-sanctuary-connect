@@ -24,7 +24,7 @@ const RegistrationConfirmation = () => {
   const { event, attendee } = registrationData;
   
   // Updated Google Maps URL for Cresta Lodge Gaborone
-  const googleMapsUrl = https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96;
+  const googleMapsUrl = "https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96";
   
   // Create QR code value - a JSON string of important registration data
   const qrCodeValue = JSON.stringify({
