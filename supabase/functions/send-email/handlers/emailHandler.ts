@@ -60,7 +60,7 @@ export async function processEmailRequest(req: Request): Promise<Response> {
     console.log(`🔗 [Email Handler] Check-in URL generated: ${checkInUrl}`);
     
     // Updated Google Maps URL for the conference location
-    const googleMapsUrl = "https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA";
+    const googleMapsUrl = "https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96";
     
     // Generate QR codes
     const locationQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(googleMapsUrl)}&size=300x300&margin=10&qzone=2`;
