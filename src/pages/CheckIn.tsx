@@ -12,7 +12,7 @@ const CheckIn = () => {
   const [checkedIn, setCheckedIn] = useState(false);
   
   // Updated Google Maps URL for Cresta Lodge Gaborone
-  const googleMapsUrl = "https://maps.app.goo.gl/qTbip9HaE5B1zbaUA";
+  const googleMapsUrl = "https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96";
   
   useEffect(() => {
     // Log page visit for analytics
@@ -30,8 +30,8 @@ const CheckIn = () => {
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: 'My Cresta Lodge Conference Check-in',
-        text: 'I\'m attending the Apostolic Conference at Cresta Lodge Gaborone! You should join too.',
+        title: 'My Gate Gaborone Conference Check-in',
+        text: 'I\'m attending the Apostolic Conference atGate Gaborone! You should join too.',
         url: window.location.href,
       })
       .catch(err => console.error('Error sharing:', err));
@@ -88,7 +88,7 @@ const CheckIn = () => {
                       rel="noopener noreferrer"
                       className="hover:text-church-blue hover:underline"
                     >
-                      Cresta Lodge Gaborone, Samora Machel Dr<br />
+                      Gate Gaborone<br />
                       Gaborone, Botswana
                     </a>
                   </div>
