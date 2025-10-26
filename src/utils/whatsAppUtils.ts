@@ -80,8 +80,8 @@ export const generatePremiumWhatsAppConfirmation = (registrationData: Registrati
 
 📅 *Date:* Saturday, November 1, 2025
 ⏰ *Time:* 08:30 - 13:30
-📍 *Location:* Cresta Lodge Gaborone, Samora Machel Dr, Gaborone
-🗺️ *Get Directions:* https://maps.app.goo.gl/qTbip9HaE5B1zbaUA
+📍 *Location:* GATE Gaborone Auditorium, Gaborone
+🗺️ *Get Directions:* https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96
 
 *About the Event:*
 Join us for Perspectives on the Apostolic with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family. Registration is compulsory. Refreshments provided, freewill offerings received.
@@ -113,8 +113,8 @@ Hello ${attendeeName}, your registration has been successfully processed.
 
 Date: Saturday, November 1, 2025
 Time: 08:30 - 13:30
-Location: Cresta Lodge Gaborone, Samora Machel Dr, Gaborone
-📍 Get Directions: https://maps.app.goo.gl/qTbip9HaE5B1zbaUA
+Location: GATE Gaborone Auditorium, Gaborone (VENUE UPDATE)
+📍 Get Directions: https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96
 
 Thank you for your registration! We'll send you more details closer to the conference.
 
