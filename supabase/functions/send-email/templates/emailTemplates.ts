@@ -115,7 +115,7 @@ export function generateConfirmationEmailContent({
   churchLogo = 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png'
 }: ConfirmationEmailProps): string {
   const churchUrl = "https://www.gategaborone.com";
-  const shareTextBase = `Join me at ${eventName} at Cresta Lodge Gaborone on Saturday, November 1, 2025 at Cresta Lodge Gaborone, Samora Machel Dr, Gaborone.`;
+  const shareTextBase = `Join me at ${eventName} at GATE Gaborone Auditorium on Saturday, November 1, 2025 at GATE Gaborone Auditorium, Gaborone.`;
   const checkInUrl = `${churchUrl}/check-in/${checkInId}`;
 
   return `
@@ -148,7 +148,7 @@ export function generateConfirmationEmailContent({
         <li style="margin-bottom: 8px;"><strong>Role:</strong> ${role}</li>
         <li style="margin-bottom: 8px;"><strong>Denomination:</strong> ${denomination}</li>
         <li style="margin-bottom: 8px;"><strong>Phone:</strong> ${phone}</li>
-        <li style="margin-bottom: 8px;"><strong>Location:</strong> <a href="https://maps.app.goo.gl/qTbip9HaE5B1zbaUA" style="color: #3b82f6;">Cresta Lodge Gaborone, Samora Machel Dr, Gaborone</a></li>
+        <li style="margin-bottom: 8px;"><strong>Location:</strong> <a href="https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96" style="color: #3b82f6;">GATE Gaborone Auditorium, Gaborone</a></li>
         <li style="margin-bottom: 8px;"><strong>Check-in ID:</strong> ${checkInId}</li>
         <li style="margin-bottom: 8px;"><strong>Check-in Link:</strong> <a href="${checkInUrl}" style="color: #3b82f6;">Quick Check-in Portal</a></li>
       </ul>
@@ -168,7 +168,7 @@ export function generateConfirmationEmailContent({
         <h3 style="color: #3b82f6; margin-top: 0; margin-bottom: 15px;">Conference Location</h3>
         <img src="${locationQrCodeUrl}" alt="Location QR Code" style="max-width: 180px; height: auto; margin-bottom: 10px; border: 1px solid #e5e7eb; padding: 5px; background-color: #fff;" />
         <p style="font-size: 14px; color: #6b7280; margin-bottom: 0;">Scan to open in Google Maps</p>
-        <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">Cresta Lodge Gaborone, Samora Machel Dr, Gaborone</p>
+        <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">GATE Gaborone Auditorium, Gaborone</p>
       </div>
       
       <div style="flex: 1; min-width: 250px; text-align: center; padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
