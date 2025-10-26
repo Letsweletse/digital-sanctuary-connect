@@ -39,7 +39,7 @@ export const useWhatsAppNotification = () => {
 *Date:* Saturday, November 1, 2025
 *Time:* 09:00 - 13:30
 *Location:* Gate Gaborone, Plot 54014, Gaborone West
-📍 *Get Directions:* https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA
+📍 *Get Directions:* https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96
 
 *About the Event:*
 Join us for Perspectives on the Apostolic with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family. Registration is compulsory. Refreshments provided, freewill offerings received.
