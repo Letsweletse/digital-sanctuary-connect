@@ -24,7 +24,7 @@ const RegistrationConfirmation = () => {
   const { event, attendee } = registrationData;
   
   // Updated Google Maps URL for Cresta Lodge Gaborone
-  const googleMapsUrl = "https://maps.app.goo.gl/qTbip9HaE5B1zbaUA";
+  const googleMapsUrl = https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96;
   
   // Create QR code value - a JSON string of important registration data
   const qrCodeValue = JSON.stringify({
@@ -42,7 +42,7 @@ const RegistrationConfirmation = () => {
     const startDate = new Date("2025-11-01T08:30:00");
     const endDate = new Date("2025-11-01T13:30:00");
     
-    const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z/${endDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z&details=${encodeURIComponent(`You registered for this conference on ${new Date(registrationData.submitDate).toLocaleDateString()}. Conference is on Saturday, November 1, 2025 at Cresta Lodge Gaborone, Samora Machel Dr, Gaborone.`)}&location=${encodeURIComponent("Cresta Lodge Gaborone, Samora Machel Dr, Gaborone, Botswana")}`;
+    const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z/${endDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z&details=${encodeURIComponent(`You registered for this conference on ${new Date(registrationData.submitDate).toLocaleDateString()}. Conference is on Saturday, November 1, 2025 at Gate Gaborone, Gaborone.`)}&location=${encodeURIComponent("Gate Gaborone, Gaborone, Botswana")}`;
     
     window.open(googleCalUrl, '_blank');
   };
@@ -51,7 +51,7 @@ const RegistrationConfirmation = () => {
     if (navigator.share) {
       navigator.share({
         title: `I'm attending ${event.title}`,
-        text: `Join me at ${event.title} on Saturday, November 1, 2025 at Cresta Lodge Gaborone, Samora Machel Dr, Gaborone. Registration is compulsory!`,
+        text: `Join me at ${event.title} on Saturday, November 1, 2025 at GATE Gaborone Auditorium , Gaborone. Registration is compulsory!`,
         url: window.location.href
       }).catch(err => console.error('Error sharing:', err));
     } else {
@@ -108,7 +108,7 @@ const RegistrationConfirmation = () => {
                       rel="noopener noreferrer" 
                       className="text-lg hover:text-church-blue hover:underline"
                     >
-                      Cresta Lodge Gaborone, Samora Machel Dr, Gaborone
+                      GATE Gaborone Auditorium , Gaborone
                     </a>
                   </div>
                 </div>
