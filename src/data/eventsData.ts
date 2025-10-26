@@ -6,7 +6,7 @@ export const events: EventData[] = [
     title: 'Perspectives On The Apostolic',
     date: '2025-11-01',
     time: '08:30 - 13:10',
-    location: 'Cresta Lodge Gaborone, Samora Machel Dr, Gaborone',
+    location: 'GATE Gaborone Auditorium , Gaborone',
     description: 'Join us for Perspectives on the Apostolic with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family. Registration is compulsory. Refreshments provided, freewill offerings received.',
     category: 'conference',
     image: '/lovable-uploads/poa-november-2025.jpeg',
