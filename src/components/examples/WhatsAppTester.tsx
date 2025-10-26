@@ -30,7 +30,7 @@ const WhatsAppTester = () => {
 *Date:* May 10, 2025
 *Time:* 9:00 AM – 13:30 PM
 *Location:* Gate Gaborone Auditorium
-*Map:* https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7
+*Map:* https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96
 
 🙋‍♂️ *Registration Details:*
 *Name:* ${fullName}
@@ -77,7 +77,7 @@ _Reach | Resource | Reform_`;
 *Date:* May 10, 2025
 *Time:* 9:00 AM – 13:30 PM
 *Location:* Gate Gaborone Auditorium
-*Map:* https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7
+*Map:* https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96
 
 🙋‍♂️ *Registration Details:*
 *Name:* ${fullName}
