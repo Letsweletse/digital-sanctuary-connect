@@ -24,7 +24,7 @@ const EventQRCode: React.FC<EventQRCodeProps> = ({
   // If the value contains old location URLs, replace with the updated one
   if (value.includes('maps.app.goo.gl') && !value.includes('Y5BPKfURyqQJ8EuXA')) {
     // Replace with the updated Google Maps URL
-    formattedValue = "https://maps.app.goo.gl/Y5BPKfURyqQJ8EuXA";
+    formattedValue = "https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96";
   }
   
   return (
