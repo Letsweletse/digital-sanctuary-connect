@@ -3,7 +3,7 @@ import { getSpeakerImage } from '@/components/media/utils/speakerImageUtils';
 export const conferenceData = {
   title: "Perspectives on the Apostolic",
   dates: "Saturday, November 1, 2025",
-  venue: "Cresta Lodge Gaborone, Samora Machel Dr, Gaborone",
+  venue: "GATE Gaborone Auditorium , Gaborone",
   description: "Join us for Perspectives on the Apostolic with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family. Registration is compulsory. Refreshments provided, freewill offerings received.",
   image: "/lovable-uploads/poa-november-2025.jpeg",
   targetDate: new Date("2025-11-01T08:30:00"),
