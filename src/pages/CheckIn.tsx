@@ -88,7 +88,7 @@ const CheckIn = () => {
                       rel="noopener noreferrer"
                       className="hover:text-church-blue hover:underline"
                     >
-                      Gate Gaborone<br />
+                      Gate Gaborone <br />
                       Gaborone, Botswana
                     </a>
                   </div>
