@@ -15,7 +15,7 @@ const LocationMap = () => {
           allowFullScreen 
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
-          title="Gate Gaborone Location"
+          title="GATE Gaborone Auditorium Location"
         ></iframe>
       </div>
       <div className="mt-3 flex justify-center items-center">
