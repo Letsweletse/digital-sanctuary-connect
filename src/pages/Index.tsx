@@ -27,6 +27,7 @@ const Index = () => {
   } = useEventRegistration();
   
   const openFeaturedEventRegistration = () => {
+    if (!featuredEvent) return;
     handleOpenRegistration(featuredEvent);
   };
 
@@ -70,12 +71,14 @@ const Index = () => {
         <Welcome />
         
         {/* Featured Event Section */}
-        <div id="register-event">
-          <FeaturedEvent 
-            featuredEvent={featuredEvent} 
-            onRegisterClick={openFeaturedEventRegistration} 
-          />
-        </div>
+        {featuredEvent && (
+          <div id="register-event">
+            <FeaturedEvent 
+              featuredEvent={featuredEvent} 
+              onRegisterClick={openFeaturedEventRegistration} 
+            />
+          </div>
+        )}
         
         {/* Featured Sections Links */}
         <FeaturedSections />
