@@ -53,7 +53,16 @@ export const useSermons = () => {
         downloads: sermon.downloads || 0
       }));
 
-      setSermons(transformedSermons);
+      // Deduplicate sermons that may have been imported more than once
+      const seen = new Set<string>();
+      const uniqueSermons = transformedSermons.filter((sermon) => {
+        const key = `${sermon.title}|${sermon.date}|${sermon.speaker}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+
+      setSermons(uniqueSermons);
       console.log('✅ Sermons loaded successfully');
       
     } catch (err) {

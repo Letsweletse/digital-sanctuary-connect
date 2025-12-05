@@ -4,6 +4,7 @@ import Layout from '@/components/layout/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import SermonAudioManager from '@/components/admin/SermonAudioManager';
+import SermonManager from '@/components/media/SermonManager';
 import SubscriberManager from '@/components/admin/SubscriberManager';
 import DatabaseMonitor from '@/components/admin/DatabaseMonitor';
 import EmailTestPanel from '@/components/admin/EmailTestPanel';
@@ -86,7 +87,27 @@ const Admin = () => {
               </TabsContent>
 
               <TabsContent value="sermons">
-                <SermonAudioManager />
+                <div className="space-y-8">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Sermon Library</CardTitle>
+                      <CardDescription>Update sermon details, YouTube links, and metadata.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <SermonManager />
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Audio Uploads (Storage)</CardTitle>
+                      <CardDescription>Manage raw sermon audio files stored in Supabase.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <SermonAudioManager />
+                    </CardContent>
+                  </Card>
+                </div>
               </TabsContent>
 
               <TabsContent value="subscribers">

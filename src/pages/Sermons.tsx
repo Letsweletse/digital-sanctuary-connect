@@ -100,15 +100,33 @@ const Sermons = () => {
         <div className="container mx-auto px-4 py-10">
           {/* Header */}
           <div className="max-w-4xl mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-church-neutral-900 mb-3">
-              Sermon Library
-            </h1>
-            <p className="text-church-neutral-600 mb-4 max-w-3xl">
-              Listen to and download sermons that bring biblical truth to life. 
-              Browse by speaker, topic, or scripture reference.
-            </p>
-            <div className="text-sm text-church-neutral-500">
-              Our library contains {sermons.length} sermon{sermons.length !== 1 ? 's' : ''} for your spiritual growth.
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-church-neutral-900 mb-3">
+                  Sermon Library
+                </h1>
+                <p className="text-church-neutral-600 mb-4 max-w-3xl">
+                  Listen to and download sermons that bring biblical truth to life. 
+                  Browse by speaker, topic, or scripture reference.
+                </p>
+                <div className="text-sm text-church-neutral-500">
+                  Our library contains {filteredSermons.length} unique sermon{filteredSermons.length !== 1 ? 's' : ''} for your spiritual growth.
+                </div>
+              </div>
+              <div className="flex md:flex-col items-start md:items-end gap-2">
+                <Button
+                  variant="outline"
+                  asChild
+                >
+                  <a
+                    href="https://www.youtube.com/watch?v=bY-s2ZQCQEU"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Watch sermons on YouTube
+                  </a>
+                </Button>
+              </div>
             </div>
           </div>
 
