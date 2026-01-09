@@ -78,10 +78,10 @@ export const generatePremiumWhatsAppConfirmation = (registrationData: Registrati
 
 🎉 *${event.title}*
 
-📅 *Date:* Saturday, November 1, 2025
-⏰ *Time:* 08:30 - 13:30
-📍 *Location:* GATE Gaborone Auditorium, Gaborone
-🗺️ *Get Directions:* https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96
+📅 *Date:* ${event.date}
+⏰ *Time:* ${event.time || '09:00 - 13:30'}
+📍 *Location:* GATE Gaborone Auditorium, Plot 54014, Gaborone West
+🗺️ *Get Directions:* https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7
 
 *About the Event:*
 Join us for Perspectives on the Apostolic with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family. Registration is compulsory. Refreshments provided, freewill offerings received.
@@ -100,7 +100,7 @@ ${registrationData.checkInUrl ? `🎫 *Check-in Link:* ${registrationData.checkI
 
 For any questions, please reply to this message.
 
-*Perspectives on the Apostolic Conference*`;
+*Gate Gaborone*`;
 
   return message;
 };
@@ -111,14 +111,14 @@ export const generateSimpleWhatsAppMessage = (eventTitle: string, attendeeName: 
 
 Hello ${attendeeName}, your registration has been successfully processed.
 
-Date: Saturday, November 1, 2025
-Time: 08:30 - 13:30
-Location: GATE Gaborone Auditorium, Gaborone (VENUE UPDATE)
-📍 Get Directions: https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96
+📅 Date: ${eventDate}
+⏰ Time: 09:00 - 13:30
+📍 Location: GATE Gaborone Auditorium, Plot 54014, Gaborone West
+🗺️ Get Directions: https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7
 
-Thank you for your registration! We'll send you more details closer to the conference.
+Thank you for your registration! We'll send you more details closer to the event.
 
-Perspectives on the Apostolic Conference`;
+Gate Gaborone`;
 };
 
 // Validate phone number for WhatsApp
