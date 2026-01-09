@@ -1,9 +1,9 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 
-// Use the correct API key and instance ID
+// Use hardcoded credentials - these should be updated with valid tokens
 const ULTRAMSG_API_KEY = Deno.env.get('ULTRAMSG_API_KEY') || 'zpivrjhut12tefx6';
-const ULTRAMSG_INSTANCE_ID = '114633';
+const ULTRAMSG_INSTANCE_ID = Deno.env.get('ULTRAMSG_INSTANCE_ID') || '114633';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -19,7 +19,9 @@ serve(async (req) => {
     const { phone, message } = await req.json();
 
     console.log("📱 [Edge Function] WhatsApp notification for phone:", phone);
-    console.log("💬 [Edge Function] Message:", message);
+    console.log("💬 [Edge Function] Message length:", message?.length);
+    console.log("🔑 [Edge Function] Using API Key:", ULTRAMSG_API_KEY.substring(0, 5) + "...");
+    console.log("🏢 [Edge Function] Using Instance ID:", ULTRAMSG_INSTANCE_ID);
 
     // Enhanced phone validation
     const phoneRegex = /^\+\d{10,15}$/;
@@ -39,31 +41,71 @@ serve(async (req) => {
       finalMessage += "\n\nGate Gaborone - Reach | Resource | Reform";
     }
 
-    // Direct API call with hardcoded instance ID and token for reliability
-    const response = await fetch(`https://api.ultramsg.com/instance${ULTRAMSG_INSTANCE_ID}/messages/chat`, {
+    // Use form-encoded data (correct format for UltraMsg API)
+    const formData = new URLSearchParams();
+    formData.append('token', ULTRAMSG_API_KEY);
+    formData.append('to', phone);
+    formData.append('body', finalMessage);
+    formData.append('priority', '10');
+
+    const apiUrl = `https://api.ultramsg.com/instance${ULTRAMSG_INSTANCE_ID}/messages/chat`;
+    console.log("🌐 [Edge Function] Calling API:", apiUrl);
+
+    const response = await fetch(apiUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        token: ULTRAMSG_API_KEY,
-        to: phone,
-        body: finalMessage,
-        priority: 10 // High priority to ensure faster delivery
-      })
+      headers: { 
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: formData.toString()
     });
 
-    if (!response.ok) {
-      throw new Error(`WhatsApp API responded with status: ${response.status}`);
+    const responseText = await response.text();
+    console.log("📥 [Edge Function] Raw API Response:", responseText);
+
+    let responseData;
+    try {
+      responseData = JSON.parse(responseText);
+    } catch {
+      responseData = { raw: responseText };
     }
 
-    const responseData = await response.json();
-    console.log("✅ WhatsApp API Response:", responseData);
+    if (!response.ok) {
+      console.error("❌ [Edge Function] API Error:", response.status, responseData);
+      return new Response(JSON.stringify({
+        error: true,
+        message: `WhatsApp API error: ${response.status}`,
+        details: responseData
+      }), {
+        status: response.status,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
 
-    return new Response(JSON.stringify(responseData), {
+    // Check for UltraMsg specific errors
+    if (responseData.error) {
+      console.error("❌ [Edge Function] UltraMsg Error:", responseData.error);
+      return new Response(JSON.stringify({
+        error: true,
+        message: responseData.error,
+        details: responseData
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    console.log("✅ [Edge Function] WhatsApp message sent successfully:", responseData);
+
+    return new Response(JSON.stringify({
+      success: true,
+      data: responseData,
+      message: "WhatsApp message sent successfully"
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
 
   } catch (error) {
-    console.error("❌ Error in WhatsApp function:", error);
+    console.error("❌ [Edge Function] Error:", error);
     const errorMessage = error instanceof Error ? error.message : "Something went wrong sending WhatsApp message";
     return new Response(JSON.stringify({
       error: true,

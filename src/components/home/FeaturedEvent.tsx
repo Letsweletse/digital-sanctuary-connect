@@ -59,10 +59,11 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
               {featuredEvent.title}
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 bg-gradient-to-r from-white to-[#b8a156] bg-clip-text text-transparent">
-              VENUE UPDATE!
-Due to emergency maintenance at Cresta Lodge, the POA event for the 1st November 2025 will now be held at our GATE Gaborone Auditorium (Phase 4).
-Apologies for the inconvenience caused.
+              Happy New Year and Welcome!
             </h2>
+            <p className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto">
+              We are grateful to begin this new year together and to welcome you to our first Perspectives on the Apostolic of the year.
+            </p>
           </div>
 
           {/* Large Countdown Timer at the top */}
