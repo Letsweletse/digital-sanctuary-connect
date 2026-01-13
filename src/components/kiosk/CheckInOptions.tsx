@@ -25,7 +25,7 @@ const CheckInOptions: React.FC<CheckInOptionsProps> = ({ onSelectMethod }) => {
       >
         <div className="w-full max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-2xl border-4 border-church-gold/20">
           <img 
-            src="/lovable-uploads/poa-november-2025.jpeg"
+            src="/lovable-uploads/poa-february-2026.jpg"
             alt="Perspectives on the Apostolic" 
             className="w-full h-64 object-cover"
           />

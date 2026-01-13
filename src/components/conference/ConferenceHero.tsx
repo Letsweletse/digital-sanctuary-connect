@@ -19,7 +19,7 @@ const ConferenceHero: React.FC<ConferenceHeroProps> = ({
   venue,
   description,
   image,
-  time = "08:30 - 13:10",
+  time = "09:00 - 13:30",
   onRegister
 }) => {
   return (
@@ -66,7 +66,7 @@ const ConferenceHero: React.FC<ConferenceHeroProps> = ({
                 <Button 
                   variant="outline" 
                   className="w-full border-church-blue text-church-blue"
-                  onClick={() => window.open("https://calendar.google.com/calendar/render?action=TEMPLATE&text=Perspectives%20on%20the%20Apostolic&dates=20251101T083000/20251101T131000&details=Join%20us%20for%20Perspectives%20on%20the%20Apostolic%20with%20Thamo%20Naidoo,%20Presiding%20Apostolic%20Elder%20of%20Gate%20Global%20Family.&location=Cresta%20Lodge%20Gaborone,%20Samora%20Machel%20Dr,%20Gaborone&sprop=&sprop=name:", "_blank")}
+                  onClick={() => window.open("https://calendar.google.com/calendar/render?action=TEMPLATE&text=Perspectives%20on%20the%20Apostolic&dates=20260207T090000/20260207T133000&details=Join%20us%20for%20Perspectives%20on%20the%20Apostolic%20with%20Thamo%20Naidoo,%20Presiding%20Apostolic%20Elder%20of%20Gate%20Global%20Family.&location=GATE%20Gaborone%20Auditorium,%20Plot%2054014,%20Gaborone%20West&sprop=&sprop=name:", "_blank")}
                 >
                   Add to Calendar
                 </Button>

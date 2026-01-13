@@ -66,8 +66,8 @@ const KioskManager = () => {
       const defaultConfig = {
         kiosk_mode: true,
         event_name: 'Perspectives on the Apostolic',
-        active_from: '2025-11-01T06:00:00Z',
-        active_until: '2025-11-01T23:59:59Z',
+        active_from: '2026-02-07T06:00:00Z',
+        active_until: '2026-02-07T23:59:59Z',
       };
 
       const { data, error } = await supabase
