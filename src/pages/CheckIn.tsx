@@ -70,7 +70,7 @@ const CheckIn = () => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5 text-church-blue flex-shrink-0" />
-                    <span>Saturday, 7 February 2026 - 09:00 - 13:30</span>
+                    <span>Saturday, 7 February 2026 </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Clock className="h-5 w-5 text-church-blue flex-shrink-0" />
