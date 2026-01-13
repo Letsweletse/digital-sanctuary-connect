@@ -148,7 +148,7 @@ export function generateConfirmationEmailContent({
         <li style="margin-bottom: 8px;"><strong>Role:</strong> ${role}</li>
         <li style="margin-bottom: 8px;"><strong>Denomination:</strong> ${denomination}</li>
         <li style="margin-bottom: 8px;"><strong>Phone:</strong> ${phone}</li>
-        <li style="margin-bottom: 8px;"><strong>Location:</strong> <a href="https://maps.app.goo.gl/eAGtrWHiWJMwJZ7W6" style="color: #3b82f6;">GATE Gaborone Auditorium, Plot 54014, Gaborone West</a></li>
+        <li style="margin-bottom: 8px;"><strong>Location:</strong> <a href="https://maps.app.goo.gl/eAGtrWHiWJMwJZ7W6" style="color: #3b82f6;">Gate Gaborone Auditorium, Plot 54014, Gaborone West</a></li>
         <li style="margin-bottom: 8px;"><strong>Check-in ID:</strong> ${checkInId}</li>
         <li style="margin-bottom: 8px;"><strong>Check-in Link:</strong> <a href="${checkInUrl}" style="color: #3b82f6;">Quick Check-in Portal</a></li>
       </ul>
