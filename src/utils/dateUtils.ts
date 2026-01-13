@@ -4,9 +4,10 @@ export const formatDate = (dateString: string): string => {
   
   const options: Intl.DateTimeFormatOptions = { 
     weekday: 'long', 
+    day: 'numeric',
     month: 'long', 
-    day: 'numeric' 
+    year: 'numeric'
   };
   
-  return new Date(dateString).toLocaleDateString('en-US', options);
+  return new Date(dateString).toLocaleDateString('en-GB', options);
 };

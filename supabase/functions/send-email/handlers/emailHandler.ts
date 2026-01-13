@@ -42,9 +42,9 @@ export async function processEmailRequest(req: Request): Promise<Response> {
       denomination, 
       phone, 
       location,
-      eventDate = "2025-05-10",
-      eventTime = "9:00 AM - 1:30 PM",
-      eventImage = "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/POA_1743681812478.jpg",
+      eventDate = "Saturday, 7 February 2026",
+      eventTime = "09:00 - 13:30",
+      eventImage = "/lovable-uploads/poa-february-2026.jpg",
       checkInId = uuidv4(),
       attendeeEmail = email
     } = body;
