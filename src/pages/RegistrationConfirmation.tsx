@@ -94,7 +94,7 @@ const RegistrationConfirmation = () => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Calendar className="h-6 w-6 text-church-blue" />
-                    <span className="text-lg">Saturday, 7 February 2026 - 09:00 - 13:30</span>
+                    <span className="text-lg">Saturday, 7 February 2026 </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Clock className="h-6 w-6 text-church-blue" />
