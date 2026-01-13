@@ -36,10 +36,10 @@ export const useWhatsAppNotification = () => {
       const messageText = `✅ *Registration Confirmed for Gate Gaborone!*
 
 *Conference:* ${registrationData.event.title}
-*Date:* Saturday, November 1, 2025
+*Date:* Saturday, 7 February 2026
 *Time:* 09:00 - 13:30
-*Location:* Gate Gaborone, Plot 54014, Gaborone West
-📍 *Get Directions:* https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96
+*Location:* GATE Gaborone Auditorium, Plot 54014, Gaborone West
+📍 *Get Directions:* https://maps.app.goo.gl/eAGtrWHiWJMwJZ7W6
 
 *About the Event:*
 Join us for Perspectives on the Apostolic with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family. Registration is compulsory. Refreshments provided, freewill offerings received.

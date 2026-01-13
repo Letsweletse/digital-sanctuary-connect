@@ -18,7 +18,7 @@ const EventDetailCard: React.FC<EventDetailCardProps> = ({ event, formatDate }) 
   
   // Function to handle date display - shows formatted date or TBA
   const displayDate = (dateString: string) => {
-    return dateString === 'TBA' ? 'Saturday, November 1, 2025' : formatDate(dateString);
+    return dateString === 'TBA' ? 'Saturday, 7 February 2026' : formatDate(dateString);
   };
   
   return (

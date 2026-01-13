@@ -70,14 +70,14 @@ const CheckIn = () => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5 text-church-blue flex-shrink-0" />
-                    <span>Saturday, November 1, 2025 - 08:30 - 13:10</span>
+                    <span>Saturday, 7 February 2026 - 09:00 - 13:30</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Clock className="h-5 w-5 text-church-blue flex-shrink-0" />
                     <div className="text-sm">
-                      <div>Saturday: Session 1 (09:00–10:15)</div>
-                      <div>Saturday: Session 2 (10:45–12:00)</div>
-                      <div>Saturday: Session 3 (12:05–13:10)</div>
+                      <div>Session 1: 09:00–10:15</div>
+                      <div>Session 2: 10:45–12:00</div>
+                      <div>Session 3: 12:05–13:30</div>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -111,7 +111,7 @@ const CheckIn = () => {
                     timestamp: new Date().toISOString(),
                     mapsUrl: googleMapsUrl,
                     eventTitle: "Perspectives on the Apostolic",
-                    eventDates: "Saturday, November 1, 2025"
+                    eventDates: "Saturday, 7 February 2026"
                   })}
                   size={200}
                   level="H"

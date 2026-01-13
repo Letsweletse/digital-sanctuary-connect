@@ -115,7 +115,7 @@ export function generateConfirmationEmailContent({
   churchLogo = 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png'
 }: ConfirmationEmailProps): string {
   const churchUrl = "https://www.gategaborone.com";
-  const shareTextBase = `Join me at ${eventName} at GATE Gaborone Auditorium on Saturday, November 1, 2025 at GATE Gaborone Auditorium, Gaborone.`;
+  const shareTextBase = `Join me at ${eventName} at GATE Gaborone Auditorium on Saturday, 7 February 2026 at GATE Gaborone Auditorium, Gaborone.`;
   const checkInUrl = `${churchUrl}/check-in/${checkInId}`;
 
   return `
@@ -141,14 +141,14 @@ export function generateConfirmationEmailContent({
       <h3 style="color: #3b82f6; margin-top: 0; margin-bottom: 10px;">Conference Details</h3>
       <ul style="padding-left: 20px; margin-bottom: 0;">
         <li style="margin-bottom: 8px;"><strong>Conference:</strong> ${eventName}</li>
-        <li style="margin-bottom: 8px;"><strong>Date:</strong> Saturday, November 1, 2025</li>
-        <li style="margin-bottom: 8px;"><strong>Time:</strong> 09:00 - 13:10</li>
+        <li style="margin-bottom: 8px;"><strong>Date:</strong> Saturday, 7 February 2026</li>
+        <li style="margin-bottom: 8px;"><strong>Time:</strong> 09:00 - 13:30</li>
         <li style="margin-bottom: 8px;"><strong>About:</strong> Join us for Perspectives on the Apostolic with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family.</li>
         <li style="margin-bottom: 8px;"><strong>Registration Type:</strong> <span style="color: #3b82f6; font-weight: bold;">Standard Registration</span></li>
         <li style="margin-bottom: 8px;"><strong>Role:</strong> ${role}</li>
         <li style="margin-bottom: 8px;"><strong>Denomination:</strong> ${denomination}</li>
         <li style="margin-bottom: 8px;"><strong>Phone:</strong> ${phone}</li>
-        <li style="margin-bottom: 8px;"><strong>Location:</strong> <a href="https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96" style="color: #3b82f6;">GATE Gaborone Auditorium, Gaborone</a></li>
+        <li style="margin-bottom: 8px;"><strong>Location:</strong> <a href="https://maps.app.goo.gl/eAGtrWHiWJMwJZ7W6" style="color: #3b82f6;">GATE Gaborone Auditorium, Plot 54014, Gaborone West</a></li>
         <li style="margin-bottom: 8px;"><strong>Check-in ID:</strong> ${checkInId}</li>
         <li style="margin-bottom: 8px;"><strong>Check-in Link:</strong> <a href="${checkInUrl}" style="color: #3b82f6;">Quick Check-in Portal</a></li>
       </ul>
@@ -159,7 +159,7 @@ export function generateConfirmationEmailContent({
       <ul style="padding-left: 20px; margin-bottom: 0;">
         <li style="margin-bottom: 8px;"><strong>Session 1:</strong> 09:00–10:15</li>
         <li style="margin-bottom: 8px;"><strong>Session 2:</strong> 10:45–12:00</li>
-        <li style="margin-bottom: 8px;"><strong>Session 3:</strong> 12:05–13:10</li>
+        <li style="margin-bottom: 8px;"><strong>Session 3:</strong> 12:05–13:30</li>
       </ul>
     </div>
 
