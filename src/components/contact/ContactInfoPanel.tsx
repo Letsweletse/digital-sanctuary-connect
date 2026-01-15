@@ -69,7 +69,7 @@ const ContactInfoPanel = () => {
             </svg>
           }
         >
-          <p className="text-church-neutral-700">General Information: otenggate@gmail.com</p>
+          <p className="text-church-neutral-700">General Information: info@gategaborone.com</p>
         </ContactInfoItem>
         
         <ContactInfoItem 

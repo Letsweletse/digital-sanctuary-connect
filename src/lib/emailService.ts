@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 
 // Admin email addresses for notifications
 export const ADMIN_EMAILS = [
-  'otenggate@gmail.com',
   'info@gategaborone.com',
   'blimenterprise@zohomail.com'
 ];
