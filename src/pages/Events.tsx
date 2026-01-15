@@ -75,14 +75,13 @@ const Events = () => {
             {sortedEvents.length === 0 ? (
               <div className="mt-8 rounded-2xl bg-white/90 shadow-lg border border-church-blue-light/30 p-8 text-center">
                 <h2 className="text-2xl md:text-3xl font-semibold text-church-neutral-900 mb-3">
-                  No upcoming events right now
+                  No upcoming events at the moment
                 </h2>
                 <p className="text-church-neutral-700 mb-2">
-                  Thank you for being part of the GATE Gaborone family this year.
+                  Thank you for being part of the GATE Gaborone family.
                 </p>
                 <p className="text-church-neutral-700">
-                  We wish you a blessed festive season and a joyful New Year.
-                  Look out for new and upcoming events in the year ahead!
+                  Check back soon for new and upcoming events, or follow us on social media to stay updated!
                 </p>
               </div>
             ) : (
