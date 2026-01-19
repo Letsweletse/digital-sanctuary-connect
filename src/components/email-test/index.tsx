@@ -125,7 +125,7 @@ const EmailTest = () => {
       />
       
       <div className="mt-4 text-sm text-gray-500">
-        <p>Admin recipients: info@gategaborone.com, blimenterprise@zohomail.com</p>
+        <p>Admin recipients: otenggate@gmail.com, info@gategaborone.com, blimenterprise@zohomail.com</p>
       </div>
     </Card>
   );
