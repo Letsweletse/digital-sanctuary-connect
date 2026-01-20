@@ -208,14 +208,14 @@ function generateConfirmationEmailContent(params: {
   checkInId: string;
   locationQrCodeUrl: string;
   checkInQrCodeUrl: string;
-  encodedIcsContent: string;
+  googleCalendarUrl: string;
   whatsappShareUrl: string;
   churchLogo?: string;
 }): string {
   const {
     title, name, eventName, eventDate, eventTime, eventImage,
     registrationType, role, denomination, phone, checkInId,
-    locationQrCodeUrl, checkInQrCodeUrl, encodedIcsContent, whatsappShareUrl,
+    locationQrCodeUrl, checkInQrCodeUrl, googleCalendarUrl, whatsappShareUrl,
     churchLogo = 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png'
   } = params;
 
@@ -289,8 +289,8 @@ function generateConfirmationEmailContent(params: {
     </div>
 
     <div style="text-align: center; margin-bottom: 30px;">
-      <a href="data:text/calendar;charset=utf-8,${encodedIcsContent}" download="${eventName.replace(/\s+/g, '_')}_invite.ics" style="display: inline-block; padding: 15px 30px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px;">
-        📅 Add to Calendar
+      <a href="${googleCalendarUrl}" target="_blank" style="display: inline-block; padding: 15px 30px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px;">
+        📅 Add to Google Calendar
       </a>
       <a href="${whatsappShareUrl}" target="_blank" style="display: inline-block; padding: 15px 30px; background-color: #25D366; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px;">
         📱 Share on WhatsApp
@@ -372,16 +372,12 @@ async function processEmailRequest(req: Request): Promise<Response> {
     const whatsappShareText = `Hey! I just registered for ${eventName} at Gate Gaborone. You should come too! 🙌 Date: ${eventDate}, Time: ${eventTime}. Here's the link: ${baseUrl}/events?register=${encodeURIComponent(eventName)}`;
     const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(whatsappShareText)}`;
 
-    const icsContent = generateIcsContent({
-      eventName,
-      startDateFormatted,
-      endDateFormatted,
-      nowFormatted,
-      location: googleMapsUrl,
-      message: message || "",
-      checkInId
-    });
-    const encodedIcsContent = encodeURIComponent(icsContent);
+    // Generate Google Calendar URL instead of ICS file (works better with email tracking)
+    const formatForGoogleCalendar = (dateStr: string) => {
+      return dateStr.replace(/-|:|\.\d{3}/g, "").replace("Z", "Z");
+    };
+    const venueLocation = "Gate Gaborone Auditorium, Plot 54014, Gaborone West";
+    const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventName)}&dates=${formatForGoogleCalendar(startDateFormatted)}/${formatForGoogleCalendar(endDateFormatted)}&details=${encodeURIComponent(`Check-in ID: ${checkInId}\n\nVenue: ${venueLocation}\nMap: ${googleMapsUrl}`)}&location=${encodeURIComponent(venueLocation)}&sf=true&output=xml`;
 
     console.log("📤 [Email Handler] Preparing admin email...");
     const adminHtmlContent = generateAdminEmailContent({
@@ -432,7 +428,7 @@ async function processEmailRequest(req: Request): Promise<Response> {
         checkInId,
         locationQrCodeUrl,
         checkInQrCodeUrl,
-        encodedIcsContent,
+        googleCalendarUrl,
         whatsappShareUrl
       });
 
