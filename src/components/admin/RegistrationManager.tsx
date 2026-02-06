@@ -3,13 +3,17 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Download, Mail, MessageCircle, Calendar, Users, RefreshCw } from 'lucide-react';
+import { Download, Mail, MessageCircle, Calendar, Users, RefreshCw, Phone } from 'lucide-react';
 import { registrationService, RegistrationRecord } from '@/services/registrationService';
 import { useToast } from '@/hooks/use-toast';
+import { sendEventRegistrationEmail } from '@/lib/emailService';
+import { supabase } from '@/integrations/supabase/client';
 
 const RegistrationManager = () => {
   const [registrations, setRegistrations] = useState<RegistrationRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [sendingEmail, setSendingEmail] = useState<string | null>(null);
+  const [sendingWhatsApp, setSendingWhatsApp] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchRegistrations = async () => {
@@ -100,6 +104,99 @@ const RegistrationManager = () => {
   };
 
   const { eventCounts, totalAttendees } = getEventStats();
+
+  const handleResendEmail = async (registration: RegistrationRecord) => {
+    setSendingEmail(registration.id);
+    try {
+      const registrationData = {
+        attendee: {
+          title: registration.attendee_title || 'Mr',
+          name: registration.attendee_name,
+          email: registration.attendee_email,
+          phone: registration.attendee_phone || 'N/A',
+          role: registration.attendee_role || 'Individual',
+          denomination: registration.attendee_denomination || 'N/A',
+          numberOfAttendees: registration.number_of_attendees || 1
+        },
+        eventDate: registration.event_date,
+        eventTime: registration.event_time || '09:00 - 13:30',
+        eventImage: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/Malawi%20Conference_1744623783611.jpeg',
+        location: registration.event_location || 'Gate Gaborone Auditorium, Plot 54014, Gaborone West',
+        message: registration.additional_message || '',
+        registrationType: registration.registration_type || 'Standard',
+      };
+
+      await sendEventRegistrationEmail(registration.event_name, registrationData);
+      
+      // Update status in database
+      await registrationService.updateRegistrationStatus(registration.id, { email_sent: true });
+      
+      // Update local state
+      setRegistrations(prev => prev.map(r => 
+        r.id === registration.id ? { ...r, email_sent: true } : r
+      ));
+
+      toast({
+        title: "Email Sent",
+        description: `Confirmation email resent to ${registration.attendee_email}`,
+      });
+    } catch (error) {
+      console.error('Error resending email:', error);
+      toast({
+        title: "Error",
+        description: "Failed to resend email. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setSendingEmail(null);
+    }
+  };
+
+  const handleSendWhatsApp = async (registration: RegistrationRecord) => {
+    if (!registration.attendee_phone) {
+      toast({
+        title: "No Phone Number",
+        description: "This registrant doesn't have a phone number on file.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setSendingWhatsApp(registration.id);
+    try {
+      // Send WhatsApp via edge function
+      const { data, error } = await supabase.functions.invoke('send-whatsapp', {
+        body: {
+          phone: registration.attendee_phone,
+          message: `Hi ${registration.attendee_name}! 👋\n\nThis is a reminder about your registration for *${registration.event_name}*.\n\n📅 Date: ${registration.event_date}\n⏰ Time: ${registration.event_time || '09:00 - 13:30'}\n📍 Venue: Gate Gaborone Auditorium, Plot 54014, Gaborone West\n\nPlease arrive 15 minutes early for check-in.\n\nSee you there! 🙌\n\n— Gate Gaborone`
+        }
+      });
+
+      if (error) throw error;
+
+      // Update status in database
+      await registrationService.updateRegistrationStatus(registration.id, { whatsapp_sent: true });
+      
+      // Update local state
+      setRegistrations(prev => prev.map(r => 
+        r.id === registration.id ? { ...r, whatsapp_sent: true } : r
+      ));
+
+      toast({
+        title: "WhatsApp Sent",
+        description: `Message sent to ${registration.attendee_phone}`,
+      });
+    } catch (error) {
+      console.error('Error sending WhatsApp:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send WhatsApp message. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setSendingWhatsApp(null);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -198,16 +295,34 @@ const RegistrationManager = () => {
                     <div>
                       <h3 className="font-semibold">{registration.attendee_name}</h3>
                       <p className="text-sm text-muted-foreground">{registration.attendee_email}</p>
+                      {registration.attendee_phone && (
+                        <p className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5">
+                          <Phone className="h-3 w-3" />
+                          {registration.attendee_phone}
+                        </p>
+                      )}
                     </div>
                     <div className="flex gap-2">
-                      <Badge variant={registration.email_sent ? "default" : "secondary"}>
+                      <Button
+                        variant={registration.email_sent ? "default" : "secondary"}
+                        size="sm"
+                        className="h-7 text-xs"
+                        disabled={sendingEmail === registration.id}
+                        onClick={() => handleResendEmail(registration)}
+                      >
                         <Mail className="h-3 w-3 mr-1" />
-                        {registration.email_sent ? "Email Sent" : "Email Pending"}
-                      </Badge>
-                      <Badge variant={registration.whatsapp_sent ? "default" : "secondary"}>
+                        {sendingEmail === registration.id ? "Sending..." : registration.email_sent ? "Resend Email" : "Send Email"}
+                      </Button>
+                      <Button
+                        variant={registration.whatsapp_sent ? "default" : "secondary"}
+                        size="sm"
+                        className="h-7 text-xs"
+                        disabled={sendingWhatsApp === registration.id || !registration.attendee_phone}
+                        onClick={() => handleSendWhatsApp(registration)}
+                      >
                         <MessageCircle className="h-3 w-3 mr-1" />
-                        {registration.whatsapp_sent ? "WhatsApp Sent" : "WhatsApp Pending"}
-                      </Badge>
+                        {sendingWhatsApp === registration.id ? "Sending..." : registration.whatsapp_sent ? "Resend WhatsApp" : "Send WhatsApp"}
+                      </Button>
                     </div>
                   </div>
                   
