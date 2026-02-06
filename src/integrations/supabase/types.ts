@@ -172,6 +172,33 @@ export type Database = {
         }
         Relationships: []
       }
+      qa_questions: {
+        Row: {
+          author_name: string
+          created_at: string
+          id: string
+          is_dismissed: boolean
+          is_highlighted: boolean
+          question: string
+        }
+        Insert: {
+          author_name: string
+          created_at?: string
+          id?: string
+          is_dismissed?: boolean
+          is_highlighted?: boolean
+          question: string
+        }
+        Update: {
+          author_name?: string
+          created_at?: string
+          id?: string
+          is_dismissed?: boolean
+          is_highlighted?: boolean
+          question?: string
+        }
+        Relationships: []
+      }
       sermons: {
         Row: {
           audio_url: string | null
