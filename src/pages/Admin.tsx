@@ -11,6 +11,7 @@ import EmailTestPanel from '@/components/admin/EmailTestPanel';
 import KioskManager from '@/components/admin/KioskManager';
 import BankingQRManager from '@/components/admin/BankingQRManager';
 import RegistrationManager from '@/components/admin/RegistrationManager';
+import QAManager from '@/components/admin/QAManager';
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -18,6 +19,7 @@ const Admin = () => {
   const adminSections = [
     { id: "overview", label: "Overview", icon: "📊" },
     { id: "registrations", label: "Registrations", icon: "📝" },
+    { id: "qa", label: "Live Q&A", icon: "❓" },
     { id: "sermons", label: "Sermons", icon: "🎵" },
     { id: "subscribers", label: "Subscribers", icon: "👥" },
     { id: "database", label: "Database", icon: "💾" },
@@ -48,7 +50,7 @@ const Admin = () => {
         <section className="py-16">
           <div className="container mx-auto px-4">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 mb-8">
+              <TabsList className="grid w-full grid-cols-5 lg:grid-cols-9 mb-8">
                 {adminSections.map((section) => (
                   <TabsTrigger key={section.id} value={section.id} className="text-xs">
                     <span className="mr-1">{section.icon}</span>
@@ -69,6 +71,7 @@ const Admin = () => {
                         </CardTitle>
                         <CardDescription>
                           {section.id === 'registrations' && 'View and manage event registrations with location details'}
+                          {section.id === 'qa' && 'Manage live Q&A questions for conferences and events'}
                           {section.id === 'sermons' && 'Upload and manage sermon audio files and YouTube videos'}
                           {section.id === 'subscribers' && 'Manage newsletter subscribers'}
                           {section.id === 'database' && 'Monitor database connections'}
@@ -84,6 +87,10 @@ const Admin = () => {
 
               <TabsContent value="registrations">
                 <RegistrationManager />
+              </TabsContent>
+
+              <TabsContent value="qa">
+                <QAManager />
               </TabsContent>
 
               <TabsContent value="sermons">

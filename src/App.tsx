@@ -29,6 +29,8 @@ import KioskCheckIn from "./pages/KioskCheckIn";
 import TestSermonUpload from "./pages/TestSermonUpload";
 import BankingQR from "./pages/BankingQR";
 import EventRegistration from "./pages/EventRegistration";
+import QASubmit from "./pages/QASubmit";
+import QADisplay from "./pages/QADisplay";
 
 const queryClient = new QueryClient();
 
@@ -79,6 +81,8 @@ const App = () => (
             <Route path="/test-sermon-upload" element={<TestSermonUpload />} />
             <Route path="/banking-qr" element={<BankingQR />} />
             <Route path="/event" element={<EventRegistration />} />
+            <Route path="/qa" element={<QASubmit />} />
+            <Route path="/qa-display" element={<QADisplay />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
