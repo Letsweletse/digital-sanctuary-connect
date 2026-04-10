@@ -27,19 +27,29 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
   isSubmitting,
   formatDate
 }) => {
-  // Check if this event requires payment (assuming conferences and special events do)
-  const requiresPayment = currentEvent?.category === 'conference' || 
-                         currentEvent?.title.toLowerCase().includes('conference') ||
-                         currentEvent?.title.toLowerCase().includes('retreat') ||
-                         currentEvent?.title.toLowerCase().includes('workshop');
+  // Determine if this is a paid event based on description containing a fee
+  const hasFee = currentEvent?.description?.match(/(?:Registration Fee|Fee)[:\s]*P(\d+)/i);
+  const registrationFee = hasFee ? `P${hasFee[1]}` : "FREE";
+  const isPaid = registrationFee !== "FREE";
+
+  // Check if banking details should be shown
+  const showBanking = isPaid || currentEvent?.category === 'conference' || 
+                     currentEvent?.title.toLowerCase().includes('conference') ||
+                     currentEvent?.title.toLowerCase().includes('retreat') ||
+                     currentEvent?.title.toLowerCase().includes('workshop');
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-xl md:max-w-4xl w-[95%] max-h-[90vh] overflow-y-auto p-0 gap-0 dialog-animation">
         <DialogHeader className="p-4 md:p-6 pb-2 bg-gradient-to-r from-[#24324b]/10 to-white">
-          <DialogTitle className="text-lg md:text-xl font-montserrat">FREE REGISTRATION for {currentEvent?.title}</DialogTitle>
+          <DialogTitle className="text-lg md:text-xl font-montserrat">
+            {isPaid ? `REGISTER NOW` : `FREE REGISTRATION`} for {currentEvent?.title}
+          </DialogTitle>
           <DialogDescription className="text-sm md:text-base font-montserrat">
-            Complete the form below to reserve your spot at no cost
+            {isPaid 
+              ? `Complete the form below to register. Registration Fee: ${registrationFee}`
+              : `Complete the form below to reserve your spot at no cost`
+            }
           </DialogDescription>
         </DialogHeader>
         
@@ -50,11 +60,10 @@ const EventRegistrationDialog: React.FC<EventRegistrationDialogProps> = ({
               <EventDetailCard event={currentEvent} formatDate={formatDate} />
             )}
             
-            {/* Banking Details - show for events that require payment */}
-            {requiresPayment && currentEvent && (
+            {showBanking && currentEvent && (
               <BankingDetailsCard 
                 eventTitle={currentEvent.title}
-                registrationFee="FREE"
+                registrationFee={registrationFee}
               />
             )}
           </div>
