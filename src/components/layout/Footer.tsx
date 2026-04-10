@@ -78,7 +78,7 @@ const Footer = () => {
               </li>
               <li className="text-white/80">
                 <span className="font-medium">Email:</span>
-                <span className="block">info@gategaborone.com</span>
+                <span className="block">info@gategaborone.co.bw</span>
               </li>
             </ul>
           </div>

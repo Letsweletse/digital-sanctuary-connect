@@ -116,7 +116,7 @@ const generateIcsContent = (params: {
 VERSION:2.0
 PRODID:-//Gate Gaborone//Event Registration//EN
 BEGIN:VEVENT
-UID:${checkInId}@gategaborone.com
+UID:${checkInId}@gategaborone.co.bw
 DTSTAMP:${formatForIcs(nowFormatted)}
 DTSTART:${formatForIcs(startDateFormatted)}
 DTEND:${formatForIcs(endDateFormatted)}
@@ -142,7 +142,7 @@ function generateAdminEmailContent(params: {
   checkInId: string;
 }): string {
   const { eventName, registrationType, title, name, email, phone, role, denomination, message, checkInId } = params;
-  const churchUrl = "https://www.gategaborone.com";
+  const churchUrl = "https://www.gategaborone.co.bw";
   const checkInUrl = `${churchUrl}/check-in/${checkInId}`;
 
   return `
@@ -219,7 +219,7 @@ function generateConfirmationEmailContent(params: {
     churchLogo = 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png'
   } = params;
 
-  const churchUrl = "https://www.gategaborone.com";
+  const churchUrl = "https://www.gategaborone.co.bw";
   const checkInUrl = `${churchUrl}/check-in/${checkInId}`;
   
   // Always use the correct venue location
@@ -312,7 +312,7 @@ function generateConfirmationEmailContent(params: {
         We look forward to seeing you at ${eventName}!
       </p>
       <p style="color: #6b7280; font-size: 12px; margin: 0;">
-        For questions, contact us at <a href="mailto:info@gategaborone.com" style="color: #3b82f6;">info@gategaborone.com</a>
+        For questions, contact us at <a href="mailto:info@gategaborone.co.bw" style="color: #3b82f6;">info@gategaborone.co.bw</a>
       </p>
     </div>
   </div>
@@ -357,7 +357,7 @@ async function processEmailRequest(req: Request): Promise<Response> {
     console.log(`📝 [Email Handler] Processing registration for: ${eventName}`);
     console.log(`👤 [Email Handler] Attendee: ${name} (${email})`);
 
-    const baseUrl = "https://www.gategaborone.com";
+    const baseUrl = "https://www.gategaborone.co.bw";
     const checkInUrl = `${baseUrl}/check-in/${checkInId}`;
     console.log(`🔗 [Email Handler] Check-in URL generated: ${checkInUrl}`);
     
@@ -396,7 +396,7 @@ async function processEmailRequest(req: Request): Promise<Response> {
     console.log("📨 [Email Handler] Sending admin email to:", to);
     try {
       const adminEmailResponse = await resend.emails.send({
-        from: "Gate Gaborone <info@gategaborone.com>",
+        from: "Gate Gaborone <info@gategaborone.co.bw>",
         to,
         subject,
         html: adminHtmlContent,
@@ -434,7 +434,7 @@ async function processEmailRequest(req: Request): Promise<Response> {
 
       try {
         const emailResponse = await resend.emails.send({
-          from: "Gate Gaborone <info@gategaborone.com>",
+          from: "Gate Gaborone <info@gategaborone.co.bw>",
           to: [email],
           subject: `Registration Confirmation: ${eventName}`,
           html: confirmationHtml,

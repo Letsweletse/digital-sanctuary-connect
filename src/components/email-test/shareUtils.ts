@@ -5,7 +5,7 @@ export const createShareLinks = (
   eventTime: string,
   checkInId?: string
 ) => {
-  const churchUrl = "https://gategaborone.com";
+  const churchUrl = "https://gategaborone.co.bw";
   const tagline = "Reach | Resource | Reform";
   
   // Direct Google Maps URL for Gate Gaborone - no shortened URL

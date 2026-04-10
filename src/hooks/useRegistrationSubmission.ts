@@ -93,7 +93,7 @@ export const useRegistrationSubmission = () => {
       
       // Generate check-in ID
       const checkInId = `event-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      const checkInUrl = `https://gategaborone.com/check-in/${checkInId}`;
+      const checkInUrl = `https://gategaborone.co.bw/check-in/${checkInId}`;
       registrationData.checkInId = checkInId;
       registrationData.checkInUrl = checkInUrl;
 
