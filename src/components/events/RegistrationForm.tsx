@@ -28,14 +28,12 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
   return (
     <form onSubmit={onSubmit} className="space-y-5">
       <div className="grid gap-4">
-        {/* Personal Information Fields */}
         <PersonalInfoFields 
           title={formData.title}
           name={formData.name}
           onInputChange={onInputChange}
         />
         
-        {/* Contact Fields */}
         <ContactFields 
           email={formData.email}
           countryCode={formData.countryCode}
@@ -43,7 +41,6 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
           onInputChange={onInputChange}
         />
         
-        {/* Church Information Fields */}
         <ChurchInfoFields 
           role={formData.role}
           denomination={formData.denomination}
@@ -74,7 +71,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
               </svg>
               Submitting...
             </span> 
-            : "Submit FREE Registration"
+            : "Submit Registration"
           }
         </Button>
       </DialogFooter>

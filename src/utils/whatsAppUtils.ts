@@ -22,8 +22,8 @@ export const sendDirectWhatsAppMessage = async (phone: string, message: string) 
 
     // Ensure message includes branding
     let finalMessage = message;
-    if (!finalMessage.includes("Apostolic Conference")) {
-      finalMessage += "\n\n*Perspectives on the Apostolic Conference*";
+    if (!finalMessage.includes("Gate Gaborone")) {
+      finalMessage += "\n\n*Gate Gaborone - Reach | Resource | Reform*";
     }
 
     // Make direct API call to UltraMsg
@@ -70,7 +70,7 @@ export const sendDirectWhatsAppMessage = async (phone: string, message: string) 
   }
 };
 
-// Generate premium WhatsApp confirmation message with clickable location link
+// Generate premium WhatsApp confirmation message - DYNAMIC based on event data
 export const generatePremiumWhatsAppConfirmation = (registrationData: RegistrationData): string => {
   const { event, attendee } = registrationData;
   
@@ -79,46 +79,42 @@ export const generatePremiumWhatsAppConfirmation = (registrationData: Registrati
 🎉 *${event.title}*
 
 📅 *Date:* ${event.date}
-⏰ *Time:* ${event.time || '09:00 - 13:30'}
-📍 *Location:* GATE Gaborone Auditorium, Plot 54014, Gaborone West
+⏰ *Time:* ${event.time || 'TBA'}
+📍 *Location:* ${event.location || 'TBA'}
 🗺️ *Get Directions:* https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7
-
-*About the Event:*
-Join us for Perspectives on the Apostolic with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family. Registration is compulsory. Refreshments provided, freewill offerings received.
 
 👤 *Attendee Details:*
 • *Name:* ${attendee.name}
 • *Email:* ${attendee.email}
 • *Phone:* ${attendee.phone}
-• *Role:* ${attendee.role}
-• *Church:* ${attendee.denomination}
-• *Attendees:* ${attendee.numberOfAttendees}
+• *Role:* ${attendee.role || 'N/A'}
+• *Church:* ${attendee.denomination || 'N/A'}
+• *Attendees:* ${attendee.numberOfAttendees || 1}
 
 ${registrationData.checkInUrl ? `🎫 *Check-in Link:* ${registrationData.checkInUrl}\n` : ''}
 
-*Thank you for your registration!* We look forward to seeing you at this transformative conference.
+*Thank you for your registration!* We look forward to seeing you.
 
-For any questions, please reply to this message.
+For enquiries, WhatsApp: +267 72 511 354
 
-*Gate Gaborone*`;
+*Gate Gaborone - Reach | Resource | Reform*`;
 
   return message;
 };
 
-// Generate simple confirmation message with clickable location link
+// Generate simple confirmation message - DYNAMIC
 export const generateSimpleWhatsAppMessage = (eventTitle: string, attendeeName: string, eventDate: string): string => {
   return `✅ Registration confirmed for ${eventTitle}
 
 Hello ${attendeeName}, your registration has been successfully processed.
 
 📅 Date: ${eventDate}
-⏰ Time: 09:00 - 13:30
-📍 Location: GATE Gaborone Auditorium, Plot 54014, Gaborone West
-🗺️ Get Directions: https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7
 
 Thank you for your registration! We'll send you more details closer to the event.
 
-Gate Gaborone`;
+For enquiries, WhatsApp: +267 72 511 354
+
+Gate Gaborone - Reach | Resource | Reform`;
 };
 
 // Validate phone number for WhatsApp
