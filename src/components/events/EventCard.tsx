@@ -74,7 +74,7 @@ const EventCard: React.FC<EventCardProps> = ({
             className="w-full bg-church-blue hover:bg-church-blue-dark text-white transition-colors"
             onClick={handleRegisterClick}
           >
-            FREE REGISTRATION
+            REGISTER NOW
           </Button>
         )}
       </CardContent>
