@@ -346,9 +346,9 @@ async function processEmailRequest(req: Request): Promise<Response> {
       role, 
       denomination, 
       phone, 
-      eventDate = "Saturday, 7 February 2026",
-      eventTime = "09:00 - 13:30",
-      eventImage = "/lovable-uploads/poa-february-2026.jpg",
+      eventDate = "TBA",
+      eventTime = "TBA",
+      eventImage = "",
       checkInId = crypto.randomUUID()
     } = body;
 
@@ -360,7 +360,7 @@ async function processEmailRequest(req: Request): Promise<Response> {
     console.log(`🔗 [Email Handler] Check-in URL generated: ${checkInUrl}`);
     
     // Always use the correct venue location
-    const googleMapsUrl = "https://maps.app.goo.gl/eAGtrWHiWJMwJZ7W6";
+    const googleMapsUrl = "https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7";
     
     const locationQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(googleMapsUrl)}&size=300x300&margin=10&qzone=2`;
     const checkInQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(checkInUrl)}&size=300x300&margin=10&qzone=2`;
@@ -374,7 +374,8 @@ async function processEmailRequest(req: Request): Promise<Response> {
     const formatForGoogleCalendar = (dateStr: string) => {
       return dateStr.replace(/-|:|\.\d{3}/g, "").replace("Z", "Z");
     };
-    const venueLocation = "Gate Gaborone Auditorium, Plot 54014, Gaborone West";
+    const location = body.location || "TBA";
+    const venueLocation = location;
     const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventName)}&dates=${formatForGoogleCalendar(startDateFormatted)}/${formatForGoogleCalendar(endDateFormatted)}&details=${encodeURIComponent(`Check-in ID: ${checkInId}\n\nVenue: ${venueLocation}\nMap: ${googleMapsUrl}`)}&location=${encodeURIComponent(venueLocation)}&sf=true&output=xml`;
 
     console.log("📤 [Email Handler] Preparing admin email...");
