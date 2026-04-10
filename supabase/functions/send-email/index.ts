@@ -222,9 +222,8 @@ function generateConfirmationEmailContent(params: {
   const churchUrl = "https://www.gategaborone.co.bw";
   const checkInUrl = `${churchUrl}/check-in/${checkInId}`;
   
-  // Always use the correct venue location
-  const venueLocation = "Gate Gaborone Auditorium, Plot 54014, Gaborone West";
-  const venueMapUrl = "https://maps.app.goo.gl/eAGtrWHiWJMwJZ7W6";
+  const venueLocation = location || "TBA";
+  const venueMapUrl = "https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7";
 
   return `
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #f8fafc;">
@@ -236,23 +235,22 @@ function generateConfirmationEmailContent(params: {
       <img src="${eventImage}" alt="${eventName}" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
     </div>
     
-    <h2 style="color: #3b82f6; text-align: center; margin-bottom: 20px;">Conference Registration Confirmation</h2>
-    <p style="margin-bottom: 15px;">Dear ${title} ${name},</p>
-    <p style="margin-bottom: 15px;">Thank you for your <strong>registration</strong> for <strong>${eventName}</strong>.</p>
+     <h2 style="color: #3b82f6; text-align: center; margin-bottom: 20px;">Registration Confirmation</h2>
+     <p style="margin-bottom: 15px;">Dear ${title} ${name},</p>
+     <p style="margin-bottom: 15px;">Thank you for your registration for <strong>${eventName}</strong>.</p>
     
-    <div style="background-color: #dcfce7; border-left: 4px solid #22c55e; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
-      <h3 style="color: #16a34a; margin-top: 0; margin-bottom: 10px;">✅ Conference Registration Confirmed</h3>
-      <p style="color: #15803d; font-weight: bold; margin: 0; font-size: 16px;">Your spot is secured!</p>
-    </div>
+     <div style="background-color: #dcfce7; border-left: 4px solid #22c55e; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+       <h3 style="color: #16a34a; margin-top: 0; margin-bottom: 10px;">✅ Registration Confirmed</h3>
+       <p style="color: #15803d; font-weight: bold; margin: 0; font-size: 16px;">Your spot is secured!</p>
+     </div>
     
-    <div style="background-color: #f0f9ff; border-left: 4px solid #3b82f6; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
-      <h3 style="color: #3b82f6; margin-top: 0; margin-bottom: 10px;">Conference Details</h3>
+     <div style="background-color: #f0f9ff; border-left: 4px solid #3b82f6; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+       <h3 style="color: #3b82f6; margin-top: 0; margin-bottom: 10px;">Event Details</h3>
       <ul style="padding-left: 20px; margin-bottom: 0;">
-        <li style="margin-bottom: 8px;"><strong>Conference:</strong> ${eventName}</li>
-        <li style="margin-bottom: 8px;"><strong>Date:</strong> ${eventDate}</li>
-        <li style="margin-bottom: 8px;"><strong>Time:</strong> ${eventTime}</li>
-        <li style="margin-bottom: 8px;"><strong>About:</strong> Join us for Perspectives on the Apostolic with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family.</li>
-        <li style="margin-bottom: 8px;"><strong>Registration Type:</strong> <span style="color: #3b82f6; font-weight: bold;">Standard Registration</span></li>
+         <li style="margin-bottom: 8px;"><strong>Event:</strong> ${eventName}</li>
+         <li style="margin-bottom: 8px;"><strong>Date:</strong> ${eventDate}</li>
+         <li style="margin-bottom: 8px;"><strong>Time:</strong> ${eventTime}</li>
+         <li style="margin-bottom: 8px;"><strong>Registration Type:</strong> <span style="color: #3b82f6; font-weight: bold;">Standard Registration</span></li>
         <li style="margin-bottom: 8px;"><strong>Role:</strong> ${role}</li>
         <li style="margin-bottom: 8px;"><strong>Denomination:</strong> ${denomination}</li>
         <li style="margin-bottom: 8px;"><strong>Phone:</strong> ${phone}</li>
@@ -262,18 +260,18 @@ function generateConfirmationEmailContent(params: {
       </ul>
     </div>
 
-    <div style="background-color: #fef3c7; border-left: 4px solid #d97706; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
-      <h3 style="color: #d97706; margin-top: 0; margin-bottom: 10px;">Conference Schedule</h3>
-      <ul style="padding-left: 20px; margin-bottom: 0;">
-        <li style="margin-bottom: 8px;"><strong>Session 1:</strong> 09:00–10:15</li>
-        <li style="margin-bottom: 8px;"><strong>Session 2:</strong> 10:45–12:00</li>
-        <li style="margin-bottom: 8px;"><strong>Session 3:</strong> 12:05–13:30</li>
-      </ul>
-    </div>
+     <div style="background-color: #fef3c7; border-left: 4px solid #d97706; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+       <h3 style="color: #d97706; margin-top: 0; margin-bottom: 10px;">📌 Important Information</h3>
+       <ul style="padding-left: 20px; margin-bottom: 0;">
+         <li style="margin-bottom: 8px;">Please arrive 15 minutes early for check-in</li>
+         <li style="margin-bottom: 8px;">Show your QR code at registration for faster entry</li>
+         <li style="margin-bottom: 8px;">For enquiries, WhatsApp: +267 72 511 354</li>
+       </ul>
+     </div>
 
-    <div style="display: flex; justify-content: space-between; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;">
-      <div style="flex: 1; min-width: 250px; text-align: center; padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <h3 style="color: #3b82f6; margin-top: 0; margin-bottom: 15px;">Conference Location</h3>
+     <div style="display: flex; justify-content: space-between; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;">
+       <div style="flex: 1; min-width: 250px; text-align: center; padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+         <h3 style="color: #3b82f6; margin-top: 0; margin-bottom: 15px;">Event Location</h3>
         <img src="${locationQrCodeUrl}" alt="Location QR Code" style="max-width: 180px; height: auto; margin-bottom: 10px; border: 1px solid #e5e7eb; padding: 5px; background-color: #fff;" />
         <p style="font-size: 14px; color: #6b7280; margin-bottom: 0;">Scan to open in Google Maps</p>
         <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">${venueLocation}</p>
