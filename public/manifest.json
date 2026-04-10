@@ -1,0 +1,21 @@
+{
+  "name": "Gate Gaborone",
+  "short_name": "Gate",
+  "description": "Gate Gaborone - Reach | Resource | Reform. Transforming lives through faith, community, and the Word of God.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e3a5f",
+  "icons": [
+    {
+      "src": "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/gate%20logo_1743681596913.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/leadership/gate%20logo_1743681596913.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
