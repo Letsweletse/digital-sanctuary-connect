@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 // Admin email addresses for notifications
 export const ADMIN_EMAILS = [
   'otenggate@gmail.com',
-  'info@gategaborone.com',
+  'info@gategaborone.co.bw',
   'blimenterprise@zohomail.com'
 ];
 
@@ -82,7 +82,7 @@ export const sendEventRegistrationEmail = async (eventTitle: string, registratio
       data: {
         ...result.data,
         checkInId: checkInId,
-        checkInUrl: `https://gategaborone.com/check-in/${checkInId}`
+        checkInUrl: `https://gategaborone.co.bw/check-in/${checkInId}`
       },
       recipients: emailRequestBody.to,
       message: 'Event registration email sent successfully'
@@ -150,7 +150,7 @@ export const sendImageUploadEmail = async (fileName: string, category: string) =
       to: ADMIN_EMAILS,
       subject: `New Image Uploaded - ${category}`,
       name: 'System',
-      email: 'system@gategaborone.com',
+      email: 'system@gategaborone.co.bw',
       message: `A new image has been uploaded to the ${category} category: ${fileName}`,
       sendConfirmation: false
     };
