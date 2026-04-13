@@ -93,11 +93,15 @@ export const generatePremiumWhatsAppConfirmation = (registrationData: Registrati
 
 ${registrationData.checkInUrl ? `🎫 *Check-in Link:* ${registrationData.checkInUrl}\n` : ''}
 
+📌 *Important:*
+• Refreshments will be provided
+• Freewill offerings will be received
+
 *Thank you for your registration!* We look forward to seeing you.
 
-For enquiries, WhatsApp: +267 72 511 354
+For enquiries: otenggate@gmail.com or call +267 75507981
 
-*Gate Gaborone - Reach | Resource | Reform*`;
+*Gate Gaborone - Reach • Resource • Reform*`;
 
   return message;
 };
@@ -112,9 +116,9 @@ Hello ${attendeeName}, your registration has been successfully processed.
 
 Thank you for your registration! We'll send you more details closer to the event.
 
-For enquiries, WhatsApp: +267 72 511 354
+For enquiries: otenggate@gmail.com or call +267 75507981
 
-Gate Gaborone - Reach | Resource | Reform`;
+Gate Gaborone - Reach • Resource • Reform`;
 };
 
 // Validate phone number for WhatsApp

@@ -265,7 +265,9 @@ function generateConfirmationEmailContent(params: {
        <ul style="padding-left: 20px; margin-bottom: 0;">
          <li style="margin-bottom: 8px;">Please arrive 15 minutes early for check-in</li>
          <li style="margin-bottom: 8px;">Show your QR code at registration for faster entry</li>
-         <li style="margin-bottom: 8px;">For enquiries, WhatsApp: +267 72 511 354</li>
+         <li style="margin-bottom: 8px;">Refreshments will be provided</li>
+         <li style="margin-bottom: 8px;">Freewill offerings will be received</li>
+         <li style="margin-bottom: 8px;">For enquiries: <a href="mailto:otenggate@gmail.com" style="color: #3b82f6;">otenggate@gmail.com</a> or call +267 75507981</li>
        </ul>
      </div>
 
@@ -301,7 +303,9 @@ function generateConfirmationEmailContent(params: {
         <li style="margin-bottom: 8px;">Please arrive 15 minutes early for check-in</li>
         <li style="margin-bottom: 8px;">Show your QR code at registration for faster entry</li>
         <li style="margin-bottom: 8px;">Bring a Bible and notebook for taking notes</li>
-        <li style="margin-bottom: 8px;">Parking is available at the venue</li>
+        <li style="margin-bottom: 8px;">Refreshments will be provided</li>
+        <li style="margin-bottom: 8px;">Freewill offerings will be received</li>
+        <li style="margin-bottom: 8px;">For enquiries: <a href="mailto:otenggate@gmail.com" style="color: #3b82f6;">otenggate@gmail.com</a> or call +267 75507981</li>
       </ul>
     </div>
 
