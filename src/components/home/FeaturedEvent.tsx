@@ -59,10 +59,10 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
               {featuredEvent.title}
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 bg-gradient-to-r from-white to-[#b8a156] bg-clip-text text-transparent">
-              Happy New Year and Welcome!
+              Reach • Resource • Reform
             </h2>
             <p className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto">
-              We are grateful to begin this new year together and to welcome you to our first Perspectives on the Apostolic of the year.
+              Join us for Perspectives on the Apostolic with Thamo Naidoo — registration is compulsory. Contact otenggate@gmail.com or +267 75507981.
             </p>
           </div>
 
