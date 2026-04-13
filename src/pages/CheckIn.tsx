@@ -31,7 +31,7 @@ const CheckIn = () => {
     if (navigator.share) {
       navigator.share({
         title: 'My Gate Gaborone Conference Check-in',
-        text: 'I\'m attending the Apostolic Conference atGate Gaborone! You should join too.',
+        text: 'I\'m attending the Apostolic Conference at Gate Gaborone on 9 May 2026! You should join too.',
         url: window.location.href,
       })
       .catch(err => console.error('Error sharing:', err));
@@ -70,7 +70,7 @@ const CheckIn = () => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5 text-church-blue flex-shrink-0" />
-                    <span>Saturday, 7 February 2026 </span>
+                    <span>Saturday, 9 May 2026</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Clock className="h-5 w-5 text-church-blue flex-shrink-0" />
@@ -111,7 +111,7 @@ const CheckIn = () => {
                     timestamp: new Date().toISOString(),
                     mapsUrl: googleMapsUrl,
                     eventTitle: "Perspectives on the Apostolic",
-                    eventDates: "Saturday, 7 February 2026"
+                    eventDates: "Saturday, 9 May 2026"
                   })}
                   size={200}
                   level="H"
