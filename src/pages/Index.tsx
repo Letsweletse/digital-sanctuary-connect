@@ -12,7 +12,7 @@ import { useEventRegistration } from '@/hooks/useEventRegistration';
 import { events } from '@/data/eventsData'; // Import events from data file
 
 const Index = () => {
-  // Featured event data - use the first event (November 2025 conference)
+  // Featured event data - use the first event (May 2026 POA conference)
   const featuredEvent: EventData = events[0];
   
   const {
