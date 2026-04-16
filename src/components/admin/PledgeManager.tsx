@@ -120,6 +120,8 @@ const PledgeManager = () => {
     }
   };
 
+  const currencyEntries = Object.entries(totalByCurrency);
+
   return (
     <div className="space-y-6">
       {/* Shareable Link */}
@@ -132,10 +134,10 @@ const PledgeManager = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">Share this link with people to collect pledges for the conference.</p>
-          <div className="flex gap-2">
-            <Input value={pledgeUrl} readOnly className="flex-1" />
+          <div className="flex gap-2 flex-wrap">
+            <Input value={pledgeUrl} readOnly className="flex-1 min-w-[200px]" />
             <Button onClick={copyLink} variant="outline" size="sm"><Copy className="h-4 w-4 mr-1" /> Copy</Button>
-            <Button onClick={shareWhatsApp} variant="outline" size="sm" className="bg-green-50 text-green-700 hover:bg-green-100">
+            <Button onClick={shareWhatsApp} variant="outline" size="sm">
               <MessageCircle className="h-4 w-4 mr-1" /> Share via WhatsApp
             </Button>
           </div>
@@ -152,8 +154,8 @@ const PledgeManager = () => {
             <div className="text-2xl font-bold">{pledges.length}</div>
           </CardContent>
         </Card>
-        {Object.entries(totalByurrency).length > 0 ? (
-          Object.entries(totalByurrency).map(([currency, total]) => (
+        {currencyEntries.length > 0 ? (
+          currencyEntries.map(([currency, total]) => (
             <Card key={currency}>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium">Total ({currency})</CardTitle>
@@ -205,11 +207,11 @@ const PledgeManager = () => {
                       <Badge variant="secondary" className="text-lg px-3 py-1">
                         {pledge.currency} {Number(pledge.pledge_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                       </Badge>
-                      <Button variant="ghost" size="sm" onClick={() => handleResendEmail(pledge)}>
+                      <Button variant="ghost" size="sm" onClick={() => handleResendEmail(pledge)} title="Resend email">
                         <Mail className="h-4 w-4" />
                       </Button>
                       {pledge.pledger_phone && (
-                        <Button variant="ghost" size="sm" onClick={() => handleResendWhatsApp(pledge)}>
+                        <Button variant="ghost" size="sm" onClick={() => handleResendWhatsApp(pledge)} title="Resend WhatsApp">
                           <MessageCircle className="h-4 w-4" />
                         </Button>
                       )}
@@ -226,8 +228,5 @@ const PledgeManager = () => {
     </div>
   );
 };
-
-// Fix variable name typo
-const totalByurrency = {} as Record<string, number>;
 
 export default PledgeManager;
