@@ -321,13 +321,132 @@ function generateConfirmationEmailContent(params: {
   `;
 }
 
+// ============= Pledge & Invitation Email Templates =============
+function generatePledgeConfirmationEmail(params: {
+  pledgerName: string;
+  pledgeAmount: string;
+  currency: string;
+  eventName: string;
+  message?: string;
+}): string {
+  const { pledgerName, pledgeAmount, currency, eventName, message } = params;
+  return `
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #f8fafc;">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <img src="https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png" alt="Gate Gaborone" style="max-width: 180px; height: auto;" />
+    </div>
+    <h2 style="color: #d97706; text-align: center;">🙏 Pledge Confirmation</h2>
+    <p>Dear ${pledgerName},</p>
+    <p>Thank you for your generous pledge towards the <strong>${eventName}</strong>!</p>
+    <div style="background-color: #fef3c7; border-left: 4px solid #d97706; padding: 15px; margin: 20px 0; border-radius: 4px;">
+      <h3 style="color: #92400e; margin-top: 0;">Pledge Details</h3>
+      <p style="font-size: 24px; font-weight: bold; color: #92400e; margin: 10px 0;">${currency} ${pledgeAmount}</p>
+    </div>
+    <div style="background-color: #f0f9ff; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0; border-radius: 4px;">
+      <h3 style="color: #3b82f6; margin-top: 0;">Conference Details</h3>
+      <ul style="padding-left: 20px;">
+        <li><strong>Event:</strong> Apostolic Conference – Malawi 2026</li>
+        <li><strong>Theme:</strong> Time to Build (Haggai 1:2)</li>
+        <li><strong>Dates:</strong> 29th April – 2nd May 2026</li>
+        <li><strong>Time:</strong> 9:00 AM – 3:30 PM</li>
+        <li><strong>Venue:</strong> Capital City Baptist Hall, Lilongwe, Malawi</li>
+        <li><strong>Guest Speakers:</strong> Randolph Barnwell (South Africa), Kobus Bezuidenhout (Botswana)</li>
+      </ul>
+    </div>
+    ${message ? `<p style="font-style: italic; color: #6b7280;">Your message: "${message}"</p>` : ''}
+    <p>God bless you for your generous contribution!</p>
+    <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+      <p style="color: #6b7280; font-size: 12px;">Gate Gaborone · Apostolic Conference Malawi 2026</p>
+    </div>
+  </div>`;
+}
+
+function generatePledgeAdminEmail(params: {
+  pledgerName: string;
+  pledgerEmail: string;
+  pledgerPhone?: string;
+  pledgeAmount: string;
+  currency: string;
+  eventName: string;
+  message?: string;
+}): string {
+  const { pledgerName, pledgerEmail, pledgerPhone, pledgeAmount, currency, eventName, message } = params;
+  return `
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #f8fafc;">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <img src="https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png" alt="Gate Gaborone" style="max-width: 180px; height: auto;" />
+    </div>
+    <h2 style="color: #d97706; text-align: center;">🙏 New Pledge Received</h2>
+    <div style="background-color: #dcfce7; border-left: 4px solid #22c55e; padding: 15px; margin: 20px 0; border-radius: 4px;">
+      <p style="font-size: 24px; font-weight: bold; color: #166534; margin: 0;">${currency} ${pledgeAmount}</p>
+    </div>
+    <div style="background-color: #fff; border: 1px solid #e5e7eb; padding: 15px; border-radius: 4px;">
+      <ul style="padding-left: 20px;">
+        <li><strong>Name:</strong> ${pledgerName}</li>
+        <li><strong>Email:</strong> ${pledgerEmail}</li>
+        ${pledgerPhone ? `<li><strong>Phone:</strong> ${pledgerPhone}</li>` : ''}
+        <li><strong>Event:</strong> ${eventName}</li>
+        ${message ? `<li><strong>Message:</strong> ${message}</li>` : ''}
+      </ul>
+    </div>
+    <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+      <p style="color: #6b7280; font-size: 12px;">Automated pledge notification from Gate Gaborone</p>
+    </div>
+  </div>`;
+}
+
+function generateInvitationEmail(params: {
+  recipientName: string;
+  eventName: string;
+  eventDate: string;
+  eventTime: string;
+  eventLocation: string;
+}): string {
+  const { recipientName, eventName, eventDate, eventTime, eventLocation } = params;
+  const registerUrl = "https://www.gategaborone.co.bw/events";
+  return `
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #f8fafc;">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <img src="https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png" alt="Gate Gaborone" style="max-width: 180px; height: auto;" />
+    </div>
+    <h2 style="color: #3b82f6; text-align: center;">You're Invited! 🎉</h2>
+    <p>Dear ${recipientName},</p>
+    <p>We're excited to invite you to <strong>${eventName}</strong>!</p>
+    <div style="background-color: #f0f9ff; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0; border-radius: 4px;">
+      <h3 style="color: #3b82f6; margin-top: 0;">Event Details</h3>
+      <ul style="padding-left: 20px;">
+        <li><strong>📅 Date:</strong> ${eventDate}</li>
+        <li><strong>⏰ Time:</strong> ${eventTime}</li>
+        <li><strong>📍 Venue:</strong> ${eventLocation}</li>
+      </ul>
+      <p style="margin-top: 15px;"><strong>Sessions:</strong></p>
+      <ul style="padding-left: 20px;">
+        <li>Session 1: 09:00–10:15</li>
+        <li>Session 2: 10:45–12:00</li>
+        <li>Session 3: 12:05–13:30</li>
+      </ul>
+    </div>
+    <div style="background-color: #fef3c7; border-left: 4px solid #d97706; padding: 15px; margin: 20px 0; border-radius: 4px;">
+      <p><strong>Registration is compulsory.</strong> Refreshments provided. Freewill offerings received.</p>
+      <p>Contact: <a href="mailto:otenggate@gmail.com">otenggate@gmail.com</a> or +267 75507981</p>
+    </div>
+    <div style="text-align: center; margin: 25px 0;">
+      <a href="${registerUrl}" style="display: inline-block; padding: 15px 30px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Register Now</a>
+    </div>
+    <p>We look forward to seeing you!</p>
+    <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+      <p style="color: #6b7280; font-size: 12px;">Gate Gaborone · <a href="https://www.gategaborone.co.bw">www.gategaborone.co.bw</a></p>
+    </div>
+  </div>`;
+}
+
 // ============= Main Handler =============
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 async function processEmailRequest(req: Request): Promise<Response> {
   try {
     console.log("🚀 [Email Handler] Processing email request...");
-    const body: EmailRequest = await req.json();
+    const body = await req.json();
     console.log("📧 [Email Handler] Request body received:", JSON.stringify(body, null, 2));
 
     const apiKey = Deno.env.get("RESEND_API_KEY");
@@ -335,7 +454,81 @@ async function processEmailRequest(req: Request): Promise<Response> {
       console.error("❌ [Email Handler] RESEND_API_KEY not found in environment");
       throw new Error("Email service not configured - missing API key");
     }
-    console.log("✅ [Email Handler] API key found:", apiKey.substring(0, 10) + "...");
+
+    // Handle pledge confirmation emails
+    if (body.type === 'pledge_confirmation') {
+      console.log("🙏 [Email Handler] Processing pledge confirmation...");
+      const adminEmails = ['otenggate@gmail.com', 'iblimenterprise@zohomail.com', 'info@gategaborone.co.bw'];
+      
+      // Send confirmation to pledger
+      const confirmationHtml = generatePledgeConfirmationEmail({
+        pledgerName: body.pledgerName,
+        pledgeAmount: body.pledgeAmount,
+        currency: body.currency,
+        eventName: body.eventName,
+        message: body.message,
+      });
+
+      await resend.emails.send({
+        from: "Gate Gaborone <info@gategaborone.co.bw>",
+        to: [body.pledgerEmail],
+        subject: `Pledge Confirmation: ${body.eventName}`,
+        html: confirmationHtml,
+      });
+      console.log("✅ Pledge confirmation email sent to:", body.pledgerEmail);
+
+      // Send admin notification
+      const adminHtml = generatePledgeAdminEmail({
+        pledgerName: body.pledgerName,
+        pledgerEmail: body.pledgerEmail,
+        pledgerPhone: body.pledgerPhone,
+        pledgeAmount: body.pledgeAmount,
+        currency: body.currency,
+        eventName: body.eventName,
+        message: body.message,
+      });
+
+      await resend.emails.send({
+        from: "Gate Gaborone <info@gategaborone.co.bw>",
+        to: adminEmails,
+        subject: `New Pledge: ${body.currency} ${body.pledgeAmount} – ${body.eventName}`,
+        html: adminHtml,
+      });
+      console.log("✅ Pledge admin notification sent");
+
+      return new Response(
+        JSON.stringify({ success: true, message: "Pledge emails sent" }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Handle event invitation emails
+    if (body.type === 'event_invitation') {
+      console.log("✉️ [Email Handler] Processing event invitation...");
+      
+      const invitationHtml = generateInvitationEmail({
+        recipientName: body.recipientName,
+        eventName: body.eventName,
+        eventDate: body.eventDate,
+        eventTime: body.eventTime,
+        eventLocation: body.eventLocation,
+      });
+
+      await resend.emails.send({
+        from: "Gate Gaborone <info@gategaborone.co.bw>",
+        to: [body.recipientEmail],
+        subject: `You're Invited: ${body.eventName}`,
+        html: invitationHtml,
+      });
+      console.log("✅ Invitation email sent to:", body.recipientEmail);
+
+      return new Response(
+        JSON.stringify({ success: true, message: "Invitation email sent" }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // === Original registration email flow ===
 
     const { 
       to, 
