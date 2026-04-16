@@ -172,6 +172,51 @@ export type Database = {
         }
         Relationships: []
       }
+      pledges: {
+        Row: {
+          created_at: string
+          currency: string
+          email_sent: boolean | null
+          event_name: string
+          id: string
+          message: string | null
+          pledge_amount: number
+          pledger_email: string
+          pledger_name: string
+          pledger_phone: string | null
+          updated_at: string
+          whatsapp_sent: boolean | null
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          email_sent?: boolean | null
+          event_name?: string
+          id?: string
+          message?: string | null
+          pledge_amount: number
+          pledger_email: string
+          pledger_name: string
+          pledger_phone?: string | null
+          updated_at?: string
+          whatsapp_sent?: boolean | null
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          email_sent?: boolean | null
+          event_name?: string
+          id?: string
+          message?: string | null
+          pledge_amount?: number
+          pledger_email?: string
+          pledger_name?: string
+          pledger_phone?: string | null
+          updated_at?: string
+          whatsapp_sent?: boolean | null
+        }
+        Relationships: []
+      }
       qa_questions: {
         Row: {
           author_name: string

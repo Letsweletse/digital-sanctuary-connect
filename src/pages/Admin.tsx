@@ -12,6 +12,8 @@ import KioskManager from '@/components/admin/KioskManager';
 import BankingQRManager from '@/components/admin/BankingQRManager';
 import RegistrationManager from '@/components/admin/RegistrationManager';
 import QAManager from '@/components/admin/QAManager';
+import PledgeManager from '@/components/admin/PledgeManager';
+import InviteRegistrantsButton from '@/components/admin/InviteRegistrantsButton';
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -19,6 +21,8 @@ const Admin = () => {
   const adminSections = [
     { id: "overview", label: "Overview", icon: "📊" },
     { id: "registrations", label: "Registrations", icon: "📝" },
+    { id: "invitations", label: "Invitations", icon: "✉️" },
+    { id: "pledges", label: "Pledges", icon: "🙏" },
     { id: "qa", label: "Live Q&A", icon: "❓" },
     { id: "sermons", label: "Sermons", icon: "🎵" },
     { id: "subscribers", label: "Subscribers", icon: "👥" },
@@ -50,7 +54,7 @@ const Admin = () => {
         <section className="py-16">
           <div className="container mx-auto px-4">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-5 lg:grid-cols-9 mb-8">
+              <TabsList className="grid w-full grid-cols-5 lg:grid-cols-11 mb-8">
                 {adminSections.map((section) => (
                   <TabsTrigger key={section.id} value={section.id} className="text-xs">
                     <span className="mr-1">{section.icon}</span>
@@ -71,6 +75,8 @@ const Admin = () => {
                         </CardTitle>
                         <CardDescription>
                           {section.id === 'registrations' && 'View and manage event registrations with location details'}
+                          {section.id === 'invitations' && 'Send invitations to previous registrants for upcoming events'}
+                          {section.id === 'pledges' && 'Manage pledges for the Apostolic Conference Malawi 2026'}
                           {section.id === 'qa' && 'Manage live Q&A questions for conferences and events'}
                           {section.id === 'sermons' && 'Upload and manage sermon audio files and YouTube videos'}
                           {section.id === 'subscribers' && 'Manage newsletter subscribers'}
@@ -87,6 +93,14 @@ const Admin = () => {
 
               <TabsContent value="registrations">
                 <RegistrationManager />
+              </TabsContent>
+
+              <TabsContent value="invitations">
+                <InviteRegistrantsButton />
+              </TabsContent>
+
+              <TabsContent value="pledges">
+                <PledgeManager />
               </TabsContent>
 
               <TabsContent value="qa">

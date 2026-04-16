@@ -31,6 +31,7 @@ import BankingQR from "./pages/BankingQR";
 import EventRegistration from "./pages/EventRegistration";
 import QASubmit from "./pages/QASubmit";
 import QADisplay from "./pages/QADisplay";
+import Pledge from "./pages/Pledge";
 import InstallPrompt from "./components/pwa/InstallPrompt";
 
 const queryClient = new QueryClient();
@@ -84,6 +85,7 @@ const App = () => (
             <Route path="/event" element={<EventRegistration />} />
             <Route path="/qa" element={<QASubmit />} />
             <Route path="/qa-display" element={<QADisplay />} />
+            <Route path="/pledge" element={<Pledge />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
