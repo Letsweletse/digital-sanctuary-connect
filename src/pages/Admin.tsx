@@ -75,6 +75,8 @@ const Admin = () => {
                         </CardTitle>
                         <CardDescription>
                           {section.id === 'registrations' && 'View and manage event registrations with location details'}
+                          {section.id === 'invitations' && 'Send invitations to previous registrants for upcoming events'}
+                          {section.id === 'pledges' && 'Manage pledges for the Apostolic Conference Malawi 2026'}
                           {section.id === 'qa' && 'Manage live Q&A questions for conferences and events'}
                           {section.id === 'sermons' && 'Upload and manage sermon audio files and YouTube videos'}
                           {section.id === 'subscribers' && 'Manage newsletter subscribers'}
@@ -91,6 +93,14 @@ const Admin = () => {
 
               <TabsContent value="registrations">
                 <RegistrationManager />
+              </TabsContent>
+
+              <TabsContent value="invitations">
+                <InviteRegistrantsButton />
+              </TabsContent>
+
+              <TabsContent value="pledges">
+                <PledgeManager />
               </TabsContent>
 
               <TabsContent value="qa">
