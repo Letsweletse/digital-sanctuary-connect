@@ -12,6 +12,8 @@ import KioskManager from '@/components/admin/KioskManager';
 import BankingQRManager from '@/components/admin/BankingQRManager';
 import RegistrationManager from '@/components/admin/RegistrationManager';
 import QAManager from '@/components/admin/QAManager';
+import PledgeManager from '@/components/admin/PledgeManager';
+import InviteRegistrantsButton from '@/components/admin/InviteRegistrantsButton';
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -19,6 +21,8 @@ const Admin = () => {
   const adminSections = [
     { id: "overview", label: "Overview", icon: "📊" },
     { id: "registrations", label: "Registrations", icon: "📝" },
+    { id: "invitations", label: "Invitations", icon: "✉️" },
+    { id: "pledges", label: "Pledges", icon: "🙏" },
     { id: "qa", label: "Live Q&A", icon: "❓" },
     { id: "sermons", label: "Sermons", icon: "🎵" },
     { id: "subscribers", label: "Subscribers", icon: "👥" },
