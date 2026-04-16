@@ -54,7 +54,7 @@ const Admin = () => {
         <section className="py-16">
           <div className="container mx-auto px-4">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-5 lg:grid-cols-9 mb-8">
+              <TabsList className="grid w-full grid-cols-5 lg:grid-cols-11 mb-8">
                 {adminSections.map((section) => (
                   <TabsTrigger key={section.id} value={section.id} className="text-xs">
                     <span className="mr-1">{section.icon}</span>
