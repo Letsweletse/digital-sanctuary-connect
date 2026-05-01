@@ -169,18 +169,22 @@ const InviteRegistrantsButton = () => {
             <div className="flex items-center gap-2 text-green-700 font-semibold">
               <CheckCircle className="h-5 w-5" /> Invitation Results
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-2">
               <div className="text-center">
                 <div className="text-2xl font-bold">{results.total}</div>
-                <div className="text-xs text-muted-foreground">Total Recipients</div>
+                <div className="text-xs text-muted-foreground">Recipients</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600">{results.emailsSent}</div>
-                <div className="text-xs text-muted-foreground flex items-center justify-center gap-1"><Mail className="h-3 w-3" /> Emails Sent</div>
+                <div className="text-xs text-muted-foreground flex items-center justify-center gap-1"><Mail className="h-3 w-3" /> Emails</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600">{results.whatsappSent}</div>
-                <div className="text-xs text-muted-foreground flex items-center justify-center gap-1"><MessageCircle className="h-3 w-3" /> WhatsApp Sent</div>
+                <div className="text-xs text-muted-foreground flex items-center justify-center gap-1"><MessageCircle className="h-3 w-3" /> WhatsApp</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-amber-600">{results.skipped}</div>
+                <div className="text-xs text-muted-foreground">Skipped (Already Registered)</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-red-600">{results.errors}</div>
