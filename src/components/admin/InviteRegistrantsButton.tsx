@@ -139,7 +139,7 @@ const InviteRegistrantsButton = () => {
           Send Invitations – Perspectives On The Apostolic (9 May 2026)
         </CardTitle>
         <CardDescription>
-          Send email and WhatsApp invitations to all previously registered attendees for the upcoming Perspectives On The Apostolic event with Thamo Naidoo.
+          Send email and WhatsApp invitations to all previously registered attendees. Anyone who has already registered for this upcoming event will be automatically skipped.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
