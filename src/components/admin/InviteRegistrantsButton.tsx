@@ -7,10 +7,26 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Send, Users, Mail, MessageCircle, CheckCircle, Loader2 } from 'lucide-react';
 
+const TARGET_EVENT_NAME = 'Perspectives On The Apostolic with Thamo Naidoo';
+
+// Normalize phone number to international format (+267... default for Botswana)
+const normalizePhone = (raw?: string | null): string | null => {
+  if (!raw) return null;
+  let p = String(raw).replace(/[\s\-\(\)]/g, '').trim();
+  if (!p) return null;
+  if (p.startsWith('+')) return p;
+  if (p.startsWith('00')) return '+' + p.slice(2);
+  // Botswana local numbers (typically 8 digits starting with 7)
+  if (/^[67]\d{7}$/.test(p)) return '+267' + p;
+  if (p.startsWith('267')) return '+' + p;
+  if (/^\d{10,15}$/.test(p)) return '+' + p;
+  return null;
+};
+
 const InviteRegistrantsButton = () => {
   const { toast } = useToast();
   const [isSending, setIsSending] = useState(false);
-  const [results, setResults] = useState<{ total: number; emailsSent: number; whatsappSent: number; errors: number } | null>(null);
+  const [results, setResults] = useState<{ total: number; emailsSent: number; whatsappSent: number; skipped: number; errors: number } | null>(null);
 
   const handleSendInvitations = async () => {
     setIsSending(true);
@@ -30,17 +46,28 @@ const InviteRegistrantsButton = () => {
         return;
       }
 
-      // Get unique emails to avoid duplicates
+      // Build set of emails already registered for the upcoming event (skip them)
+      const alreadyRegistered = new Set<string>(
+        registrations
+          .filter((r: any) => (r.event_name || '').toLowerCase().includes('perspectives on the apostolic'))
+          .map((r: any) => (r.attendee_email || '').toLowerCase())
+      );
+
+      // Get unique emails to avoid duplicates, excluding those already registered
       const uniqueRegistrants = new Map<string, any>();
       registrations.forEach(reg => {
-        if (!uniqueRegistrants.has(reg.attendee_email)) {
-          uniqueRegistrants.set(reg.attendee_email, reg);
+        const email = (reg.attendee_email || '').toLowerCase();
+        if (!email) return;
+        if (alreadyRegistered.has(email)) return; // already registered for upcoming event
+        if (!uniqueRegistrants.has(email)) {
+          uniqueRegistrants.set(email, reg);
         }
       });
 
       let emailsSent = 0;
       let whatsappSent = 0;
       let errors = 0;
+      const skipped = alreadyRegistered.size;
 
       for (const [email, reg] of uniqueRegistrants) {
         try {
@@ -59,19 +86,28 @@ const InviteRegistrantsButton = () => {
           });
           emailsSent++;
 
-          // Send WhatsApp if phone available
-          if (reg.attendee_phone) {
+          // Send WhatsApp if phone available (normalize to international format)
+          const normalizedPhone = normalizePhone(reg.attendee_phone);
+          if (normalizedPhone) {
             try {
-              await supabase.functions.invoke('send-whatsapp', {
+              const { data: waData, error: waError } = await supabase.functions.invoke('send-whatsapp', {
                 body: {
-                  phone: reg.attendee_phone,
-                  message: `Hi ${reg.attendee_name}! 👋\n\nYou're invited to *Perspectives On The Apostolic* with Thamo Naidoo!\n\n📅 Saturday, 9 May 2026\n⏰ 09:00 – 13:30\n📍 Gate Gaborone, Plot 54014, Gaborone West\n\n🎯 Sessions:\n• Session 1: 09:00–10:15\n• Session 2: 10:45–12:00\n• Session 3: 12:05–13:30\n\nRegistration is compulsory. Register here:\nhttps://www.gategaborone.co.bw/events\n\nRefreshments provided. Freewill offerings received.\n\nWe look forward to seeing you! 🙌\n\n— Gate Gaborone`
+                  phone: normalizedPhone,
+                  message: `Hi ${reg.attendee_name}! 👋\n\nYou're invited to *Perspectives On The Apostolic* with Thamo Naidoo!\n\n📅 Saturday, 9 May 2026\n⏰ 09:00 – 13:30\n📍 Gate Gaborone, Plot 54014, Gaborone West\n\n🎯 Sessions:\n• Session 1: 09:00–10:15\n• Session 2: 10:45–12:00\n• Session 3: 12:05–13:30\n\nRegistration is compulsory. Register here:\nhttps://www.gategaborone.co.bw/events\n\nIf you have already registered, kindly ignore this message.\n\nRefreshments provided. Freewill offerings received.\n\nWe look forward to seeing you! 🙌\n\n— Gate Gaborone`
                 }
               });
-              whatsappSent++;
-            } catch {
-              console.log('WhatsApp failed for:', reg.attendee_phone);
+              if (waError) {
+                console.error('WhatsApp error for', normalizedPhone, waError);
+              } else if (waData && (waData as any).error) {
+                console.error('WhatsApp API error for', normalizedPhone, waData);
+              } else {
+                whatsappSent++;
+              }
+            } catch (waErr) {
+              console.error('WhatsApp failed for:', normalizedPhone, waErr);
             }
+          } else if (reg.attendee_phone) {
+            console.log('Skipping invalid phone:', reg.attendee_phone);
           }
 
           // Small delay to avoid rate limits
@@ -82,10 +118,10 @@ const InviteRegistrantsButton = () => {
         }
       }
 
-      setResults({ total: uniqueRegistrants.size, emailsSent, whatsappSent, errors });
+      setResults({ total: uniqueRegistrants.size, emailsSent, whatsappSent, skipped, errors });
       toast({
         title: 'Invitations Sent!',
-        description: `Sent ${emailsSent} emails and ${whatsappSent} WhatsApp messages to ${uniqueRegistrants.size} registrants.`,
+        description: `Sent ${emailsSent} emails and ${whatsappSent} WhatsApp messages. Skipped ${skipped} already registered.`,
       });
     } catch (error) {
       console.error('Error sending invitations:', error);
@@ -103,7 +139,7 @@ const InviteRegistrantsButton = () => {
           Send Invitations – Perspectives On The Apostolic (9 May 2026)
         </CardTitle>
         <CardDescription>
-          Send email and WhatsApp invitations to all previously registered attendees for the upcoming Perspectives On The Apostolic event with Thamo Naidoo.
+          Send email and WhatsApp invitations to all previously registered attendees. Anyone who has already registered for this upcoming event will be automatically skipped.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -133,18 +169,22 @@ const InviteRegistrantsButton = () => {
             <div className="flex items-center gap-2 text-green-700 font-semibold">
               <CheckCircle className="h-5 w-5" /> Invitation Results
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-2">
               <div className="text-center">
                 <div className="text-2xl font-bold">{results.total}</div>
-                <div className="text-xs text-muted-foreground">Total Recipients</div>
+                <div className="text-xs text-muted-foreground">Recipients</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600">{results.emailsSent}</div>
-                <div className="text-xs text-muted-foreground flex items-center justify-center gap-1"><Mail className="h-3 w-3" /> Emails Sent</div>
+                <div className="text-xs text-muted-foreground flex items-center justify-center gap-1"><Mail className="h-3 w-3" /> Emails</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600">{results.whatsappSent}</div>
-                <div className="text-xs text-muted-foreground flex items-center justify-center gap-1"><MessageCircle className="h-3 w-3" /> WhatsApp Sent</div>
+                <div className="text-xs text-muted-foreground flex items-center justify-center gap-1"><MessageCircle className="h-3 w-3" /> WhatsApp</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-amber-600">{results.skipped}</div>
+                <div className="text-xs text-muted-foreground">Skipped (Already Registered)</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-red-600">{results.errors}</div>
