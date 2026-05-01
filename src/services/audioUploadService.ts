@@ -56,15 +56,8 @@ export const uploadAudioToSupabase = async (
       .from('sermon_audio')
       .getPublicUrl(data.path);
 
-    const result = { success: true, url: publicUrl, path: data.path };
-    
-    if (!result.success) {
-      console.error('Failed to upload file:', result.error);
-    } else {
-      console.log('Audio upload completed successfully:', result.url);
-    }
-    
-    return result;
+    console.log('Audio upload completed successfully:', publicUrl);
+    return { success: true, url: publicUrl, path: data.path };
   } catch (err: any) {
     console.error('Unexpected error during upload:', err);
     if (onProgress) onProgress(0);
