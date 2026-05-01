@@ -502,28 +502,32 @@ async function processEmailRequest(req: Request): Promise<Response> {
       );
     }
 
-    // Handle event invitation emails
-    if (body.type === 'event_invitation') {
-      console.log("✉️ [Email Handler] Processing event invitation...");
-      
+    // Handle event invitation / reminder emails
+    if (body.type === 'event_invitation' || body.type === 'event_reminder') {
+      const isReminder = body.type === 'event_reminder';
+      console.log(`✉️ [Email Handler] Processing event ${isReminder ? 'reminder' : 'invitation'}...`);
+
       const invitationHtml = generateInvitationEmail({
         recipientName: body.recipientName,
         eventName: body.eventName,
         eventDate: body.eventDate,
         eventTime: body.eventTime,
         eventLocation: body.eventLocation,
+        isReminder,
       });
 
       await resend.emails.send({
         from: "Gate Gaborone <info@gategaborone.co.bw>",
         to: [body.recipientEmail],
-        subject: `You're Invited: ${body.eventName}`,
+        subject: isReminder
+          ? `Reminder: ${body.eventName} — ${body.eventDate}`
+          : `You're Invited: ${body.eventName}`,
         html: invitationHtml,
       });
-      console.log("✅ Invitation email sent to:", body.recipientEmail);
+      console.log(`✅ ${isReminder ? 'Reminder' : 'Invitation'} email sent to:`, body.recipientEmail);
 
       return new Response(
-        JSON.stringify({ success: true, message: "Invitation email sent" }),
+        JSON.stringify({ success: true, message: `${isReminder ? 'Reminder' : 'Invitation'} email sent` }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
