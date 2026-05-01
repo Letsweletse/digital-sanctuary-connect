@@ -142,7 +142,7 @@ const InviteRegistrantsButton = () => {
           Send Invitations – Perspectives On The Apostolic (9 May 2026)
         </CardTitle>
         <CardDescription>
-          Send email and WhatsApp invitations to all previously registered attendees. Anyone who has already registered for this upcoming event will be automatically skipped.
+          Send email and WhatsApp invitations to all previously registered attendees. Anyone who has already registered for this upcoming event will receive a friendly reminder instead. Automated reminders also go out twice a week (Tuesdays & Fridays).
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
