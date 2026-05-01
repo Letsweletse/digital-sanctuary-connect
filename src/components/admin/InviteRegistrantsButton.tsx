@@ -46,19 +46,19 @@ const InviteRegistrantsButton = () => {
         return;
       }
 
-      // Build set of emails already registered for the upcoming event (skip them)
+      // Build set of emails already registered for the upcoming event
+      // (they still receive a reminder, just with a different tone)
       const alreadyRegistered = new Set<string>(
         registrations
           .filter((r: any) => (r.event_name || '').toLowerCase().includes('perspectives on the apostolic'))
           .map((r: any) => (r.attendee_email || '').toLowerCase())
       );
 
-      // Get unique emails to avoid duplicates, excluding those already registered
+      // Get unique recipients (everyone gets a message — invite OR reminder)
       const uniqueRegistrants = new Map<string, any>();
       registrations.forEach(reg => {
         const email = (reg.attendee_email || '').toLowerCase();
         if (!email) return;
-        if (alreadyRegistered.has(email)) return; // already registered for upcoming event
         if (!uniqueRegistrants.has(email)) {
           uniqueRegistrants.set(email, reg);
         }
@@ -67,14 +67,16 @@ const InviteRegistrantsButton = () => {
       let emailsSent = 0;
       let whatsappSent = 0;
       let errors = 0;
-      const skipped = alreadyRegistered.size;
+      let reminders = 0;
 
       for (const [email, reg] of uniqueRegistrants) {
+        const isReminder = alreadyRegistered.has(email);
+        if (isReminder) reminders++;
         try {
-          // Send invitation email
+          // Send invitation/reminder email
           await supabase.functions.invoke('send-email', {
             body: {
-              type: 'event_invitation',
+              type: isReminder ? 'event_reminder' : 'event_invitation',
               recipientName: reg.attendee_name,
               recipientEmail: email,
               recipientPhone: reg.attendee_phone,
@@ -90,11 +92,12 @@ const InviteRegistrantsButton = () => {
           const normalizedPhone = normalizePhone(reg.attendee_phone);
           if (normalizedPhone) {
             try {
+              const message = isReminder
+                ? `Hi ${reg.attendee_name}! 🙌\n\nA gentle reminder — you're registered for *Perspectives On The Apostolic* with Thamo Naidoo.\n\n📅 Saturday, 9 May 2026\n⏰ 09:00 – 13:30\n📍 Gate Gaborone, Plot 54014, Gaborone West\n\n🎯 Sessions:\n• Session 1: 09:00–10:15\n• Session 2: 10:45–12:00\n• Session 3: 12:05–13:30\n\nRefreshments provided. Freewill offerings received.\n\nWe look forward to seeing you! 🙌\n\n— Gate Gaborone`
+                : `Hi ${reg.attendee_name}! 👋\n\nYou're invited to *Perspectives On The Apostolic* with Thamo Naidoo!\n\n📅 Saturday, 9 May 2026\n⏰ 09:00 – 13:30\n📍 Gate Gaborone, Plot 54014, Gaborone West\n\n🎯 Sessions:\n• Session 1: 09:00–10:15\n• Session 2: 10:45–12:00\n• Session 3: 12:05–13:30\n\nRegistration is compulsory. Register here:\nhttps://www.gategaborone.co.bw/events\n\nIf you have already registered, kindly ignore this message.\n\nRefreshments provided. Freewill offerings received.\n\nWe look forward to seeing you! 🙌\n\n— Gate Gaborone`;
+
               const { data: waData, error: waError } = await supabase.functions.invoke('send-whatsapp', {
-                body: {
-                  phone: normalizedPhone,
-                  message: `Hi ${reg.attendee_name}! 👋\n\nYou're invited to *Perspectives On The Apostolic* with Thamo Naidoo!\n\n📅 Saturday, 9 May 2026\n⏰ 09:00 – 13:30\n📍 Gate Gaborone, Plot 54014, Gaborone West\n\n🎯 Sessions:\n• Session 1: 09:00–10:15\n• Session 2: 10:45–12:00\n• Session 3: 12:05–13:30\n\nRegistration is compulsory. Register here:\nhttps://www.gategaborone.co.bw/events\n\nIf you have already registered, kindly ignore this message.\n\nRefreshments provided. Freewill offerings received.\n\nWe look forward to seeing you! 🙌\n\n— Gate Gaborone`
-                }
+                body: { phone: normalizedPhone, message }
               });
               if (waError) {
                 console.error('WhatsApp error for', normalizedPhone, waError);
@@ -118,10 +121,10 @@ const InviteRegistrantsButton = () => {
         }
       }
 
-      setResults({ total: uniqueRegistrants.size, emailsSent, whatsappSent, skipped, errors });
+      setResults({ total: uniqueRegistrants.size, emailsSent, whatsappSent, skipped: reminders, errors });
       toast({
         title: 'Invitations Sent!',
-        description: `Sent ${emailsSent} emails and ${whatsappSent} WhatsApp messages. Skipped ${skipped} already registered.`,
+        description: `Sent ${emailsSent} emails and ${whatsappSent} WhatsApp messages (${reminders} as reminders to existing registrants).`,
       });
     } catch (error) {
       console.error('Error sending invitations:', error);
