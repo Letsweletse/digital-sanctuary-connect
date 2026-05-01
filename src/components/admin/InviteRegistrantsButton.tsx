@@ -187,7 +187,7 @@ const InviteRegistrantsButton = () => {
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-amber-600">{results.skipped}</div>
-                <div className="text-xs text-muted-foreground">Skipped (Already Registered)</div>
+                <div className="text-xs text-muted-foreground">Reminders (Already Registered)</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-red-600">{results.errors}</div>
