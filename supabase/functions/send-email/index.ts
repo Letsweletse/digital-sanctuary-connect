@@ -401,17 +401,28 @@ function generateInvitationEmail(params: {
   eventDate: string;
   eventTime: string;
   eventLocation: string;
+  isReminder?: boolean;
 }): string {
-  const { recipientName, eventName, eventDate, eventTime, eventLocation } = params;
+  const { recipientName, eventName, eventDate, eventTime, eventLocation, isReminder } = params;
   const registerUrl = "https://www.gategaborone.co.bw/events";
+  const heading = isReminder ? "Friendly Reminder 🔔" : "You're Invited! 🎉";
+  const intro = isReminder
+    ? `This is a friendly reminder that you're registered for <strong>${eventName}</strong>. We can't wait to see you there!`
+    : `We're excited to invite you to <strong>${eventName}</strong>!`;
+  const ctaLabel = isReminder ? "View Event Details" : "Register Now";
+  const noticeBlock = isReminder
+    ? `<p><strong>You're already registered</strong> — no action needed. Refreshments provided. Freewill offerings received.</p>
+       <p>Contact: <a href="mailto:otenggate@gmail.com">otenggate@gmail.com</a> or +267 75507981</p>`
+    : `<p><strong>Registration is compulsory.</strong> Refreshments provided. Freewill offerings received.</p>
+       <p>Contact: <a href="mailto:otenggate@gmail.com">otenggate@gmail.com</a> or +267 75507981</p>`;
   return `
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #f8fafc;">
     <div style="text-align: center; margin-bottom: 20px;">
       <img src="https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png" alt="Gate Gaborone" style="max-width: 180px; height: auto;" />
     </div>
-    <h2 style="color: #3b82f6; text-align: center;">You're Invited! 🎉</h2>
+    <h2 style="color: #3b82f6; text-align: center;">${heading}</h2>
     <p>Dear ${recipientName},</p>
-    <p>We're excited to invite you to <strong>${eventName}</strong>!</p>
+    <p>${intro}</p>
     <div style="background-color: #f0f9ff; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0; border-radius: 4px;">
       <h3 style="color: #3b82f6; margin-top: 0;">Event Details</h3>
       <ul style="padding-left: 20px;">
@@ -427,11 +438,10 @@ function generateInvitationEmail(params: {
       </ul>
     </div>
     <div style="background-color: #fef3c7; border-left: 4px solid #d97706; padding: 15px; margin: 20px 0; border-radius: 4px;">
-      <p><strong>Registration is compulsory.</strong> Refreshments provided. Freewill offerings received.</p>
-      <p>Contact: <a href="mailto:otenggate@gmail.com">otenggate@gmail.com</a> or +267 75507981</p>
+      ${noticeBlock}
     </div>
     <div style="text-align: center; margin: 25px 0;">
-      <a href="${registerUrl}" style="display: inline-block; padding: 15px 30px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Register Now</a>
+      <a href="${registerUrl}" style="display: inline-block; padding: 15px 30px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">${ctaLabel}</a>
     </div>
     <p>We look forward to seeing you!</p>
     <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
