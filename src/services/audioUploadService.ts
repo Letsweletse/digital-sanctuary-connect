@@ -19,37 +19,45 @@ export const uploadAudioToSupabase = async (
   console.log(`Starting audio upload to Supabase: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`);
   
   try {
-    // First, ensure the sermon_audio bucket exists with proper permissions
-    const bucketExists = await createBucketIfNotExists('sermon_audio', true, 500 * 1024 * 1024, [
-      'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/*', 'audio/mp4', 'audio/m4a'
-    ]);
-    
-    if (!bucketExists) {
-      console.error('Failed to create or access the sermon_audio bucket');
-      if (onProgress) onProgress(0);
-      return { 
-        success: false, 
-        url: null, 
-        error: 'Failed to create or access storage bucket' 
-      };
-    }
-    
+    // Bucket already exists with public RLS policies — skip admin-level checks
+    // (createBucket / updateBucket / listBuckets require service role and will
+    // fail for anon users, blocking uploads even though INSERT is permitted).
+
     // Generate unique filename based on original name
     const fileName = generateUniqueFileName(file.name);
     const filePath = category ? `${category}/${fileName}` : fileName;
-    
+
     console.log(`Uploading to sermon_audio bucket with path: ${filePath}`);
-    
-    // Use the common file upload function
-    const result = await uploadFileToStorage(file, 'sermon_audio', filePath, onProgress);
-    
-    if (!result.success) {
-      console.error('Failed to upload file:', result.error);
-    } else {
-      console.log('Audio upload completed successfully:', result.url);
+
+    // Upload directly using the storage client (RLS allows public INSERT)
+    let lastProgress = 0;
+    const progressInterval = onProgress
+      ? setInterval(() => {
+          lastProgress = Math.min(85, lastProgress + Math.random() * 5);
+          onProgress(lastProgress);
+        }, 600)
+      : null;
+
+    const { data, error } = await supabase.storage
+      .from('sermon_audio')
+      .upload(filePath, file, { upsert: true, contentType: file.type || 'audio/mpeg' });
+
+    if (progressInterval) clearInterval(progressInterval);
+
+    if (error) {
+      if (onProgress) onProgress(0);
+      console.error('Failed to upload file:', error);
+      return { success: false, url: null, error: error.message };
     }
-    
-    return result;
+
+    if (onProgress) onProgress(100);
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('sermon_audio')
+      .getPublicUrl(data.path);
+
+    console.log('Audio upload completed successfully:', publicUrl);
+    return { success: true, url: publicUrl, path: data.path };
   } catch (err: any) {
     console.error('Unexpected error during upload:', err);
     if (onProgress) onProgress(0);
