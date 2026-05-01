@@ -14,6 +14,7 @@ import RegistrationManager from '@/components/admin/RegistrationManager';
 import QAManager from '@/components/admin/QAManager';
 import PledgeManager from '@/components/admin/PledgeManager';
 import InviteRegistrantsButton from '@/components/admin/InviteRegistrantsButton';
+import AdminGate from '@/components/admin/AdminGate';
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -33,6 +34,7 @@ const Admin = () => {
   ];
 
   return (
+    <AdminGate>
     <Layout>
       <main className="flex-grow pt-24 page-transition">
         <section className="bg-gradient-to-b from-church-blue-light to-white py-16 md:py-24">
@@ -155,6 +157,7 @@ const Admin = () => {
         </section>
       </main>
     </Layout>
+    </AdminGate>
   );
 };
 
