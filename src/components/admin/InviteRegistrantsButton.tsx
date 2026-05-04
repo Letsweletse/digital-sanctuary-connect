@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Send, Users, Mail, MessageCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { sendDirectWhatsAppMessage } from '@/utils/whatsAppUtils';
 
 const TARGET_EVENT_NAME = 'Perspectives On The Apostolic with Thamo Naidoo';
 
@@ -96,13 +97,9 @@ const InviteRegistrantsButton = () => {
                 ? `Hi ${reg.attendee_name}! 🙌\n\nA gentle reminder — you're registered for *Perspectives On The Apostolic* with Thamo Naidoo.\n\n📅 Saturday, 9 May 2026\n⏰ 09:00 – 13:30\n📍 Gate Gaborone, Plot 54014, Gaborone West\n\n🎯 Sessions:\n• Session 1: 09:00–10:15\n• Session 2: 10:45–12:00\n• Session 3: 12:05–13:30\n\nRefreshments provided. Freewill offerings received.\n\nWe look forward to seeing you! 🙌\n\n— Gate Gaborone`
                 : `Hi ${reg.attendee_name}! 👋\n\nYou're invited to *Perspectives On The Apostolic* with Thamo Naidoo!\n\n📅 Saturday, 9 May 2026\n⏰ 09:00 – 13:30\n📍 Gate Gaborone, Plot 54014, Gaborone West\n\n🎯 Sessions:\n• Session 1: 09:00–10:15\n• Session 2: 10:45–12:00\n• Session 3: 12:05–13:30\n\nRegistration is compulsory. Register here:\nhttps://www.gategaborone.co.bw/events\n\nIf you have already registered, kindly ignore this message.\n\nRefreshments provided. Freewill offerings received.\n\nWe look forward to seeing you! 🙌\n\n— Gate Gaborone`;
 
-              const { data: waData, error: waError } = await supabase.functions.invoke('send-whatsapp', {
-                body: { phone: normalizedPhone, message }
-              });
-              if (waError) {
-                console.error('WhatsApp error for', normalizedPhone, waError);
-              } else if (waData && (waData as any).error) {
-                console.error('WhatsApp API error for', normalizedPhone, waData);
+              const waResult = await sendDirectWhatsAppMessage(normalizedPhone, message);
+              if (waResult.error) {
+                console.error('WhatsApp API error for', normalizedPhone, waResult);
               } else {
                 whatsappSent++;
               }
