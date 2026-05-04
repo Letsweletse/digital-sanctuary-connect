@@ -52,21 +52,21 @@ serve(async (req) => {
       finalMessage += "\n\nGate Gaborone - Reach | Resource | Reform";
     }
 
-    // UltraMsg expects token in the URL query string for this endpoint.
-    const formData = new URLSearchParams();
-    formData.append('to', phone.replace(/^\+/, ''));
-    formData.append('body', finalMessage);
-    formData.append('priority', '10');
-
-    const apiUrl = `https://api.ultramsg.com/instance${ULTRAMSG_INSTANCE_ID}/messages/chat?token=${encodeURIComponent(ULTRAMSG_API_KEY)}`;
+    const apiUrl = `https://api.ultramsg.com/instance${ULTRAMSG_INSTANCE_ID}/messages/chat`;
     console.log("🌐 [Edge Function] Calling API:", apiUrl);
 
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: { 
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
-      body: formData.toString()
+      body: JSON.stringify({
+        token: ULTRAMSG_API_KEY,
+        to: phone,
+        body: finalMessage,
+        priority: 10
+      })
     });
 
     const responseText = await response.text();
