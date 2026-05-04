@@ -1,9 +1,9 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 
-// Use hardcoded credentials - these should be updated with valid tokens
-const ULTRAMSG_API_KEY = Deno.env.get('ULTRAMSG_API_KEY') || 'zpivrjhut12tefx6';
-const ULTRAMSG_INSTANCE_ID = Deno.env.get('ULTRAMSG_INSTANCE_ID') || '114633';
+const ULTRAMSG_API_KEY = Deno.env.get('ULTRAMSG_API_KEY');
+const RAW_INSTANCE_ID = Deno.env.get('ULTRAMSG_INSTANCE_ID') || '114633';
+const ULTRAMSG_INSTANCE_ID = RAW_INSTANCE_ID.replace(/^instance/i, '');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,6 +17,17 @@ serve(async (req) => {
 
   try {
     const { phone, message } = await req.json();
+
+    if (!ULTRAMSG_API_KEY) {
+      console.error("❌ [Edge Function] ULTRAMSG_API_KEY is not configured");
+      return new Response(JSON.stringify({
+        error: true,
+        message: "WhatsApp service is not configured"
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
 
     console.log("📱 [Edge Function] WhatsApp notification for phone:", phone);
     console.log("💬 [Edge Function] Message length:", message?.length);
@@ -41,14 +52,13 @@ serve(async (req) => {
       finalMessage += "\n\nGate Gaborone - Reach | Resource | Reform";
     }
 
-    // Use form-encoded data (correct format for UltraMsg API)
+    // UltraMsg expects token in the URL query string for this endpoint.
     const formData = new URLSearchParams();
-    formData.append('token', ULTRAMSG_API_KEY);
-    formData.append('to', phone);
+    formData.append('to', phone.replace(/^\+/, ''));
     formData.append('body', finalMessage);
     formData.append('priority', '10');
 
-    const apiUrl = `https://api.ultramsg.com/instance${ULTRAMSG_INSTANCE_ID}/messages/chat`;
+    const apiUrl = `https://api.ultramsg.com/instance${ULTRAMSG_INSTANCE_ID}/messages/chat?token=${encodeURIComponent(ULTRAMSG_API_KEY)}`;
     console.log("🌐 [Edge Function] Calling API:", apiUrl);
 
     const response = await fetch(apiUrl, {
