@@ -1,5 +1,6 @@
 import { EventData, EventCategoryObject, EventCategoryType } from '@/types/eventTypes';
-import poaFlyer from '@/assets/poa-august-2026.jpeg.asset.json';
+
+const poaFlyer = { url: '/images/events/poa-august-2026.jpeg' };
 
 export const events: EventData[] = [
   {
