@@ -1,15 +1,16 @@
 import { EventData, EventCategoryObject, EventCategoryType } from '@/types/eventTypes';
+import poaFlyer from '@/assets/poa-august-2026.jpeg.asset.json';
 
 export const events: EventData[] = [
   {
-    id: 'poa-may-2026',
+    id: 'poa-august-2026',
     title: 'Perspectives On The Apostolic with Thamo Naidoo',
-    date: '2026-05-09',
+    date: '2026-08-15',
     time: '09:00 - 13:30',
     location: 'Gate Gaborone, Plot 54014, Gaborone West',
     description: 'Join us for Perspectives On The Apostolic with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family. Reach • Resource • Reform. Registration is compulsory. Contact: otenggate@gmail.com or +267 75507981. Refreshments provided. Freewill offerings received.',
     category: 'conference',
-    image: '/images/events/poa-may-2026.jpg',
+    image: poaFlyer.url,
     registration: true
   }
 ];
