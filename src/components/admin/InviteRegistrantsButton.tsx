@@ -9,6 +9,7 @@ import { Send, Users, Mail, MessageCircle, CheckCircle, Loader2 } from 'lucide-r
 import { sendDirectWhatsAppMessage } from '@/utils/whatsAppUtils';
 
 const TARGET_EVENT_NAME = 'Perspectives On The Apostolic with Thamo Naidoo';
+const TARGET_EVENT_DATE = 'Saturday, 15 August 2026';
 
 // Normalize phone number to international format (+267... default for Botswana)
 const normalizePhone = (raw?: string | null): string | null => {
@@ -47,11 +48,14 @@ const InviteRegistrantsButton = () => {
         return;
       }
 
-      // Build set of emails already registered for the upcoming event
+      // Build set of emails already registered for the UPCOMING Aug 15 event
       // (they still receive a reminder, just with a different tone)
       const alreadyRegistered = new Set<string>(
         registrations
-          .filter((r: any) => (r.event_name || '').toLowerCase().includes('perspectives on the apostolic'))
+          .filter((r: any) =>
+            (r.event_name || '').toLowerCase().includes('perspectives on the apostolic') &&
+            (r.event_date || '').toLowerCase().includes('15 august 2026')
+          )
           .map((r: any) => (r.attendee_email || '').toLowerCase())
       );
 
@@ -82,7 +86,7 @@ const InviteRegistrantsButton = () => {
               recipientEmail: email,
               recipientPhone: reg.attendee_phone,
               eventName: 'Perspectives On The Apostolic with Thamo Naidoo',
-              eventDate: 'Saturday, 9 May 2026',
+              eventDate: 'Saturday, 15 August 2026',
               eventTime: '09:00 - 13:30',
               eventLocation: 'Gate Gaborone, Plot 54014, Gaborone West',
             }
@@ -97,8 +101,8 @@ const InviteRegistrantsButton = () => {
           const normalizedPhone = normalizePhone(reg.attendee_phone);
           if (normalizedPhone) {
             const message = isReminder
-              ? `Hi ${reg.attendee_name}! 🙌\n\nA gentle reminder — you're registered for *Perspectives On The Apostolic* with Thamo Naidoo.\n\n📅 Saturday, 9 May 2026\n⏰ 09:00 – 13:30\n📍 Gate Gaborone, Plot 54014, Gaborone West\n\n🎯 Sessions:\n• Session 1: 09:00–10:15\n• Session 2: 10:45–12:00\n• Session 3: 12:05–13:30\n\nRefreshments provided. Freewill offerings received.\n\nWe look forward to seeing you! 🙌\n\n— Gate Gaborone`
-              : `Hi ${reg.attendee_name}! 👋\n\nYou're invited to *Perspectives On The Apostolic* with Thamo Naidoo!\n\n📅 Saturday, 9 May 2026\n⏰ 09:00 – 13:30\n📍 Gate Gaborone, Plot 54014, Gaborone West\n\n🎯 Sessions:\n• Session 1: 09:00–10:15\n• Session 2: 10:45–12:00\n• Session 3: 12:05–13:30\n\nRegistration is compulsory. Register here:\nhttps://www.gategaborone.co.bw/events\n\nIf you have already registered, kindly ignore this message.\n\nRefreshments provided. Freewill offerings received.\n\nWe look forward to seeing you! 🙌\n\n— Gate Gaborone`;
+              ? `Hi ${reg.attendee_name}! 🙌\n\nA gentle reminder — you're registered for *Perspectives On The Apostolic* with Thamo Naidoo.\n\n📅 Saturday, 15 August 2026\n⏰ 09:00 – 13:30\n📍 Gate Gaborone, Plot 54014, Gaborone West\n\n🎯 Sessions:\n• Session 1: 09:00–10:15\n• Session 2: 10:45–12:00\n• Session 3: 12:05–13:30\n\nRefreshments provided. Freewill offerings received.\n\nWe look forward to seeing you! 🙌\n\n— Gate Gaborone`
+              : `Hi ${reg.attendee_name}! 👋\n\nYou're invited to *Perspectives On The Apostolic* with Thamo Naidoo!\n\n📅 Saturday, 15 August 2026\n⏰ 09:00 – 13:30\n📍 Gate Gaborone, Plot 54014, Gaborone West\n\n🎯 Sessions:\n• Session 1: 09:00–10:15\n• Session 2: 10:45–12:00\n• Session 3: 12:05–13:30\n\nRegistration is compulsory. Register here:\nhttps://www.gategaborone.co.bw/event\n\nIf you have already registered for this August event, kindly ignore this message.\n\nRefreshments provided. Freewill offerings received.\n\nWe look forward to seeing you! 🙌\n\n— Gate Gaborone`;
 
             const waResult = await sendDirectWhatsAppMessage(normalizedPhone, message);
             if (waResult.error) {
@@ -136,16 +140,16 @@ const InviteRegistrantsButton = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Send className="h-5 w-5 text-blue-500" />
-          Send Invitations – Perspectives On The Apostolic (9 May 2026)
+          Send Invitations – Perspectives On The Apostolic (15 August 2026)
         </CardTitle>
         <CardDescription>
-          Send email and WhatsApp invitations to all previously registered attendees. Anyone who has already registered for this upcoming event will receive a friendly reminder instead. Automated reminders also go out twice a week (Tuesdays & Fridays).
+          Send email and WhatsApp invitations to all previously registered attendees. Anyone who has already registered for this upcoming August event will receive a friendly reminder instead.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
           <p className="font-semibold text-blue-900">Event Details:</p>
-          <p className="text-sm text-blue-800">📅 Saturday, 9 May 2026</p>
+          <p className="text-sm text-blue-800">📅 Saturday, 15 August 2026</p>
           <p className="text-sm text-blue-800">⏰ 09:00 – 13:30 (3 Sessions)</p>
           <p className="text-sm text-blue-800">📍 Gate Gaborone, Plot 54014, Gaborone West</p>
           <p className="text-sm text-blue-800">🎤 Speaker: Thamo Naidoo</p>

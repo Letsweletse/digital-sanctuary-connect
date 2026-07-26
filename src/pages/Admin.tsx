@@ -14,6 +14,7 @@ import RegistrationManager from '@/components/admin/RegistrationManager';
 import QAManager from '@/components/admin/QAManager';
 import PledgeManager from '@/components/admin/PledgeManager';
 import InviteRegistrantsButton from '@/components/admin/InviteRegistrantsButton';
+import AugustEventReport from '@/components/admin/AugustEventReport';
 import AdminGate from '@/components/admin/AdminGate';
 
 const Admin = () => {
@@ -97,7 +98,8 @@ const Admin = () => {
                 <RegistrationManager />
               </TabsContent>
 
-              <TabsContent value="invitations">
+              <TabsContent value="invitations" className="space-y-6">
+                <AugustEventReport />
                 <InviteRegistrantsButton />
               </TabsContent>
 
