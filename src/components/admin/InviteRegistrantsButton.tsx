@@ -9,6 +9,7 @@ import { Send, Users, Mail, MessageCircle, CheckCircle, Loader2 } from 'lucide-r
 import { sendDirectWhatsAppMessage } from '@/utils/whatsAppUtils';
 
 const TARGET_EVENT_NAME = 'Perspectives On The Apostolic with Thamo Naidoo';
+const TARGET_EVENT_DATE = 'Saturday, 15 August 2026';
 
 // Normalize phone number to international format (+267... default for Botswana)
 const normalizePhone = (raw?: string | null): string | null => {
