@@ -48,11 +48,14 @@ const InviteRegistrantsButton = () => {
         return;
       }
 
-      // Build set of emails already registered for the upcoming event
+      // Build set of emails already registered for the UPCOMING Aug 15 event
       // (they still receive a reminder, just with a different tone)
       const alreadyRegistered = new Set<string>(
         registrations
-          .filter((r: any) => (r.event_name || '').toLowerCase().includes('perspectives on the apostolic'))
+          .filter((r: any) =>
+            (r.event_name || '').toLowerCase().includes('perspectives on the apostolic') &&
+            (r.event_date || '').toLowerCase().includes('15 august 2026')
+          )
           .map((r: any) => (r.attendee_email || '').toLowerCase())
       );
 
