@@ -140,16 +140,16 @@ const InviteRegistrantsButton = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Send className="h-5 w-5 text-blue-500" />
-          Send Invitations – Perspectives On The Apostolic (9 May 2026)
+          Send Invitations – Perspectives On The Apostolic (15 August 2026)
         </CardTitle>
         <CardDescription>
-          Send email and WhatsApp invitations to all previously registered attendees. Anyone who has already registered for this upcoming event will receive a friendly reminder instead. Automated reminders also go out twice a week (Tuesdays & Fridays).
+          Send email and WhatsApp invitations to all previously registered attendees. Anyone who has already registered for this upcoming August event will receive a friendly reminder instead.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
           <p className="font-semibold text-blue-900">Event Details:</p>
-          <p className="text-sm text-blue-800">📅 Saturday, 9 May 2026</p>
+          <p className="text-sm text-blue-800">📅 Saturday, 15 August 2026</p>
           <p className="text-sm text-blue-800">⏰ 09:00 – 13:30 (3 Sessions)</p>
           <p className="text-sm text-blue-800">📍 Gate Gaborone, Plot 54014, Gaborone West</p>
           <p className="text-sm text-blue-800">🎤 Speaker: Thamo Naidoo</p>
