@@ -86,7 +86,7 @@ const InviteRegistrantsButton = () => {
               recipientEmail: email,
               recipientPhone: reg.attendee_phone,
               eventName: 'Perspectives On The Apostolic with Thamo Naidoo',
-              eventDate: 'Saturday, 9 May 2026',
+              eventDate: 'Saturday, 15 August 2026',
               eventTime: '09:00 - 13:30',
               eventLocation: 'Gate Gaborone, Plot 54014, Gaborone West',
             }
@@ -101,8 +101,8 @@ const InviteRegistrantsButton = () => {
           const normalizedPhone = normalizePhone(reg.attendee_phone);
           if (normalizedPhone) {
             const message = isReminder
-              ? `Hi ${reg.attendee_name}! 🙌\n\nA gentle reminder — you're registered for *Perspectives On The Apostolic* with Thamo Naidoo.\n\n📅 Saturday, 9 May 2026\n⏰ 09:00 – 13:30\n📍 Gate Gaborone, Plot 54014, Gaborone West\n\n🎯 Sessions:\n• Session 1: 09:00–10:15\n• Session 2: 10:45–12:00\n• Session 3: 12:05–13:30\n\nRefreshments provided. Freewill offerings received.\n\nWe look forward to seeing you! 🙌\n\n— Gate Gaborone`
-              : `Hi ${reg.attendee_name}! 👋\n\nYou're invited to *Perspectives On The Apostolic* with Thamo Naidoo!\n\n📅 Saturday, 9 May 2026\n⏰ 09:00 – 13:30\n📍 Gate Gaborone, Plot 54014, Gaborone West\n\n🎯 Sessions:\n• Session 1: 09:00–10:15\n• Session 2: 10:45–12:00\n• Session 3: 12:05–13:30\n\nRegistration is compulsory. Register here:\nhttps://www.gategaborone.co.bw/events\n\nIf you have already registered, kindly ignore this message.\n\nRefreshments provided. Freewill offerings received.\n\nWe look forward to seeing you! 🙌\n\n— Gate Gaborone`;
+              ? `Hi ${reg.attendee_name}! 🙌\n\nA gentle reminder — you're registered for *Perspectives On The Apostolic* with Thamo Naidoo.\n\n📅 Saturday, 15 August 2026\n⏰ 09:00 – 13:30\n📍 Gate Gaborone, Plot 54014, Gaborone West\n\n🎯 Sessions:\n• Session 1: 09:00–10:15\n• Session 2: 10:45–12:00\n• Session 3: 12:05–13:30\n\nRefreshments provided. Freewill offerings received.\n\nWe look forward to seeing you! 🙌\n\n— Gate Gaborone`
+              : `Hi ${reg.attendee_name}! 👋\n\nYou're invited to *Perspectives On The Apostolic* with Thamo Naidoo!\n\n📅 Saturday, 15 August 2026\n⏰ 09:00 – 13:30\n📍 Gate Gaborone, Plot 54014, Gaborone West\n\n🎯 Sessions:\n• Session 1: 09:00–10:15\n• Session 2: 10:45–12:00\n• Session 3: 12:05–13:30\n\nRegistration is compulsory. Register here:\nhttps://www.gategaborone.co.bw/event\n\nIf you have already registered for this August event, kindly ignore this message.\n\nRefreshments provided. Freewill offerings received.\n\nWe look forward to seeing you! 🙌\n\n— Gate Gaborone`;
 
             const waResult = await sendDirectWhatsAppMessage(normalizedPhone, message);
             if (waResult.error) {
