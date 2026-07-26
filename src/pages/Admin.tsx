@@ -98,7 +98,8 @@ const Admin = () => {
                 <RegistrationManager />
               </TabsContent>
 
-              <TabsContent value="invitations">
+              <TabsContent value="invitations" className="space-y-6">
+                <AugustEventReport />
                 <InviteRegistrantsButton />
               </TabsContent>
 
