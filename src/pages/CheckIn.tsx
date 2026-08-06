@@ -14,10 +14,10 @@ const CheckIn = () => {
   
   const googleMapsUrl = "https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96";
   const eventTitle = "Perspectives On The Apostolic";
-  const eventDate = "Saturday, 9 May 2026";
+  const eventDate = "Saturday, 24 October 2026";
   const eventVenue = "Gate Gaborone, Plot 54014, Gaborone West";
   
-  const shareText = `I'm attending ${eventTitle} at Gate Gaborone on 9 May 2026! Speaker: Thamo Naidoo. You should join too! 🙌 Reach • Resource • Reform`;
+  const shareText = `I'm attending ${eventTitle} at Gate Gaborone on 24 October 2026! Speaker: Thamo Naidoo. You should join too! 🙌 Reach • Resource • Reform`;
   const shareUrl = window.location.href;
   const registrationUrl = "https://www.gategaborone.co.bw/events?register=poa-may-2026";
 

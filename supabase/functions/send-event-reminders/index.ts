@@ -13,7 +13,7 @@ const corsHeaders = {
 
 const UPCOMING_EVENT = {
   name: "Perspectives On The Apostolic with Thamo Naidoo",
-  date: "Saturday, 9 May 2026",
+  date: "Saturday, 24 October 2026",
   time: "09:00 - 13:30",
   location: "Gate Gaborone, Plot 54014, Gaborone West",
   matchKeyword: "perspectives on the apostolic",
