@@ -20,7 +20,7 @@ interface Reg {
   event_date: string;
 }
 
-const AugustEventReport: React.FC = () => {
+const OctoberEventReport: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [octRegs, setOctRegs] = useState<Reg[]>([]);
   const [pastUnique, setPastUnique] = useState<Set<string>>(new Set());
@@ -115,7 +115,7 @@ const AugustEventReport: React.FC = () => {
               <Button variant="outline" size="sm" onClick={load}>
                 <RefreshCw className="h-4 w-4 mr-1" /> Refresh
               </Button>
-              <Button variant="outline" size="sm" onClick={() => downloadCsv(octRegs, `Aug15_Registered_${new Date().toISOString().slice(0,10)}.csv`)}>
+              <Button variant="outline" size="sm" onClick={() => downloadCsv(octRegs, `Oct24_Registered_${new Date().toISOString().slice(0,10)}.csv`)}>
                 <Download className="h-4 w-4 mr-1" /> Download Registered ({octRegs.length})
               </Button>
             </div>
@@ -157,4 +157,4 @@ const AugustEventReport: React.FC = () => {
   );
 };
 
-export default AugustEventReport;
+export default OctoberEventReport;
