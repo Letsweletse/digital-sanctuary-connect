@@ -560,6 +560,33 @@ async function processEmailRequest(req: Request): Promise<Response> {
       );
     }
 
+    // Handle event postponement notices
+    if (body.type === 'event_postponement') {
+      console.log("📢 [Email Handler] Processing postponement notice...");
+      const html = generatePostponementEmail({
+        recipientName: body.recipientName,
+        eventName: body.eventName,
+        oldEventDate: body.oldEventDate,
+        newEventDate: body.eventDate,
+        eventTime: body.eventTime,
+        eventLocation: body.eventLocation,
+      });
+
+      await resend.emails.send({
+        from: "Gate Gaborone <info@gategaborone.co.bw>",
+        to: [body.recipientEmail],
+        subject: `Important: ${body.eventName} postponed to ${body.eventDate}`,
+        html,
+      });
+      console.log("✅ Postponement email sent to:", body.recipientEmail);
+
+      return new Response(
+        JSON.stringify({ success: true, message: "Postponement email sent" }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+
     // Handle event invitation / reminder emails
     if (body.type === 'event_invitation' || body.type === 'event_reminder') {
       const isReminder = body.type === 'event_reminder';
