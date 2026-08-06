@@ -450,6 +450,54 @@ function generateInvitationEmail(params: {
   </div>`;
 }
 
+function generatePostponementEmail(params: {
+  recipientName: string;
+  eventName: string;
+  oldEventDate: string;
+  newEventDate: string;
+  eventTime: string;
+  eventLocation: string;
+}): string {
+  const { recipientName, eventName, oldEventDate, newEventDate, eventTime, eventLocation } = params;
+  const registerUrl = "https://www.gategaborone.co.bw/event";
+  return `
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #f8fafc;">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <img src="https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/images/general/gate-logo.png" alt="Gate Gaborone" style="max-width: 180px; height: auto;" />
+    </div>
+    <h2 style="color: #b45309; text-align: center;">Important Notice: Event Postponed</h2>
+    <p>Dear ${recipientName},</p>
+    <p>We regret to inform you that <strong>${eventName}</strong>, scheduled for <strong>${oldEventDate}</strong>, has been <strong>cancelled</strong>.</p>
+    <p>There has been an unfortunate death in the Gate Global family, and Apostle Thamo Naidoo has to attend the funeral. We sincerely apologise for the inconvenience caused.</p>
+    <div style="background-color: #f0f9ff; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0; border-radius: 4px;">
+      <h3 style="color: #3b82f6; margin-top: 0;">New Date</h3>
+      <ul style="padding-left: 20px;">
+        <li><strong>📅 Date:</strong> ${newEventDate}</li>
+        <li><strong>⏰ Time:</strong> ${eventTime}</li>
+        <li><strong>📍 Venue:</strong> ${eventLocation}</li>
+      </ul>
+      <p style="margin-top: 15px;"><strong>Sessions:</strong></p>
+      <ul style="padding-left: 20px;">
+        <li>Session 1: 09:00–10:15</li>
+        <li>Session 2: 10:45–12:00</li>
+        <li>Session 3: 12:05–13:30</li>
+      </ul>
+    </div>
+    <div style="background-color: #fef3c7; border-left: 4px solid #d97706; padding: 15px; margin: 20px 0; border-radius: 4px;">
+      <p><strong>Registration is compulsory.</strong> Please register again for the new date. Refreshments provided. Freewill offerings received.</p>
+      <p>Contact: <a href="mailto:otenggate@gmail.com">otenggate@gmail.com</a> or +267 75507981</p>
+    </div>
+    <div style="text-align: center; margin: 25px 0;">
+      <a href="${registerUrl}" style="display: inline-block; padding: 15px 30px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Register for 24 October</a>
+    </div>
+    <p>Thank you for your understanding, and we look forward to seeing you in October.</p>
+    <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+      <p style="color: #6b7280; font-size: 12px;">Gate Gaborone · <a href="https://www.gategaborone.co.bw">www.gategaborone.co.bw</a></p>
+    </div>
+  </div>`;
+}
+
+
 // ============= Main Handler =============
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -511,6 +559,33 @@ async function processEmailRequest(req: Request): Promise<Response> {
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
+
+    // Handle event postponement notices
+    if (body.type === 'event_postponement') {
+      console.log("📢 [Email Handler] Processing postponement notice...");
+      const html = generatePostponementEmail({
+        recipientName: body.recipientName,
+        eventName: body.eventName,
+        oldEventDate: body.oldEventDate,
+        newEventDate: body.eventDate,
+        eventTime: body.eventTime,
+        eventLocation: body.eventLocation,
+      });
+
+      await resend.emails.send({
+        from: "Gate Gaborone <info@gategaborone.co.bw>",
+        to: [body.recipientEmail],
+        subject: `Important: ${body.eventName} postponed to ${body.eventDate}`,
+        html,
+      });
+      console.log("✅ Postponement email sent to:", body.recipientEmail);
+
+      return new Response(
+        JSON.stringify({ success: true, message: "Postponement email sent" }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
 
     // Handle event invitation / reminder emails
     if (body.type === 'event_invitation' || body.type === 'event_reminder') {

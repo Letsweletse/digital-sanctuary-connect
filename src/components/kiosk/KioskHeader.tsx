@@ -79,7 +79,7 @@ const KioskHeader = () => {
           <div className="flex items-center justify-center space-x-8 text-white/90">
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-church-gold rounded-full"></div>
-              <span className="text-xl">Saturday, 9 May 2026</span>
+              <span className="text-xl">Saturday, 24 October 2026</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-church-gold rounded-full"></div>

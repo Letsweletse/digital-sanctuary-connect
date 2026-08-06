@@ -34,15 +34,15 @@ const RegistrationConfirmation = () => {
     attendeeEmail: attendee.email,
     registrationId: registrationData.submitDate,
     location: googleMapsUrl,
-    eventDates: "Saturday, 9 May 2026"
+    eventDates: "Saturday, 24 October 2026"
   });
   
   const handleAddToCalendar = () => {
     // Add to Google Calendar with full event details
-    const startDate = new Date("2026-05-09T09:00:00");
-    const endDate = new Date("2026-05-09T13:30:00");
+    const startDate = new Date("2026-10-24T09:00:00");
+    const endDate = new Date("2026-10-24T13:30:00");
     
-    const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z/${endDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z&details=${encodeURIComponent(`You registered for this conference on ${new Date(registrationData.submitDate).toLocaleDateString()}. Conference is on Saturday, 9 May 2026 at Gate Gaborone, Plot 54014, Gaborone West.`)}&location=${encodeURIComponent("Gate Gaborone, Plot 54014, Gaborone West")}`;
+    const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z/${endDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0,13)}00Z&details=${encodeURIComponent(`You registered for this conference on ${new Date(registrationData.submitDate).toLocaleDateString()}. Conference is on Saturday, 24 October 2026 at Gate Gaborone, Plot 54014, Gaborone West.`)}&location=${encodeURIComponent("Gate Gaborone, Plot 54014, Gaborone West")}`;
     
     window.open(googleCalUrl, '_blank');
   };
@@ -51,7 +51,7 @@ const RegistrationConfirmation = () => {
     if (navigator.share) {
       navigator.share({
         title: `I'm attending ${event.title}`,
-        text: `Join me at ${event.title} on Saturday, 9 May 2026 at Gate Gaborone, Plot 54014, Gaborone West. Registration is compulsory!`,
+        text: `Join me at ${event.title} on Saturday, 24 October 2026 at Gate Gaborone, Plot 54014, Gaborone West. Registration is compulsory!`,
         url: window.location.href
       }).catch(err => console.error('Error sharing:', err));
     } else {
@@ -94,7 +94,7 @@ const RegistrationConfirmation = () => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Calendar className="h-6 w-6 text-church-blue" />
-                    <span className="text-lg">Saturday, 9 May 2026</span>
+                    <span className="text-lg">Saturday, 24 October 2026</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Clock className="h-6 w-6 text-church-blue" />
