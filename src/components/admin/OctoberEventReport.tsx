@@ -44,7 +44,7 @@ const OctoberEventReport: React.FC = () => {
     const past = new Set<string>();
     all.forEach(r => {
       const isOct = (r.event_date || '').toLowerCase().includes(OCT_DATE_MATCH);
-      if (!isAug && r.attendee_email) past.add(r.attendee_email.toLowerCase());
+      if (!isOct && r.attendee_email) past.add(r.attendee_email.toLowerCase());
     });
     setOctRegs(oct);
     setPastUnique(past);
