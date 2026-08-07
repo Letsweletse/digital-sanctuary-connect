@@ -29,7 +29,7 @@ const normalizePhone = (raw?: string | null): string | null => {
 const sessionsBlock = `🎯 Sessions:\n• Session 1: 09:00–10:15\n• Session 2: 10:45–12:00\n• Session 3: 12:05–13:30`;
 
 const postponementMessage = (name: string) =>
-  `Dear ${name},\n\n*IMPORTANT NOTICE — EVENT POSTPONED*\n\nThe *Perspectives On The Apostolic* gathering scheduled for ${OLD_EVENT_DATE} has been *cancelled*.\n\nThere has been an unfortunate death in the Gate Global family and Apostle Thamo Naidoo has to attend the funeral. We sincerely apologise for the inconvenience.\n\n✅ *NEW DATE:*\n📅 ${NEW_EVENT_DATE}\n⏰ ${EVENT_TIME}\n📍 ${EVENT_LOCATION}\n\n${sessionsBlock}\n\nRegistration is compulsory. Please register for the new date here:\nhttps://www.gategaborone.co.bw/event\n\nRefreshments provided. Freewill offerings received.\n\nThank you for your understanding. 🙏\n\n— Gate Gaborone`;
+  `*ANNOUNCEMENT*\n\nDear ${name},\n\nPOA has been postponed to the *24 October 2026* due to an unfortunate death in our Gate Global family.\n\nApologies for the inconvenience caused.\n\n📅 ${NEW_EVENT_DATE}\n⏰ ${EVENT_TIME}\n📍 ${EVENT_LOCATION}\n\n${sessionsBlock}\n\nRegistration is compulsory. Register here:\nhttps://www.gategaborone.co.bw/event\n\nRefreshments provided. Freewill offerings received.\n\nThank you for your understanding. 🙏\n\n— Gate Gaborone`;
 
 const invitationMessage = (name: string, isReminder: boolean) =>
   isReminder
