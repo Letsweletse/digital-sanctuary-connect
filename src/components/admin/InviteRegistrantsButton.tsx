@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Send, Users, Mail, MessageCircle, CheckCircle, Loader2, AlertTriangle } from 'lucide-react';
-import { sendDirectWhatsAppMessage } from '@/utils/whatsAppUtils';
+import { Progress } from '@/components/ui/progress';
 
 const EVENT_NAME = 'Perspectives On The Apostolic with Thamo Naidoo';
 const NEW_EVENT_DATE = 'Saturday, 24 October 2026';
@@ -37,15 +37,22 @@ const invitationMessage = (name: string, isReminder: boolean) =>
     : `Hi ${name}! 👋\n\nYou're invited to *Perspectives On The Apostolic* with Thamo Naidoo!\n\n📅 ${NEW_EVENT_DATE}\n⏰ ${EVENT_TIME}\n📍 ${EVENT_LOCATION}\n\n${sessionsBlock}\n\nRegistration is compulsory. Register here:\nhttps://www.gategaborone.co.bw/event\n\nIf you have already registered for this October event, kindly ignore this message.\n\nRefreshments provided. Freewill offerings received.\n\nWe look forward to seeing you! 🙌\n\n— Gate Gaborone`;
 
 interface Results { total: number; emailsSent: number; whatsappSent: number; reminders: number; errors: number }
+interface SendProgress extends Results { processed: number }
 
 const InviteRegistrantsButton = () => {
   const { toast } = useToast();
   const [sendingMode, setSendingMode] = useState<null | 'postponement' | 'invitation'>(null);
   const [results, setResults] = useState<(Results & { mode: string }) | null>(null);
+  const [progress, setProgress] = useState<SendProgress | null>(null);
 
   const runSend = async (mode: 'postponement' | 'invitation') => {
     setSendingMode(mode);
     setResults(null);
+    setProgress(null);
+    toast({
+      title: 'Sending started',
+      description: 'Please keep this tab open. Live delivery progress will appear below.',
+    });
 
     try {
       const { data: registrations, error } = await supabase
@@ -81,13 +88,15 @@ const InviteRegistrantsButton = () => {
       let whatsappSent = 0;
       let errors = 0;
       let reminders = 0;
+      let processed = 0;
+      setProgress({ total: uniqueRegistrants.size, processed, emailsSent, whatsappSent, reminders, errors });
 
       for (const [email, reg] of uniqueRegistrants) {
         const isReminder = mode === 'invitation' && alreadyRegistered.has(email);
         if (isReminder) reminders++;
 
         try {
-          await supabase.functions.invoke('send-email', {
+          const { data: emailData, error: emailError } = await supabase.functions.invoke('send-email', {
             body: {
               type: mode === 'postponement' ? 'event_postponement' : (isReminder ? 'event_reminder' : 'event_invitation'),
               recipientName: reg.attendee_name,
@@ -100,6 +109,9 @@ const InviteRegistrantsButton = () => {
               eventLocation: EVENT_LOCATION,
             }
           });
+          if (emailError || emailData?.error) {
+            throw emailError || new Error(emailData.error);
+          }
           emailsSent++;
         } catch (emailErr) {
           console.error(`Email failed for ${email}:`, emailErr);
@@ -113,20 +125,25 @@ const InviteRegistrantsButton = () => {
               ? postponementMessage(reg.attendee_name)
               : invitationMessage(reg.attendee_name, isReminder);
 
-            const waResult = await sendDirectWhatsAppMessage(normalizedPhone, message);
-            if (waResult.error) {
-              console.error('WhatsApp API error for', normalizedPhone, waResult);
-              errors++;
-            } else {
-              whatsappSent++;
+            const { data: waData, error: waError } = await supabase.functions.invoke('send-whatsapp', {
+              body: { phone: normalizedPhone, message },
+            });
+            if (waError || waData?.error || !waData?.success) {
+              throw waError || new Error(waData?.message || 'WhatsApp provider rejected the message');
             }
+            whatsappSent++;
+          } else {
+            console.warn('WhatsApp skipped because the phone number is invalid:', reg.attendee_phone);
+            errors++;
           }
         } catch (waErr) {
           console.error('WhatsApp failed for:', reg.attendee_phone, waErr);
           errors++;
         }
 
-        await new Promise(resolve => setTimeout(resolve, 500));
+        processed++;
+        setProgress({ total: uniqueRegistrants.size, processed, emailsSent, whatsappSent, reminders, errors });
+        await new Promise(resolve => setTimeout(resolve, 300));
       }
 
       setResults({ mode, total: uniqueRegistrants.size, emailsSent, whatsappSent, reminders, errors });
@@ -139,6 +156,7 @@ const InviteRegistrantsButton = () => {
       toast({ title: 'Error', description: 'Failed to send messages.', variant: 'destructive' });
     } finally {
       setSendingMode(null);
+      setProgress(null);
     }
   };
 
@@ -212,6 +230,24 @@ const InviteRegistrantsButton = () => {
           </Button>
         </CardContent>
       </Card>
+
+      {sendingMode && progress && (
+        <div className="border border-border bg-card rounded-lg p-4 space-y-3" role="status" aria-live="polite">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 font-semibold">
+              <Loader2 className="h-4 w-4 animate-spin" /> Sending email and WhatsApp notifications
+            </div>
+            <span className="text-sm text-muted-foreground">{progress.processed} / {progress.total}</span>
+          </div>
+          <Progress value={progress.total ? (progress.processed / progress.total) * 100 : 0} />
+          <div className="grid grid-cols-3 gap-3 text-center text-sm">
+            <div><strong className="block text-blue-600">{progress.emailsSent}</strong>Emails sent</div>
+            <div><strong className="block text-green-600">{progress.whatsappSent}</strong>WhatsApp sent</div>
+            <div><strong className="block text-red-600">{progress.errors}</strong>Failed/skipped</div>
+          </div>
+          <p className="text-xs text-muted-foreground">Keep this tab open until sending is complete.</p>
+        </div>
+      )}
 
       {results && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-2">
