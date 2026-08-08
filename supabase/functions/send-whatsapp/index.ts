@@ -1,14 +1,10 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
 const ULTRAMSG_API_KEY = Deno.env.get('ULTRAMSG_API_KEY');
 const RAW_INSTANCE_ID = Deno.env.get('ULTRAMSG_INSTANCE_ID') || '114633';
 const ULTRAMSG_INSTANCE_ID = RAW_INSTANCE_ID.replace(/^instance/i, '');
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
-};
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -52,17 +48,17 @@ serve(async (req) => {
       finalMessage += "\n\nGate Gaborone - Reach | Resource | Reform";
     }
 
-    const apiUrl = `https://api.ultramsg.com/instance${ULTRAMSG_INSTANCE_ID}/messages/chat`;
+    const apiUrl = new URL(`https://api.ultramsg.com/instance${ULTRAMSG_INSTANCE_ID}/messages/chat`);
+    apiUrl.searchParams.set('token', ULTRAMSG_API_KEY);
     console.log("🌐 [Edge Function] Calling API:", apiUrl);
 
-    const response = await fetch(apiUrl, {
+    const response = await fetch(apiUrl.toString(), {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
       body: JSON.stringify({
-        token: ULTRAMSG_API_KEY,
         to: phone,
         body: finalMessage,
         priority: 10
