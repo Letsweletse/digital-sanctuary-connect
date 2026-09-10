@@ -48,17 +48,17 @@ serve(async (req) => {
       finalMessage += "\n\nGate Gaborone - Reach | Resource | Reform";
     }
 
-    const apiUrl = new URL(`https://api.ultramsg.com/instance${ULTRAMSG_INSTANCE_ID}/messages/chat`);
-    apiUrl.searchParams.set('token', ULTRAMSG_API_KEY);
+    const apiUrl = `https://api.ultramsg.com/instance${ULTRAMSG_INSTANCE_ID}/messages/chat`;
     console.log("🌐 [Edge Function] Calling API:", apiUrl);
 
-    const response = await fetch(apiUrl.toString(), {
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
       body: JSON.stringify({
+        token: ULTRAMSG_API_KEY,
         to: phone,
         body: finalMessage,
         priority: 10
