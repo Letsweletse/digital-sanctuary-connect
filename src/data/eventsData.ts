@@ -4,6 +4,17 @@ const poaFlyer = { url: '/images/events/poa-august-2026.jpeg' };
 
 export const events: EventData[] = [
   {
+    id: 'couples-picnic-2026',
+    title: 'Couples Picnic',
+    date: '2026-09-19',
+    time: '09:30 (arrival) - 10:00 (start)',
+    location: "Ditlhareng Estate Gabane (Taylor's Place)",
+    description: "Join us for a Couples Picnic. Registration Fee: P60 per couple. Bring: pen, notebook, picnic basket for two, picnic blanket or chairs. Picnic lunch ideas: ready cooked meat/chicken/sausage (no braai fires), finger foods (sliced fruits or vegetables), sandwiches, cold drinks. Tea, coffee and water will be provided. WhatsApp: +267 72 511 354.",
+    category: 'fellowship',
+    image: '/images/events/couples-picnic-2026.jpeg',
+    registration: true
+  },
+  {
     id: 'poa-august-2026',
     title: 'Perspectives On The Apostolic with Thamo Naidoo',
     date: '2026-10-24',
