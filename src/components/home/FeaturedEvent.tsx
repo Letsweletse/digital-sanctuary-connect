@@ -44,6 +44,10 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
     return new Date(featuredEvent.date);
   };
 
+  // Detect a registration fee mentioned in the event description (e.g. "P60")
+  const feeMatch = (featuredEvent.description || '').match(/P\s?(\d+)/i);
+  const fee = feeMatch ? `P${feeMatch[1]}` : null;
+
   return (
     <section className="py-16 bg-gradient-to-br from-[#1a2332] via-[#24324b] to-[#2d3e5a] text-white relative overflow-hidden">
       {/* Premium background pattern */}
