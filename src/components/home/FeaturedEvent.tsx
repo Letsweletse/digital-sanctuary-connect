@@ -66,7 +66,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
               Reach • Resource • Reform
             </h2>
             <p className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto">
-              Join us for Perspectives on the Apostolic with Thamo Naidoo — registration is compulsory. Contact otenggate@gmail.com or +267 75507981.
+              Registration is compulsory. WhatsApp +267 72 511 354 or email otenggate@gmail.com for assistance.
             </p>
           </div>
 
@@ -125,20 +125,20 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
                     </div>
                   </div>
 
-                  {/* FREE Registration Notice */}
+                  {/* Registration Fee Notice */}
                   <div className="mb-6">
                     <div className="bg-gradient-to-r from-green-500/20 to-green-400/20 border border-green-400/30 rounded-lg p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
                           <BadgeDollarSign className="h-6 w-6 mr-3 text-green-400" />
                           <div>
-                            <div className="font-semibold text-white">FREE Registration</div>
-                            <div className="text-white/80 text-sm">No cost - just reserve your spot</div>
+                            <div className="font-semibold text-white">{fee ? 'Registration Fee' : 'FREE Registration'}</div>
+                            <div className="text-white/80 text-sm">{fee ? 'Payable per couple' : 'No cost - just reserve your spot'}</div>
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-2xl font-bold text-green-400">FREE</div>
-                          <div className="text-white/70 text-xs">No charge</div>
+                          <div className="text-2xl font-bold text-green-400">{fee ?? 'FREE'}</div>
+                          <div className="text-white/70 text-xs">{fee ? 'Per couple' : 'No charge'}</div>
                         </div>
                       </div>
                     </div>
@@ -154,7 +154,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
                       className="bg-gradient-to-r from-[#b8a156] to-[#d4c278] hover:from-[#d4c278] hover:to-[#b8a156] text-white px-8 py-6 text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-0 rounded-lg"
                     >
                       <Users className="h-5 w-5 mr-3" />
-                      FREE REGISTRATION
+                      REGISTER NOW
                     </Button>
                     
                     <Button 
