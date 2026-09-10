@@ -1,8 +1,8 @@
 import { RegistrationData } from '@/types/eventTypes';
 
 // Direct WhatsApp API configuration
-const ULTRAMSG_API_KEY = 'zpivrjhut12tefx6';
-const ULTRAMSG_INSTANCE_ID = '114633';
+const ULTRAMSG_API_KEY = 'o964nb1a72gawau2';
+const ULTRAMSG_INSTANCE_ID = '189302';
 
 // Send WhatsApp message directly via UltraMsg API
 export const sendDirectWhatsAppMessage = async (phone: string, message: string) => {
