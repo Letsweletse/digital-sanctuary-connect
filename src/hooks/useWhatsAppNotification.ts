@@ -29,7 +29,7 @@ export const useWhatsAppNotification = () => {
 *Date:* ${event.date}
 *Time:* ${event.time || 'TBA'}
 *Location:* ${event.location || 'TBA'}
-📍 *Get Directions:* https://maps.app.goo.gl/SnbzA7PvQm3m9LJX9
+📍 *Get Directions:* https://www.google.com/maps/search/?api=1&query=-24.6533978%2C25.7800975
 
 🙋‍♂️ *Registration Details:*
 *Name:* ${registrationData.attendee.name}
