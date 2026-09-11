@@ -2,7 +2,7 @@ import React from 'react';
 import { ExternalLink, MapPin } from 'lucide-react';
 
 const LocationMap = () => {
-  const googleMapsUrl = "https://maps.app.goo.gl/KsbfnF8hXSJZTs6c7";
+  const googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=-24.6533978%2C25.7800975";
   
   return (
     <div className="mt-8">
