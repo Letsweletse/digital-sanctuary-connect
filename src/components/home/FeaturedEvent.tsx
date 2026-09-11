@@ -66,7 +66,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({
               Reach • Resource • Reform
             </h2>
             <p className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto">
-              Registration is compulsory. WhatsApp +267 72 511 354 or email otenggate@gmail.com for assistance.
+              Registration is compulsory. WhatsApp +267 72171066 or email otenggate@gmail.com for assistance.
             </p>
           </div>
 
