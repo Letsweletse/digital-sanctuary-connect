@@ -99,7 +99,7 @@ ${registrationData.checkInUrl ? `🎫 *Check-in Link:* ${registrationData.checkI
 
 *Thank you for your registration!* We look forward to seeing you.
 
-For enquiries: otenggate@gmail.com or call +267 75507981
+For enquiries: tms@btcmail.co.bw or call 72171066 / 72374568
 
 *Gate Gaborone - Reach • Resource • Reform*`;
 
@@ -116,7 +116,7 @@ Hello ${attendeeName}, your registration has been successfully processed.
 
 Thank you for your registration! We'll send you more details closer to the event.
 
-For enquiries: otenggate@gmail.com or call +267 75507981
+For enquiries: tms@btcmail.co.bw or call 72171066 / 72374568
 
 Gate Gaborone - Reach • Resource • Reform`;
 };

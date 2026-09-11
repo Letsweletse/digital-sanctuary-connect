@@ -267,7 +267,7 @@ function generateConfirmationEmailContent(params: {
          <li style="margin-bottom: 8px;">Show your QR code at registration for faster entry</li>
          <li style="margin-bottom: 8px;">Refreshments will be provided</li>
          <li style="margin-bottom: 8px;">Freewill offerings will be received</li>
-         <li style="margin-bottom: 8px;">For enquiries: <a href="mailto:otenggate@gmail.com" style="color: #3b82f6;">otenggate@gmail.com</a> or call +267 75507981</li>
+          <li style="margin-bottom: 8px;">For enquiries: <a href="mailto:tms@btcmail.co.bw" style="color: #3b82f6;">tms@btcmail.co.bw</a> or call 72171066 / 72374568</li>
        </ul>
      </div>
 
@@ -305,7 +305,7 @@ function generateConfirmationEmailContent(params: {
         <li style="margin-bottom: 8px;">Bring a Bible and notebook for taking notes</li>
         <li style="margin-bottom: 8px;">Refreshments will be provided</li>
         <li style="margin-bottom: 8px;">Freewill offerings will be received</li>
-        <li style="margin-bottom: 8px;">For enquiries: <a href="mailto:otenggate@gmail.com" style="color: #3b82f6;">otenggate@gmail.com</a> or call +267 75507981</li>
+        <li style="margin-bottom: 8px;">For enquiries: <a href="mailto:tms@btcmail.co.bw" style="color: #3b82f6;">tms@btcmail.co.bw</a> or call 72171066 / 72374568</li>
       </ul>
     </div>
 
@@ -412,9 +412,9 @@ function generateInvitationEmail(params: {
   const ctaLabel = isReminder ? "View Event Details" : "Register Now";
   const noticeBlock = isReminder
     ? `<p><strong>You're already registered</strong> — no action needed. Refreshments provided. Freewill offerings received.</p>
-       <p>Contact: <a href="mailto:otenggate@gmail.com">otenggate@gmail.com</a> or +267 75507981</p>`
+       <p>Contact: <a href="mailto:tms@btcmail.co.bw">tms@btcmail.co.bw</a> or 72171066 / 72374568</p>`
     : `<p><strong>Registration is compulsory.</strong> Refreshments provided. Freewill offerings received.</p>
-       <p>Contact: <a href="mailto:otenggate@gmail.com">otenggate@gmail.com</a> or +267 75507981</p>`;
+       <p>Contact: <a href="mailto:tms@btcmail.co.bw">tms@btcmail.co.bw</a> or 72171066 / 72374568</p>`;
   return `
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #f8fafc;">
     <div style="text-align: center; margin-bottom: 20px;">
@@ -485,7 +485,7 @@ function generatePostponementEmail(params: {
     </div>
     <div style="background-color: #fef3c7; border-left: 4px solid #d97706; padding: 15px; margin: 20px 0; border-radius: 4px;">
       <p><strong>Registration is compulsory.</strong> Please register again for the new date. Refreshments provided. Freewill offerings received.</p>
-      <p>Contact: <a href="mailto:otenggate@gmail.com">otenggate@gmail.com</a> or +267 75507981</p>
+      <p>Contact: <a href="mailto:tms@btcmail.co.bw">tms@btcmail.co.bw</a> or 72171066 / 72374568</p>
     </div>
     <div style="text-align: center; margin: 25px 0;">
       <a href="${registerUrl}" style="display: inline-block; padding: 15px 30px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Register for 24 October</a>
