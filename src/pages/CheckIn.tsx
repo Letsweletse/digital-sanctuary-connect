@@ -12,14 +12,15 @@ const CheckIn = () => {
   const [checkedIn, setCheckedIn] = useState(false);
   const [copied, setCopied] = useState(false);
   
-  const googleMapsUrl = "https://maps.app.goo.gl/tKHAW2wV6sZ2yLy96";
-  const eventTitle = "Perspectives On The Apostolic";
-  const eventDate = "Saturday, 24 October 2026";
-  const eventVenue = "Gate Gaborone, Plot 54014, Gaborone West";
+  const eventTitle = "Couples Picnic";
+  const eventDate = "Saturday, 19 September 2026";
+  const eventVenue = "Ditlhareng Estate, Gabane (Taylor's Place)";
+  const directions = `Take the tar road from Mogoditshane to Kumakwane. Pass Gabane traffic lights; keep going towards Kumakwane. The last left turn into Gabane is about 3km further next to the hill on the left. Turn left there and go about 200m till you see the sign on the right that says Ditlhareng. When you get to the gate press 2580# on the key pad to enter. Proceed up the road and turn left at the 'Stables' sign. Keep going straight, ignoring left and right turns. The road will take you to the top of the hill at a house where we'll meet.`;
+  const enquiryLine = "For enquiries: tms@btcmail.co.bw or call 72171066 / 72374568";
   
-  const shareText = `I'm attending ${eventTitle} at Gate Gaborone on 24 October 2026! Speaker: Thamo Naidoo. You should join too! 🙌 Reach • Resource • Reform`;
+  const shareText = `I'm attending ${eventTitle} at ${eventVenue} on 19 September 2026! Join too 🙌 Reach • Resource • Reform`;
   const shareUrl = window.location.href;
-  const registrationUrl = "https://www.gategaborone.co.bw/events?register=poa-may-2026";
+  const registrationUrl = "https://www.gategaborone.co.bw/events?register=couples-picnic-2026";
 
   useEffect(() => {
     console.log(`Check-in page accessed with ID: ${id}`);
@@ -71,12 +72,12 @@ const CheckIn = () => {
             )}
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-            {checkedIn ? 'Check-in Successful!' : 'Conference Check-in'}
+            {checkedIn ? 'Check-in Successful!' : 'Event Check-in'}
           </h1>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto">
             {checkedIn 
               ? `You have been successfully checked in to ${eventTitle}. We look forward to seeing you!` 
-              : 'Please wait while we process your conference check-in...'}
+              : 'Please wait while we process your event check-in...'}
           </p>
         </div>
         
@@ -85,7 +86,7 @@ const CheckIn = () => {
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold text-primary">{eventTitle}</h2>
-                <p className="text-sm text-muted-foreground italic">with Thamo Naidoo — Presiding Apostolic Elder, Gate Global Family</p>
+                <p className="text-sm text-muted-foreground italic">Reach • Resource • Reform</p>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5 text-primary flex-shrink-0" />
@@ -94,30 +95,30 @@ const CheckIn = () => {
                   <div className="flex items-center gap-3">
                     <Clock className="h-5 w-5 text-primary flex-shrink-0" />
                     <div className="text-sm">
-                      <div>Session 1: 09:00–10:15</div>
-                      <div>Session 2: 10:45–12:00</div>
-                      <div>Session 3: 12:05–13:30</div>
+                      <div>Arrival: 09:30</div>
+                      <div>Start: 10:00</div>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <MapPin className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-                    <a 
-                      href={googleMapsUrl}
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="hover:text-primary hover:underline"
-                    >
-                      {eventVenue}
-                    </a>
+                    <span>{eventVenue}</span>
                   </div>
                 </div>
-                
-                <div className="pt-4">
+
+                <div className="bg-muted/50 rounded-lg p-4 text-sm text-muted-foreground leading-relaxed">
+                  <span className="font-semibold text-foreground">Directions to Ditlhareng Estate:</span><br />
+                  {directions}
+                </div>
+
+                <div className="pt-2">
                   <p className="text-muted-foreground mb-4">
                     Your check-in ID: <span className="font-semibold">{id}</span>
                   </p>
                   <p className="text-muted-foreground">
-                    Please show this page to the registration team when you arrive at the conference.
+                    Please show this page to the registration team when you arrive at the event.
+                  </p>
+                  <p className="text-muted-foreground mt-2 font-medium">
+                    {enquiryLine}
                   </p>
                 </div>
               </div>
@@ -127,9 +128,9 @@ const CheckIn = () => {
                   value={JSON.stringify({
                     checkInId: id,
                     timestamp: new Date().toISOString(),
-                    mapsUrl: googleMapsUrl,
                     eventTitle,
-                    eventDates: eventDate
+                    eventDates: eventDate,
+                    venue: eventVenue
                   })}
                   size={200}
                   level="H"
@@ -137,7 +138,7 @@ const CheckIn = () => {
                   className="border-4 border-white shadow-md rounded-lg"
                 />
                 <p className="text-sm text-muted-foreground mt-4">
-                  Scan this code at the conference entrance
+                  Scan this code at the event entrance
                 </p>
               </div>
             </div>
@@ -192,7 +193,7 @@ const CheckIn = () => {
                   View All Events
                 </Button>
               </Link>
-              <Link to={`/events?register=poa-may-2026`}>
+              <Link to={`/events?register=couples-picnic-2026`}>
                 <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90">
                   Register a Friend
                 </Button>
@@ -202,7 +203,7 @@ const CheckIn = () => {
         </Card>
         
         <div className="mb-10">
-          <h3 className="text-xl font-semibold text-foreground mb-4">Conference Location</h3>
+          <h3 className="text-xl font-semibold text-foreground mb-4">Event Location</h3>
           <LocationMap />
         </div>
       </div>
