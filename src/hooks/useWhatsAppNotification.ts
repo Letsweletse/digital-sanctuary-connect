@@ -40,7 +40,7 @@ export const useWhatsAppNotification = () => {
 Your registration has been confirmed. We look forward to seeing you!
 Save this message for your reference.
 
-For enquiries, WhatsApp: +267 72 511 354
+For enquiries, WhatsApp: +267 72171066
 
 *Reach | Resource | Reform*
 - The Gate Gaborone Team`;
