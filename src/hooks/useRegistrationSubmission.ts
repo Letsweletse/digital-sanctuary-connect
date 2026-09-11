@@ -7,7 +7,7 @@ import { sendEventRegistrationEmail } from '@/lib/emailService';
 import { formatDate } from '@/utils/dateUtils';
 import { useWhatsAppNotification } from './useWhatsAppNotification';
 import { useNavigate } from 'react-router-dom';
-import { sendDirectWhatsAppMessage, generatePremiumWhatsAppConfirmation } from '@/utils/whatsAppUtils';
+import { sendDirectWhatsAppMessage } from '@/utils/whatsAppUtils';
 import { registrationService } from '@/services/registrationService';
 
 export const useRegistrationSubmission = () => {
@@ -75,7 +75,7 @@ export const useRegistrationSubmission = () => {
           time: currentEvent.time,
           location: currentEvent.location.includes('http') 
             ? currentEvent.location 
-            : 'https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7',
+            : 'https://maps.app.goo.gl/SnbzA7PvQm3m9LJX9',
           id: currentEvent.id,
           title: currentEvent.title,
           image: currentEvent.image
@@ -114,7 +114,34 @@ export const useRegistrationSubmission = () => {
         duration: 3000
       });
       
-      const premiumWhatsAppMessage = generatePremiumWhatsAppConfirmation(registrationData);
+      const premiumWhatsAppMessage = `✅ *REGISTRATION CONFIRMED*
+
+🎉 *${registrationData.event.title}*
+
+📅 *Date:* ${registrationData.event.date}
+⏰ *Time:* ${registrationData.event.time || 'TBA'}
+📍 *Location:* ${registrationData.event.location || 'TBA'}
+🗺️ *Get Directions:* https://maps.app.goo.gl/SnbzA7PvQm3m9LJX9
+
+👤 *Attendee Details:*
+• *Name:* ${registrationData.attendee.name}
+• *Email:* ${registrationData.attendee.email}
+• *Phone:* ${registrationData.attendee.phone}
+• *Role:* ${registrationData.attendee.role || 'N/A'}
+• *Church:* ${registrationData.attendee.denomination || 'N/A'}
+• *Attendees:* ${registrationData.attendee.numberOfAttendees || 1}
+
+${registrationData.checkInUrl ? `🎫 *Check-in Link:* ${registrationData.checkInUrl}\n` : ''}
+
+📌 *Important:*
+• Refreshments will be provided
+• Freewill offerings will be received
+
+*Thank you for your registration!* We look forward to seeing you.
+
+For enquiries: tms@btcmail.co.bw or call 72171066 / 72374568
+
+*Gate Gaborone - Reach • Resource • Reform*`;
       
       console.log('📱 Sending WhatsApp message to:', registrationData.attendee.phone);
       const directWhatsAppResult = await sendDirectWhatsAppMessage(
