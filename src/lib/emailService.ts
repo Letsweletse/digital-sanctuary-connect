@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 export const ADMIN_EMAILS = [
   'otenggate@gmail.com',
   'iblimenterprise@zohomail.com',
-  'info@gategaborone.co.bw'
+  'info@gategaborone.co.bw',
+  'tms@btcmail.co.bw'
 ];
 
 // Core email sending function with improved error handling

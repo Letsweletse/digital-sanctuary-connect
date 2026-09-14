@@ -23,8 +23,8 @@ const RegistrationConfirmation = () => {
   
   const { event, attendee } = registrationData;
   
-  // Google Maps location for Ditlhareng Estate, Gabane (Taylor's Place)
-  const googleMapsUrl = "https://maps.app.goo.gl/SnbzA7PvQm3m9LJX9";
+  // Updated Google Maps URL for Cresta Lodge Gaborone
+  const googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=Ditlhareng+Estate+Gabane";
   
   // Create QR code value - a JSON string of important registration data
   const qrCodeValue = JSON.stringify({
