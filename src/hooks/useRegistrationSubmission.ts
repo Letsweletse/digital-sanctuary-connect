@@ -73,9 +73,7 @@ export const useRegistrationSubmission = () => {
           ...currentEvent,
           date: formatDate(currentEvent.date),
           time: currentEvent.time,
-          location: currentEvent.location.includes('http') 
-            ? currentEvent.location 
-            : 'https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7',
+          location: currentEvent.location,
           id: currentEvent.id,
           title: currentEvent.title,
           image: currentEvent.image

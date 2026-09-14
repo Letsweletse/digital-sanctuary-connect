@@ -223,7 +223,7 @@ function generateConfirmationEmailContent(params: {
   const checkInUrl = `${churchUrl}/check-in/${checkInId}`;
   
   const venueLocation = location || "TBA";
-  const venueMapUrl = "https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7";
+  const venueMapUrl = "https://www.google.com/maps/search/?api=1&query=Ditlhareng+Estate+Gabane";
 
   return `
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #f8fafc;">
@@ -646,7 +646,7 @@ async function processEmailRequest(req: Request): Promise<Response> {
     console.log(`🔗 [Email Handler] Check-in URL generated: ${checkInUrl}`);
     
     // Always use the correct venue location
-    const googleMapsUrl = "https://maps.app.goo.gl/mVLNzv5R2T8wQZNt7";
+    const googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=Ditlhareng+Estate+Gabane";
     
     const locationQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(googleMapsUrl)}&size=300x300&margin=10&qzone=2`;
     const checkInQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(checkInUrl)}&size=300x300&margin=10&qzone=2`;
