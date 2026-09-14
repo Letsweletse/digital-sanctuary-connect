@@ -516,7 +516,7 @@ async function processEmailRequest(req: Request): Promise<Response> {
     // Handle pledge confirmation emails
     if (body.type === 'pledge_confirmation') {
       console.log("🙏 [Email Handler] Processing pledge confirmation...");
-      const adminEmails = ['otenggate@gmail.com', 'iblimenterprise@zohomail.com', 'info@gategaborone.co.bw'];
+      const adminEmails = ['otenggate@gmail.com', 'iblimenterprise@zohomail.com', 'info@gategaborone.co.bw', 'tms@btcmail.co.bw'];
       
       // Send confirmation to pledger
       const confirmationHtml = generatePledgeConfirmationEmail({
