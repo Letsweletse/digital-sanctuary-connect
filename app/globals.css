@@ -238,3 +238,15 @@ body.has-player{padding-bottom:92px}
 .hero-split h1{margin:26px 0 22px}
 .hero-split .framed{max-width:520px;justify-self:end;width:100%}
 @media(max-width:900px){.hero-split{gap:48px}.hero-split .framed{justify-self:center;max-width:440px;margin:0 14px}}
+.bank-qr{width:200px;margin:18px auto 0}.bank-qr svg{width:100%;height:auto;display:block}
+.bank-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--line)}
+.bank-row span{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.bank-row b{font-size:18px;font-weight:600}
+.regform{display:grid;gap:14px;margin-top:22px}
+.regform .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.regform label{display:grid;gap:6px;font-size:14px;font-weight:500}
+.regform input,.regform select,.regform textarea{font:inherit;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#fff}
+@media(max-width:620px){.regform .row{grid-template-columns:1fr}}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}.tbl th,.tbl td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}.tabs button{font:inherit;padding:9px 18px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer}.tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}

@@ -53,14 +53,14 @@ export const HOUSE_CHURCHES = [
 
 export type ChurchEvent = {
   slug: string; title: string; category: string; date: string; // ISO date
-  time: string; venue: string; summary: string; fee?: string; contact?: string; image?: string; registerUrl?: string;
+  time: string; venue: string; summary: string; fee?: string; contact?: string; image?: string; registerUrl?: string; registration?: boolean;
 };
 // Add new events at the top. Events drop off the site automatically once their date has passed.
 export const EVENTS: ChurchEvent[] = [
   { slug: 'thanksgiving-2026', title: 'Thanksgiving', category: 'Celebration', date: '2026-11-29',
     time: 'Details to be announced', venue: 'For the Gate Gaborone family',
     summary: 'Gate Gaborone invites you for Thanksgiving, a day of gratitude for the Gate Gaborone family.',
-    contact: 'otenggate@gmail.com · +267 7550 7981', image: '/img/thanksgiving-2026.jpg' },
+    contact: 'otenggate@gmail.com · +267 7550 7981', image: '/img/thanksgiving-2026.jpg', registration: true },
 ];
 
 export const NAV = [
@@ -72,6 +72,12 @@ export const NAV = [
   { href: '/contact', label: 'Contact' },
 ];
 
-// Giving details. Fill in with the church's official bank / mobile money details.
-// While empty, the Give page asks visitors to contact the church office.
-export const GIVING: { label: string; lines: string[] }[] = [];
+// Church bank account (from the previous website).
+export const BANK = { accountName: 'Gate Gaborone', bank: 'FNB', branchName: 'FNB Kgale', branchNumber: '284567', accountNumber: '62767853213' };
+export const GIVING_TYPES = ['Tithes', 'Offerings', 'First Fruits', 'General Donation'];
+export const MISSION = "To help people experience God's grace, grow in faith, and discover their purpose through Jesus Christ.";
+export const VISION = "To be a community where lives are transformed by God's love, creating a movement of grace that impacts our city and beyond.";
+// Registration form options (same as the previous website).
+export const ATTENDEE_TITLES = ['Mr', 'Mrs', 'Ms', 'Dr', 'Rev', 'Pastor', 'Bishop', 'Elder', 'Other'];
+export const ATTENDEE_ROLES = ['Individual', 'Pastor', 'Church Leader', 'Minister', 'Deacon', 'Elder', 'Youth Leader', 'Worship Leader', 'Church Member', 'Other'];
+export const COUNTRY_CODES = [['+267', 'Botswana'], ['+27', 'South Africa'], ['+260', 'Zambia'], ['+263', 'Zimbabwe'], ['+264', 'Namibia'], ['+266', 'Lesotho'], ['+1', 'USA/Canada'], ['+44', 'UK']];

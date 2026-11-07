@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import PageHead from '@/components/PageHead';
 import { upcoming, fmtEventDate } from '@/lib/events';
 import { SITE } from '@/lib/site';
+import RegistrationForm from '@/components/RegistrationForm';
 export const revalidate = 3600;
 export const metadata: Metadata = { title: 'Events', description: 'Upcoming services, conferences and gatherings at Gate Gaborone.' };
 export default function Events() {
@@ -17,7 +18,8 @@ export default function Events() {
             <div><span className="pill">{e.category}</span><h2 className="h-lg" style={{ margin: '16px 0' }}>{e.title}</h2>
               <p className="lede">{fmtEventDate(e.date)} · {e.time}</p><p style={{ margin: '6px 0 16px', color: 'var(--muted)' }}>{e.venue}</p>
               <p style={{ marginBottom: 16 }}>{e.summary}</p>
-              {e.fee && <p><b>Fee:</b> {e.fee}</p>}{e.contact && <p><b>Register:</b> {e.contact}</p>}</div>
+              {e.fee && <p><b>Fee:</b> {e.fee}</p>}{e.contact && <p><b>{e.registration ? 'Enquiries' : 'Register'}:</b> {e.contact}</p>}
+              {e.registration && <div id="register"><RegistrationForm slug={e.slug} title={e.title} /></div>}</div>
           </div>)) : (
           <div className="card" style={{ marginTop: 28 }}><div className="pad" style={{ padding: 36 }}>
             <h3 className="h-md">No special events scheduled <em>right now</em>.</h3>
