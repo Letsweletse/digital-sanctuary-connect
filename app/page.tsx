@@ -23,7 +23,7 @@ export default async function Home() {
       <section className="hero">
         <div className="container">
           <span className="badge fade">Gaborone West · Sundays 8:30 &amp; 11:00 · All welcome</span>
-          <h1 className="h-xl fade" style={{ animationDelay: '.08s' }}>A <em>gateway</em> church<br />for a gateway <em>city</em>.</h1>
+          <h1 className="h-xl fade" style={{ animationDelay: '.08s' }}>Gate Gaborone<br /><em>Botswana</em></h1>
           <p className="lede fade" style={{ animationDelay: '.16s' }}>Gate Gaborone is an apostolic centre in the heart of Botswana’s economic capital, part of the <b>Gate Global Family</b>, committed to aligning the church with biblical patterns and modelling the <b>Kingdom of God</b>.</p>
           <div className="actions fade" style={{ animationDelay: '.24s' }}>
             <Link href="/contact" className="btn btn-dark">Plan your visit</Link>

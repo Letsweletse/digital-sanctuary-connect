@@ -55,16 +55,12 @@ export type ChurchEvent = {
   slug: string; title: string; category: string; date: string; // ISO date
   time: string; venue: string; summary: string; fee?: string; contact?: string; image?: string; registerUrl?: string;
 };
-// Add new events at the top. Past events move to "Past events" automatically.
+// Add new events at the top. Events drop off the site automatically once their date has passed.
 export const EVENTS: ChurchEvent[] = [
-  { slug: 'perspectives-on-the-apostolic-2026', title: 'Perspectives on the Apostolic with Thamo Naidoo', category: 'Conference',
-    date: '2026-10-24', time: '08:30 – 13:10', venue: 'Gate Gaborone, Plot 54014, Gaborone West',
-    summary: 'Teaching with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family, equipping believers with apostolic principles and understanding. Refreshments provided; freewill offerings received.',
-    contact: 'otenggate@gmail.com · +267 7550 7981', image: '/img/poa-thamo-naidoo.jpg' },
-  { slug: 'couples-picnic-2026', title: 'Couples Picnic', category: 'Fellowship', date: '2026-09-19',
-    time: '09:30 arrival · 10:00 start', venue: 'Ditlhareng Estate, Gabane (Taylor’s Place)',
-    summary: 'A morning for couples. Bring a pen, notebook, a picnic basket for two and a blanket or chairs. Tea, coffee and water provided.',
-    fee: 'P60 per couple', contact: 'WhatsApp +267 7217 1066', image: '/img/couples-picnic-2026.jpg' },
+  { slug: 'thanksgiving-2026', title: 'Thanksgiving', category: 'Celebration', date: '2026-11-29',
+    time: 'Details to be announced', venue: 'For the Gate Gaborone family',
+    summary: 'Gate Gaborone invites you for Thanksgiving, a day of gratitude for the Gate Gaborone family.',
+    contact: 'otenggate@gmail.com · +267 7550 7981', image: '/img/thanksgiving-2026.jpg' },
 ];
 
 export const NAV = [
