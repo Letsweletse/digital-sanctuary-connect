@@ -67,6 +67,7 @@ export const NAV = [
   { href: '/about', label: 'About' },
   { href: '/sermons', label: 'Sermons' },
   { href: '/events', label: 'Events' },
+  { href: '/conferences', label: 'Conferences' },
   { href: '/leadership', label: 'Leadership' },
   { href: '/house-church', label: 'House Church' },
   { href: '/contact', label: 'Contact' },
