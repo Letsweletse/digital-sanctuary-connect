@@ -2,15 +2,23 @@
   "name": "gate-gaborone",
   "private": true,
   "version": "1.0.0",
-  "scripts": { "dev": "next dev", "build": "next build", "start": "next start" },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
   "dependencies": {
-    "next": "15.5.4",
-    "react": "19.1.1",
-    "react-dom": "19.1.1",
-    "@supabase/supabase-js": "2.57.4",
     "@aws-sdk/client-s3": "3.890.0",
     "@aws-sdk/s3-request-presigner": "3.890.0",
+    "@supabase/supabase-js": "2.57.4",
+    "next": "^15.5.29",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
     "resend": "6.1.0"
   },
-  "devDependencies": { "typescript": "5.9.2", "@types/react": "19.1.13", "@types/node": "22.18.6" }
+  "devDependencies": {
+    "@types/node": "22.18.6",
+    "@types/react": "19.1.13",
+    "typescript": "5.9.2"
+  }
 }
