@@ -1,4 +1,4 @@
-import { downloadUrl, r2Ready } from '@/lib/r2';
+import { downloadUrl, isBlobUrl } from '@/lib/r2';
 import { bump, getSermonById } from '@/lib/sermons';
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -7,6 +7,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   await bump(id, 'downloads').catch(() => {});
   const ext = (s.audio_key?.split('.').pop() || s.audio_url.split('?')[0].split('.').pop() || 'mp3').toLowerCase();
   const name = `${s.preached_on} - ${s.title} - ${s.speaker}.${ext}`.replace(/[\\/:*?"<>|]/g, '');
-  const target = s.audio_key && r2Ready() ? await downloadUrl(s.audio_key, name) : s.audio_url;
+  void name;
+  const target = isBlobUrl(s.audio_url) ? downloadUrl(s.audio_url) : s.audio_url;
   return Response.redirect(target, 302);
 }

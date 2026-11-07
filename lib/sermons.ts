@@ -39,7 +39,7 @@ export const SEED: Sermon[] = [
     plays: 0, downloads: 0, published: true, created_at: '2024-10-12T10:00:00Z' },
 ];
 
-/* Sermon library storage: everything lives in the church's Cloudflare R2 bucket.
+/* Sermon library storage: everything lives in the site's Vercel Blob store.
    Audio files sit under sermons/YYYY/…, and the list of messages is one small JSON file
    (catalog/sermons.json) that the admin page updates. No separate database to manage. */
 const CATALOG = 'catalog/sermons.json';
@@ -58,7 +58,7 @@ async function load(): Promise<Sermon[]> {
   try { return JSON.parse(txt) as Sermon[]; } catch { return SEED; }
 }
 async function save(list: Sermon[]) {
-  if (!r2Ready()) throw new Error('Storage is not configured yet (R2 keys missing in Vercel).');
+  if (!r2Ready()) throw new Error('Audio storage is not connected yet.');
   await putText(CATALOG, JSON.stringify(list, null, 1));
 }
 const sortList = (l: Sermon[]) => [...l].sort((a, b) => b.preached_on.localeCompare(a.preached_on) || b.created_at.localeCompare(a.created_at));

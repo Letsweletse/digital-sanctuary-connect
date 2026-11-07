@@ -1,6 +1,6 @@
 import { revalidatePath } from 'next/cache';
 import { isAdmin } from '@/lib/auth';
-import { publicUrl } from '@/lib/r2';
+import { isBlobUrl } from '@/lib/r2';
 import { createSermon } from '@/lib/sermons';
 export async function POST(req: Request) {
   if (!(await isAdmin())) return Response.json({ error: 'Not signed in' }, { status: 401 });
@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   try {
     const sermon = await createSermon({
       title, speaker, preached_on: date, series: b.series || null, scripture: b.scripture || null, description: b.description || null,
-      audio_key: key, audio_url: key ? publicUrl(key) : null,
+      audio_key: key, audio_url: b.url && isBlobUrl(String(b.url)) ? String(b.url) : null,
       duration_seconds: b.duration ? Number(b.duration) : null, size_bytes: b.size ? Number(b.size) : null, mime_type: b.mime || null,
       youtube_url: b.youtube_url || null, cover_image: b.cover_image || null, published: true,
     });

@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import type { Sermon } from '@/lib/sermons';
+import { upload } from '@vercel/blob/client';
 
 const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Gaborone' });
 const lastSunday = () => { const d = new Date(today() + 'T12:00:00'); d.setDate(d.getDate() - d.getDay()); return d.toISOString().slice(0, 10); };
@@ -39,23 +40,20 @@ export function Panel({ initial, speakers, ready }: { initial: Sermon[]; speaker
     e.preventDefault(); setMsg(''); setLink('');
     const f = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
     try {
-      let key: string | null = null;
+      let key: string | null = null, url: string | null = null;
       if (file) {
         setStage('uploading'); setPct(0);
-        const type = file.type || (file.name.toLowerCase().endsWith('.m4a') ? 'audio/mp4' : 'audio/mpeg');
-        const r = await fetch('/api/admin/upload-url', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ filename: file.name, contentType: type, size: file.size, date: f.date }) });
-        const j = await r.json(); if (!r.ok) throw new Error(j.error);
-        await new Promise<void>((res, rej) => {
-          const x = new XMLHttpRequest(); x.open('PUT', j.url); x.setRequestHeader('Content-Type', type);
-          x.upload.onprogress = ev => ev.lengthComputable && setPct(Math.round(ev.loaded / ev.total * 100));
-          x.onload = () => (x.status < 300 ? res() : rej(new Error(`Upload failed (${x.status}). Check the R2 CORS settings.`)));
-          x.onerror = () => rej(new Error('Upload failed. Check your connection and the R2 CORS settings.')); x.send(file);
+        const ext = (file.name.split('.').pop() || 'mp3').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5) || 'mp3';
+        const blob = await upload(`sermons/${f.date.slice(0, 4)}/${f.date}.${ext}`, file, {
+          access: 'public', handleUploadUrl: '/api/admin/blob', multipart: file.size > 20 * 1048576,
+          contentType: file.type || (ext === 'm4a' ? 'audio/mp4' : 'audio/mpeg'),
+          onUploadProgress: p => setPct(Math.round(p.percentage)),
         });
-        key = j.key;
+        key = blob.pathname; url = blob.url;
       } else if (!f.youtube_url) throw new Error('Choose an audio file, or add a YouTube link.');
       setStage('saving');
       const r2 = await fetch('/api/admin/sermons', { method: 'POST', headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ ...f, key, size: file?.size, duration: dur, mime: file?.type || null }) });
+        body: JSON.stringify({ ...f, key, url, size: file?.size, duration: dur, mime: file?.type || null }) });
       const j2 = await r2.json(); if (!r2.ok) throw new Error(j2.error);
       setList([j2.sermon, ...list]); setStage('done'); setLink(`${location.origin}/sermons/${j2.sermon.slug}`);
       form.current?.reset(); setFile(null);
@@ -74,7 +72,7 @@ export function Panel({ initial, speakers, ready }: { initial: Sermon[]; speaker
 
   return (
     <div className="grid" style={{ gap: 40 }}>
-      {!ready.r2 && <p className="notice err">Setup incomplete: Cloudflare R2 keys are not in Vercel yet, so uploads won’t work until they are added.</p>}
+      {!ready.r2 && <p className="notice err">Setup incomplete: audio storage is not connected yet.</p>}
       <div className="card"><div className="pad" style={{ padding: 30 }}>
         <h2 className="h-md" style={{ marginBottom: 6 }}>Upload this Sunday’s message</h2>
         <p style={{ color: 'var(--muted)', marginBottom: 22 }}>MP3 is best (about 30 MB per hour at 64 kbps). M4A from a phone also works.</p>

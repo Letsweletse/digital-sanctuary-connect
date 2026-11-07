@@ -1,35 +1,20 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+// Audio + catalog storage on Vercel Blob (connected to the project; the token is injected by Vercel).
+import { put, del, list } from '@vercel/blob';
 
-export function r2Ready() {
-  return !!(process.env.R2_ACCOUNT_ID && process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY && process.env.R2_BUCKET);
-}
-function client() {
-  return new S3Client({
-    region: 'auto',
-    endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-    credentials: { accessKeyId: process.env.R2_ACCESS_KEY_ID!, secretAccessKey: process.env.R2_SECRET_ACCESS_KEY! },
-  });
-}
-export async function uploadUrl(key: string, contentType: string) {
-  return getSignedUrl(client(), new PutObjectCommand({ Bucket: process.env.R2_BUCKET!, Key: key, ContentType: contentType }), { expiresIn: 3600 });
-}
-export async function downloadUrl(key: string, filename: string) {
-  return getSignedUrl(client(), new GetObjectCommand({
-    Bucket: process.env.R2_BUCKET!, Key: key,
-    ResponseContentDisposition: `attachment; filename="${filename.replace(/"/g, '')}"`,
-  }), { expiresIn: 600 });
-}
-export async function removeObject(key: string) {
-  await client().send(new DeleteObjectCommand({ Bucket: process.env.R2_BUCKET!, Key: key }));
-}
-export function publicUrl(key: string) {
-  return `${(process.env.R2_PUBLIC_URL || '').replace(/\/$/, '')}/${key}`;
-}
+export function r2Ready() { return !!process.env.BLOB_READ_WRITE_TOKEN; }
+
 export async function getText(key: string) {
-  const r = await client().send(new GetObjectCommand({ Bucket: process.env.R2_BUCKET!, Key: key }));
-  return r.Body ? await r.Body.transformToString() : null;
+  const { blobs } = await list({ prefix: key, limit: 5 });
+  const b = blobs.find(x => x.pathname === key);
+  if (!b) return null;
+  const r = await fetch(`${b.url}?t=${Date.now()}`, { cache: 'no-store' });
+  return r.ok ? await r.text() : null;
 }
 export async function putText(key: string, body: string) {
-  await client().send(new PutObjectCommand({ Bucket: process.env.R2_BUCKET!, Key: key, Body: body, ContentType: 'application/json', CacheControl: 'no-store' }));
+  await put(key, body, { access: 'public', contentType: 'application/json', addRandomSuffix: false, allowOverwrite: true, cacheControlMaxAge: 60 });
 }
+export async function removeObject(url: string) { await del(url); }
+export function isBlobUrl(u: string) {
+  try { return new URL(u).hostname.endsWith('.public.blob.vercel-storage.com'); } catch { return false; }
+}
+export function downloadUrl(url: string) { return `${url}${url.includes('?') ? '&' : '?'}download=1`; }
