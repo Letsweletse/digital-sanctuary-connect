@@ -10,6 +10,21 @@ export type Sermon = {
 
 // Shown until the database is connected, and kept as the first records when it is.
 export const SEED: Sermon[] = [
+  { id: 'poa-1', slug: '2025-06-02-perspectives-on-the-apostolic-session-1', title: 'Perspectives On The Apostolic: Session 1', speaker: 'Thamo Naidoo',
+    preached_on: '2025-06-02', series: 'Perspectives On The Apostolic', scripture: null,
+    description: 'Perspectives On The Apostolic with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family.',
+    audio_url: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/sermon_audio/Perspective_on_the_Apostolic__Session_1_Thamo_Naidoo_2025_06_02.mp3', audio_key: null, duration_seconds: null, size_bytes: 57855020, mime_type: 'audio/mpeg',
+    youtube_url: null, cover_image: '/img/poa-thamo-naidoo.jpg', plays: 0, downloads: 0, published: true, created_at: '2025-06-02T10:00:00Z' },
+  { id: 'poa-2', slug: '2025-05-19-perspectives-on-the-apostolic-session-2', title: 'Perspectives On The Apostolic: Session 2', speaker: 'Thamo Naidoo',
+    preached_on: '2025-05-19', series: 'Perspectives On The Apostolic', scripture: null,
+    description: 'Perspectives On The Apostolic with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family.',
+    audio_url: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/sermon_audio/Perspectives_On_The_Apostolic_Session_2_Thamo_Naidoo_2025_05_19.mp3', audio_key: null, duration_seconds: null, size_bytes: 61100204, mime_type: 'audio/mpeg',
+    youtube_url: null, cover_image: '/img/poa-thamo-naidoo.jpg', plays: 0, downloads: 0, published: true, created_at: '2025-05-19T10:00:00Z' },
+  { id: 'poa-3', slug: '2025-05-19-perspectives-on-the-apostolic-session-3', title: 'Perspectives On The Apostolic: Session 3', speaker: 'Thamo Naidoo',
+    preached_on: '2025-05-19', series: 'Perspectives On The Apostolic', scripture: null,
+    description: 'Perspectives On The Apostolic with Thamo Naidoo, Presiding Apostolic Elder of Gate Global Family.',
+    audio_url: 'https://lojchdvtwypjqupsjynf.supabase.co/storage/v1/object/public/sermon_audio/Perspectives_On_The_Apostolic_Session_3_Thamo_Naidoo_2025_05_19.mp3', audio_key: null, duration_seconds: null, size_bytes: 56923052, mime_type: 'audio/mpeg',
+    youtube_url: null, cover_image: '/img/poa-thamo-naidoo.jpg', plays: 0, downloads: 0, published: true, created_at: '2025-05-19T10:00:00Z' },
   { id: 'seed-1', slug: '2025-10-05-the-wisdom-of-god', title: 'The Wisdom of God', speaker: 'Pastor Kobus Bezuidenhout',
     preached_on: '2025-10-05', series: 'Sunday Service', scripture: null,
     description: 'Sunday sermon on the wisdom of God, delivered by Pastor Kobus Bezuidenhout.',
