@@ -13,7 +13,7 @@ export default function Header() {
       <div className="container in">
         <Link href="/" className="logo" aria-label="Gate Gaborone home"><img src="/img/logo-wordmark-dark.png" alt="Gate Gaborone" /></Link>
         <nav aria-label="Main">
-          {NAV.map(n => <Link key={n.href} href={n.href} className={path?.startsWith(n.href) ? 'on' : ''}>{n.label}</Link>)}
+          {NAV.map(n => <Link key={n.href} href={n.href} className={(n.href === '/' ? path === '/' : path?.startsWith(n.href)) ? 'on' : ''}>{n.label}</Link>)}
           <Link href="/give" className="btn btn-dark btn-sm">Give</Link>
         </nav>
         <button className="burger" aria-label="Open menu" onClick={() => setOpen(true)}>

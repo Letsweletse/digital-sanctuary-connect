@@ -26,3 +26,10 @@ export async function removeObject(key: string) {
 export function publicUrl(key: string) {
   return `${(process.env.R2_PUBLIC_URL || '').replace(/\/$/, '')}/${key}`;
 }
+export async function getText(key: string) {
+  const r = await client().send(new GetObjectCommand({ Bucket: process.env.R2_BUCKET!, Key: key }));
+  return r.Body ? await r.Body.transformToString() : null;
+}
+export async function putText(key: string, body: string) {
+  await client().send(new PutObjectCommand({ Bucket: process.env.R2_BUCKET!, Key: key, Body: body, ContentType: 'application/json', CacheControl: 'no-store' }));
+}

@@ -74,7 +74,7 @@ export function Panel({ initial, speakers, ready }: { initial: Sermon[]; speaker
 
   return (
     <div className="grid" style={{ gap: 40 }}>
-      {(!ready.db || !ready.r2) && <p className="notice err">Setup incomplete: {!ready.db && 'database (Supabase) '}{!ready.r2 && 'audio storage (R2)'} not configured. Uploads won’t work until the keys are added in Vercel.</p>}
+      {!ready.r2 && <p className="notice err">Setup incomplete: Cloudflare R2 keys are not in Vercel yet, so uploads won’t work until they are added.</p>}
       <div className="card"><div className="pad" style={{ padding: 30 }}>
         <h2 className="h-md" style={{ marginBottom: 6 }}>Upload this Sunday’s message</h2>
         <p style={{ color: 'var(--muted)', marginBottom: 22 }}>MP3 is best (about 30 MB per hour at 64 kbps). M4A from a phone also works.</p>

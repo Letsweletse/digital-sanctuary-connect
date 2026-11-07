@@ -1,4 +1,4 @@
-import { db } from './db';
+import { r2Ready, getText, putText } from './r2';
 
 export type Sermon = {
   id: string; slug: string; title: string; speaker: string; preached_on: string;
@@ -24,116 +24,69 @@ export const SEED: Sermon[] = [
     plays: 0, downloads: 0, published: true, created_at: '2024-10-12T10:00:00Z' },
 ];
 
-/* The church's existing Supabase table (shared with the old site) has these columns:
-   id, title, speaker, speaker_image, date, audio_url, youtube_id, description, tags[], thumbnail_url,
-   featured, duration (text), downloads, views, series, created_at, updated_at.
-   We map to/from it here so no database migration is needed. Extra details (scripture, file key,
-   size, hidden) are kept as prefixed entries in `tags`. */
-type Row = {
-  id: string; title: string; speaker: string; speaker_image: string | null; date: string; audio_url: string | null;
-  youtube_id: string | null; description: string | null; tags: string[] | null; thumbnail_url: string | null;
-  featured: boolean | null; duration: string | null; downloads: number | null; views: number | null;
-  series: string | null; created_at: string;
-};
-const meta = (tags: string[] | null, k: string) => (tags || []).find(t => t.startsWith(k + ':'))?.slice(k.length + 1) ?? null;
-function keyFromUrl(u: string | null) {
-  const base = (process.env.R2_PUBLIC_URL || '').replace(/\/$/, '');
-  return u && base && u.startsWith(base + '/') ? u.slice(base.length + 1) : null;
-}
-function ytUrl(id: string | null) {
-  if (!id) return null;
-  return id.startsWith('http') ? id : `https://www.youtube.com/watch?v=${id}`;
-}
+/* Sermon library storage: everything lives in the church's Cloudflare R2 bucket.
+   Audio files sit under sermons/YYYY/…, and the list of messages is one small JSON file
+   (catalog/sermons.json) that the admin page updates. No separate database to manage. */
+const CATALOG = 'catalog/sermons.json';
+export type SermonInput = Partial<Omit<Sermon, 'id' | 'slug' | 'plays' | 'downloads' | 'created_at'>>;
+
 export function ytId(v: string | null | undefined) {
   if (!v) return null;
   const m = v.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/); return m ? m[1] : /^[\w-]{11}$/.test(v) ? v : null;
 }
-function fromRow(r: Row): Sermon {
-  const date = (r.date || r.created_at).slice(0, 10);
-  const dur = r.duration && /^\d+$/.test(r.duration) ? Number(r.duration) : null;
-  return {
-    id: r.id, slug: `${slugify(date, r.title)}-${r.id.slice(0, 8)}`, title: r.title.replace(/^Sunday Sermon\s*[-–:]\s*/i, ''),
-    speaker: r.speaker, preached_on: date, series: r.series, scripture: meta(r.tags, 'scripture'),
-    description: r.description, audio_url: r.audio_url, audio_key: meta(r.tags, 'key') || keyFromUrl(r.audio_url),
-    duration_seconds: dur, size_bytes: Number(meta(r.tags, 'size')) || null, mime_type: meta(r.tags, 'mime'),
-    youtube_url: ytUrl(r.youtube_id), cover_image: r.thumbnail_url || r.speaker_image || '/img/kobus-portrait.jpg',
-    plays: r.views ?? 0, downloads: r.downloads ?? 0, published: !(r.tags || []).includes('hidden'), created_at: r.created_at,
-  };
+function normYt(v: string | null | undefined) { const id = ytId(v); return id ? `https://www.youtube.com/watch?v=${id}` : null; }
+
+async function load(): Promise<Sermon[]> {
+  if (!r2Ready()) return SEED;
+  const txt = await getText(CATALOG).catch(() => null);
+  if (!txt) return SEED;
+  try { return JSON.parse(txt) as Sermon[]; } catch { return SEED; }
 }
-export type SermonInput = Partial<Pick<Sermon, 'title' | 'speaker' | 'preached_on' | 'series' | 'scripture' | 'description' |
-  'youtube_url' | 'cover_image' | 'published' | 'audio_url' | 'audio_key' | 'duration_seconds' | 'size_bytes' | 'mime_type'>>;
-function toRow(i: SermonInput, prevTags: string[] = []) {
-  const r: Record<string, unknown> = {};
-  if (i.title !== undefined) r.title = i.title;
-  if (i.speaker !== undefined) r.speaker = i.speaker;
-  if (i.preached_on !== undefined) r.date = `${i.preached_on}T00:00:00+00:00`;
-  if (i.series !== undefined) r.series = i.series || null;
-  if (i.description !== undefined) r.description = i.description || null;
-  if (i.youtube_url !== undefined) r.youtube_id = ytId(i.youtube_url);
-  if (i.cover_image !== undefined) r.thumbnail_url = i.cover_image || null;
-  if (i.audio_url !== undefined) r.audio_url = i.audio_url;
-  if (i.duration_seconds !== undefined) r.duration = i.duration_seconds ? String(Math.round(i.duration_seconds)) : null;
-  let tags = [...prevTags]; let touched = false;
-  const set = (k: string, v: unknown) => { touched = true; tags = tags.filter(t => !t.startsWith(k + ':')); if (v) tags.push(`${k}:${v}`); };
-  if (i.scripture !== undefined) set('scripture', i.scripture);
-  if (i.audio_key !== undefined) set('key', i.audio_key);
-  if (i.size_bytes !== undefined) set('size', i.size_bytes);
-  if (i.mime_type !== undefined) set('mime', i.mime_type);
-  if (i.published !== undefined) { touched = true; tags = tags.filter(t => t !== 'hidden'); if (!i.published) tags.push('hidden'); }
-  if (touched || !prevTags.length) r.tags = tags.length ? tags : ['Sunday Service'];
-  return r;
+async function save(list: Sermon[]) {
+  if (!r2Ready()) throw new Error('Storage is not configured yet (R2 keys missing in Vercel).');
+  await putText(CATALOG, JSON.stringify(list, null, 1));
 }
-// The old site saved some sermons more than once; show each only once (keep the earliest).
-function dedupe(list: Sermon[]) {
-  const seen = new Set<string>();
-  return [...list].sort((a, b) => a.created_at.localeCompare(b.created_at))
-    .filter(s => { const k = `${s.preached_on}|${s.title.toLowerCase()}|${s.youtube_url || s.audio_url || ''}`; if (seen.has(k)) return false; seen.add(k); return true; })
-    .sort((a, b) => b.preached_on.localeCompare(a.preached_on) || b.created_at.localeCompare(a.created_at));
-}
+const sortList = (l: Sermon[]) => [...l].sort((a, b) => b.preached_on.localeCompare(a.preached_on) || b.created_at.localeCompare(a.created_at));
 
 export async function listSermons(opts: { includeHidden?: boolean } = {}): Promise<Sermon[]> {
-  const c = db();
-  if (!c) return SEED;
-  const { data, error } = await c.from('sermons').select('*').order('date', { ascending: false });
-  if (error) { console.error('listSermons', error.message); return SEED; }
-  const all = ((data as Row[]) ?? []).map(fromRow);
-  const list = opts.includeHidden ? all : dedupe(all.filter(s => s.published));
-  return list;
+  const all = sortList(await load());
+  return opts.includeHidden ? all : all.filter(s => s.published);
 }
 export async function getSermon(slug: string): Promise<Sermon | null> {
-  const list = await listSermons();
-  return list.find(s => s.slug === slug) ?? list.find(s => slug.endsWith(s.id.slice(0, 8))) ?? null;
+  return (await listSermons()).find(s => s.slug === slug) ?? null;
 }
 export async function getSermonById(id: string): Promise<Sermon | null> {
-  const c = db(); if (!c || !/^[0-9a-f-]{36}$/.test(id)) return null;
-  const { data } = await c.from('sermons').select('*').eq('id', id).maybeSingle();
-  return data ? fromRow(data as Row) : null;
+  return (await load()).find(s => s.id === id) ?? null;
 }
 export async function createSermon(i: SermonInput) {
-  const c = db(); if (!c) throw new Error('Database is not configured yet.');
-  const { data, error } = await c.from('sermons').insert({ ...toRow(i), featured: false, views: 0, downloads: 0 }).select().single();
-  if (error) throw new Error(error.message);
-  return fromRow(data as Row);
-}
-export async function updateSermon(id: string, i: SermonInput) {
-  const c = db(); if (!c) throw new Error('No database');
-  const { data: prev } = await c.from('sermons').select('tags').eq('id', id).maybeSingle();
-  const { data, error } = await c.from('sermons').update({ ...toRow(i, prev?.tags || []), updated_at: new Date().toISOString() }).eq('id', id).select().single();
-  if (error) throw new Error(error.message);
-  return fromRow(data as Row);
-}
-export async function deleteSermon(id: string) {
-  const c = db(); if (!c) throw new Error('No database');
-  const s = await getSermonById(id);
-  const { error } = await c.from('sermons').delete().eq('id', id);
-  if (error) throw new Error(error.message);
+  const list = await load();
+  const date = i.preached_on!, title = i.title!;
+  let slug = slugify(date, title);
+  if (list.some(s => s.slug === slug)) slug = `${slug}-${crypto.randomUUID().slice(0, 4)}`;
+  const s: Sermon = {
+    id: crypto.randomUUID(), slug, title, speaker: i.speaker!, preached_on: date,
+    series: i.series ?? null, scripture: i.scripture ?? null, description: i.description ?? null,
+    audio_url: i.audio_url ?? null, audio_key: i.audio_key ?? null, duration_seconds: i.duration_seconds ?? null,
+    size_bytes: i.size_bytes ?? null, mime_type: i.mime_type ?? null, youtube_url: normYt(i.youtube_url),
+    cover_image: i.cover_image || '/img/kobus-portrait.jpg', plays: 0, downloads: 0, published: i.published ?? true,
+    created_at: new Date().toISOString(),
+  };
+  await save([s, ...list]);
   return s;
 }
-export async function bump(id: string, field: 'views' | 'downloads') {
-  const c = db(); if (!c || !/^[0-9a-f-]{36}$/.test(id)) return;
-  const { data } = await c.from('sermons').select(field).eq('id', id).maybeSingle();
-  if (data) await c.from('sermons').update({ [field]: ((data as Record<string, number>)[field] || 0) + 1 }).eq('id', id);
+export async function updateSermon(id: string, i: SermonInput) {
+  const list = await load(); const idx = list.findIndex(s => s.id === id);
+  if (idx < 0) throw new Error('Message not found');
+  const s = { ...list[idx], ...i } as Sermon;
+  if ('youtube_url' in i) s.youtube_url = normYt(i.youtube_url);
+  list[idx] = s; await save(list); return s;
 }
+export async function deleteSermon(id: string) {
+  const list = await load(); const s = list.find(x => x.id === id) ?? null;
+  await save(list.filter(x => x.id !== id)); return s;
+}
+// Play/download counts are not stored (keeps the catalog file simple and safe from clashes).
+export async function bump(_id: string, _field: 'views' | 'downloads') {}
 
 export function slugify(date: string, title: string) {
   const t = title.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 70);

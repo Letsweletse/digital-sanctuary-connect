@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { isAdmin } from '@/lib/auth';
 import { listSermons } from '@/lib/sermons';
-import { db } from '@/lib/db';
 import { r2Ready } from '@/lib/r2';
 import { Login, Panel } from '@/components/Admin';
 import { LEADERS } from '@/lib/site';
@@ -18,7 +17,7 @@ export default async function AdminPage() {
       <div className="container" style={{ maxWidth: 980 }}>
         <p className="eyebrow" style={{ color: 'var(--gold-d)' }}>Media team</p>
         <h1 className="h-lg" style={{ margin: '10px 0 34px' }}>Sermon uploads</h1>
-        {ok ? <Panel initial={sermons} speakers={speakers} ready={{ db: !!db(), r2: r2Ready() }} /> : <Login />}
+        {ok ? <Panel initial={sermons} speakers={speakers} ready={{ db: r2Ready(), r2: r2Ready() }} /> : <Login />}
       </div>
     </section>
   );

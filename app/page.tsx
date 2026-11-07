@@ -1,147 +1,119 @@
 import Link from 'next/link';
-import SermonActions from '@/components/SermonActions';
-import Cta from '@/components/Cta';
-import { listSermons, fmtDate } from '@/lib/sermons';
-import { upcoming, fmtEventDate } from '@/lib/events';
-import { SITE, LEADERS, HOUSE_CHURCHES } from '@/lib/site';
+import Countdown from '@/components/Countdown';
+import { SITE } from '@/lib/site';
 
-export const revalidate = 60;
-
-const I = {
-  reach: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18" /></svg>,
-  book: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 5v16" /></svg>,
-  crown: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z" /></svg>,
-  home: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z" /></svg>,
+// Wording and images on this page match the current live homepage word for word.
+const FEATURED = {
+  title: 'Couples Picnic',
+  date: '2026-09-19',
+  dateLabel: 'September 19, 2026',
+  time: '09:30 (arrival) - 10:00 (start)',
+  location: "Ditlhareng Estate Gabane (Taylor's Place)",
+  description: "Join us for a Couples Picnic. Registration Fee: P60 per couple. Bring: pen, notebook, picnic basket for two, picnic blanket or chairs. Picnic lunch ideas: ready cooked meat/chicken/sausage (no braai fires), finger foods (sliced fruits or vegetables), sandwiches, cold drinks. Tea, coffee and water will be provided. WhatsApp: +267 72171066.",
+  image: '/img/couples-picnic-2026.jpg',
+  fee: 'P60',
 };
 
-export default async function Home() {
-  const sermons = await listSermons();
-  const latest = sermons.find(s => s.audio_url) || sermons[0];
-  const next = upcoming()[0];
+const ico = {
+  book: <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" /></svg>,
+  home: <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>,
+  users: <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>,
+};
+
+export default function Home() {
+  const wa = `https://wa.me/26772171066?text=${encodeURIComponent(`Hello, I would like to register for the ${FEATURED.title} (${FEATURED.dateLabel}).`)}`;
   return (
     <>
-      <section className="hero">
+      {/* Hero */}
+      <section className="hero-photo" style={{ backgroundImage: "url('/img/gaborone-city.jpg')" }}>
         <div className="container">
-          <span className="badge fade">Gaborone West · Sundays 8:30 &amp; 11:00 · All welcome</span>
-          <h1 className="h-xl fade" style={{ animationDelay: '.08s' }}>A <em>gateway</em> church<br />for a gateway <em>city</em>.</h1>
-          <p className="lede fade" style={{ animationDelay: '.16s' }}>Gate Gaborone is an apostolic centre in the heart of Botswana’s economic capital, part of the <b>Gate Global Family</b>, committed to aligning the church with biblical patterns and modelling the <b>Kingdom of God</b>.</p>
+          <span className="hp-kicker fade">Welcome to Gate Gaborone</span>
+          <h1 className="fade" style={{ animationDelay: '.08s' }}>GATE GABORONE</h1>
+          <p className="fade" style={{ animationDelay: '.16s' }}>An apostolic center in the heart of Botswana&apos;s economic capital, strategically positioned to align with biblical patterns and model the Kingdom of God.</p>
           <div className="actions fade" style={{ animationDelay: '.24s' }}>
-            <Link href="/contact" className="btn btn-dark">Plan your visit</Link>
-            <Link href="/sermons" className="btn">Sunday messages</Link>
-            <Link href="/house-church" className="btn">House churches</Link>
-          </div>
-          <div className="facts fade" style={{ animationDelay: '.32s' }}>
-            <div><span>Sunday services</span><b>8:30 AM &amp; 11:00 AM</b></div>
-            <div><span>House church</span><b>Wednesdays, 6:30 PM</b></div>
-            <div><span>Venue</span><b>Plot 54014, Gaborone West</b></div>
+            <a href={SITE.youtube} target="_blank" rel="noopener noreferrer" className="btn btn-blue">Watch Live</a>
+            <Link href="/sermons" className="btn btn-glass">Sermon Archive</Link>
+            <Link href="/events" className="btn btn-glass">Upcoming Events</Link>
           </div>
         </div>
+        <span className="hp-scroll" aria-hidden>↓</span>
       </section>
 
-      <section className="stats">
-        <div className="container grid">
-          <div><b>2012</b><span>The mandate is given</span></div>
-          <div><b>15+</b><span>Years of pastoral leadership</span></div>
-          <div><b>{HOUSE_CHURCHES.length}</b><span>House churches</span></div>
-          <div><b>2</b><span>Sunday services</span></div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="container split top">
+      {/* About */}
+      <section className="section white">
+        <div className="container split">
+          <div className="framed"><img src="/img/kobus-and-wife.jpg" alt="Pastor Kobus Bezuidenhout and his wife" /></div>
           <div>
-            <p className="eyebrow">About Gate Gaborone</p>
-            <h2 className="h-lg" style={{ marginTop: 22 }}>Built for a city where <em>nations</em> meet.</h2>
-          </div>
-          <div>
-            <p style={{ marginBottom: 16 }}>Gate Gaborone was birthed through a divine mandate given at a conference in 2012: a new season has dawned upon the church, one that must visibly and tangibly express itself through congregations positioned in <b>gateway cities</b> across the world.</p>
-            <p style={{ marginBottom: 30 }}>For more than <b>15 years</b>, our leaders have pursued one thing: a church aligned with apostolic, biblical patterns, offering a Christ-centred model of ministry and a deeper encounter with God.</p>
-            <div className="grid g2" style={{ gap: 14 }}>
-              {[['reach', 'Reach', 'Taking the message of the Kingdom to our city and the nations.'],
-                ['book', 'Resource', 'Sound apostolic teaching that equips believers for every sphere of life.'],
-                ['crown', 'Reform', 'Modelling the Kingdom so lives, families and communities are transformed.'],
-                ['home', 'Family', 'Midweek house churches where faith grows in real community.']].map(([k, t, d]) => (
-                <div key={t} className="card soft"><div className="pad" style={{ padding: 22 }}><div className="icon">{I[k as keyof typeof I]}</div><h3>{t}</h3><p>{d}</p></div></div>))}
+            <p className="eyebrow">About</p>
+            <h2 className="h-lg" style={{ margin: '18px 0 24px' }}>Gate Gaborone</h2>
+            <div className="prose">
+              <p>Gate Gaborone, as part of the Gate Family of churches, was birthed through a divine mandate given in a conference in 2012. The directive was unequivocally simple and clear — a new season has dawned upon the church that must visibly announce and tangibly express itself through congregations strategically positioned in gateway cities globally.</p>
+              <p>This season, named in some circles as the &apos;apostolic season&apos;, was born at least two decades ago in relative obscurity and insignificance. Through this period of time, it has endured the rigorous process of spiritual and physical formation before presenting itself as a fresh biblical paradigm distinct from that of its Pentecostal/ Charismatic counterparts.</p>
+              <p>At the heart of this season is the passionate pursuit to align the church to apostolic biblical patterns, free from conformity to secular and humanistic influences. GGB serves as an apostolic center in the heart of the economic capital of Botswana. Its mandate is to be a strategic gate for the presentation, proclamation, and modeling of the apostolic message to the nations.</p>
+              <p>In pursuit of its mandate, Gate Gaborone seeks to constructively and practically provide a biblical, Christocentric model of ministry, offering a deeper spiritual encounter for the family of God.</p>
+            </div>
+            <div className="sig">
+              <img src="/img/kobus-bezuidenhout.jpg" alt="Pastor Kobus Bezuidenhout" />
+              <div><h4>Pastor Kobus Bezuidenhout</h4><p>Senior Pastor</p></div>
             </div>
           </div>
         </div>
       </section>
 
-      {latest && (
-        <section className="section beige">
-          <div className="container split">
-            <div>
-              <p className="eyebrow">Latest message</p>
-              <h2 className="h-lg" style={{ margin: '22px 0 14px' }}>{latest.title.split(' ').slice(0, -1).join(' ')} <em>{latest.title.split(' ').slice(-1)}</em></h2>
-              <p className="lede" style={{ marginBottom: 28 }}>{latest.speaker} · {fmtDate(latest.preached_on)}</p>
-              <SermonActions s={latest} siteUrl={SITE.url} left />
-              <div className="rule" />
-              <p style={{ color: 'var(--muted)', maxWidth: 520 }}>Missed Sunday? Every message is added to the library, so you can listen online, download it for later, or share it on WhatsApp.</p>
-              <p style={{ marginTop: 22 }}><Link className="btn btn-sm" href="/sermons">All messages</Link></p>
-            </div>
-            <div className="photo" style={{ aspectRatio: '1/1' }}><img src={latest.cover_image || '/img/kobus-portrait.jpg'} alt={latest.speaker} /></div>
-          </div>
-        </section>
-      )}
-
-      <section className="section">
+      {/* Featured event */}
+      <section className="section dark feat">
         <div className="container">
-          <p className="eyebrow">Get connected</p>
-          <h2 className="h-lg" style={{ margin: '22px 0 40px' }}>How to <em>belong</em> here.</h2>
-          <div className="steps">
-            {[['Visit on a Sunday', 'Join us at 8:30 AM or 11:00 AM at the Gate Gaborone Auditorium, Plot 54014, Gaborone West. Come as you are.'],
-              ['Join a house church', `Every Wednesday at 6:30 PM, ${HOUSE_CHURCHES.length} groups meet in homes across Gaborone for fellowship, prayer and Bible study.`],
-              ['Listen and share', 'Catch up on every Sunday message online, download it for the road, or send it to a friend on WhatsApp.'],
-              ['Grow and serve', 'Discover your purpose through Jesus Christ and serve alongside a church family committed to the Kingdom.']].map(([t, d], i) => (
-              <div key={t}><span className="n">0{i + 1}</span><div><h3>{t}</h3><p>{d}</p></div></div>))}
+          <div style={{ textAlign: 'center', marginBottom: 34 }}>
+            <span className="feat-tag">{FEATURED.title}</span>
+            <h2 className="h-lg" style={{ margin: '18px 0 10px' }}>Reach • Resource • Reform</h2>
+            <p className="lede" style={{ margin: '0 auto', maxWidth: 760 }}>Registration is compulsory. WhatsApp +267 72171066 or email otenggate@gmail.com for assistance.</p>
+          </div>
+          <Countdown target={`${FEATURED.date}T09:30:00+02:00`} />
+          <div className="feat-card">
+            <div className="feat-img"><img src={FEATURED.image} alt={FEATURED.title} /></div>
+            <div className="feat-body">
+              <h3>{FEATURED.title}</h3>
+              <div className="feat-meta">
+                <div><span>Date</span><b>{FEATURED.dateLabel}</b></div>
+                <div><span>Venue</span><b>{FEATURED.location}</b></div>
+              </div>
+              <p className="feat-k">Event Time</p>
+              <div className="feat-box">{FEATURED.time}</div>
+              <div className="feat-fee">
+                <div><b>Registration Fee</b><span>Payable per couple</span></div>
+                <div style={{ textAlign: 'right' }}><strong>{FEATURED.fee}</strong><span>Per couple</span></div>
+              </div>
+              <p className="feat-desc">{FEATURED.description}</p>
+              <div className="actions">
+                <a href={wa} target="_blank" rel="noopener" className="btn btn-blue">REGISTER NOW</a>
+                <Link href="/events" className="btn btn-glass">View Full Details</Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {next && (
-        <section className="section white">
-          <div className="container split">
-            {next.image && <div className="photo" style={{ aspectRatio: '4/3' }}><img src={next.image} alt={next.title} /></div>}
-            <div>
-              <p className="eyebrow">Coming up · {next.category}</p>
-              <h2 className="h-lg" style={{ margin: '22px 0 16px' }}>{next.title}</h2>
-              <p className="lede" style={{ marginBottom: 8 }}>{fmtEventDate(next.date)} · {next.time}</p>
-              <p style={{ color: 'var(--muted)', marginBottom: 26 }}>{next.venue}</p>
-              <Link className="btn btn-dark" href="/events">Event details</Link>
-            </div>
-          </div>
-        </section>
-      )}
-
+      {/* Get connected */}
       <section className="section beige">
         <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 20, flexWrap: 'wrap' }}>
-            <div><p className="eyebrow">Leadership</p><h2 className="h-lg" style={{ marginTop: 22 }}>Serving with <em>purpose</em>.</h2></div>
-            <Link className="btn btn-sm" href="/leadership">Meet the team</Link>
+          <div style={{ textAlign: 'center', marginBottom: 44 }}>
+            <p className="eyebrow c">Explore More</p>
+            <h2 className="h-lg" style={{ margin: '18px 0 14px' }}>Get Connected</h2>
+            <p className="lede" style={{ margin: '0 auto', maxWidth: 640 }}>Discover different ways to get involved and grow in your faith journey at Gate Gaborone Ministries.</p>
           </div>
-          <div className="grid g3" style={{ marginTop: 44 }}>
-            {LEADERS.slice(0, 3).map(l => (
-              <div key={l.name} className="card">
-                <div style={{ aspectRatio: '4/4.4', overflow: 'hidden' }}><img src={l.img} alt={l.name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
-                <div className="pad"><p className="pill">{l.role}</p><h3 style={{ marginTop: 12 }}>{l.name}</h3></div>
+          <div className="grid g3">
+            {[
+              ['book', 'Sermons', "Watch and listen to our latest teachings to grow in your understanding of God's Word.", '/sermons', 'Browse Sermons'],
+              ['home', 'House Church', 'Join our small group ministry for fellowship, prayer, and deeper Bible study in a home setting.', '/house-church', 'Find a Group'],
+              ['users', 'Leadership', 'Meet the leadership team that guides our church family with wisdom, vision and a heart for God.', '/leadership', 'Meet the Team'],
+            ].map(([k, t, d, href, cta]) => (
+              <div key={t} className="card conn">
+                <div className="conn-top"><div className="conn-ico">{ico[k as keyof typeof ico]}</div><h3>{t}</h3></div>
+                <div className="pad"><p style={{ marginBottom: 20 }}>{d}</p><Link href={href} className="btn btn-sm">{cta}</Link></div>
               </div>))}
           </div>
         </div>
       </section>
-
-      <section className="section">
-        <div className="container">
-          <p className="eyebrow">Across the city</p>
-          <h2 className="h-lg" style={{ margin: '22px 0 14px' }}>{HOUSE_CHURCHES.length} homes. <em>One</em> church family.</h2>
-          <p className="lede" style={{ marginBottom: 38 }}>Every Wednesday at 6:30 PM, house churches meet across Gaborone. There is one near you.</p>
-          <div className="chips">
-            {HOUSE_CHURCHES.map(h => <div key={h.hosts} className="chip"><span className="pill">{h.area}</span><h3>{h.hosts}</h3><p>Wednesdays · 6:30 PM</p></div>)}
-            <Link href="/house-church" className="chip" style={{ textDecoration: 'none', background: 'var(--ink)', color: '#fff', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}><h3 style={{ color: '#fff' }}>Find your group <em>→</em></h3><p style={{ color: '#cfc7bb' }}>See all house churches</p></Link>
-          </div>
-        </div>
-      </section>
-
-      <Cta />
     </>
   );
 }
