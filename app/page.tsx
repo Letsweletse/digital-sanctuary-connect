@@ -16,19 +16,20 @@ const I = {
 
 export default async function Home() {
   const sermons = await listSermons();
-  const latest = sermons.find(s => s.audio_url) || sermons[0];
+  const latest = sermons[0];
+  const ytLatest = latest?.youtube_url?.match(/[?&]v=([\w-]{11})/)?.[1];
   const next = upcoming()[0];
   return (
     <>
-      <section className="hero">
+      <section className="hero hero-img" style={{ backgroundImage: "url('/img/gaborone-city.jpg')" }}>
         <div className="container">
           <span className="badge fade">Gaborone West · Sundays 8:30 AM · All welcome</span>
           <h1 className="h-xl fade" style={{ animationDelay: '.08s' }}>Gate Gaborone<br /><em>Botswana</em></h1>
           <p className="lede fade" style={{ animationDelay: '.16s' }}>Gate Gaborone is an apostolic centre in the heart of Botswana’s economic capital, part of the <b>Gate Global Family</b>, committed to aligning the church with biblical patterns and modelling the <b>Kingdom of God</b>.</p>
           <div className="actions fade" style={{ animationDelay: '.24s' }}>
-            <Link href="/contact" className="btn btn-dark">Plan your visit</Link>
-            <Link href="/sermons" className="btn">Sunday messages</Link>
-            <Link href="/house-church" className="btn">House churches</Link>
+            <Link href="/contact" className="btn btn-blue">Plan your visit</Link>
+            <Link href="/sermons" className="btn btn-glass">Sunday messages</Link>
+            <Link href="/house-church" className="btn btn-glass">House churches</Link>
           </div>
           <div className="facts fade" style={{ animationDelay: '.32s' }}>
             <div><span>Sunday service</span><b>8:30 AM</b></div>
@@ -51,10 +52,10 @@ export default async function Home() {
         <div className="container split top">
           <div>
             <p className="eyebrow">About Gate Gaborone</p>
-            <h2 className="h-lg" style={{ marginTop: 22 }}>Built for a city where <em>nations</em> meet.</h2>
+            <h2 className="h-lg" style={{ marginTop: 22, fontSize: 'clamp(34px,4vw,52px)' }}>Gate Gaborone was birthed through a divine mandate given at a conference in <em>2012</em>.</h2>
           </div>
           <div>
-            <p style={{ marginBottom: 16 }}>Gate Gaborone was birthed through a divine mandate given at a conference in 2012: a new season has dawned upon the church, one that must visibly and tangibly express itself through congregations positioned in <b>gateway cities</b> across the world.</p>
+            <p style={{ marginBottom: 16 }}>The directive was simple and clear: a new season has dawned upon the church, one that must visibly and tangibly express itself through congregations positioned in <b>gateway cities</b> across the world.</p>
             <p style={{ marginBottom: 30 }}>For more than <b>15 years</b>, our leaders have pursued one thing: a church aligned with apostolic, biblical patterns, offering a Christ-centred model of ministry and a deeper encounter with God.</p>
             <div className="grid g2" style={{ gap: 14 }}>
               {[['reach', 'Reach', 'Taking the message of the Kingdom to our city and the nations.'],
@@ -79,7 +80,9 @@ export default async function Home() {
               <p style={{ color: 'var(--muted)', maxWidth: 520 }}>Missed Sunday? Every message is added to the library, so you can listen online, download it for later, or share it on WhatsApp.</p>
               <p style={{ marginTop: 22 }}><Link className="btn btn-sm" href="/sermons">All messages</Link></p>
             </div>
-            <div className="photo" style={{ aspectRatio: '1/1' }}><img src={latest.cover_image || '/img/kobus-portrait.jpg'} alt={latest.speaker} /></div>
+            {ytLatest
+              ? <div className="photo" style={{ aspectRatio: '16/9' }}><iframe src={`https://www.youtube-nocookie.com/embed/${ytLatest}`} title={latest.title} style={{ width: '100%', height: '100%', border: 0 }} allow="accelerometer; autoplay; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" /></div>
+              : <div className="photo" style={{ aspectRatio: '1/1' }}><img src={latest.cover_image || '/img/kobus-portrait.jpg'} alt={latest.speaker} /></div>}
           </div>
         </section>
       )}
