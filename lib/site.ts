@@ -9,7 +9,7 @@ export const SITE = {
   phoneOffice: '+267 350 0194',
   phoneAfterHours: '+267 7550 7981',
   email: 'info@gategaborone.co.bw',
-  youtube: 'https://www.youtube.com/@gategaboronebotswana2702',
+  youtube: 'https://www.youtube.com/@gategaboronebotswana',
   facebook: 'https://www.facebook.com/profile.php?id=61575319345710',
   services: [
     { day: 'Sunday', name: 'Sunday Services', time: '8:30 AM & 11:00 AM', where: 'Gate Gaborone Auditorium' },

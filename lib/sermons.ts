@@ -1,4 +1,5 @@
 import { r2Ready, getText, putText } from './r2';
+import { youtubeSermons, ytIdOf } from './youtube';
 
 export type Sermon = {
   id: string; slug: string; title: string; speaker: string; preached_on: string;
@@ -64,8 +65,12 @@ async function save(list: Sermon[]) {
 const sortList = (l: Sermon[]) => [...l].sort((a, b) => b.preached_on.localeCompare(a.preached_on) || b.created_at.localeCompare(a.created_at));
 
 export async function listSermons(opts: { includeHidden?: boolean } = {}): Promise<Sermon[]> {
-  const all = sortList(await load());
-  return opts.includeHidden ? all : all.filter(s => s.published);
+  const own = await load();
+  if (opts.includeHidden) return sortList(own);
+  // Add YouTube sermons, unless the same video is already attached to an uploaded message.
+  const taken = new Set(own.map(s => ytIdOf(s.youtube_url)).filter(Boolean));
+  const yt = (await youtubeSermons()).filter(s => !taken.has(ytIdOf(s.youtube_url)));
+  return sortList([...own.filter(s => s.published), ...yt]);
 }
 export async function getSermon(slug: string): Promise<Sermon | null> {
   return (await listSermons()).find(s => s.slug === slug) ?? null;

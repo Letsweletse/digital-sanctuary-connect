@@ -41,7 +41,11 @@ export default async function SermonPage({ params }: P) {
       <section className="section tight">
         <div className="container" style={{ maxWidth: 820 }}>
           {s.description && <p style={{ fontSize: 19, whiteSpace: 'pre-line' }}>{s.description}</p>}
-          {!s.audio_url && s.youtube_url && <p className="notice info" style={{ marginTop: 24 }}>This message is available on YouTube.</p>}
+          {s.youtube_url && /[?&]v=([\w-]{11})/.test(s.youtube_url) && (
+            <div style={{ marginTop: 28, aspectRatio: '16/9', borderRadius: 14, overflow: 'hidden', background: '#000' }}>
+              <iframe src={`https://www.youtube-nocookie.com/embed/${s.youtube_url.match(/[?&]v=([\w-]{11})/)![1]}`} title={s.title}
+                style={{ width: '100%', height: '100%', border: 0 }} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen />
+            </div>)}
           <div className="rule" />
           <p className="eyebrow">More messages</p>
           <div style={{ marginTop: 8 }}>
