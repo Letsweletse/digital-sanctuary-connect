@@ -15,7 +15,6 @@ export const metadata: Metadata = {
   description: SITE.description,
   openGraph: { siteName: SITE.name, type: 'website', images: ['/img/congregation.jpg'] },
   twitter: { card: 'summary_large_image' },
-  alternates: { types: { 'application/rss+xml': [{ url: '/podcast.xml', title: 'Gate Gaborone Sermons' }] } },
 };
 export const viewport: Viewport = { themeColor: '#faf7f2', width: 'device-width', initialScale: 1 };
 

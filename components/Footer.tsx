@@ -25,7 +25,7 @@ export default function Footer() {
               {SITE.address.map(a => <li key={a}>{a}</li>)}
               <li style={{ marginTop: 8 }}><a href={`tel:${SITE.phoneOffice.replace(/\s/g, '')}`}>{SITE.phoneOffice}</a> · <a href={`tel:${SITE.phoneAfterHours.replace(/\s/g, '')}`}>{SITE.phoneAfterHours}</a></li>
               <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
-              <li style={{ display: 'flex', gap: 16, marginTop: 8 }}><a href={SITE.youtube} target="_blank" rel="noopener">YouTube</a><a href={SITE.facebook} target="_blank" rel="noopener">Facebook</a><a href="/podcast.xml">Podcast</a></li>
+              <li style={{ display: 'flex', gap: 16, marginTop: 8 }}><a href={SITE.youtube} target="_blank" rel="noopener">YouTube</a><a href={SITE.facebook} target="_blank" rel="noopener">Facebook</a></li>
             </ul>
           </div>
         </div>

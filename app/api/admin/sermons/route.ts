@@ -15,7 +15,7 @@ export async function POST(req: Request) {
       duration_seconds: b.duration ? Number(b.duration) : null, size_bytes: b.size ? Number(b.size) : null, mime_type: b.mime || null,
       youtube_url: b.youtube_url || null, cover_image: b.cover_image || null, published: true,
     });
-    ['/', '/sermons', '/podcast.xml'].forEach(p => revalidatePath(p));
+    ['/', '/sermons'].forEach(p => revalidatePath(p));
     return Response.json({ ok: true, sermon });
   } catch (e) { return Response.json({ error: (e as Error).message }, { status: 500 }); }
 }
