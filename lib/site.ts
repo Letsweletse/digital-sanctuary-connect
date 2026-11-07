@@ -68,7 +68,6 @@ export const EVENTS: ChurchEvent[] = [
 ];
 
 export const NAV = [
-  { href: '/', label: 'Home' },
   { href: '/about', label: 'About' },
   { href: '/sermons', label: 'Sermons' },
   { href: '/events', label: 'Events' },

@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import { SITE } from '@/lib/site';
+import { SITE, NAV } from '@/lib/site';
 
-// Footer wording matches the current live site.
 export default function Footer() {
   return (
     <footer className="ftr">
@@ -9,41 +8,30 @@ export default function Footer() {
         <div className="cols">
           <div>
             <img src="/img/logo-wordmark.png" alt="Gate Gaborone" style={{ height: 24, width: 'auto', marginBottom: 20 }} />
-            <p style={{ maxWidth: 320 }}>An apostolic center in the heart of Botswana&apos;s economic capital, strategically positioned to align with biblical patterns.</p>
-            <p style={{ display: 'flex', gap: 16, marginTop: 18 }}>
-              <a href={SITE.facebook} target="_blank" rel="noopener">Facebook</a>
-              <a href={SITE.youtube} target="_blank" rel="noopener">YouTube</a>
-            </p>
+            <p style={{ maxWidth: 320 }}>{SITE.description}</p>
+            <p className="eyebrow" style={{ marginTop: 18 }}>{SITE.tagline}</p>
           </div>
           <div>
-            <h4>Quick Links</h4>
-            <ul>
-              <li><Link href="/sermons">Sermons</Link></li>
-              <li><Link href="/events">Events Calendar</Link></li>
-              <li><Link href="/leadership">Our Leadership</Link></li>
-              <li><Link href="/house-church">House Church</Link></li>
-              <li><Link href="/about">About Us</Link></li>
-            </ul>
+            <h4>Explore</h4>
+            <ul>{NAV.map(n => <li key={n.href}><Link href={n.href}>{n.label}</Link></li>)}<li><Link href="/give">Give</Link></li></ul>
           </div>
           <div>
-            <h4>Service Times</h4>
-            <ul>
-              <li><span style={{ color: '#fff' }}>Sunday Services</span><br />8:30 AM &amp; 11:00 AM</li>
-              <li><span style={{ color: '#fff' }}>Wednesday Housechurch</span><br />6:30 PM - 8:00 PM</li>
-            </ul>
+            <h4>Gather</h4>
+            <ul>{SITE.services.map(s => <li key={s.name}><span style={{ color: '#fff' }}>{s.name}</span><br />{s.day}s · {s.time}</li>)}</ul>
           </div>
           <div>
-            <h4>Contact Us</h4>
+            <h4>Visit</h4>
             <ul>
-              <li><span style={{ color: '#fff' }}>Address:</span><br />Gate Gaborone Auditorium<br />Gaborone West, Phase 4, Plot 54014</li>
-              <li><span style={{ color: '#fff' }}>Phone:</span><br /><a href="tel:+2673500194">+267 3500194</a> / <a href="tel:+26775507981">+267 75507981</a></li>
-              <li><span style={{ color: '#fff' }}>Email:</span><br /><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
+              {SITE.address.map(a => <li key={a}>{a}</li>)}
+              <li style={{ marginTop: 8 }}><a href={`tel:${SITE.phoneOffice.replace(/\s/g, '')}`}>{SITE.phoneOffice}</a> · <a href={`tel:${SITE.phoneAfterHours.replace(/\s/g, '')}`}>{SITE.phoneAfterHours}</a></li>
+              <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
+              <li style={{ display: 'flex', gap: 16, marginTop: 8 }}><a href={SITE.youtube} target="_blank" rel="noopener">YouTube</a><a href={SITE.facebook} target="_blank" rel="noopener">Facebook</a><a href="/podcast.xml">Podcast</a></li>
             </ul>
           </div>
         </div>
         <div className="base">
-          <span>© {new Date().getFullYear()} Gate Gaborone. All rights reserved.</span>
-          <span style={{ display: 'flex', gap: 22 }}><Link href="/privacy">Privacy Policy</Link><Link href="/privacy">Terms of Service</Link></span>
+          <span>© {new Date().getFullYear()} Gate Gaborone. Part of the Gate Global Family.</span>
+          <span><Link href="/privacy">Privacy</Link></span>
         </div>
       </div>
     </footer>
