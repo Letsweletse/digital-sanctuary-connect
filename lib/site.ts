@@ -12,7 +12,7 @@ export const SITE = {
   youtube: 'https://www.youtube.com/@gategaboronebotswana',
   facebook: 'https://www.facebook.com/profile.php?id=61575319345710',
   services: [
-    { day: 'Sunday', name: 'Sunday Services', time: '8:30 AM & 11:00 AM', where: 'Gate Gaborone Auditorium' },
+    { day: 'Sunday', name: 'Sunday Service', time: '8:30 AM', where: 'Gate Gaborone Auditorium' },
     { day: 'Wednesday', name: 'House Church', time: '6:30 PM – 8:00 PM', where: 'Homes across Gaborone' },
   ],
 };

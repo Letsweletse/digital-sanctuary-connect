@@ -8,7 +8,7 @@ export default function Events() {
   const up = upcoming();
   return (
     <>
-      <PageHead eyebrow="Calendar" title={<>What’s <em>coming</em>.</>} lede="Worship, teaching and fellowship through the year. We gather every Sunday at 8:30 AM and 11:00 AM." />
+      <PageHead eyebrow="Calendar" title={<>What’s <em>coming</em>.</>} lede="Worship, teaching and fellowship through the year. We gather every Sunday at 8:30 AM." />
       <section className="section"><div className="container">
         <p className="eyebrow">Upcoming</p>
         {up.length ? up.map(e => (
@@ -21,7 +21,7 @@ export default function Events() {
           </div>)) : (
           <div className="card" style={{ marginTop: 28 }}><div className="pad" style={{ padding: 36 }}>
             <h3 className="h-md">No special events scheduled <em>right now</em>.</h3>
-            <p style={{ marginTop: 12 }}>Join us for Sunday services at 8:30 AM and 11:00 AM, and house church on Wednesdays at 6:30 PM. Follow us on <a href={SITE.facebook} target="_blank" rel="noopener">Facebook</a> for announcements.</p>
+            <p style={{ marginTop: 12 }}>Join us for our Sunday service at 8:30 AM, and house church on Wednesdays at 6:30 PM. Follow us on <a href={SITE.facebook} target="_blank" rel="noopener">Facebook</a> for announcements.</p>
           </div></div>)}
       </div></section>
     </>

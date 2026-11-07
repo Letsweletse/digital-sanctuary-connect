@@ -26,7 +26,7 @@ export default function About() {
         <h2 className="h-lg" style={{ margin: '22px 0 40px' }}>What we <em>hold</em> to.</h2>
         <div className="numgrid">{VALUES.map((v, i) => (
           <div key={v}><span className="n">0{i + 1}</span><h3>{v.charAt(0).toUpperCase() + v.slice(1)}</h3></div>))}
-          <div style={{ background: 'var(--ink)', color: '#fff' }}><span className="n">→</span><h3 style={{ color: '#fff' }}>Come and see</h3><p style={{ color: '#cfc7bb' }}>Sundays at 8:30 AM and 11:00 AM.</p></div></div>
+          <div style={{ background: 'var(--ink)', color: '#fff' }}><span className="n">→</span><h3 style={{ color: '#fff' }}>Come and see</h3><p style={{ color: '#cfc7bb' }}>Sundays at 8:30 AM.</p></div></div>
       </div></section>
       <Cta />
     </>

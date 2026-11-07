@@ -22,7 +22,7 @@ export default async function Home() {
     <>
       <section className="hero">
         <div className="container">
-          <span className="badge fade">Gaborone West · Sundays 8:30 &amp; 11:00 · All welcome</span>
+          <span className="badge fade">Gaborone West · Sundays 8:30 AM · All welcome</span>
           <h1 className="h-xl fade" style={{ animationDelay: '.08s' }}>Gate Gaborone<br /><em>Botswana</em></h1>
           <p className="lede fade" style={{ animationDelay: '.16s' }}>Gate Gaborone is an apostolic centre in the heart of Botswana’s economic capital, part of the <b>Gate Global Family</b>, committed to aligning the church with biblical patterns and modelling the <b>Kingdom of God</b>.</p>
           <div className="actions fade" style={{ animationDelay: '.24s' }}>
@@ -31,7 +31,7 @@ export default async function Home() {
             <Link href="/house-church" className="btn">House churches</Link>
           </div>
           <div className="facts fade" style={{ animationDelay: '.32s' }}>
-            <div><span>Sunday services</span><b>8:30 AM &amp; 11:00 AM</b></div>
+            <div><span>Sunday service</span><b>8:30 AM</b></div>
             <div><span>House church</span><b>Wednesdays, 6:30 PM</b></div>
             <div><span>Venue</span><b>Plot 54014, Gaborone West</b></div>
           </div>
@@ -43,7 +43,7 @@ export default async function Home() {
           <div><b>2012</b><span>The mandate is given</span></div>
           <div><b>15+</b><span>Years of pastoral leadership</span></div>
           <div><b>{HOUSE_CHURCHES.length}</b><span>House churches</span></div>
-          <div><b>2</b><span>Sunday services</span></div>
+          <div><b>8:30</b><span>Sunday service</span></div>
         </div>
       </section>
 
@@ -89,7 +89,7 @@ export default async function Home() {
           <p className="eyebrow">Get connected</p>
           <h2 className="h-lg" style={{ margin: '22px 0 40px' }}>How to <em>belong</em> here.</h2>
           <div className="steps">
-            {[['Visit on a Sunday', 'Join us at 8:30 AM or 11:00 AM at the Gate Gaborone Auditorium, Plot 54014, Gaborone West. Come as you are.'],
+            {[['Visit on a Sunday', 'Join us at 8:30 AM at the Gate Gaborone Auditorium, Plot 54014, Gaborone West. Come as you are.'],
               ['Join a house church', `Every Wednesday at 6:30 PM, ${HOUSE_CHURCHES.length} groups meet in homes across Gaborone for fellowship, prayer and Bible study.`],
               ['Listen and share', 'Catch up on every Sunday message online, download it for the road, or send it to a friend on WhatsApp.'],
               ['Grow and serve', 'Discover your purpose through Jesus Christ and serve alongside a church family committed to the Kingdom.']].map(([t, d], i) => (

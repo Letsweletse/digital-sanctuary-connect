@@ -15,7 +15,7 @@ export default function Give() {
         ) : (
           <div className="card"><div className="pad" style={{ padding: 34 }}>
             <h2 className="h-md">Giving details</h2>
-            <p style={{ color: 'var(--muted)', margin: '12px 0 22px' }}>You can give during our Sunday services. For bank transfer or mobile money details, please contact the church office.</p>
+            <p style={{ color: 'var(--muted)', margin: '12px 0 22px' }}>You can give during our Sunday service. For bank transfer or mobile money details, please contact the church office.</p>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               <a className="btn btn-dark" href={`tel:${SITE.phoneOffice.replace(/\s/g, '')}`}>Call {SITE.phoneOffice}</a>
               <Link className="btn" href="/contact?subject=Other">Send a message</Link></div>
