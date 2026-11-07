@@ -25,24 +25,28 @@ export default function Home() {
   return (
     <>
       {/* Hero */}
-      <section className="hero-photo" style={{ backgroundImage: "url('/img/gaborone-city.jpg')" }}>
-        <div className="container">
-          <span className="hp-kicker fade">Welcome to Gate Gaborone</span>
-          <h1 className="fade" style={{ animationDelay: '.08s' }}>GATE GABORONE</h1>
-          <p className="fade" style={{ animationDelay: '.16s' }}>An apostolic center in the heart of Botswana&apos;s economic capital, strategically positioned to align with biblical patterns and model the Kingdom of God.</p>
-          <div className="actions fade" style={{ animationDelay: '.24s' }}>
-            <a href={SITE.youtube} target="_blank" rel="noopener noreferrer" className="btn btn-blue">Watch Live</a>
-            <Link href="/sermons" className="btn btn-glass">Sermon Archive</Link>
-            <Link href="/events" className="btn btn-glass">Upcoming Events</Link>
+      <section className="hero">
+        <div className="container split hero-split">
+          <div>
+            <span className="badge fade">Welcome to Gate Gaborone</span>
+            <h1 className="h-xl fade" style={{ animationDelay: '.08s' }}>Gate <em>Gaborone</em></h1>
+            <p className="lede fade" style={{ animationDelay: '.16s' }}>An apostolic center in the heart of Botswana&apos;s economic capital, strategically positioned to align with biblical patterns and model the Kingdom of God.</p>
+            <div className="actions fade" style={{ animationDelay: '.24s' }}>
+              <a href={SITE.youtube} target="_blank" rel="noopener noreferrer" className="btn btn-dark">Watch Live</a>
+              <Link href="/sermons" className="btn">Sermon Archive</Link>
+              <Link href="/events" className="btn">Upcoming Events</Link>
+            </div>
+          </div>
+          <div className="framed fade" style={{ animationDelay: '.2s' }}>
+            <img src="/img/kobus-and-wife.jpg" alt="Pastor Kobus Bezuidenhout and his wife" />
           </div>
         </div>
-        <span className="hp-scroll" aria-hidden>↓</span>
       </section>
 
       {/* About */}
       <section className="section white">
         <div className="container split">
-          <div className="framed"><img src="/img/kobus-and-wife.jpg" alt="Pastor Kobus Bezuidenhout and his wife" /></div>
+          <div className="photo" style={{ aspectRatio: '4/3.4' }}><img src="/img/gaborone-city.jpg" alt="Gaborone, Botswana" /></div>
           <div>
             <p className="eyebrow">About</p>
             <h2 className="h-lg" style={{ margin: '18px 0 24px' }}>Gate Gaborone</h2>

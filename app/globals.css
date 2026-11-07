@@ -234,3 +234,7 @@ body.has-player{padding-bottom:92px}
 @media(max-width:900px){.feat-card{grid-template-columns:1fr}.feat-img img{min-height:0;aspect-ratio:4/3}.feat-body{padding:26px}.feat-meta{grid-template-columns:1fr}}
 @media(max-width:620px){.cd-grid{grid-template-columns:repeat(4,1fr);gap:8px}.hero-photo{min-height:86vh}.hero-photo .actions .btn{width:100%;justify-content:center}}
 .section.feat{background:linear-gradient(135deg,#1a2332,#24324b 50%,#2d3e5a)}
+.hero-split{align-items:center;gap:64px}
+.hero-split h1{margin:26px 0 22px}
+.hero-split .framed{max-width:520px;justify-self:end;width:100%}
+@media(max-width:900px){.hero-split{gap:48px}.hero-split .framed{justify-self:center;max-width:440px;margin:0 14px}}
